@@ -33,6 +33,7 @@ dependencies {
     implementation("io.quarkus:quarkus-arc")
     implementation("io.quarkus:quarkus-hibernate-orm")
     implementation("io.quarkus:quarkus-smallrye-openapi")
+    implementation("org.jetbrains.kotlinx:kotlinx-serialization-json")
     testImplementation("io.quarkus:quarkus-junit5")
     testImplementation("io.rest-assured:rest-assured")
     runtimeOnly("org.jetbrains.kotlinx:kotlinx-serialization-json:1.5.0")

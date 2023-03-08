@@ -14,8 +14,7 @@ import javax.persistence.Table
 @Entity
 @Table(name = "base_code")
 @Serializable
-@Schema(description = "공통코드2")
-open class BaseCode (
+class BaseCode (
     @EmbeddedId
     var id: BaseCodeId? = null,
 
@@ -46,10 +45,9 @@ open class BaseCode (
 
     @Column(name = "updt_dttm", nullable = false)
     @Serializable(with = TimestampSerializer::class)
-    @Schema(description = "생년월일", example = "2023.02.03 11:22", maxLength = 16, format = "yyyy.MM.dd HH:mm")
     var updtDttm: Instant? = null
-) : PanacheEntityBase,  java.io.Serializable {
+) : PanacheEntityBase, java.io.Serializable {
     companion object {
-        private val serialVersionUID = UUID.randomUUID()
+        private const val serialVersionUID = 165979703881194617L
     }
 }
