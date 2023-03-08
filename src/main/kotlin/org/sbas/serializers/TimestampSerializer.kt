@@ -24,7 +24,6 @@ object TimestampSerializer: KSerializer<Instant> {
     override fun serialize(encoder: Encoder, value: Instant) {
         val formatter: DateTimeFormatter = DateTimeFormatter.ofPattern("yyyy.MM.dd HH:mm")
             .withZone(ZoneId.systemDefault())
-        // val instant = Instant.parse(value)
         val ret = formatter.format(value)
         encoder.encodeString(ret.toString())
     }

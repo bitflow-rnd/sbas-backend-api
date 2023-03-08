@@ -34,7 +34,6 @@ class UserService {
         param2.cdGrpId = "12345678"
         param2.cdId = "23456789"
         val res1 = repo1.findById(param2)
-        // some programming logic should be placed here
         val ret = BaseCodeResponse()
         if (res1?.id != null) {
             ret.cdGrpId = res1.id!!.cdGrpId
@@ -49,11 +48,11 @@ class UserService {
     fun getBaseCode(param1: BaseCodeRequest?, ctx: SecurityContext): BaseCodeResponse {
         val jwtString = TokenUtils.debugJwtContent(jwt, ctx)
         log.debug("jwtString is $jwtString");
-        // some programming logic should be placed here
         val param2 = BaseCodeId()
         param2.cdGrpId = param1!!.cdGrpId!!
         param2.cdId = param1!!.cdId!!
         val res1 = repo1.findById(param2)
+        // some programming logic should be placed here
         val ret = BaseCodeResponse()
         return ret
     }
