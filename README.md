@@ -1,4 +1,4 @@
-# sbas-backend-api
+# 스마트 병상배정 시스템 백엔드 API
 
 This project uses Quarkus, the Supersonic Subatomic Java Framework.
 
