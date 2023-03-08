@@ -3,12 +3,14 @@ package org.sbas.response
 import kotlinx.serialization.Serializable
 import org.eclipse.microprofile.openapi.annotations.media.Schema
 import org.sbas.entities.BaseCodeId
+import javax.persistence.Column
 
 //@Schema(description = "공통코드 응답")
 @Serializable
 data class BaseCodeResponse (
 
-    var id: BaseCodeId? = null,
+    var cdGrpId: String? = null,
+    var cdId: String? = null,
     var cdGrpNm: String? = null,
     var cdNm: String? = null,
     var cdVal: String? = null,

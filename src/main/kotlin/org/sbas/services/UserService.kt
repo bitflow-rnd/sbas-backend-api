@@ -36,6 +36,12 @@ class UserService {
         val res1 = repo1.findById(param2)
         // some programming logic should be placed here
         val ret = BaseCodeResponse()
+        if (res1?.id != null) {
+            ret.cdGrpId = res1.id!!.cdGrpId
+            ret.cdId = res1.id!!.cdId
+            ret.cdGrpNm = res1.cdGrpNm
+            ret.cdNm = res1.cdNm
+        }
         return ret
     }
 
