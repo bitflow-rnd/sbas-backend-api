@@ -24,10 +24,7 @@ class SbasTestResource {
     @GET
     @Path("test1")
     fun test1(): BaseCodeResponse {
-        val param1 = BaseCodeId()
-        param1.cdGrpId = "12345678"
-        param1.cdId = "23456789"
-        val ret = serv1.getBaseCode(param1)
+        val ret = serv1.getBaseCode()
         return ret
     }
 
@@ -36,10 +33,7 @@ class SbasTestResource {
     @Path("test2")
     @RolesAllowed("USER","ADMIN")
     fun test2(param1: BaseCodeRequest): BaseCodeResponse {
-        val param2 = BaseCodeId()
-        param2.cdGrpId = param1!!.cdGrpId!!
-        param2.cdId = param1!!.cdId!!
-        val ret = serv1.getBaseCode(param2)
+        val ret = serv1.getBaseCode(param1)
         return ret
     }
 
