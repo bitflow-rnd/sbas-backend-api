@@ -48,6 +48,9 @@ java {
 }
 allOpen {
     annotation("javax.enterprise.context.ApplicationScoped")
+    annotation("javax.persistence.Entity")
+    annotation("javax.persistence.Embeddable")
+    annotation("javax.persistence.MappedSuperclass")
 }
 
 tasks.withType<Test> {
