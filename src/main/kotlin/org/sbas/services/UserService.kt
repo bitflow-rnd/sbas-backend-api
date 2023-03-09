@@ -2,7 +2,8 @@ package org.sbas.services
 
 import org.eclipse.microprofile.jwt.JsonWebToken
 import org.jboss.logging.Logger
-import org.sbas.entities.BaseCodeId
+import org.sbas.entities.base.BaseCode
+import org.sbas.entities.base.BaseCodeId
 import org.sbas.parameters.BaseCodeRequest
 import org.sbas.repositories.BaseCodeRepository
 import org.sbas.response.BaseCodeResponse

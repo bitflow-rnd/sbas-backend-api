@@ -2,8 +2,6 @@ package org.sbas.response
 
 import kotlinx.serialization.Serializable
 import org.eclipse.microprofile.openapi.annotations.media.Schema
-import org.sbas.entities.BaseCodeId
-import javax.persistence.Column
 
 //@Schema(description = "공통코드 응답")
 @Serializable
