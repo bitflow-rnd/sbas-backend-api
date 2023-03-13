@@ -1,12 +1,16 @@
 package org.sbas.services
 
+import org.eclipse.microprofile.config.inject.ConfigProperty
 import org.eclipse.microprofile.jwt.JsonWebToken
+import org.eclipse.microprofile.rest.client.inject.RestClient
 import org.jboss.logging.Logger
-import org.sbas.entities.base.BaseCode
 import org.sbas.entities.base.BaseCodeId
 import org.sbas.parameters.BaseCodeRequest
 import org.sbas.repositories.BaseCodeRepository
 import org.sbas.response.BaseCodeResponse
+import org.sbas.restclients.EgenRestClient
+import org.sbas.restresponses.EgenCodeMastItem
+import org.sbas.restresponses.EgenResponse
 import org.sbas.utils.TokenUtils
 import javax.enterprise.context.ApplicationScoped
 import javax.inject.Inject
@@ -18,7 +22,7 @@ import javax.ws.rs.core.SecurityContext
  * 사용자를 CRUD하는 서비스 클래스
  */
 @ApplicationScoped
-class UserService {
+class TestUserService {
 
     @Inject
     lateinit var log: Logger
@@ -28,6 +32,12 @@ class UserService {
 
     @Inject
     lateinit var repo1: BaseCodeRepository
+
+    @RestClient
+    lateinit var egenapi: EgenRestClient
+
+    @ConfigProperty(name = "restclient.egen.service.key")
+    lateinit var serviceKey: String
 
     @Transactional
     fun getBaseCode(): BaseCodeResponse {
@@ -43,6 +53,11 @@ class UserService {
             ret.cdNm = res1.cdNm
         }
         return ret
+    }
+
+    @Transactional
+    fun getCodeMast(): EgenResponse {
+        return egenapi.getCodeMast(serviceKey, "P004")
     }
 
     @Transactional

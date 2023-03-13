@@ -5,7 +5,8 @@ import org.eclipse.microprofile.openapi.annotations.tags.Tag
 import org.jboss.logging.Logger
 import org.sbas.parameters.BaseCodeRequest
 import org.sbas.response.BaseCodeResponse
-import org.sbas.services.UserService
+import org.sbas.response.EgenCodeMastResponse
+import org.sbas.services.TestUserService
 import javax.annotation.security.RolesAllowed
 import javax.inject.Inject
 import javax.ws.rs.GET
@@ -14,14 +15,14 @@ import javax.ws.rs.core.Context
 import javax.ws.rs.core.SecurityContext
 
 @Tag(name = "테스트", description = "테스트 API")
-@Path("v1")
-class SbasTestResource {
+@Path("v1/test")
+class SbasTestEndpoint {
 
     @Inject
     lateinit var log: Logger
 
     @Inject
-    lateinit var serv1: UserService
+    lateinit var serv1: TestUserService
 
     @Operation(summary = "회원 조회", description = "id를 이용하여 user 레코드를 조회합니다.")
     @GET
@@ -32,9 +33,19 @@ class SbasTestResource {
         return ret
     }
 
-    @Operation(summary = "회원 조회 Advanced", description = "test1에 JWT와 접근권한 설정 등을 추가한 더 복잡한 예제입니다")
+    @Operation(summary = "E-Gen Rest API 호출 테스트", description = "RESR Client 이용하여 E-GEN API를 조회합니다.")
     @GET
     @Path("test2")
+    fun test2(): EgenCodeMastResponse {
+        val res = serv1.getCodeMast()
+        log.debug("api return value is $res");
+        val ret = EgenCodeMastResponse(res.body?.items?.item)
+        return ret
+    }
+
+    @Operation(summary = "회원 조회 Advanced", description = "test1에 JWT와 접근권한 설정 등을 추가한 더 복잡한 예제입니다")
+    @GET
+    @Path("test3")
     @RolesAllowed("USER","ADMIN")
     fun test2(param1: BaseCodeRequest, @Context ctx: SecurityContext): BaseCodeResponse {
         val ret = serv1.getBaseCode(param1, ctx)
