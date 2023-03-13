@@ -4,8 +4,12 @@ import org.eclipse.microprofile.config.inject.ConfigProperty
 import org.eclipse.microprofile.jwt.JsonWebToken
 import org.eclipse.microprofile.rest.client.inject.RestClient
 import org.jboss.logging.Logger
+import org.sbas.constants.EgenConst
+import org.sbas.entities.base.BaseCodeEgen
+import org.sbas.entities.base.BaseCodeEgenId
 import org.sbas.entities.base.BaseCodeId
 import org.sbas.parameters.BaseCodeRequest
+import org.sbas.repositories.BaseCodeEgenRepository
 import org.sbas.repositories.BaseCodeRepository
 import org.sbas.response.BaseCodeResponse
 import org.sbas.restclients.EgenRestClient
@@ -33,6 +37,9 @@ class TestUserService {
     @Inject
     lateinit var repo1: BaseCodeRepository
 
+    @Inject
+    lateinit var repo2: BaseCodeEgenRepository
+
     @RestClient
     lateinit var egenapi: EgenRestClient
 
@@ -57,7 +64,24 @@ class TestUserService {
 
     @Transactional
     fun getCodeMast(): EgenResponse {
-        return egenapi.getCodeMast(serviceKey, "P004")
+        for (cmMid: String in EgenConst.EGEN_GRP_CDS) {
+            val res = egenapi.getCodeMastInfo(serviceKey, cmMid)
+            if (res.header?.resultCode == EgenConst.SUCCESS) {
+                // 응답성공
+                for (item: EgenCodeMastItem in res.body?.items?.item!!) {
+                    val entity = BaseCodeEgen()
+                    entity.id = BaseCodeEgenId()
+                    entity.id!!.cmMid = item.cmMid
+                    entity.id!!.cmSid = item.cmSid
+                    entity.cmMnm = item.cmMnm
+                    entity.cmSnm = item.cmSnm
+                    entity.rgstUserId = "method76"
+                    entity.updtUserId = "method76"
+                    repo2.persist(entity)
+                }
+            }
+        }
+        return EgenResponse()
     }
 
     @Transactional
