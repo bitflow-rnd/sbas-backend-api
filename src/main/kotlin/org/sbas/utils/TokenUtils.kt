@@ -1,28 +1,47 @@
 package org.sbas.utils
 
+import io.smallrye.jwt.build.Jwt
 import org.eclipse.microprofile.jwt.JsonWebToken
 import javax.ws.rs.InternalServerErrorException
+import javax.ws.rs.Produces
+import javax.ws.rs.core.Context
+import javax.ws.rs.core.MediaType
 import javax.ws.rs.core.SecurityContext
 
 /**
  * JWT 등 토큰관련 처리 도움 유틸
  */
 class TokenUtils {
+
     companion object {
-        fun hasJwt(jwt: JsonWebToken): Boolean {
-            return jwt.getClaimNames() != null
+
+        @Produces(MediaType.TEXT_PLAIN)
+        fun helloRolesAllowed(@Context ctx: SecurityContext, jwt: JsonWebToken): String {
+            return debugJwtContent(jwt, ctx)// + ", birthdate: " + jwt.claim<Any?>("birthdate").toString()
+        }
+        private fun hasJwt(jwt: JsonWebToken): Boolean {
+            return jwt.claimNames != null
         }
 
         fun debugJwtContent(jwt: JsonWebToken, ctx: SecurityContext): String {
-            val name = if (ctx.getUserPrincipal() == null) {
+            val name = if (ctx.userPrincipal == null) {
                 "anonymous"
-            } else if (!ctx.getUserPrincipal().getName().equals(jwt.getName())) {
+            } else if (!ctx.userPrincipal.name.equals(jwt.name)) {
                 throw InternalServerErrorException("Principal and JsonWebToken names do not match")
             } else {
-                ctx.getUserPrincipal().getName()
+                ctx.userPrincipal.name
             }
-            return "hello $name isHttps: ${ctx.isSecure()} authScheme: ${ctx.getAuthenticationScheme()}" +
-                    " hasJWT: ${hasJwt(jwt)}"
+
+            return "hello $name isHttps: ${ctx.isSecure} authScheme: ${ctx.authenticationScheme}" +
+                    " hasJWT: ${hasJwt(jwt)}" + " issueAt: ${jwt.issuedAtTime}" + " expiresAt: ${jwt.expirationTime}"
+        }
+
+        fun generateToken(userId: String): String {
+            return Jwt.issuer("https://sbas-test.bitflow.ai")
+                    .upn(userId)
+                    .expiresIn(60 * 60 * 24 * 30)
+                    .groups("USER")
+                    .sign()
         }
     }
 }
