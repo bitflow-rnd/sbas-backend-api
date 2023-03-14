@@ -1,15 +1,19 @@
 package org.sbas.endpoints
 
 import org.eclipse.microprofile.openapi.annotations.Operation
+import org.eclipse.microprofile.openapi.annotations.parameters.RequestBody
 import org.eclipse.microprofile.openapi.annotations.tags.Tag
 import org.jboss.logging.Logger
+import org.sbas.entities.info.InfoUser
 import org.sbas.parameters.BaseCodeRequest
 import org.sbas.response.BaseCodeResponse
 import org.sbas.response.EgenCodeMastResponse
 import org.sbas.services.TestUserService
+import javax.annotation.security.PermitAll
 import javax.annotation.security.RolesAllowed
 import javax.inject.Inject
 import javax.ws.rs.GET
+import javax.ws.rs.POST
 import javax.ws.rs.Path
 import javax.ws.rs.core.Context
 import javax.ws.rs.core.SecurityContext
@@ -50,6 +54,13 @@ class SbasTestEndpoint {
     fun test2(param1: BaseCodeRequest, @Context ctx: SecurityContext): BaseCodeResponse {
         val ret = serv1.getBaseCode(param1, ctx)
         return ret
+    }
+
+    @POST
+    @Path("login")
+    @PermitAll
+    fun login(@RequestBody infoUser: InfoUser): String{
+        return serv1.login(infoUser)
     }
 
 }
