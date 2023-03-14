@@ -53,9 +53,7 @@ class TestUserService {
 
     @Transactional
     fun getBaseCode(): BaseCodeResponse {
-        val param2 = BaseCodeId()
-        param2.cdGrpId = "12345678"
-        param2.cdId = "23456789"
+        val param2 = BaseCodeId("12345678", "23456789")
         val res1 = repo1.findById(param2)
         val ret = BaseCodeResponse()
         if (res1?.id != null) {
@@ -93,9 +91,7 @@ class TestUserService {
     fun getBaseCode(param1: BaseCodeRequest?, ctx: SecurityContext): BaseCodeResponse {
         val jwtString = TokenUtils.debugJwtContent(jwt, ctx)
         log.debug("jwtString is $jwtString");
-        val param2 = BaseCodeId()
-        param2.cdGrpId = param1!!.cdGrpId!!
-        param2.cdId = param1!!.cdId!!
+        val param2 = BaseCodeId(param1!!.cdGrpId!!, param1!!.cdId!!)
         val res1 = repo1.findById(param2)
         // some programming logic should be placed here
         val ret = BaseCodeResponse()
@@ -107,7 +103,7 @@ class TestUserService {
         val findUser = userRepo.findByUserId(infoUser.id!!)
 
         return if(findUser!!.pw.equals(infoUser.pw)){
-            "SUCCESS"
+            TokenUtils.generateUserToken(findUser.id!!)
         }else {
             "FAIL"
         }

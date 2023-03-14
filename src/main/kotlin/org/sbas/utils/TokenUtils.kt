@@ -36,11 +36,19 @@ class TokenUtils {
                     " hasJWT: ${hasJwt(jwt)}" + " issueAt: ${jwt.issuedAtTime}" + " expiresAt: ${jwt.expirationTime}"
         }
 
-        fun generateToken(userId: String): String {
+        fun generateUserToken(userId: String): String {
             return Jwt.issuer("https://sbas-test.bitflow.ai")
                     .upn(userId)
                     .expiresIn(60 * 60 * 24 * 30)
                     .groups("USER")
+                    .sign()
+        }
+
+        fun generateAdminToken(userId: String): String {
+            return Jwt.issuer("https://sbas-test.bitflow.ai")
+                    .upn(userId)
+                    .expiresIn(60 * 60 * 24 * 30)
+                    .groups("ADMIN")
                     .sign()
         }
     }
