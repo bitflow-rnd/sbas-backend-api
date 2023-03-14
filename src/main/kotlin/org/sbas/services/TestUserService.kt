@@ -8,9 +8,11 @@ import org.sbas.constants.EgenConst
 import org.sbas.entities.base.BaseCodeEgen
 import org.sbas.entities.base.BaseCodeEgenId
 import org.sbas.entities.base.BaseCodeId
+import org.sbas.entities.info.InfoUser
 import org.sbas.parameters.BaseCodeRequest
 import org.sbas.repositories.BaseCodeEgenRepository
 import org.sbas.repositories.BaseCodeRepository
+import org.sbas.repositories.TestUserRepository
 import org.sbas.response.BaseCodeResponse
 import org.sbas.restclients.EgenRestClient
 import org.sbas.restresponses.EgenCodeMastItem
@@ -39,6 +41,9 @@ class TestUserService {
 
     @Inject
     lateinit var repo2: BaseCodeEgenRepository
+
+    @Inject
+    lateinit var userRepo: TestUserRepository
 
     @RestClient
     lateinit var egenapi: EgenRestClient
@@ -95,6 +100,17 @@ class TestUserService {
         // some programming logic should be placed here
         val ret = BaseCodeResponse()
         return ret
+    }
+
+    @Transactional
+    fun login(infoUser: InfoUser): String{
+        val findUser = userRepo.findByUserId(infoUser.id!!)
+
+        return if(findUser!!.pw.equals(infoUser.pw)){
+            "SUCCESS"
+        }else {
+            "FAIL"
+        }
     }
     
 }
