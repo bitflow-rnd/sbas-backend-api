@@ -1,9 +1,7 @@
 package org.sbas.response
 
-import org.eclipse.microprofile.openapi.annotations.media.Schema
-
 abstract class AbstractResponse<T> {
-    lateinit var code: String
-    lateinit var message: String
+    var code: String? = "00"
+    var message: String? = null
     abstract var result: T?
 }

@@ -1,6 +1,5 @@
 package org.sbas.services
 
-import io.smallrye.mutiny.Uni
 import org.eclipse.microprofile.config.inject.ConfigProperty
 import org.eclipse.microprofile.jwt.JsonWebToken
 import org.eclipse.microprofile.rest.client.inject.RestClient
@@ -16,10 +15,10 @@ import org.sbas.repositories.BaseCodeRepository
 import org.sbas.repositories.TestUserRepository
 import org.sbas.response.BaseCodeResponse
 import org.sbas.response.EgenCodeMastResponse
+import org.sbas.response.EgenHsptMdcncResponse
 import org.sbas.restclients.EgenRestClient
-import org.sbas.restresponses.EgenCodeMastItem
-import org.sbas.restresponses.EgenHsptlMdcnc
-import org.sbas.restresponses.EgenResponse
+import org.sbas.restresponses.EgenHsptMdcncApiResponse.HsptMdcncBody.HsptMdcncItems.EgenHsptlMdcncItem
+import org.sbas.restresponses.EgenCodeMastlApiResponse.CodeMastBody.CodeMastItems.EgenCodeMastItem
 import org.sbas.utils.TokenUtils
 import javax.enterprise.context.ApplicationScoped
 import javax.inject.Inject
@@ -72,11 +71,15 @@ class TestUserService {
     fun getCodeMast(): EgenCodeMastResponse {
         val retlist = mutableListOf<EgenCodeMastItem>()
         val savelist = mutableListOf<BaseCodeEgen>()
+
         for (cmMid: String in EgenConst.EGEN_GRP_CDS) {
             val res = egenapi.getCodeMastInfo(serviceKey, cmMid)
             if (res.header?.resultCode == EgenConst.SUCCESS) {
-                // 응답성공
-                for (item: EgenCodeMastItem in res.body?.items?.item!!) {
+                log.debug("SUCCESS")
+                //val list = ItemWrapper(res.body?.items?.item!!)
+                for (item in res.body?.items?.item!!) {
+                    log.debug("item")
+                    retlist.add(item)
                     val entity = BaseCodeEgen()
                     entity.id = BaseCodeEgenId()
                     entity.id!!.cmMid = item.cmMid
@@ -86,24 +89,31 @@ class TestUserService {
                     entity.rgstUserId = "method76"
                     entity.updtUserId = "method76"
                     savelist.add(entity)
-                    retlist.add(item)
                 }
             }
         }
-        repo2.persist(savelist)
+        try {
+//            repo2.persist(savelist)
+        } catch (e: Exception) {
+        } finally {
+
+        }
         return EgenCodeMastResponse(retlist)
     }
 
     @Transactional
-    fun getHosptalMedclinic(): EgenResponse {
+    fun getHosptalMedclinic(): EgenHsptMdcncResponse {
+        val retlist = mutableListOf<EgenHsptlMdcncItem>()
+        val savelist = mutableListOf<BaseCodeEgen>()
         val res = egenapi.getHsptlMdcncListInfoInqire(serviceKey, "")
         if (res.header?.resultCode == EgenConst.SUCCESS) {
             // 응답성공
             for (item in res.body?.items?.item!!) {
                 log.debug("e-gen api res $item.dutyAddr")
+                retlist.add(item)
             }
         }
-        return EgenResponse()
+        return EgenHsptMdcncResponse(retlist)
     }
 
     @Transactional

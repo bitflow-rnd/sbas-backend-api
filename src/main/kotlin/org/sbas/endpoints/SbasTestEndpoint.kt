@@ -59,14 +59,15 @@ class SbasTestEndpoint {
     @GET
     @Path("test3")
     fun test3(): Response {
+        var res: EgenCodeMastResponse?
         return try {
-            val res = serv1.getCodeMast()
+            res = serv1.getCodeMast()
             log.debug("api return value is $res");
             Response.ok(res).build()
         } catch (e: Exception) {
-            val res = EgenCodeMastResponse()
+            res = EgenCodeMastResponse()
             res.code = "01"
-            res.message = e.localizedMessage
+            res.message = e.message
             Response.status(Response.Status.INTERNAL_SERVER_ERROR)
                 .entity(res)
                 .type(MediaType.APPLICATION_JSON)
@@ -77,10 +78,20 @@ class SbasTestEndpoint {
     @Operation(summary = "E-Gen Rest API 호출 테스트", description = "RESR Client 이용하여 E-GEN API를 조회합니다.")
     @GET
     @Path("test4")
-    fun test4(): String {
-        val res = serv1.getHosptalMedclinic()
-        log.debug("api return value is $res")
-        return ""
+    fun test4(): Response {
+        return try {
+            val res = serv1.getHosptalMedclinic()
+            log.debug("api return value is $res")
+            Response.ok(res).build()
+        } catch (e: Exception) {
+            val res = EgenCodeMastResponse()
+            res.code = "01"
+            res.message = e.localizedMessage
+            Response.status(Response.Status.INTERNAL_SERVER_ERROR)
+                .entity(res)
+                .type(MediaType.APPLICATION_JSON)
+                .build()
+        }
     }
     @POST
     @Path("login")
