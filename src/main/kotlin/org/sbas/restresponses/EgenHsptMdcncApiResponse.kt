@@ -35,11 +35,11 @@ class EgenHsptMdcncApiResponse {
         @XmlAccessorType(XmlAccessType.FIELD)
         class HsptMdcncItems {
             @XmlElement
-            var item: List<EgenHsptlMdcncItem>? = null
+            var item: List<HsptlMdcncItem>? = null
 
             @XmlRootElement(name = "item")
             @XmlAccessorType(XmlAccessType.FIELD)
-            class EgenHsptlMdcncItem {
+            class HsptlMdcncItem {
 
                 @XmlElement
                 var dutyAddr: String? = null

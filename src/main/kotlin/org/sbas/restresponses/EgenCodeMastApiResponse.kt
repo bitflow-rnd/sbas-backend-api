@@ -4,7 +4,7 @@ import javax.xml.bind.annotation.*
 
 @XmlRootElement(name = "response")
 @XmlAccessorType(XmlAccessType.FIELD)
-class EgenCodeMastlApiResponse {
+class EgenCodeMastApiResponse {
 
     @XmlElement
     var header: CodeMastHeader? = null
@@ -32,11 +32,11 @@ class EgenCodeMastlApiResponse {
         @XmlAccessorType(XmlAccessType.FIELD)
         class CodeMastItems {
             @XmlElement
-            var item: List<EgenCodeMastItem>? = null
+            var item: List<CodeMastItem>? = null
 
             @XmlRootElement(name = "item")
             @XmlAccessorType(XmlAccessType.FIELD)
-            class EgenCodeMastItem {
+            class CodeMastItem {
 
                 @XmlElement
                 var cmMid: String? = null

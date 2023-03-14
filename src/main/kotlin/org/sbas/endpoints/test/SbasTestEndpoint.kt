@@ -1,4 +1,4 @@
-package org.sbas.endpoints
+package org.sbas.endpoints.test
 
 import io.smallrye.mutiny.Uni
 import org.eclipse.microprofile.openapi.annotations.Operation
