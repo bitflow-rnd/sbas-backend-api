@@ -1,10 +1,8 @@
 package org.sbas.parameters
 
-import kotlinx.serialization.Serializable
 import org.eclipse.microprofile.openapi.annotations.media.Schema
 
 @Schema(description = "공통코드 응답")
-@Serializable
 data class BaseCodeRequest (
 
     var cdGrpId: String,

@@ -1,13 +1,12 @@
 package org.sbas.entities.base
 
-import kotlinx.serialization.Serializable
 import org.sbas.entities.CommonEntity
-import javax.persistence.Column
-import javax.persistence.EmbeddedId
-import javax.persistence.Entity
-import javax.persistence.Table
+import java.math.BigDecimal
+import javax.persistence.*
 
-@Serializable
+/**
+ * 첨부 파일 정보
+ */
 @Entity
 @Table(name = "base_attc")
 class BaseAttc(
@@ -15,23 +14,38 @@ class BaseAttc(
     var id: BaseAttcId? = null,
 
     @Column(name = "attc_dt", nullable = false, length = 8)
-    var attcDt: String? = null,
+    var attcDt: String? = null, // 첨부 날짜
 
     @Column(name = "attc_tm", nullable = false, length = 6)
-    var attcTm: String? = null,
+    var attcTm: String? = null, // 첨부 시간
 
     @Column(name = "file_type_cd", nullable = false, length = 8)
-    var fileTypeCd: String? = null,
+    var fileTypeCd: String? = null, // 파일 형식 코드
 
     @Column(name = "path_str", nullable = false, length = 100)
-    var pathStr: String? = null,
+    var pathStr: String? = null, // 경로 문자열
 
     @Column(name = "rmk", length = 200)
-    var rmk: String? = null,
+    var rmk: String? = null, // 비고
 
 ) : CommonEntity(), java.io.Serializable {
 
     companion object {
         private const val serialVersionUID: Long = 8779842266363259071L
+    }
+}
+
+@Embeddable
+data class BaseAttcId(
+    @Column(name = "attc_id", nullable = false, length = 10)
+    var attcId: String? = null, // 첨부 ID
+
+    @Column(name = "attc_seq", nullable = false, precision = 10)
+    var attcSeq: BigDecimal? = null, // 첨부 순번
+
+) : java.io.Serializable {
+
+    companion object {
+        private const val serialVersionUID: Long = -2680113473810765109L
     }
 }

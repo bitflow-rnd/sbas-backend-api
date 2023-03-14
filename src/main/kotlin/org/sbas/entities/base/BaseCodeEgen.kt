@@ -11,6 +11,9 @@ import javax.persistence.Table
 import javax.validation.constraints.NotNull
 import javax.validation.constraints.Size
 
+/**
+ * E-GEN 기초 코드
+ */
 @Entity
 @Table(name = "base_code_egen")
 //@IdClass(BaseCodeEgenId::class)
@@ -34,11 +37,11 @@ class BaseCodeEgen : CommonEntity() {
     @Size(max = 100)
     @NotNull
     @Column(name = "cm_mnm", nullable = false, length = 100)
-    var cmMnm: String? = null
+    var cmMnm: String? = null // 코드 이름
 
     @Size(max = 100)
     @NotNull
     @Column(name = "cm_snm", nullable = false, length = 100)
-    var cmSnm: String? = null
+    var cmSnm: String? = null // 코드 약어
 
 }

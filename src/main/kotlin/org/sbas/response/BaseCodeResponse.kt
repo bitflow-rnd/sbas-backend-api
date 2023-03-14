@@ -1,10 +1,8 @@
 package org.sbas.response
 
-import kotlinx.serialization.Serializable
 import org.eclipse.microprofile.openapi.annotations.media.Schema
 
 //@Schema(description = "공통코드 응답")
-@Serializable
 data class BaseCodeResponse (
 
     var cdGrpId: String? = null,
@@ -21,8 +19,4 @@ data class BaseCodeResponse (
     @Schema(description = "수정일", example = "2023.02.03 11:22", maxLength = 16, format = "yyyy.MM.dd HH:mm")
     var updtDttm: String? = null
 
-) : java.io.Serializable {
-    companion object {
-        private val serialVersionUID = 165979701881194617L
-    }
-}
+)
