@@ -1,14 +1,8 @@
 package org.sbas.response
 
-import kotlinx.serialization.Serializable
 import org.eclipse.microprofile.openapi.annotations.media.Schema
 
-//@Serializable
 abstract class AbstractResponse {
-
-    companion object {
-        private const val serialVersionUID = 165979704881194617L
-    }
 
     @Schema(description = "응답코드", example = "100")
     lateinit var resCd: String

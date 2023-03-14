@@ -1,13 +1,12 @@
 package org.sbas.entities.bdas
 
-import kotlinx.serialization.Serializable
 import org.sbas.entities.CommonEntity
-import javax.persistence.Column
-import javax.persistence.EmbeddedId
-import javax.persistence.Entity
-import javax.persistence.Table
+import java.math.BigDecimal
+import javax.persistence.*
 
-@Serializable
+/**
+ * 입원 정보
+ */
 @Entity
 @Table(name = "bdas_adms")
 class BdasAdm(
@@ -15,41 +14,58 @@ class BdasAdm(
     var id: BdasAdmId? = null,
 
     @Column(name = "hist_cd", nullable = false, length = 8)
-    var histCd: String? = null,
+    var histCd: String? = null, // 이력 코드
 
     @Column(name = "hosp_id", nullable = false, length = 10)
-    var hospId: String? = null,
+    var hospId: String? = null, // 병원 ID
 
     @Column(name = "dept_nm", length = 20)
-    var deptNm: String? = null,
+    var deptNm: String? = null, // 진료과 이름
 
     @Column(name = "ward_nm", length = 20)
-    var wardNm: String? = null,
+    var wardNm: String? = null, // 병동 이름
 
     @Column(name = "room_nm", length = 20)
-    var roomNm: String? = null,
+    var roomNm: String? = null, // 병실 이름
 
     @Column(name = "adms_dt", nullable = false, length = 8)
-    var admsDt: String? = null,
+    var admsDt: String? = null, // 입원 날짜
 
     @Column(name = "adms_tm", nullable = false, length = 6)
-    var admsTm: String? = null,
+    var admsTm: String? = null, // 입원 시간
 
     @Column(name = "dsch_dt", length = 8)
-    var dschDt: String? = null,
+    var dschDt: String? = null, // 퇴원 날짜
 
     @Column(name = "dsch_tm", length = 6)
-    var dschTm: String? = null,
+    var dschTm: String? = null, // 퇴원 시간
 
     @Column(name = "dsch_rsn_cd", length = 8)
-    var dschRsnCd: String? = null,
+    var dschRsnCd: String? = null, // 퇴원 사유 코드
 
     @Column(name = "dsch_rsn_detl", length = 500)
-    var dschRsnDetl: String? = null,
+    var dschRsnDetl: String? = null, // 퇴원 사유 상세
 ) : CommonEntity(), java.io.Serializable {
 
     companion object {
         private const val serialVersionUID: Long = 2241635970857630703L
+    }
+}
+
+@Embeddable
+data class BdasAdmId(
+    @Column(name = "pt_id", nullable = false, length = 10)
+    var ptId: String? = null, // 환자 ID
+
+    @Column(name = "bdas_seq", nullable = false, precision = 10)
+    var bdasSeq: BigDecimal? = null, // 병상 배정 순번
+
+    @Column(name = "hist_seq", nullable = false, precision = 3)
+    var histSeq: BigDecimal? = null, // 이력 순번
+) : java.io.Serializable {
+
+    companion object {
+        private const val serialVersionUID = -1724344466522266093L
     }
 }
 
