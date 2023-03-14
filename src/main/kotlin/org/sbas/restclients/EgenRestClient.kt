@@ -1,5 +1,6 @@
 package org.sbas.restclients
 
+import io.smallrye.mutiny.Uni
 import org.eclipse.microprofile.rest.client.inject.RegisterRestClient
 import org.sbas.restresponses.EgenResponse
 import javax.ws.rs.Consumes

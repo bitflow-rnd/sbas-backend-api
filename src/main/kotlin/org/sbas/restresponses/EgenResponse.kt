@@ -1,5 +1,7 @@
 package org.sbas.restresponses
 
+import org.sbas.entities.base.BaseCodeEgen
+import org.sbas.response.EgenCodeMastResponse
 import javax.xml.bind.annotation.*
 
 @XmlRootElement(name = "response")
@@ -10,30 +12,32 @@ class EgenResponse {
     var header: EgenHeader? = null
 
     @XmlElement
-    var body: EgenBody? = null
-}
+    lateinit var body: EgenBody
 
-@XmlRootElement(name = "header")
-@XmlAccessorType(XmlAccessType.FIELD)
-class EgenHeader {
+    @XmlRootElement(name = "header")
+    @XmlAccessorType(XmlAccessType.FIELD)
+    class EgenHeader {
 
-    @XmlElement
-    var resultCode: String? = null
+        @XmlElement
+        var resultCode: String? = null
 
-    @XmlElement
-    var resultMsg: String? = null
-}
+        @XmlElement
+        var resultMsg: String? = null
+    }
 
-@XmlRootElement(name = "body")
-@XmlAccessorType(XmlAccessType.FIELD)
-class EgenBody {
-    @XmlElement(name = "items")
-    var items: EgenItems? = null
-}
+    @XmlRootElement(name = "body")
+    @XmlAccessorType(XmlAccessType.FIELD)
+    class EgenBody {
+        @XmlElement(name = "items")
+        lateinit var items: EgenItems
 
-@XmlRootElement(name = "items")
-@XmlAccessorType(XmlAccessType.FIELD)
-class EgenItems {
-    @XmlElement(name = "item")
-    var item: List<EgenCodeMastItem>? = null
+        @XmlRootElement(name = "items")
+        @XmlAccessorType(XmlAccessType.FIELD)
+        class EgenItems {
+            @XmlElement(name = "item")
+            var item: List<EgenCodeMastItem>? = null
+        }
+
+    }
+
 }

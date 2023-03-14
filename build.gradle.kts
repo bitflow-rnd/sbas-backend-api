@@ -2,9 +2,8 @@ plugins {
     val kotlinVersion = "1.8.10"
     java
     kotlin("jvm") version kotlinVersion
-    //kotlin("plugin.serialization") version kotlinVersion
-    id("org.jetbrains.kotlin.plugin.allopen") version kotlinVersion
-    id("org.jetbrains.kotlin.plugin.noarg") version kotlinVersion
+    kotlin("plugin.allopen") version kotlinVersion
+    kotlin("plugin.noarg") version kotlinVersion
     id("io.quarkus")
 }
 
@@ -24,7 +23,7 @@ dependencies {
     implementation("io.quarkus:quarkus-hibernate-orm-panache-kotlin")
     implementation("io.quarkus:quarkus-hibernate-validator")
     implementation("io.quarkus:quarkus-resteasy-reactive")
-    implementation("io.quarkus:quarkus-resteasy-reactive-jaxb")
+    //implementation("io.quarkus:quarkus-resteasy-reactive-jaxb")
     implementation("io.quarkus:quarkus-resteasy-reactive-jackson")
     //implementation("io.quarkus:quarkus-resteasy-reactive-kotlin-serialization")
     //implementation("io.quarkus:quarkus-rest-client-reactive-kotlin-serialization")

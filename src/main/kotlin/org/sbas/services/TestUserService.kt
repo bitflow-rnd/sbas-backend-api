@@ -1,5 +1,6 @@
 package org.sbas.services
 
+import io.smallrye.mutiny.Uni
 import org.eclipse.microprofile.config.inject.ConfigProperty
 import org.eclipse.microprofile.jwt.JsonWebToken
 import org.eclipse.microprofile.rest.client.inject.RestClient
@@ -14,8 +15,10 @@ import org.sbas.repositories.BaseCodeEgenRepository
 import org.sbas.repositories.BaseCodeRepository
 import org.sbas.repositories.TestUserRepository
 import org.sbas.response.BaseCodeResponse
+import org.sbas.response.EgenCodeMastResponse
 import org.sbas.restclients.EgenRestClient
 import org.sbas.restresponses.EgenCodeMastItem
+import org.sbas.restresponses.EgenHsptlMdcnc
 import org.sbas.restresponses.EgenResponse
 import org.sbas.utils.TokenUtils
 import javax.enterprise.context.ApplicationScoped
@@ -66,7 +69,9 @@ class TestUserService {
     }
 
     @Transactional
-    fun getCodeMast(): EgenResponse {
+    fun getCodeMast(): EgenCodeMastResponse {
+        val retlist = mutableListOf<EgenCodeMastItem>()
+        val savelist = mutableListOf<BaseCodeEgen>()
         for (cmMid: String in EgenConst.EGEN_GRP_CDS) {
             val res = egenapi.getCodeMastInfo(serviceKey, cmMid)
             if (res.header?.resultCode == EgenConst.SUCCESS) {
@@ -80,8 +85,22 @@ class TestUserService {
                     entity.cmSnm = item.cmSnm
                     entity.rgstUserId = "method76"
                     entity.updtUserId = "method76"
-                    repo2.persist(entity)
+                    savelist.add(entity)
+                    retlist.add(item)
                 }
+            }
+        }
+        repo2.persist(savelist)
+        return EgenCodeMastResponse(retlist)
+    }
+
+    @Transactional
+    fun getHosptalMedclinic(): EgenResponse {
+        val res = egenapi.getHsptlMdcncListInfoInqire(serviceKey, "")
+        if (res.header?.resultCode == EgenConst.SUCCESS) {
+            // 응답성공
+            for (item in res.body?.items?.item!!) {
+                log.debug("e-gen api res $item.dutyAddr")
             }
         }
         return EgenResponse()
