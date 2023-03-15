@@ -139,8 +139,8 @@ class TestUserService {
     }
 
     @Transactional
-    fun getUser(ctx: SecurityContext): String{
-        return TokenUtils.helloRolesAllowed(ctx, jwt)
+    fun getUser(): JsonWebToken{
+        return jwt
     }
     
 }
