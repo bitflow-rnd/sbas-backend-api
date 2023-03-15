@@ -98,4 +98,11 @@ class SbasTestEndpoint {
         return serv1.login(infoUser)
     }
 
+    @GET
+    @Path("user")
+    @RolesAllowed("USER", "ADMIN")
+    fun getUser(@Context ctx: SecurityContext): String{
+        return serv1.getUser(ctx)
+    }
+
 }

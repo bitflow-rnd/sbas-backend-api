@@ -137,5 +137,10 @@ class TestUserService {
             "FAIL"
         }
     }
+
+    @Transactional
+    fun getUser(ctx: SecurityContext): String{
+        return TokenUtils.helloRolesAllowed(ctx, jwt)
+    }
     
 }
