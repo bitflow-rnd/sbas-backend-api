@@ -1,5 +1,6 @@
 package org.sbas.endpoints.test
 
+import org.eclipse.microprofile.jwt.JsonWebToken
 import org.eclipse.microprofile.openapi.annotations.Operation
 import org.eclipse.microprofile.openapi.annotations.parameters.RequestBody
 import org.eclipse.microprofile.openapi.annotations.tags.Tag
@@ -94,15 +95,21 @@ class SbasTestEndpoint {
     @POST
     @Path("login")
     @PermitAll
-    fun login(@RequestBody infoUser: InfoUser): String{
-        return serv1.login(infoUser)
+    fun login(@RequestBody infoUser: InfoUser): Response{
+        return Response.ok(object {
+            val token: String = serv1.login(infoUser)
+        } ).build()
     }
 
     @GET
     @Path("user")
     @RolesAllowed("USER", "ADMIN")
-    fun getUser(@Context ctx: SecurityContext): String{
-        return serv1.getUser(ctx)
+    fun getUser(): Response{
+        return Response.ok(object {
+            val token: JsonWebToken = serv1.getUser()
+        } ).build()
+
+
     }
 
 }
