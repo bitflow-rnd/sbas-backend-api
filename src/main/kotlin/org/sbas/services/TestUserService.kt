@@ -17,8 +17,8 @@ import org.sbas.response.BaseCodeResponse
 import org.sbas.response.EgenCodeMastResponse
 import org.sbas.response.EgenHsptMdcncResponse
 import org.sbas.restclients.EgenRestClient
-import org.sbas.restresponses.EgenHsptMdcncApiResponse.HsptMdcncBody.HsptMdcncItems.HsptlMdcncItem
 import org.sbas.restresponses.EgenCodeMastApiResponse.CodeMastBody.CodeMastItems.CodeMastItem
+import org.sbas.restresponses.EgenHsptMdcncApiResponse.HsptMdcncBody.HsptMdcncItems.HsptlMdcncItem
 import org.sbas.utils.TokenUtils
 import javax.enterprise.context.ApplicationScoped
 import javax.inject.Inject

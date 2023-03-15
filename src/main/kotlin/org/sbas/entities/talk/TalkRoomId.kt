@@ -6,7 +6,6 @@ import java.math.BigDecimal
 import java.util.*
 import javax.persistence.Column
 import javax.persistence.Embeddable
-import javax.persistence.Entity
 import javax.validation.constraints.NotNull
 import javax.validation.constraints.Size
 

@@ -1,13 +1,11 @@
 package org.sbas.endpoints.test
 
-import io.smallrye.mutiny.Uni
 import org.eclipse.microprofile.openapi.annotations.Operation
 import org.eclipse.microprofile.openapi.annotations.parameters.RequestBody
 import org.eclipse.microprofile.openapi.annotations.tags.Tag
 import org.jboss.logging.Logger
 import org.sbas.entities.info.InfoUser
 import org.sbas.parameters.BaseCodeRequest
-import org.sbas.response.AbstractResponse
 import org.sbas.response.BaseCodeResponse
 import org.sbas.response.EgenCodeMastResponse
 import org.sbas.services.TestUserService
