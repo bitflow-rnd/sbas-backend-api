@@ -17,25 +17,25 @@ class TalkUser {
     @Size(max = 1)
     @NotNull
     @Column(name = "host_yn", nullable = false, length = 1)
-    var hostYn: String? = null
+    var hostYn: String? = null // 호스트 여부
 
     @Size(max = 8)
     @NotNull
     @Column(name = "join_dt", nullable = false, length = 8)
-    var joinDt: String? = null
+    var joinDt: String? = null // 참여 일자
 
     @Size(max = 6)
     @NotNull
     @Column(name = "join_tm", nullable = false, length = 6)
-    var joinTm: String? = null
+    var joinTm: String? = null // 참여 시간
 
     @Size(max = 8)
     @Column(name = "wtdr_dt", length = 8)
-    var wtdrDt: String? = null
+    var wtdrDt: String? = null // 탈퇴 일자
 
     @Size(max = 6)
     @Column(name = "wtdr_tm", length = 6)
-    var wtdrTm: String? = null
+    var wtdrTm: String? = null // 탈퇴 시간
 
     @Size(max = 10)
     @NotNull

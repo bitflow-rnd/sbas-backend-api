@@ -13,12 +13,12 @@ class TalkUserId : Serializable {
     @Size(max = 10)
     @NotNull
     @Column(name = "tkrm_id", nullable = false, length = 10)
-    var tkrmId: String? = null
+    var tkrmId: String? = null // 대화방 ID
 
     @Size(max = 10)
     @NotNull
     @Column(name = "user_id", nullable = false, length = 10)
-    var userId: String? = null
+    var userId: String? = null // 사용자 ID
 
     override fun hashCode(): Int = Objects.hash(tkrmId, userId)
     override fun equals(other: Any?): Boolean {

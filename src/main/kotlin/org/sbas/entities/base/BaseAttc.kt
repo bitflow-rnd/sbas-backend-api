@@ -1,6 +1,7 @@
 package org.sbas.entities.base
 
 import org.sbas.entities.CommonEntity
+import java.io.Serializable
 import java.math.BigDecimal
 import javax.persistence.*
 
@@ -28,12 +29,7 @@ class BaseAttc(
     @Column(name = "rmk", length = 200)
     var rmk: String? = null, // 비고
 
-) : CommonEntity(), java.io.Serializable {
-
-    companion object {
-        private const val serialVersionUID: Long = 8779842266363259071L
-    }
-}
+) : CommonEntity()
 
 @Embeddable
 data class BaseAttcId(
@@ -43,7 +39,7 @@ data class BaseAttcId(
     @Column(name = "attc_seq", nullable = false, precision = 10)
     var attcSeq: BigDecimal? = null, // 첨부 순번
 
-) : java.io.Serializable {
+) : Serializable {
 
     companion object {
         private const val serialVersionUID: Long = -2680113473810765109L

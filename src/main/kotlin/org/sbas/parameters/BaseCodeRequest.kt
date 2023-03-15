@@ -6,10 +6,5 @@ import org.eclipse.microprofile.openapi.annotations.media.Schema
 data class BaseCodeRequest (
 
     var cdGrpId: String,
-    var cdId: String
-
-) : java.io.Serializable {
-    companion object {
-        private const val serialVersionUID = 165979702881194617L
-    }
-}
+    var cdId: String,
+)

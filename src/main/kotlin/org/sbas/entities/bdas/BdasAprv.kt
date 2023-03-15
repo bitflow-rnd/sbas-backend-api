@@ -1,6 +1,7 @@
 package org.sbas.entities.bdas
 
 import org.sbas.entities.CommonEntity
+import java.io.Serializable
 import javax.persistence.*
 
 /**
@@ -35,12 +36,7 @@ class BdasAprv(
 
     @Column(name = "neg_detl", length = 1)
     var negDetl: String? = null, // 불가 상세
-) : CommonEntity(), java.io.Serializable {
-
-    companion object {
-        private const val serialVersionUID: Long = -2233279039719269210L
-    }
-}
+) : CommonEntity()
 
 @Embeddable
 data class BdasAprvId(
@@ -52,7 +48,7 @@ data class BdasAprvId(
 
     @Column(name = "hist_seq", nullable = false, precision = 3)
     var histSeq: Int? = null, // 이력 순번
-) : java.io.Serializable {
+) : Serializable {
 
     companion object {
         private const val serialVersionUID = -5290966609235076509L

@@ -1,6 +1,7 @@
 package org.sbas.entities.bdas
 
 import org.sbas.entities.CommonEntity
+import java.io.Serializable
 import java.math.BigDecimal
 import javax.persistence.*
 
@@ -99,12 +100,7 @@ class BdasReq(
 
     @Column(name = "attc_id", length = 10)
     var attcId: String? = null, // 첨부 ID
-) : CommonEntity(), java.io.Serializable {
-
-    companion object {
-        private const val serialVersionUID: Long = 4750784331506783549L
-    }
-}
+) : CommonEntity()
 
 @Embeddable
 data class BdasReqId(
@@ -113,7 +109,7 @@ data class BdasReqId(
 
     @Column(name = "bdas_seq", nullable = false, precision = 10)
     var bdasSeq: BigDecimal? = null, // 병상 배정 순번
-) : java.io.Serializable {
+) : Serializable {
 
     companion object {
         private const val serialVersionUID = 2691428045062768640L

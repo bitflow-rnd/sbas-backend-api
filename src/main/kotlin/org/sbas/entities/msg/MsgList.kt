@@ -1,6 +1,7 @@
 package org.sbas.entities.msg
 
 import org.sbas.entities.CommonEntity
+import java.io.Serializable
 import java.math.BigDecimal
 import javax.persistence.*
 
@@ -24,13 +25,7 @@ class MsgList(
 
     @Column(name = "attc_id", length = 10)
     var attcId: String? = null, // 첨부 ID
-
-    ) : CommonEntity(), java.io.Serializable {
-
-    companion object {
-        private const val serialVersionUID: Long = -804783972843389739L
-    }
-}
+) : CommonEntity()
 
 @Embeddable
 class MsgListId(
@@ -42,7 +37,7 @@ class MsgListId(
 
     @Column(name = "hist_seq", nullable = false, precision = 3)
     var histSeq: Int? = null, // 이력 순번
-) : java.io.Serializable {
+) : Serializable {
 
     companion object {
         private const val serialVersionUID = -474303298484540560L

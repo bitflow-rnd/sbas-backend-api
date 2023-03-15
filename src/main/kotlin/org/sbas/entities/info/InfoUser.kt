@@ -67,8 +67,4 @@ class InfoUser(
 
     @Column(name = "attc_id", length = 10)
     var attcId: String? = null, // 첨부 ID
-) : CommonEntity(), java.io.Serializable {
-    companion object {
-        private const val serialVersionUID: Long = 2139983982022939410L
-    }
-}
+) : CommonEntity()

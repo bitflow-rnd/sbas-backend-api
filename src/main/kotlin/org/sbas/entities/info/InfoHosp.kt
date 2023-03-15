@@ -27,8 +27,4 @@ class InfoHosp(
 
     @Column(name = "rmk", length = 200)
     var rmk: String? = null, // 비고
-) : CommonEntity(), java.io.Serializable{
-    companion object {
-        private const val serialVersionUID: Long = -1836391687655606445L
-    }
-}
+) : CommonEntity()

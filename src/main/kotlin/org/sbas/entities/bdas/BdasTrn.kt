@@ -1,6 +1,7 @@
 package org.sbas.entities.bdas
 
 import org.sbas.entities.CommonEntity
+import java.io.Serializable
 import java.math.BigDecimal
 import javax.persistence.*
 
@@ -45,12 +46,7 @@ class BdasTrn(
 
     @Column(name = "trns_stat_cd", nullable = false, length = 8)
     var trnsStatCd: String? = null, // 이송 상태 코드
-) : CommonEntity(), java.io.Serializable {
-
-    companion object {
-        private const val serialVersionUID: Long = 44633960065844049L
-    }
-}
+) : CommonEntity()
 
 @Embeddable
 data class BdasTrnId(
@@ -62,7 +58,7 @@ data class BdasTrnId(
 
     @Column(name = "hist_seq", nullable = false, precision = 3)
     var histSeq: BigDecimal? = null, // 이력 순번
-) : java.io.Serializable {
+) : Serializable {
 
     companion object {
         private const val serialVersionUID = -3748060460236523127L

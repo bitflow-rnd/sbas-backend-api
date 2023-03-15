@@ -17,22 +17,22 @@ class TalkRoom {
     @Size(max = 200)
     @NotNull
     @Column(name = "tkrm_nm", nullable = false, length = 200)
-    var tkrmNm: String? = null
+    var tkrmNm: String? = null // 대화방 이름
 
     @Size(max = 8)
     @NotNull
     @Column(name = "hist_cd", nullable = false, length = 8)
-    var histCd: String? = null
+    var histCd: String? = null // 이력 코드
 
     @Size(max = 8)
     @NotNull
     @Column(name = "cret_dt", nullable = false, length = 8)
-    var cretDt: String? = null
+    var cretDt: String? = null // 생성 날짜
 
     @Size(max = 6)
     @NotNull
     @Column(name = "cret_tm", nullable = false, length = 6)
-    var cretTm: String? = null
+    var cretTm: String? = null // 생성 시간
 
     @Size(max = 10)
     @NotNull

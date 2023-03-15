@@ -21,10 +21,4 @@ abstract class CommonEntity (
     @Column(name = "updt_dttm", nullable = false)
     @UpdateTimestamp
     var updtDttm: Instant? = null, // 수정 일시
-
-) : java.io.Serializable {
-
-    companion object {
-        private const val serialVersionUID: Long = 5417401260223889229L
-    }
-}
+)

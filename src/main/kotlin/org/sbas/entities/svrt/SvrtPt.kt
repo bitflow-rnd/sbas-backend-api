@@ -1,6 +1,7 @@
 package org.sbas.entities.svrt
 
 import org.sbas.entities.CommonEntity
+import java.io.Serializable
 import java.math.BigDecimal
 import javax.persistence.*
 
@@ -40,12 +41,7 @@ class SvrtPt(
     @Column(name = "spcl_telno", length = 11)
     var spclTelno: String? = null, // 담당의 전화번호
 
-) : CommonEntity(), java.io.Serializable {
-
-    companion object {
-        private const val serialVersionUID: Long = -8866642257118594358L
-    }
-}
+) : CommonEntity()
 
 @Embeddable
 data class SvrtPtId(
@@ -58,7 +54,7 @@ data class SvrtPtId(
     @Column(name = "rgst_seq", nullable = false, precision = 10)
     var rgstSeq: BigDecimal? = null, // 등록 순번
 
-) : java.io.Serializable {
+) : Serializable {
 
     companion object {
         private const val serialVersionUID = -8539487836216536155L

@@ -14,15 +14,15 @@ class TalkMsgId : Serializable {
     @Size(max = 10)
     @NotNull
     @Column(name = "tkrm_id", nullable = false, length = 10)
-    var tkrmId: String? = null
+    var tkrmId: String? = null // 대화방 ID
 
     @NotNull
     @Column(name = "msg_seq", nullable = false, precision = 3)
-    var msgSeq: BigDecimal? = null
+    var msgSeq: BigDecimal? = null // 메시지 순번
 
     @NotNull
     @Column(name = "hist_seq", nullable = false, precision = 3)
-    var histSeq: BigDecimal? = null
+    var histSeq: BigDecimal? = null // 이력 순번
 
     override fun hashCode(): Int = Objects.hash(tkrmId, msgSeq, histSeq)
     override fun equals(other: Any?): Boolean {

@@ -1,6 +1,7 @@
 package org.sbas.entities.svrt
 
 import org.sbas.entities.CommonEntity
+import java.io.Serializable
 import java.math.BigDecimal
 import javax.persistence.*
 
@@ -82,12 +83,7 @@ class SvrtAnly(
     @Column(name = "sbed_cd_prdt", length = 8)
     var sbedCdPrdt: String? = null, // 중증병상 코드 (예측)
 
-) : CommonEntity(), java.io.Serializable {
-
-    companion object {
-        private const val serialVersionUID: Long = 4103641062407301116L
-    }
-}
+) : CommonEntity()
 
 @Embeddable
 data class SvrtAnlyId(
@@ -96,7 +92,7 @@ data class SvrtAnlyId(
 
     @Column(name = "rgst_seq", nullable = false, precision = 10)
     var rgstSeq: BigDecimal? = null, // 등록 순번
-) : java.io.Serializable {
+) : Serializable {
 
     companion object {
         private const val serialVersionUID = 4678885074474623613L

@@ -45,8 +45,4 @@ class InfoPt(
 
     @Column(name = "pica_ver", length = 10)
     var picaVer: String? = null, // 개인정보수집동의 버전
-) : CommonEntity(), java.io.Serializable {
-    companion object {
-        private const val serialVersionUID: Long = 8_117_578_039_832_831_706L
-    }
-}
+) : CommonEntity()

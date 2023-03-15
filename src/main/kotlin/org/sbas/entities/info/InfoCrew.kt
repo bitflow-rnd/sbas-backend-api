@@ -1,6 +1,7 @@
 package org.sbas.entities.info
 
 import org.sbas.entities.CommonEntity
+import java.io.Serializable
 import javax.persistence.*
 
 /**
@@ -20,12 +21,7 @@ class InfoCrew(
 
     @Column(name = "rmk", length = 200)
     var rmk: String? = null, // 비고
-) : CommonEntity(), java.io.Serializable {
-
-    companion object {
-        private const val serialVersionUID: Long = -8096707614406150551L
-    }
-}
+) : CommonEntity()
 
 @Embeddable
 data class InfoCrewId(
@@ -34,7 +30,7 @@ data class InfoCrewId(
 
     @Column(name = "crew_id", nullable = false, length = 10)
     var crewId: String? = null, // 구급대원 ID
-) : java.io.Serializable {
+) : Serializable {
 
     companion object {
         private const val serialVersionUID = -4121112425160761203L

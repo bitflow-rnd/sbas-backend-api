@@ -1,6 +1,7 @@
 package org.sbas.entities.base
 
 import org.sbas.entities.CommonEntity
+import java.io.Serializable
 import java.math.BigDecimal
 import javax.persistence.*
 
@@ -37,12 +38,7 @@ class BaseAttr(
     @Column(name = "rmk", length = 200)
     var rmk: String? = null, // 비고
 
-) : CommonEntity(), java.io.Serializable {
-
-    companion object {
-        private const val serialVersionUID: Long = 937111344016409773L
-    }
-}
+) : CommonEntity()
 
 @Embeddable
 data class BaseAttrId(
@@ -54,7 +50,7 @@ data class BaseAttrId(
 
     @Column(name = "app_strt_dt", nullable = false, length = 8)
     var appStrtDt: String? = null, // 적용 시작 날짜
-) : java.io.Serializable {
+) : Serializable {
 
     companion object {
         private const val serialVersionUID = -7627032742449928277L

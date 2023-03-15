@@ -1,6 +1,7 @@
 package org.sbas.entities.base
 
 import org.sbas.entities.CommonEntity
+import java.io.Serializable
 import javax.persistence.*
 
 /**
@@ -26,12 +27,7 @@ class BaseCode(
 
     @Column(name = "rmk", length = 200)
     var rmk: String? = null, // 비고
-) : CommonEntity(), java.io.Serializable {
-
-    companion object {
-        private const val serialVersionUID: Long = -6517953454760971895L
-    }
-}
+) : CommonEntity()
 
 @Embeddable
 data class BaseCodeId(
@@ -40,7 +36,7 @@ data class BaseCodeId(
 
     @Column(name = "cd_id", nullable = false, length = 8)
     var cdId: String, // 코드 ID
-) : java.io.Serializable {
+) : Serializable {
 
     companion object {
         private const val serialVersionUID = -165979700881194617L

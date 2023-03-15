@@ -17,16 +17,16 @@ class TalkMsg {
     @Size(max = 8)
     @NotNull
     @Column(name = "hist_cd", nullable = false, length = 8)
-    var histCd: String? = null
+    var histCd: String? = null // 이력 코드
 
     @Size(max = 1000)
     @NotNull
     @Column(name = "msg", nullable = false, length = 1000)
-    var msg: String? = null
+    var msg: String? = null // 이력 순번
 
     @Size(max = 10)
     @Column(name = "attc_id", length = 10)
-    var attcId: String? = null
+    var attcId: String? = null // 첨부 ID
 
     @Size(max = 10)
     @NotNull

@@ -1,6 +1,7 @@
 package org.sbas.entities.bdas
 
 import org.sbas.entities.CommonEntity
+import java.io.Serializable
 import java.math.BigDecimal
 import javax.persistence.*
 
@@ -93,12 +94,7 @@ class BdasEsvy(
 
     @Column(name = "rpt_chf_nm", length = 10)
     var rptChfNm: String? = null, // 신고 기관장 성명
-) : CommonEntity(), java.io.Serializable {
-
-    companion object {
-        private const val serialVersionUID: Long = -2091171034347778229L
-    }
-}
+) : CommonEntity()
 
 @Embeddable
 data class BdasEsvyId(
@@ -110,7 +106,7 @@ data class BdasEsvyId(
 
     @Column(name = "hist_seq", nullable = false, precision = 3)
     var histSeq: BigDecimal? = null, // 이력 순번
-) : java.io.Serializable {
+) : Serializable {
 
     companion object {
         private const val serialVersionUID = 2286635814191011763L
