@@ -33,8 +33,15 @@ class PublicCommonEndpoint {
 
     @Operation(summary = "", description = "")
     @GET
-    @Path("usercommcodes")
-    fun usercommcodes(): Response {
+    @Path("regcommcodesets/{param}")
+    fun regcommcodesets(@RestPath param: String): Response {
+        return Response.ok().build()
+    }
+
+    @Operation(summary = "", description = "")
+    @GET
+    @Path("searchcommcodesets/{param}")
+    fun searchcommcodesets(@RestPath param: String): Response {
         return Response.ok().build()
     }
 
@@ -62,14 +69,14 @@ class PublicCommonEndpoint {
     @Operation(summary = "", description = "")
     @GET
     @Path("codes/{param}")
-    fun codes(): Response {
+    fun codes(@RestPath param: String): Response {
         return Response.ok().build()
     }
 
     @Operation(summary = "", description = "")
     @GET
     @Path("download/{param1}/{param2}")
-    fun download(): Response {
+    fun download(@RestPath param1: String, @RestPath param2: String): Response {
        return Response.ok().build()
     }
 
@@ -83,7 +90,7 @@ class PublicCommonEndpoint {
     @Operation(summary = "", description = "")
     @GET
     @Path("files/{param}")
-    fun files(): Response {
+    fun files(@RestPath param: String): Response {
         return Response.ok().build()
     }
 }

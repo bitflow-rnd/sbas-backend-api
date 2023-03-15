@@ -60,8 +60,8 @@ class PublicUserEndpoint {
 
     @Operation(summary = "", description = "")
     @POST
-    @Path("requserregt")
-    fun requserregt(): Response {
+    @Path("requserreg")
+    fun requserreg(): Response {
         return Response.ok().build()
     }
 

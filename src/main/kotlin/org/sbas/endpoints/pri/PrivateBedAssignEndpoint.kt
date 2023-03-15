@@ -32,22 +32,22 @@ class PrivateBedAssignEndpoint {
 
     @Operation(summary = "", description = "")
     @POST
-    @Path("transfproc")
-    fun transfproc(): Response {
+    @Path("confirmtransf")
+    fun confirmtransf(): Response {
         return Response.ok().build()
     }
 
     @Operation(summary = "", description = "")
     @POST
-    @Path("hosptlzdischzproc")
-    fun hosptlzdischzproc(): Response {
+    @Path("confirmhosptlzdiscg")
+    fun confirmhosptlzdiscg(): Response {
         return Response.ok().build()
     }
 
     @Operation(summary = "", description = "")
     @GET
-    @Path("bedasgns")
-    fun bedasgns(): Response {
+    @Path("bedasgnstatlist")
+    fun bedasgnstatlist(): Response {
         return Response.ok().build()
     }
 }

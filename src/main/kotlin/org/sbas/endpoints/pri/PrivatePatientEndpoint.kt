@@ -3,6 +3,7 @@ package org.sbas.endpoints.pri
 import org.eclipse.microprofile.openapi.annotations.Operation
 import org.eclipse.microprofile.openapi.annotations.tags.Tag
 import org.jboss.logging.Logger
+import org.jboss.resteasy.reactive.RestPath
 import javax.inject.Inject
 import javax.ws.rs.GET
 import javax.ws.rs.POST
@@ -17,21 +18,21 @@ class PrivatePatientEndpoint {
     lateinit var log: Logger
 
     @Operation(summary = "", description = "")
-    @Path("epidreportup")
-    fun epidReportUp(): Response {
+    @Path("upldepidreport")
+    fun upldepidreport(): Response {
         return Response.ok().build()
     }
 
     @Operation(summary = "", description = "")
-    @Path("epidreportdel")
-    fun epidReportDel(): Response {
+    @Path("delepidreport")
+    fun delepidreport(): Response {
         return Response.ok().build()
     }
 
     @Operation(summary = "", description = "")
     @POST
-    @Path("regstbasicinfo")
-    fun regstBasicInfo(): Response {
+    @Path("regbasicinfo")
+    fun regbasicinfo(): Response {
         return Response.ok().build()
     }
 
@@ -44,41 +45,41 @@ class PrivatePatientEndpoint {
 
     @Operation(summary = "", description = "")
     @POST
-    @Path("updtbasicinfo")
-    fun updtBasicInfo(): Response {
+    @Path("modbasicinfo")
+    fun modbasicinfo(): Response {
         return Response.ok().build()
     }
 
     @Operation(summary = "", description = "")
     @GET
-    @Path("basicinfo")
-    fun basicinfo(): Response {
+    @Path("basicinfo/{param}")
+    fun basicinfo(@RestPath param: String): Response {
         return Response.ok().build()
     }
 
     @Operation(summary = "", description = "")
     @GET
-    @Path("timelinedetl")
-    fun timelinedetl(): Response {
+    @Path("timeline/{param1}/{param2}")
+    fun timeline(@RestPath param1: String, @RestPath param2: String): Response {
         return Response.ok().build()
     }
 
     @Operation(summary = "", description = "")
     @GET
-    @Path("disesinfo")
-    fun disesinfo(): Response {
+    @Path("disesinfo/{param1}/{param2}")
+    fun disesinfo(@RestPath param1: String, @RestPath param2: String): Response {
         return Response.ok().build()
     }
 
     @Operation(summary = "", description = "")
     @GET
-    @Path("sevrinfo")
-    fun sevrinfo(): Response {
+    @Path("sevrinfo/{param1}/{param2}")
+    fun sevrinfo(@RestPath param1: String, @RestPath param2: String): Response {
         return Response.ok().build()
     }
 
     @Operation(summary = "", description = "")
-    @GET
+    @POST
     @Path("bioinfoanlys")
     fun bioinfoanlys(): Response {
         return Response.ok().build()
@@ -86,36 +87,29 @@ class PrivatePatientEndpoint {
 
     @Operation(summary = "", description = "")
     @POST
-    @Path("regstDisesInfo")
-    fun regstDisesInfo(): Response {
-        return Response.ok().build()
-    }
-
-    @Operation(summary = "", description = "")
-    @GET
-    @Path("sevrfilters")
-    fun sevrfilters(): Response {
+    @Path("regdisesinfo")
+    fun regdisesinfo(): Response {
         return Response.ok().build()
     }
 
     @Operation(summary = "", description = "")
     @POST
-    @Path("regstsevrinfo")
-    fun regstsevrinfo(): Response {
+    @Path("regsevrinfo")
+    fun regsevrinfo(): Response {
         return Response.ok().build()
     }
 
     @Operation(summary = "", description = "")
     @POST
-    @Path("regststartpoint")
-    fun regststartpoint(): Response {
+    @Path("regstrtpoint")
+    fun regstrtpoint(): Response {
         return Response.ok().build()
     }
 
     @Operation(summary = "", description = "")
     @POST
-    @Path("sendmsg")
-    fun sendmsg(): Response {
+    @Path("sendmsg/{param}")
+    fun sendmsg(@RestPath param: String): Response {
         return Response.ok().build()
     }
 }

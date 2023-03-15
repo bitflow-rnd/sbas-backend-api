@@ -24,8 +24,8 @@ class PrivateUserEndpoint {
 
     @Operation(summary = "", description = "")
     @POST
-    @Path("modifybasic")
-    fun modifybasic(): Response {
+    @Path("modbasic")
+    fun modbasic(): Response {
         return Response.ok().build()
     }
 
