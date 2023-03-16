@@ -2,7 +2,10 @@ package org.sbas.endpoints.public
 
 import org.eclipse.microprofile.openapi.annotations.Operation
 import org.eclipse.microprofile.openapi.annotations.tags.Tag
+import org.eclipse.microprofile.rest.client.inject.RestClient
 import org.jboss.logging.Logger
+import org.sbas.restclients.EgenRestClient
+import org.sbas.restclients.NaverSensRestClient
 import javax.inject.Inject
 import javax.ws.rs.GET
 import javax.ws.rs.POST
