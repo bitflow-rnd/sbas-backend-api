@@ -4,6 +4,8 @@ import org.eclipse.microprofile.config.inject.ConfigProperty
 import org.eclipse.microprofile.jwt.JsonWebToken
 import org.eclipse.microprofile.rest.client.inject.RestClient
 import org.jboss.logging.Logger
+import org.json.JSONObject
+import org.json.XML
 import org.sbas.constants.EgenConst
 import org.sbas.entities.base.BaseCodeEgen
 import org.sbas.entities.base.BaseCodeEgenId
@@ -114,6 +116,21 @@ class TestUserService {
             }
         }
         return EgenHsptMdcncResponse(retlist)
+    }
+
+    @Transactional
+    fun getEgytBassInfoInqire(): JSONObject? {
+        val retList = mutableListOf<HsptlMdcncItem>()
+        val res = egenapi.getEgytBassInfoInqire(serviceKey, "A1100014", 1, 10)
+//        if (res.header?.resultCode == EgenConst.SUCCESS) {
+//            // 응답성공
+//            for (item in res.body?.items?.item!!) {
+//                log.debug("e-gen api res $item.dutyAddr")
+//                retList.add(item)
+//            }
+//      }
+        log.debug(XML.toJSONObject(res).getJSONObject("response").getJSONObject("body").toString())
+        return XML.toJSONObject(res).getJSONObject("response").getJSONObject("body")
     }
 
     @Transactional

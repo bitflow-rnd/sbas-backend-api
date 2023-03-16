@@ -77,6 +77,7 @@ interface EgenRestClient {
      */
     @GET
     @Path("/ErmctInfoInqireService/getEgytBassInfoInqire")
-    fun getEgytBassInfoInqire(@QueryParam("serviceKey") serviceKey: String, @QueryParam("CM_MID") CM_MID: String): EgenCodeMastApiResponse
+    fun getEgytBassInfoInqire(@QueryParam("serviceKey") serviceKey: String, @QueryParam("HPID") hpId: String,
+                              @QueryParam("pageNo") pageNo: Int, @QueryParam("numOfRows") numOfRows: Int): String
 
 }
