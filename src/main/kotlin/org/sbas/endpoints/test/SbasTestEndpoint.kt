@@ -98,7 +98,7 @@ class SbasTestEndpoint {
     @Path("test5")
     @Produces(MediaType.APPLICATION_JSON)
     fun test5(): String {
-        log.debug("===============res: GOOD BYE QUARKUS===============")
+        log.debug("===============res: WELCOME QUARKUS===============")
         return serv1.getEgytBassInfoInqire().toString()
     }
 
