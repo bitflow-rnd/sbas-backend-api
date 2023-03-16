@@ -98,6 +98,7 @@ class SbasTestEndpoint {
     @Path("test5")
     @Produces(MediaType.APPLICATION_JSON)
     fun test5(): String {
+        log.debug("=============res: 안녕하세요 한글테스트============")
         return serv1.getEgytBassInfoInqire().toString()
     }
 
@@ -117,8 +118,6 @@ class SbasTestEndpoint {
         return Response.ok(object {
             val token: JsonWebToken = serv1.getUser()
         } ).build()
-
-
     }
 
 }
