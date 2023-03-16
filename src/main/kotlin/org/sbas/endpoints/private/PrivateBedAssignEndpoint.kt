@@ -9,7 +9,7 @@ import javax.ws.rs.POST
 import javax.ws.rs.Path
 import javax.ws.rs.core.Response
 
-@Tag(name = "", description = "")
+@Tag(name = "병상배정 업무처리(사용자용)", description = "조회 및 처리 등")
 @Path("v1/private/bedasgn")
 class PrivateBedAssignEndpoint {
 

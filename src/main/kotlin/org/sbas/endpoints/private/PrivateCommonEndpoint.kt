@@ -10,7 +10,7 @@ import javax.ws.rs.POST
 import javax.ws.rs.Path
 import javax.ws.rs.core.Response
 
-@Tag(name = "", description = "")
+@Tag(name = "공통(사용자용)", description = "다운로드, 업로드, 목록조회 등")
 @Path("v1/private/common")
 class PrivateCommonEndpoint {
 

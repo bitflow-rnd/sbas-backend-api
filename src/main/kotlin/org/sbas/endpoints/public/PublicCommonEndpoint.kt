@@ -11,7 +11,7 @@ import javax.ws.rs.Path
 import javax.ws.rs.core.Response
 import javax.ws.rs.core.SecurityContext
 
-@Tag(name = "사용자 API", description = "비 로그인 사용자를 위한 정보조회, 가입요청 및 로그인 API")
+@Tag(name = "공통", description = "비 로그인 사용자를 위한 정보조회, 가입요청 및 로그인 API")
 @Path("v1/public/common")
 class PublicCommonEndpoint {
 

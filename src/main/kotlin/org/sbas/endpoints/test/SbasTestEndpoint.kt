@@ -22,7 +22,7 @@ import javax.ws.rs.Produces
 import javax.ws.rs.core.*
 
 
-@Tag(name = "테스트", description = "테스트 API")
+@Tag(name = "테스트", description = "테스트")
 @Path("v1/test")
 class SbasTestEndpoint {
 

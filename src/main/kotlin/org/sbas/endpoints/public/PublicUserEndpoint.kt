@@ -13,7 +13,7 @@ import javax.ws.rs.Path
 import javax.ws.rs.core.Response
 import javax.ws.rs.core.SecurityContext
 
-@Tag(name = "사용자 API", description = "비 로그인 사용자를 위한 정보조회, 가입요청 및 로그인 API")
+@Tag(name = "사용자(공개권한용)", description = "비 로그인 사용자 가입 요청, 인증요청 등")
 @Path("v1/public/user")
 class PublicUserEndpoint {
 

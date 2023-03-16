@@ -10,7 +10,7 @@ import javax.ws.rs.POST
 import javax.ws.rs.Path
 import javax.ws.rs.core.Response
 
-@Tag(name = "", description = "")
+@Tag(name = "사용자 정보(사용자용)", description = "로그아웃, 개인정보 수정, 알림메시지 조회 등")
 @Path("v1/private/user")
 class PrivateUserEndpoint {
 

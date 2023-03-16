@@ -9,7 +9,7 @@ import javax.ws.rs.GET
 import javax.ws.rs.Path
 import javax.ws.rs.core.Response
 
-@Tag
+@Tag(name = "기관조회 및 등록(공개권한용)", description = "인증이 필요없거나 게스트 인증 사용자에 오픈")
 @Path("v1/public/organ")
 class PublicOrganiztnEndpoint {
 

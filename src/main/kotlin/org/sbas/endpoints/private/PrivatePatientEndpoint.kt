@@ -10,7 +10,7 @@ import javax.ws.rs.POST
 import javax.ws.rs.Path
 import javax.ws.rs.core.Response
 
-@Tag(name = "환자 API", description = "")
+@Tag(name = "환자정보(사용자용)", description = "등록 및 조회 등")
 @Path("v1/private/patient")
 class PrivatePatientEndpoint {
 

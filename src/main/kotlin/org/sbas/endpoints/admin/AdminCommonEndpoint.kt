@@ -10,7 +10,7 @@ import javax.ws.rs.POST
 import javax.ws.rs.Path
 import javax.ws.rs.core.Response
 
-@Tag(name = "", description = "")
+@Tag(name = "공통(어드민 권한용)", description = "등록, 수정, 삭제 등")
 @Path("v1/admin/common")
 class AdminCommonEndpoint {
 

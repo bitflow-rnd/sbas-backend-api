@@ -10,7 +10,7 @@ import javax.ws.rs.POST
 import javax.ws.rs.Path
 import javax.ws.rs.core.Response
 
-@Tag(name = "", description = "")
+@Tag(name = "기관정보(사용자용)", description = "등록 및 조회 등")
 @Path("v1/public/organ")
 class PrivateOrganiztnEndpoint {
 

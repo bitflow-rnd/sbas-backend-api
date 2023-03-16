@@ -6,7 +6,7 @@ import javax.ws.rs.GET
 import javax.ws.rs.Path
 import javax.ws.rs.core.Response
 
-@Tag(name = "", description = "")
+@Tag(name = "대시보드(사용자용)", description = "로그인 된 사용자용 커스텀 대시보드")
 @Path("v1/private/dashbd")
 class PrivateDashboardEndpoint {
 

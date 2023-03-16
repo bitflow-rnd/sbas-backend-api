@@ -8,7 +8,7 @@ import javax.ws.rs.POST
 import javax.ws.rs.Path
 import javax.ws.rs.core.Response
 
-@Tag(name = "", description = "")
+@Tag(name = "E-Gen 연동 관리(어드민 권한용)", description = "동기화, 등록, 수정, 삭제 등")
 @Path("v1/admin/egen")
 class AdminEgenEndpoint {
 

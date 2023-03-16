@@ -7,7 +7,7 @@ import javax.ws.rs.GET
 import javax.ws.rs.Path
 import javax.ws.rs.core.Response
 
-@Tag(name = "", description = "")
+@Tag(name = "대화방 정보(사용자용)", description = "등록 및 조회 등")
 @Path("v1/private/talk")
 class PrivateTalkEndpoint {
 
