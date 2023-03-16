@@ -40,6 +40,22 @@ class PrivateUserEndpoint {
 
     @Operation(summary = "", description = "")
     @POST
+    @Path("modpw")
+    fun modpw(): Response {
+        return Response.ok().build()
+    }
+
+    @Operation(summary = "", description = "")
+    @GET
+    @Path("invitredir")
+    fun invitredir(): Response {
+        return Response.ok().build()
+    }
+
+
+
+    @Operation(summary = "", description = "")
+    @POST
     @Path("confirmregreq/{param}")
     fun confirmregreq(@RestPath param: String): Response {
         return Response.ok().build()

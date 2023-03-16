@@ -36,4 +36,11 @@ class PublicOrganiztnEndpoint {
     fun firestatns(): Response {
         return Response.ok().build()
     }
+
+    @Operation(summary = "", description = "")
+    @GET
+    @Path("organiztns/{param}")
+    fun organiztns(@RestPath param: String): Response {
+        return Response.ok().build()
+    }
 }

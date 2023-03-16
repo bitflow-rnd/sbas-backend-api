@@ -37,4 +37,5 @@ class PrivateOrganiztnEndpoint {
     fun regorganiztn(@RestPath param: String): Response {
         return Response.ok().build()
     }
+
 }

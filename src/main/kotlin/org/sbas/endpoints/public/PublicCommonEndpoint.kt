@@ -139,4 +139,12 @@ class PublicCommonEndpoint {
     fun opensslicenss(@RestPath param: String): Response {
         return Response.ok().build()
     }
+
+    @Operation(summary = "", description = "")
+    @GET
+    @Path("appver")
+    fun appver(): Response {
+        return Response.ok().build()
+    }
+
 }
