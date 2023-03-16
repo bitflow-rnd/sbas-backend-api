@@ -32,9 +32,8 @@ class TokenUtils {
                 ctx.userPrincipal.name
             }
 
-            return "hello $name isHttps: ${ctx.isSecure} authScheme: ${ctx.authenticationScheme}" +
-                    " hasJWT: ${hasJwt(jwt)}" + " issueAt: ${jwt.issuedAtTime}" + " expiresAt: ${jwt.expirationTime}" +
-                    "userType: ${jwt.groups}"
+            return "hello $name isHttps: ${ctx.isSecure} authScheme: ${ctx.authenticationScheme} hasJWT: ${hasJwt(jwt)}" +
+                    " issueAt: ${jwt.issuedAtTime}" + " expiresAt: ${jwt.expirationTime} userType: ${jwt.groups}"
         }
 
         fun generateUserToken(userId: String): String {

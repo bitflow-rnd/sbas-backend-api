@@ -1,4 +1,4 @@
-package org.sbas.endpoints.pub
+package org.sbas.endpoints.public
 
 import org.eclipse.microprofile.openapi.annotations.Operation
 import org.eclipse.microprofile.openapi.annotations.tags.Tag
