@@ -140,6 +140,7 @@ class TestUserService {
 
     @Transactional
     fun getUser(): JsonWebToken{
+        log.warn("jenkins test")
         return jwt
     }
     
