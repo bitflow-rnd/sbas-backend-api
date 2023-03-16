@@ -1,12 +1,18 @@
 package org.sbas.endpoints.admin
 
 import org.eclipse.microprofile.openapi.annotations.Operation
+import org.eclipse.microprofile.openapi.annotations.parameters.RequestBody
 import org.eclipse.microprofile.openapi.annotations.tags.Tag
 import org.jboss.logging.Logger
+import org.sbas.entities.info.InfoUser
+import org.sbas.response.EgenCodeMastResponse
+import org.sbas.response.StringResponse
+import org.sbas.services.admin.AdminUserService
 import javax.inject.Inject
 import javax.ws.rs.GET
 import javax.ws.rs.POST
 import javax.ws.rs.Path
+import javax.ws.rs.core.MediaType
 import javax.ws.rs.core.Response
 
 @Tag(name = "", description = "")
@@ -16,11 +22,24 @@ class AdminUserEndpoint {
     @Inject
     lateinit var log: Logger
 
-    @Operation(summary = "", description = "")
+    @Inject
+    lateinit var service: AdminUserService
+
+    @Operation(summary = "회원가입", description = "백오피스에서 어드민(전산담당)이 처리하는 API")
     @POST
     @Path("reg")
-    fun reg(): Response {
-        return Response.ok().build()
+    fun reg(@RequestBody infoUser: InfoUser): Response {
+        return try {
+            Response.ok(service.reg(infoUser)).build()
+        }catch (e: Exception) {
+            val res = StringResponse()
+            res.code = "01"
+            res.message = e.localizedMessage
+            Response.status(Response.Status.INTERNAL_SERVER_ERROR)
+                    .entity(res)
+                    .type(MediaType.APPLICATION_JSON)
+                    .build()
+        }
     }
 
     @Operation(summary = "", description = "")
