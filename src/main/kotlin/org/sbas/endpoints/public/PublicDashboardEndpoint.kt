@@ -7,7 +7,7 @@ import javax.ws.rs.GET
 import javax.ws.rs.Path
 import javax.ws.rs.core.Response
 
-@Tag(name = "대시보드(공개권한용)", description = "인증이 필요 없거나 비로그인 인증 사용자에 오픈되는 상황판")
+@Tag(name = "대시보드 조회(공개 권한용)", description = "비 로그인 사용자 - 대시보드 조회")
 @Path("v1/public")
 class PublicDashboardEndpoint {
 

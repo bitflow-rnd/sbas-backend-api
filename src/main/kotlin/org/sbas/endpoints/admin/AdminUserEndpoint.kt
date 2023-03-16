@@ -15,7 +15,7 @@ import javax.ws.rs.Path
 import javax.ws.rs.core.MediaType
 import javax.ws.rs.core.Response
 
-@Tag(name = "사용자 관리(어드민 권한용)", description = "등록, 수정, 삭제 등")
+@Tag(name = "사용자 관리(어드민 권한용)", description = "System Admin 사용자 - 사용자 등록, 수정, 삭제 등")
 @Path("v1/admin/user")
 class AdminUserEndpoint {
 
