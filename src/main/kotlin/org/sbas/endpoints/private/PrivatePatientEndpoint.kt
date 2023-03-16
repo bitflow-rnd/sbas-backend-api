@@ -1,4 +1,4 @@
-package org.sbas.endpoints.pri
+package org.sbas.endpoints.private
 
 import org.eclipse.microprofile.openapi.annotations.Operation
 import org.eclipse.microprofile.openapi.annotations.tags.Tag
@@ -110,6 +110,20 @@ class PrivatePatientEndpoint {
     @POST
     @Path("sendmsg/{param}")
     fun sendmsg(@RestPath param: String): Response {
+        return Response.ok().build()
+    }
+
+    @Operation(summary = "", description = "")
+    @POST
+    @Path("search")
+    fun search(): Response {
+        return Response.ok().build()
+    }
+
+    @Operation(summary = "", description = "")
+    @POST
+    @Path("myorganiztn")
+    fun myorganiztn(): Response {
         return Response.ok().build()
     }
 }

@@ -4,7 +4,9 @@ import org.eclipse.microprofile.jwt.JsonWebToken
 import org.eclipse.microprofile.openapi.annotations.Operation
 import org.eclipse.microprofile.openapi.annotations.parameters.RequestBody
 import org.eclipse.microprofile.openapi.annotations.tags.Tag
+import org.eclipse.microprofile.rest.client.inject.RestClient
 import org.jboss.logging.Logger
+import org.json.JSONObject
 import org.sbas.entities.info.InfoUser
 import org.sbas.parameters.BaseCodeRequest
 import org.sbas.response.BaseCodeResponse
@@ -16,10 +18,9 @@ import javax.inject.Inject
 import javax.ws.rs.GET
 import javax.ws.rs.POST
 import javax.ws.rs.Path
-import javax.ws.rs.core.Context
-import javax.ws.rs.core.MediaType
-import javax.ws.rs.core.Response
-import javax.ws.rs.core.SecurityContext
+import javax.ws.rs.Produces
+import javax.ws.rs.core.*
+
 
 @Tag(name = "테스트", description = "테스트 API")
 @Path("v1/test")
@@ -92,6 +93,14 @@ class SbasTestEndpoint {
                 .build()
         }
     }
+
+    @GET
+    @Path("test5")
+    @Produces(MediaType.APPLICATION_JSON)
+    fun test5(): String {
+        return serv1.getEgytBassInfoInqire().toString()
+    }
+
     @POST
     @Path("login")
     @PermitAll

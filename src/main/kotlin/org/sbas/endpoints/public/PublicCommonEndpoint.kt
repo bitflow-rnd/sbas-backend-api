@@ -1,23 +1,13 @@
-package org.sbas.endpoints.pub
+package org.sbas.endpoints.public
 
 import org.eclipse.microprofile.openapi.annotations.Operation
-import org.eclipse.microprofile.openapi.annotations.parameters.RequestBody
 import org.eclipse.microprofile.openapi.annotations.tags.Tag
 import org.jboss.logging.Logger
 import org.jboss.resteasy.reactive.RestPath
-import org.sbas.entities.info.InfoUser
-import org.sbas.parameters.BaseCodeRequest
-import org.sbas.response.BaseCodeResponse
-import org.sbas.response.EgenCodeMastResponse
-import org.sbas.services.TestUserService
-import javax.annotation.security.PermitAll
-import javax.annotation.security.RolesAllowed
 import javax.inject.Inject
 import javax.ws.rs.GET
 import javax.ws.rs.POST
 import javax.ws.rs.Path
-import javax.ws.rs.core.Context
-import javax.ws.rs.core.MediaType
 import javax.ws.rs.core.Response
 import javax.ws.rs.core.SecurityContext
 
@@ -91,6 +81,62 @@ class PublicCommonEndpoint {
     @GET
     @Path("files/{param}")
     fun files(@RestPath param: String): Response {
+        return Response.ok().build()
+    }
+
+    @Operation(summary = "", description = "")
+    @GET
+    @Path("prvinfocollctagrees")
+    fun prvinfocollctagrees(): Response {
+        return Response.ok().build()
+    }
+
+    @Operation(summary = "", description = "")
+    @GET
+    @Path("prvinfocollctagree")
+    fun prvinfocollctagree(@RestPath param: String): Response {
+        return Response.ok().build()
+    }
+
+    @Operation(summary = "", description = "")
+    @GET
+    @Path("svcuseterms")
+    fun svcuseterms(): Response {
+        return Response.ok().build()
+    }
+
+    @Operation(summary = "", description = "")
+    @GET
+    @Path("svcusgterm")
+    fun svcusgterm(@RestPath param: String): Response {
+        return Response.ok().build()
+    }
+
+    @Operation(summary = "", description = "")
+    @GET
+    @Path("prvinfoprocpolyc")
+    fun prvinfoprocpolyc(): Response {
+        return Response.ok().build()
+    }
+
+    @Operation(summary = "", description = "")
+    @GET
+    @Path("ancmts")
+    fun ancmts(): Response {
+        return Response.ok().build()
+    }
+
+    @Operation(summary = "", description = "")
+    @GET
+    @Path("ancmt")
+    fun ancmt(@RestPath param: String): Response {
+        return Response.ok().build()
+    }
+
+    @Operation(summary = "", description = "")
+    @GET
+    @Path("opensslicenss")
+    fun opensslicenss(@RestPath param: String): Response {
         return Response.ok().build()
     }
 }
