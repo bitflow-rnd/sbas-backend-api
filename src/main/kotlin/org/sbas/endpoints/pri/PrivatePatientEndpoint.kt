@@ -45,8 +45,8 @@ class PrivatePatientEndpoint {
 
     @Operation(summary = "", description = "")
     @POST
-    @Path("modbasicinfo")
-    fun modbasicinfo(): Response {
+    @Path("modinfo")
+    fun modinfo(): Response {
         return Response.ok().build()
     }
 

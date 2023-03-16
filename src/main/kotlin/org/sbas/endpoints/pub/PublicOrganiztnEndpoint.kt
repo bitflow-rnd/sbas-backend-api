@@ -3,6 +3,7 @@ package org.sbas.endpoints.pub
 import org.eclipse.microprofile.openapi.annotations.Operation
 import org.eclipse.microprofile.openapi.annotations.tags.Tag
 import org.jboss.logging.Logger
+import org.jboss.resteasy.reactive.RestPath
 import javax.inject.Inject
 import javax.ws.rs.GET
 import javax.ws.rs.Path
@@ -24,15 +25,8 @@ class PublicOrganiztnEndpoint {
 
     @Operation(summary = "", description = "")
     @GET
-    @Path("medinstcnt")
-    fun medinstcnt(): Response {
-        return Response.ok().build()
-    }
-
-    @Operation(summary = "", description = "")
-    @GET
-    @Path("medinst")
-    fun medinst(): Response {
+    @Path("medinst/{param}")
+    fun medinst(@RestPath param: String): Response {
         return Response.ok().build()
     }
 

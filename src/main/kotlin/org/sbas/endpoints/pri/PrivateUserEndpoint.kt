@@ -17,14 +17,14 @@ class PrivateUserEndpoint {
 
     @Operation(summary = "", description = "")
     @POST
-    @Path("logout")
+    @Path("logout/{param}")
     fun logout(): Response {
         return Response.ok().build()
     }
 
     @Operation(summary = "", description = "")
     @POST
-    @Path("modbasic")
+    @Path("modbasic/{param}")
     fun modbasic(): Response {
         return Response.ok().build()
     }

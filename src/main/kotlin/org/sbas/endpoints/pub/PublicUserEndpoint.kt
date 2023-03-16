@@ -31,14 +31,14 @@ class PublicUserEndpoint {
     lateinit var security: SecurityContext
 
     @Operation(summary = "", description = "")
-    @GET
+    @POST
     @Path("existid")
     fun existid(): Response {
         return Response.ok().build()
     }
 
     @Operation(summary = "", description = "")
-    @GET
+    @POST
     @Path("existcellphone")
     fun existcellphone(): Response {
         return Response.ok().build()

@@ -26,15 +26,8 @@ class PrivateOrganiztnEndpoint {
 
     @Operation(summary = "", description = "")
     @POST
-    @Path("regfirestatn")
-    fun regfirestatn(): Response {
-        return Response.ok().build()
-    }
-
-    @Operation(summary = "", description = "")
-    @POST
-    @Path("medinstimg")
-    fun medinstimg(): Response {
+    @Path("medinstimg/{param}")
+    fun medinstimg(@RestPath param: String): Response {
         return Response.ok().build()
     }
 
