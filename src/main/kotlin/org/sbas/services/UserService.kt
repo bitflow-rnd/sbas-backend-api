@@ -7,6 +7,7 @@ import org.jboss.logging.Logger
 import org.json.JSONObject
 import org.json.XML
 import org.sbas.constants.EgenConst
+import org.sbas.constants.SbasConst
 import org.sbas.entities.base.BaseCodeEgen
 import org.sbas.entities.base.BaseCodeEgenId
 import org.sbas.entities.base.BaseCodeId
@@ -54,7 +55,7 @@ class UserService {
         val ret = BaseCodeResponse()
         val smsto = NaverSmsReqMsgs("", "", "01088657020")
         naverSensClient.messages(naversensserviceid, NaverSmsMsgApiParams(
-            "SMS", null, "01088657020", null, null,
+            SbasConst.MSG_TYPE_SMS, null, SbasConst.MSG_SEND_NO, null, null,
             "", null, null, null,
             listOf(smsto),
             null))
