@@ -4,6 +4,9 @@ import org.eclipse.microprofile.openapi.annotations.Operation
 import org.eclipse.microprofile.openapi.annotations.tags.Tag
 import org.jboss.logging.Logger
 import org.jboss.resteasy.reactive.RestPath
+import org.sbas.entities.base.BaseCodeId
+import org.sbas.response.CommonResponse
+import org.sbas.services.CommonService
 import javax.inject.Inject
 import javax.ws.rs.GET
 import javax.ws.rs.POST
@@ -17,11 +20,14 @@ class AdminCommonEndpoint {
     @Inject
     lateinit var log: Logger
 
-    @Operation(summary = "", description = "")
+    @Inject
+    private lateinit var commonService: CommonService
+
+    @Operation(summary = "공통코드 그룹 조회", description = "공통코드 그룹 조회")
     @GET
     @Path("codegrps")
-    fun codegrps(): Response {
-        return Response.ok().build()
+    fun codegrps(): CommonResponse<*> {
+        return CommonResponse(Response.Status.OK, "조회 성공", commonService.findBaseCode())
     }
 
     @Operation(summary = "", description = "")
@@ -31,14 +37,16 @@ class AdminCommonEndpoint {
         return Response.ok().build()
     }
 
-    @Operation(summary = "", description = "")
+    @Operation(summary = "공통코드 그룹 삭제", description = "공통코드 그룹 삭제")
     @POST
-    @Path("delcodegrps/{param}")
-    fun delcodegrps(@RestPath param: String): Response {
+    @Path("delcodegrps/{cdGrpId}/{cdId}")
+    fun delcodegrps(@RestPath cdGrpId: String,
+                    @RestPath cdId: String): Response {
+        commonService.delCodeGrps(BaseCodeId(cdGrpId = cdGrpId, cdId = cdId))
         return Response.ok().build()
     }
 
-    @Operation(summary = "", description = "")
+    @Operation(summary = "공통코드 등록", description = "공통코드 등록")
     @POST
     @Path("regcode")
     fun regcode(): Response {
