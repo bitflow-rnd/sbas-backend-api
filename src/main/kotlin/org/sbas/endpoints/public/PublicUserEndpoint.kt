@@ -2,12 +2,10 @@ package org.sbas.endpoints.public
 
 import org.eclipse.microprofile.openapi.annotations.Operation
 import org.eclipse.microprofile.openapi.annotations.tags.Tag
-import org.eclipse.microprofile.rest.client.inject.RestClient
 import org.jboss.logging.Logger
-import org.sbas.restclients.EgenRestClient
-import org.sbas.restclients.NaverSensRestClient
+import org.sbas.services.UserService
+import javax.annotation.security.PermitAll
 import javax.inject.Inject
-import javax.ws.rs.GET
 import javax.ws.rs.POST
 import javax.ws.rs.Path
 import javax.ws.rs.core.Response
@@ -22,6 +20,9 @@ class PublicUserEndpoint {
 
     @Inject
     lateinit var security: SecurityContext
+
+    @Inject
+    lateinit var userService: UserService
 
     @Operation(summary = "", description = "")
     @POST
@@ -40,8 +41,9 @@ class PublicUserEndpoint {
     @Operation(summary = "", description = "")
     @POST
     @Path("smssend")
+    @PermitAll
     fun smssend(): Response {
-        return Response.ok().build()
+        return Response.ok(userService.sendIdentifySms()).build()
     }
 
     @Operation(summary = "", description = "")
@@ -78,4 +80,5 @@ class PublicUserEndpoint {
     fun findpw(): Response {
         return Response.ok().build()
     }
+
 }
