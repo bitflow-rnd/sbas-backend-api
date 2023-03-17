@@ -5,9 +5,8 @@ import org.eclipse.microprofile.openapi.annotations.parameters.RequestBody
 import org.eclipse.microprofile.openapi.annotations.tags.Tag
 import org.jboss.logging.Logger
 import org.sbas.entities.info.InfoUser
-import org.sbas.response.EgenCodeMastResponse
 import org.sbas.response.StringResponse
-import org.sbas.services.admin.AdminUserService
+import org.sbas.services.UserService
 import javax.inject.Inject
 import javax.ws.rs.GET
 import javax.ws.rs.POST
@@ -23,7 +22,7 @@ class AdminUserEndpoint {
     lateinit var log: Logger
 
     @Inject
-    lateinit var service: AdminUserService
+    lateinit var service: UserService
 
     @Operation(summary = "회원가입", description = "백오피스에서 어드민(전산담당)이 처리하는 API")
     @POST
