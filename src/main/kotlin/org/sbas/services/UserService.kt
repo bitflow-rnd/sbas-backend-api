@@ -55,7 +55,7 @@ class UserService {
         val ret = BaseCodeResponse()
         val smsto = NaverSmsReqMsgs("", "", "01088657020")
         naverSensClient.messages(naversensserviceid, NaverSmsMsgApiParams(
-            SbasConst.MSG_TYPE_SMS, null, SbasConst.MSG_SEND_NO, null, null,
+            SbasConst.MsgType.SMS, null, SbasConst.MSG_SEND_NO, null, null,
             "", null, null, null,
             listOf(smsto),
             null))
