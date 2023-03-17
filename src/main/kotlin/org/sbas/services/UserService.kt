@@ -49,14 +49,19 @@ class UserService {
     @Transactional
     fun sendIdentifySms(): BaseCodeResponse {
         val ret = BaseCodeResponse()
-        val smsto = NaverSmsReqMsgs("", "", "01088657020")
+
+        val smsto = NaverSmsReqMsgs("", "", "01082072505")
+
         naverSensClient.messages(naversensserviceid, NaverSmsMsgApiParams(
-            SbasConst.MsgType.SMS, null, SbasConst.MSG_SEND_NO, null, null,
-            "", null, null, null,
+            SbasConst.MsgType.SMS, null, SbasConst.MSG_SEND_NO, null, "COMM",
+            "안녕하세요", null, null, null,
             listOf(smsto),
             null)
         )
+
         return ret
     }
+
+
 
 }
