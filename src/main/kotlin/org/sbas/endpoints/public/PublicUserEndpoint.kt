@@ -3,9 +3,11 @@ package org.sbas.endpoints.public
 import org.eclipse.microprofile.openapi.annotations.Operation
 import org.eclipse.microprofile.openapi.annotations.tags.Tag
 import org.jboss.logging.Logger
+import org.sbas.parameters.SmsSendRequest
 import org.sbas.services.UserService
 import javax.annotation.security.PermitAll
 import javax.inject.Inject
+import javax.validation.Valid
 import javax.ws.rs.POST
 import javax.ws.rs.Path
 import javax.ws.rs.core.Response
@@ -42,8 +44,8 @@ class PublicUserEndpoint {
     @POST
     @Path("smssend")
     @PermitAll
-    fun smssend(): Response {
-        return Response.ok(userService.sendIdentifySms()).build()
+    fun smssend(@Valid smsSendRequest: SmsSendRequest): Response {
+        return Response.ok(userService.sendIdentifySms(smsSendRequest)).build()
     }
 
     @Operation(summary = "", description = "")

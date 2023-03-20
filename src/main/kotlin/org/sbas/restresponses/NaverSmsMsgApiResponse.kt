@@ -1,9 +1,11 @@
 package org.sbas.restresponses
 
+import com.fasterxml.jackson.annotation.JsonProperty
+
 data class NaverSmsMsgApiResponse(
-    var statusCode: String,
-    var statusName: String,
-    var messages: List<NaverSmsResMsgs>
+        var statusCode: String? = null,
+        var statusName: String? = null,
+        var messages: List<NaverSmsResMsgs>? = null
 )
 
 
