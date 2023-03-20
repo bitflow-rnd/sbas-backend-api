@@ -1,9 +1,12 @@
 package org.sbas.endpoints.public
 
+import org.eclipse.microprofile.config.inject.ConfigProperty
 import org.eclipse.microprofile.openapi.annotations.Operation
 import org.eclipse.microprofile.openapi.annotations.tags.Tag
 import org.jboss.logging.Logger
+import org.jboss.resteasy.reactive.RestForm
 import org.jboss.resteasy.reactive.RestPath
+import java.io.File
 import javax.inject.Inject
 import javax.ws.rs.GET
 import javax.ws.rs.POST
@@ -20,6 +23,9 @@ class PublicCommonEndpoint {
 
     @Inject
     lateinit var security: SecurityContext
+
+    @ConfigProperty(name = "upload.public.dir")
+    lateinit var UPLOAD_DIR_PUBLIC: String
 
     @Operation(summary = "", description = "")
     @GET
@@ -73,14 +79,23 @@ class PublicCommonEndpoint {
     @Operation(summary = "", description = "")
     @POST
     @Path("upload")
-    fun upload(): Response {
-        return Response.ok().build()
+//    @Consumes(MediaType.MULTIPART_FORM_DATA)
+//    @Produces(MediaType.APPLICATION_JSON)
+    fun upload(@RestForm userId: String, @RestForm file: File): Response {
+        log.debug("file accepted ${userId}")
+//               @RestForm params: CommonUploadParams): Response {
+        // UPLOAD_DIR_PUBLIC
+//        log.debug("params ${params.params.userId}")
+
+        return Response.ok("OK").build()
     }
 
     @Operation(summary = "", description = "")
     @GET
     @Path("files/{param}")
     fun files(@RestPath param: String): Response {
+        Response.ok("{\"location\":  \"German\"}")
+            .header("Content-Disposition", "attachment;filename=\"config.json\"")
         return Response.ok().build()
     }
 

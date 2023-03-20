@@ -19,14 +19,13 @@ val quarkusPlatformVersion: String by project
 dependencies {
     implementation(enforcedPlatform("${quarkusPlatformGroupId}:${quarkusPlatformArtifactId}:${quarkusPlatformVersion}"))
     implementation("io.quarkus:quarkus-kotlin")
-    implementation("io.quarkus:quarkus-rest-client-reactive")
+
     implementation("io.quarkus:quarkus-hibernate-orm-panache-kotlin")
     implementation("io.quarkus:quarkus-hibernate-validator")
     implementation("io.quarkus:quarkus-resteasy-reactive")
-    //implementation("io.quarkus:quarkus-resteasy-reactive-jaxb")
+
+    implementation("io.quarkus:quarkus-rest-client-reactive")
     implementation("io.quarkus:quarkus-resteasy-reactive-jackson")
-    //implementation("io.quarkus:quarkus-resteasy-reactive-kotlin-serialization")
-    //implementation("io.quarkus:quarkus-rest-client-reactive-kotlin-serialization")
     implementation("io.quarkus:quarkus-rest-client-reactive-jaxb")
     implementation("io.quarkus:quarkus-rest-client-reactive-jackson")
     implementation("io.quarkus:quarkus-scheduler")
@@ -39,10 +38,8 @@ dependencies {
     implementation("io.quarkus:quarkus-arc")
     implementation("io.quarkus:quarkus-hibernate-orm")
     implementation("io.quarkus:quarkus-smallrye-openapi")
-    //implementation("org.jetbrains.kotlinx:kotlinx-serialization-json")
     testImplementation("io.quarkus:quarkus-junit5")
     testImplementation("io.rest-assured:rest-assured")
-    //runtimeOnly("org.jetbrains.kotlinx:kotlinx-serialization-json:1.5.0")
 }
 
 group = "org.sbas"

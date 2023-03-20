@@ -10,14 +10,14 @@ import javax.ws.rs.Path
 
 
 /**
- * Naver Send API를 처리하는 클라이언트
+ * Naver Sens 메시지 API를 처리하는 클라이언트
  */
 @Path("sms/v2/services")
 @RegisterRestClient
 interface NaverSensRestClient {
 
     /**
-     * SMS 메시지 발송 요청
+     * 메시지 발송 요청
      */
     @POST
     @Path("{serviceId}/messages")
