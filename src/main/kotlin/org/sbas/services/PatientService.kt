@@ -1,7 +1,9 @@
 package org.sbas.services
 
 import org.jboss.logging.Logger
+import org.jboss.resteasy.reactive.multipart.FileUpload
 import org.sbas.entities.info.InfoPt
+import org.sbas.handlers.FileHandler
 import org.sbas.repositories.InfoPtRepository
 import org.sbas.response.StringResponse
 import javax.enterprise.context.ApplicationScoped
@@ -21,6 +23,9 @@ class PatientService {
     @Inject
     private lateinit var infoPtRepository: InfoPtRepository
 
+    @Inject
+    private lateinit var handler1: FileHandler
+
     @Transactional
     fun saveInfoPt(infoPt: InfoPt): StringResponse {
         infoPt.rgstUserId = "jiseong"
@@ -30,4 +35,11 @@ class PatientService {
 
         return StringResponse(infoPt.id)
     }
+
+    @Transactional
+    fun uploadEpidReport(param: FileUpload) {
+        val fileName = handler1.createPrivateFile(param)
+        // Todo: Naver Clova OCR call
+    }
+
 }

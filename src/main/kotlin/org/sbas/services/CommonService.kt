@@ -5,6 +5,7 @@ import org.jboss.logging.Logger
 import org.jboss.resteasy.reactive.multipart.FileUpload
 import org.sbas.entities.base.BaseCode
 import org.sbas.entities.base.BaseCodeId
+import org.sbas.handlers.FileHandler
 import org.sbas.repositories.BaseCodeRepository
 import java.io.File
 import java.time.Instant
@@ -25,11 +26,11 @@ class CommonService {
     @Inject
     lateinit var log: Logger
 
-    @ConfigProperty(name = "upload.public.dir")
-    lateinit var UPLOAD_DIR_PUBLIC: String
-
     @Inject
     private lateinit var baseCodeRepository: BaseCodeRepository
+
+    @Inject
+    private lateinit var handler1: FileHandler
 
     @Transactional
     fun findBaseCode(): List<BaseCode> {
@@ -44,24 +45,12 @@ class CommonService {
         }
     }
 
+    /**
+     * 전체 공개 권한 파일 업로드
+     */
     @Transactional
     fun fileUpload(param1: String, param2: FileUpload) {
-        val now = LocalDateTime.now()
-        val format = DateTimeFormatter.ofPattern("yyyyMM")
-        val fileName = Instant.now().toEpochMilli()
-        val path = UPLOAD_DIR_PUBLIC + "/" + now.format(format)
-        val dir = File(path)
-        if (!dir.exists()) {
-            dir.mkdirs()
-        }
-        val dotPos = param2.fileName().lastIndexOf(".")
-        val fileExt = param2.fileName().substring(dotPos + 1)
-        val file = File("$path/$fileName.${fileExt.lowercase()}")
-        val created = file.createNewFile()
-        if (created) {
-            file.writeBytes(param2.uploadedFile().readBytes())
-            log.debug("file uploaded at ${file.absolutePath}")
-        }
+        val fileName = handler1.createPublicFile(param2)
     }
 
 }

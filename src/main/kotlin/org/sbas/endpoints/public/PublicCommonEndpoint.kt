@@ -83,6 +83,7 @@ class PublicCommonEndpoint {
     @Path("upload")
     fun upload(@RestForm param1: String, @RestForm param2: FileUpload): Response {
         service1.fileUpload(param1, param2)
+        // Todo: JSON result에 파일 URI 반환
         return Response.ok("OK").build()
     }
 
@@ -111,8 +112,8 @@ class PublicCommonEndpoint {
 
     @Operation(summary = "", description = "")
     @GET
-    @Path("svcuseterms")
-    fun svcuseterms(): Response {
+    @Path("svcusgterms")
+    fun svcusgterms(): Response {
         return Response.ok().build()
     }
 

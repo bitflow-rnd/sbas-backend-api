@@ -4,9 +4,12 @@ import org.eclipse.microprofile.openapi.annotations.Operation
 import org.eclipse.microprofile.openapi.annotations.parameters.RequestBody
 import org.eclipse.microprofile.openapi.annotations.tags.Tag
 import org.jboss.logging.Logger
+import org.jboss.resteasy.reactive.RestForm
 import org.jboss.resteasy.reactive.RestPath
+import org.jboss.resteasy.reactive.multipart.FileUpload
 import org.sbas.entities.info.InfoPt
 import org.sbas.response.StringResponse
+import org.sbas.services.CommonService
 import org.sbas.services.PatientService
 import javax.inject.Inject
 import javax.ws.rs.GET
@@ -25,9 +28,13 @@ class PrivatePatientEndpoint {
     @Inject
     lateinit var patientService: PatientService
 
+    @Inject
+    lateinit var service1: CommonService
+
     @Operation(summary = "", description = "")
     @Path("upldepidreport")
-    fun upldepidreport(): Response {
+    fun upldepidreport(@RestForm param1: String, @RestForm param2: FileUpload): Response {
+        patientService.uploadEpidReport(param2)
         return Response.ok().build()
     }
 

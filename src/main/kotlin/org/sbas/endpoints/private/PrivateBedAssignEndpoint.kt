@@ -46,8 +46,8 @@ class PrivateBedAssignEndpoint {
 
     @Operation(summary = "", description = "")
     @GET
-    @Path("bedasgnstatlist")
-    fun bedasgnstatlist(): Response {
+    @Path("list")
+    fun list(): Response {
         return Response.ok().build()
     }
 }

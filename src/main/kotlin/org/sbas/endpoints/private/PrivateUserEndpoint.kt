@@ -33,8 +33,8 @@ class PrivateUserEndpoint {
 
     @Operation(summary = "", description = "")
     @POST
-    @Path("invite")
-    fun invite(): Response {
+    @Path("invit")
+    fun invit(): Response {
         return Response.ok().build()
     }
 
@@ -65,6 +65,13 @@ class PrivateUserEndpoint {
     @POST
     @Path("modprofimg/{param}")
     fun modprofimg(@RestPath param: String): Response {
+        return Response.ok().build()
+    }
+
+    @Operation(summary = "", description = "")
+    @POST
+    @Path("modcellpno")
+    fun modcellpno(): Response {
         return Response.ok().build()
     }
 

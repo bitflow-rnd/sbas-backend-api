@@ -35,8 +35,8 @@ class PublicUserEndpoint {
 
     @Operation(summary = "", description = "")
     @POST
-    @Path("existcellphone")
-    fun existcellphone(): Response {
+    @Path("existcellp")
+    fun existcellp(): Response {
         return Response.ok().build()
     }
 
