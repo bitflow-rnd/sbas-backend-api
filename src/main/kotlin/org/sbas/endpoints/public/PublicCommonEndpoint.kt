@@ -6,6 +6,8 @@ import org.eclipse.microprofile.openapi.annotations.tags.Tag
 import org.jboss.logging.Logger
 import org.jboss.resteasy.reactive.RestForm
 import org.jboss.resteasy.reactive.RestPath
+import org.jboss.resteasy.reactive.multipart.FileUpload
+import org.sbas.services.CommonService
 import java.io.File
 import javax.inject.Inject
 import javax.ws.rs.GET
@@ -24,8 +26,8 @@ class PublicCommonEndpoint {
     @Inject
     lateinit var security: SecurityContext
 
-    @ConfigProperty(name = "upload.public.dir")
-    lateinit var UPLOAD_DIR_PUBLIC: String
+    @Inject
+    lateinit var service1: CommonService
 
     @Operation(summary = "", description = "")
     @GET
@@ -79,14 +81,8 @@ class PublicCommonEndpoint {
     @Operation(summary = "", description = "")
     @POST
     @Path("upload")
-//    @Consumes(MediaType.MULTIPART_FORM_DATA)
-//    @Produces(MediaType.APPLICATION_JSON)
-    fun upload(@RestForm userId: String, @RestForm file: File): Response {
-        log.debug("file accepted ${userId}")
-//               @RestForm params: CommonUploadParams): Response {
-        // UPLOAD_DIR_PUBLIC
-//        log.debug("params ${params.params.userId}")
-
+    fun upload(@RestForm param1: String, @RestForm param2: FileUpload): Response {
+        service1.fileUpload(param1, param2)
         return Response.ok("OK").build()
     }
 
