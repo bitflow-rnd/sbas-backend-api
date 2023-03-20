@@ -5,6 +5,7 @@ import org.eclipse.microprofile.rest.client.inject.RestClient
 import org.jboss.logging.Logger
 import org.sbas.constants.SbasConst
 import org.sbas.entities.info.InfoUser
+import org.sbas.parameters.SmsSendRequest
 import org.sbas.repositories.UserInfoRepository
 import org.sbas.response.BaseCodeResponse
 import org.sbas.response.StringResponse
@@ -47,15 +48,16 @@ class UserService {
      * 본인인증 SMS/MMS 메시지 발송
      */
     @Transactional
-    fun sendIdentifySms(): BaseCodeResponse {
+    fun sendIdentifySms(smsSendRequest: SmsSendRequest): BaseCodeResponse {
         val ret = BaseCodeResponse()
-        val smsto = NaverSmsReqMsgs("", "", "01088657020")
+
+        val smsTo = NaverSmsReqMsgs("", "", smsSendRequest.to!!)
+
         naverSensClient.messages(naversensserviceid, NaverSmsMsgApiParams(
-            SbasConst.MsgType.SMS, null, SbasConst.MSG_SEND_NO, null, null,
-            "", null, null, null,
-            listOf(smsto),
-            null)
+            SbasConst.MsgType.SMS, null, SbasConst.MSG_SEND_NO, null, "COMM",
+            smsSendRequest.name + "님 안녕하세요", null, null, null, mutableListOf(smsTo), null)
         )
+
         return ret
     }
 

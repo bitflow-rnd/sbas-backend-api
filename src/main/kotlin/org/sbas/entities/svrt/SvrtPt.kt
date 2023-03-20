@@ -5,6 +5,9 @@ import java.io.Serializable
 import java.math.BigDecimal
 import javax.persistence.*
 
+/**
+ * 중증 환자 정보
+ */
 @Entity
 @Table(name = "svrt_pt")
 class SvrtPt(

@@ -1,10 +1,10 @@
 package org.sbas.entities.info
 
+import org.hibernate.annotations.GenericGenerator
+import org.hibernate.annotations.Parameter
 import org.sbas.entities.CommonEntity
-import javax.persistence.Column
-import javax.persistence.Entity
-import javax.persistence.Id
-import javax.persistence.Table
+import org.sbas.entities.StringPrefixedSequenceIdGenerator
+import javax.persistence.*
 
 /**
  * 환자 기본 정보
@@ -12,7 +12,17 @@ import javax.persistence.Table
 @Entity
 @Table(name = "info_pt")
 class InfoPt(
+
     @Id
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "pt_seq")
+    @GenericGenerator(
+        name = "pt_seq",
+        strategy = "org.sbas.entities.StringPrefixedSequenceIdGenerator",
+        parameters = [
+            Parameter(name = StringPrefixedSequenceIdGenerator.VALUE_PREFIX_PARAMETER, value = "PT"),
+            Parameter(name = StringPrefixedSequenceIdGenerator.NUMBER_FORMAT_PARAMETER, value = "%08d"),
+            Parameter(name = StringPrefixedSequenceIdGenerator.incrementSize, value = "1")
+        ]) // PT00000000
     @Column(name = "pt_id", nullable = false, length = 10)
     var id: String? = null, // 환자 ID
 

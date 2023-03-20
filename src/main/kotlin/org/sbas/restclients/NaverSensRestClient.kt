@@ -1,12 +1,14 @@
 package org.sbas.restclients
 
+import org.eclipse.microprofile.rest.client.annotation.RegisterClientHeaders
 import org.eclipse.microprofile.rest.client.inject.RegisterRestClient
-import org.jboss.resteasy.reactive.RestPath
 import org.sbas.restparameters.NaverSmsMsgApiParams
 import org.sbas.restresponses.NaverSmsMsgApiResponse
+import org.sbas.utils.RequestNaverSmsHeaderFactory
 import javax.validation.Valid
 import javax.ws.rs.POST
 import javax.ws.rs.Path
+import javax.ws.rs.PathParam
 
 
 /**
@@ -14,6 +16,7 @@ import javax.ws.rs.Path
  */
 @Path("sms/v2/services")
 @RegisterRestClient
+@RegisterClientHeaders(RequestNaverSmsHeaderFactory::class)
 interface NaverSensRestClient {
 
     /**
@@ -21,6 +24,6 @@ interface NaverSensRestClient {
      */
     @POST
     @Path("{serviceId}/messages")
-    fun messages(@RestPath serviceId: String, @Valid param: NaverSmsMsgApiParams): NaverSmsMsgApiResponse
+    fun messages(@PathParam("serviceId") serviceId: String, @Valid param: NaverSmsMsgApiParams): NaverSmsMsgApiResponse
 
 }

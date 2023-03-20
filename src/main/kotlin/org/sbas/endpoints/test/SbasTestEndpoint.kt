@@ -105,19 +105,18 @@ class SbasTestEndpoint {
     @POST
     @Path("login")
     @PermitAll
-    fun login(@RequestBody infoUser: InfoUser): Response{
+    fun login(@RequestBody infoUser: InfoUser): Response {
         return Response.ok(object {
             val token: String = serv1.login(infoUser)
-        } ).build()
+        }).build()
     }
 
     @GET
     @Path("user")
     @RolesAllowed("USER", "ADMIN")
-    fun getUser(): Response{
+    fun getUser(): Response {
         return Response.ok(object {
             val token: JsonWebToken = serv1.getUser()
-        } ).build()
+        }).build()
     }
-
 }
