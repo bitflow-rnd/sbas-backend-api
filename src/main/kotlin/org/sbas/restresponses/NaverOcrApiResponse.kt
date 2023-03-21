@@ -1,40 +1,55 @@
 package org.sbas.restresponses
 
 data class NaverOcrApiResponse(
-    var version: String,
-    var requestId: String,
+    var version: String?,
+    var requestId: String?,
     var timestamp: Long,
     var images: List<OcrImages>
-)
+){
+    constructor() : this(null, null, 0, emptyList())
+}
 
 data class OcrImages(
-    var uid: String,
-    var name: String,
-    var inferResult: String,
-    var message: String,
-    var validationResult: OcrImageValidationResult,
-    var fields: List<OcrImageFields>
-)
+    var uid: String?,
+    var name: String?,
+    var inferResult: String?,
+    var message: String?,
+    var validationResult: OcrImageValidationResult?,
+    var fields: List<OcrImageFields>?
+){
+    constructor() : this(null, null, null, null, null, emptyList())
+}
 
 data class OcrImageValidationResult(
-    var result: String
-)
+    var result: String?
+){
+    constructor() : this(null)
+}
 
 data class OcrImageFields(
-    var valueType: String,
-    var boundingPoly: List<OcrImageFieldsBoundingPoly>,
-    var inferText: String,
-    var inferConfidence: String
-)
+    var valueType: String?,
+    var boundingPoly: List<OcrImageFieldsBoundingPoly>?,
+    var inferText: String?,
+    var inferConfidence: String?
+){
+    constructor() : this(null, emptyList(), null, null)
+}
+
 
 data class OcrImageFieldsBoundingPoly(
-    var vertices: List<OcrImageFieldsBoundingPolyXy>
-)
+    var vertices: List<OcrImageFieldsBoundingPolyXy>?
+){
+    constructor() : this(emptyList())
+}
+
 
 data class OcrImageFieldsBoundingPolyXy(
-    var x: Float,
-    var y: Float
-)
+    var x: Float?,
+    var y: Float?
+){
+    constructor() : this(null, null)
+}
+
 
 /*
 {
