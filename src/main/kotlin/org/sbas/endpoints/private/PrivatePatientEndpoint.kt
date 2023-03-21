@@ -32,6 +32,7 @@ class PrivatePatientEndpoint {
     lateinit var service1: CommonService
 
     @Operation(summary = "", description = "")
+    @POST
     @Path("upldepidreport")
     fun upldepidreport(@RestForm param1: String, @RestForm param2: FileUpload): Response {
         val res = patientService.uploadEpidReport(param2)
@@ -39,6 +40,7 @@ class PrivatePatientEndpoint {
     }
 
     @Operation(summary = "", description = "")
+    @POST
     @Path("delepidreport")
     fun delepidreport(): Response {
         return Response.ok().build()
