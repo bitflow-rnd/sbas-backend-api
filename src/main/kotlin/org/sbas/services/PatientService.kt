@@ -47,7 +47,7 @@ class PatientService {
         if (fileuri != null) {
             // Naver Clova OCR call
             val texts = handler2.recognizeImage(fileuri)
-            log.debug("texts $texts")
+            log.debug("texts are $texts")
             // Then move from public to private
             handler1.moveFilePublicToPrivate(fileuri)
         }
