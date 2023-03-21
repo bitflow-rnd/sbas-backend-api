@@ -4,8 +4,6 @@ import org.eclipse.microprofile.config.inject.ConfigProperty
 import org.eclipse.microprofile.jwt.JsonWebToken
 import org.eclipse.microprofile.rest.client.inject.RestClient
 import org.jboss.logging.Logger
-import org.json.JSONObject
-import org.json.XML
 import org.sbas.constants.EgenConst
 import org.sbas.entities.base.BaseCodeEgen
 import org.sbas.entities.base.BaseCodeEgenId
@@ -17,10 +15,8 @@ import org.sbas.repositories.BaseCodeRepository
 import org.sbas.repositories.TestUserRepository
 import org.sbas.response.BaseCodeResponse
 import org.sbas.response.EgenCodeMastResponse
-import org.sbas.response.EgenHsptMdcncResponse
 import org.sbas.restclients.EgenRestClient
 import org.sbas.restresponses.EgenCodeMastApiResponse.CodeMastBody.CodeMastItems.CodeMastItem
-import org.sbas.restresponses.EgenHsptMdcncApiResponse.HsptMdcncBody.HsptMdcncItems.HsptlMdcncItem
 import org.sbas.utils.TokenUtils
 import javax.enterprise.context.ApplicationScoped
 import javax.inject.Inject
@@ -75,7 +71,7 @@ class TestUserService {
         val savelist = mutableListOf<BaseCodeEgen>()
 
         for (cmMid: String in EgenConst.EGEN_GRP_CDS) {
-            val res = egenapi.getCodeMastInfo(serviceKey, cmMid)
+            val res = egenapi.getCodeMastInfo(serviceKey, cmMid, "1", "10")
             if (res.header?.resultCode == EgenConst.SUCCESS) {
                 log.debug("SUCCESS")
                 //val list = ItemWrapper(res.body?.items?.item!!)
@@ -101,36 +97,6 @@ class TestUserService {
 
         }
         return EgenCodeMastResponse(retlist)
-    }
-
-    @Transactional
-    fun getHosptalMedclinic(): EgenHsptMdcncResponse {
-        val retlist = mutableListOf<HsptlMdcncItem>()
-        val savelist = mutableListOf<BaseCodeEgen>()
-        val res = egenapi.getHsptlMdcncListInfoInqire(serviceKey, "")
-        if (res.header?.resultCode == EgenConst.SUCCESS) {
-            // 응답성공
-            for (item in res.body?.items?.item!!) {
-                log.debug("e-gen api res $item.dutyAddr")
-                retlist.add(item)
-            }
-        }
-        return EgenHsptMdcncResponse(retlist)
-    }
-
-    @Transactional
-    fun getEgytBassInfoInqire(): JSONObject? {
-        val retList = mutableListOf<HsptlMdcncItem>()
-        val res = egenapi.getEgytBassInfoInqire(serviceKey, "A1100014", 1, 10)
-//        if (res.header?.resultCode == EgenConst.SUCCESS) {
-//            // 응답성공
-//            for (item in res.body?.items?.item!!) {
-//                log.debug("e-gen api res $item.dutyAddr")
-//                retList.add(item)
-//            }
-//      }
-        log.debug(XML.toJSONObject(res).getJSONObject("response").getJSONObject("body").toString())
-        return XML.toJSONObject(res).getJSONObject("response").getJSONObject("body")
     }
 
     @Transactional
