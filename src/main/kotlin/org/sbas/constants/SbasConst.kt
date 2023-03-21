@@ -1,10 +1,7 @@
 package org.sbas.constants
 
 object SbasConst {
-    /**
-     * Abstract JSON response code success type
-     */
-    const val SUCCESS = "00"
+
     // Temp
     const val MSG_SEND_NO = "01088657020"
 
@@ -19,6 +16,8 @@ object SbasConst {
     }
     object ResCode {
         const val SUCCESS = "00"
+        const val FAIL = "01"
+        const val FAIL_VALIDATION = "02"
     }
 
     /**

@@ -1,5 +1,6 @@
 package org.sbas.handlers
 
+import org.sbas.constants.SbasConst
 import org.sbas.response.CommonResponse
 import javax.ws.rs.NotFoundException
 import javax.ws.rs.core.MediaType
@@ -18,7 +19,7 @@ class RuntimeExceptionMapper : ExceptionMapper<NotFoundException> {
     override fun toResponse(exception: NotFoundException): Response {
         return Response.status(Response.Status.NOT_FOUND)
             .type(MediaType.APPLICATION_JSON_TYPE)
-            .entity(CommonResponse(Response.Status.NOT_FOUND.statusCode, exception.message!!, null))
+            .entity(CommonResponse(SbasConst.ResCode.FAIL, exception.message!!, null))
             .build()
     }
 }

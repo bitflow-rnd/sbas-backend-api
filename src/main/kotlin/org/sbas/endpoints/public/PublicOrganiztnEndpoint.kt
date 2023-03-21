@@ -50,7 +50,7 @@ class PublicOrganiztnEndpoint {
     @Path("firestatn/{instId}/{crewId}")
     fun firestatn(@PathParam("instId") instId: String, @PathParam("crewId") crewId: String): CommonResponse<*> {
         val infoCrew = organiztnService.findInfoCrewById(instId, crewId)
-        return CommonResponse(SbasConst.SUCCESS, "find crew", infoCrew)
+        return CommonResponse(SbasConst.ResCode.SUCCESS, "find crew", infoCrew)
     }
 
     @Operation(summary = "", description = "")

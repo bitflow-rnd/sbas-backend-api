@@ -2,6 +2,9 @@ package org.sbas.endpoints.private
 
 import org.eclipse.microprofile.openapi.annotations.Operation
 import org.eclipse.microprofile.openapi.annotations.tags.Tag
+import org.jboss.resteasy.reactive.RestResponse
+import org.jboss.resteasy.reactive.RestResponse.ResponseBuilder
+import org.sbas.constants.SbasConst
 import org.sbas.response.CommonResponse
 import org.sbas.services.DashboardService
 import javax.inject.Inject
@@ -28,10 +31,9 @@ class PrivateDashboardEndpoint {
     @Operation(summary = "", description = "")
     @GET
     @Path("mobile")
-    @Produces(MediaType.APPLICATION_JSON)
-    fun mobile(): CommonResponse<*> {
+    fun mobile(): RestResponse<CommonResponse<MutableMap<String, Long>>>? {
         val res = dashboardService.count()
-
-        return CommonResponse(Response.Status.OK, "조회 성공", res)
+        return ResponseBuilder.ok(CommonResponse(SbasConst.ResCode.SUCCESS,
+            null, res)).build()
     }
 }

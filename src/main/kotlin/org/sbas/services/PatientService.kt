@@ -6,7 +6,9 @@ import org.sbas.entities.info.InfoPt
 import org.sbas.handlers.FileHandler
 import org.sbas.handlers.NaverApiHandler
 import org.sbas.repositories.InfoPtRepository
+import org.sbas.response.CommonResponse
 import org.sbas.response.StringResponse
+import org.sbas.response.patient.EpidResult
 import org.sbas.restparameters.NaverOcrApiParams
 import javax.enterprise.context.ApplicationScoped
 import javax.inject.Inject
@@ -40,7 +42,10 @@ class PatientService {
     }
 
     @Transactional
-    fun uploadEpidReport(param: FileUpload): String? {
+    fun uploadEpidReport(param: FileUpload): CommonResponse<EpidResult>? {
+
+        val ret = CommonResponse<EpidResult>()
+
         val fileuri = handler1.createPublicFile(param)
         if (fileuri != null) {
             // Naver Clova OCR call
@@ -48,7 +53,8 @@ class PatientService {
             log.debug("texts are $texts")
             // Then move from public to private
             handler1.moveFilePublicToPrivate(fileuri)
-            return texts
+            // return texts
+            return ret
         }
         return null
     }
