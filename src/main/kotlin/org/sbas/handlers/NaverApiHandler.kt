@@ -7,10 +7,8 @@ import org.sbas.constants.NaverApiConst
 import org.sbas.restclients.NaverOcrRestClient
 import org.sbas.restparameters.NaverOcrApiParams
 import org.sbas.restparameters.OcrApiImagesParam
-import java.time.Instant
 import javax.enterprise.context.ApplicationScoped
 import javax.inject.Inject
-import javax.validation.constraints.NotNull
 
 
 /**
@@ -56,8 +54,8 @@ class NaverApiHandler {
         val res = naverOcrClient.recognize(reqparam)
         val texts = res.images[0].fields
         val textlist = ArrayList<String>()
-        for (field in texts) {
-            textlist.add(field.inferText)
+        for (field in texts!!) {
+            textlist.add(field.inferText!!)
         }
         return textlist.joinToString("|")
     }
