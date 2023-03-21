@@ -65,14 +65,14 @@ class BdasReq(
     @Column(name = "pt_type_cd", length = 8)
     var ptTypeCd: String? = null, // 환자 유형 코드
 
-    @Column(name = "diag_cd", length = 8)
-    var diagCd: String? = null, // 진단 코드
+    @Column(name = "ifds_cd", length = 8)
+    var ifdsCd: String? = null, // 감염병 코드
 
-    @Column(name = "diag_nm_hng", length = 100)
-    var diagNmHng: String? = null, // 진단명 (한글)
+    @Column(name = "ifds_nm_hng", length = 100)
+    var ifdsNmHng: String? = null, // 감염병 이름 (한글)
 
-    @Column(name = "diag_nm_eng", length = 100)
-    var diagNmEng: String? = null, // 진단명 (영문)
+    @Column(name = "ifds_nm_eng", length = 100)
+    var ifdsNmEng: String? = null, // 감염병 이름 (영문)
 
     @Column(name = "svrt_type_cd", length = 8)
     var svrtTypeCd: String? = null, // 중증 유형 코드
@@ -95,8 +95,8 @@ class BdasReq(
     @Column(name = "sbed_cd_prdt", length = 8)
     var sbedCdPrdt: String? = null, // 중증병상 코드 (예측)
 
-    @Column(name = "\"desc\"", length = 4000)
-    var desc: String? = null, // 설명
+    @Column(name = "req_desc", length = 4000)
+    var regDesc: String? = null, // 요청 설명
 
     @Column(name = "attc_id", length = 10)
     var attcId: String? = null, // 첨부 ID
