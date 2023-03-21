@@ -28,11 +28,11 @@ data class OcrImageValidationResult(
 
 data class OcrImageFields(
     var valueType: String?,
-    var boundingPoly: List<OcrImageFieldsBoundingPoly>?,
+    var boundingPoly: OcrImageFieldsBoundingPoly?,
     var inferText: String?,
     var inferConfidence: String?
 ){
-    constructor() : this(null, emptyList(), null, null)
+    constructor() : this(null, null, null, null)
 }
 
 
