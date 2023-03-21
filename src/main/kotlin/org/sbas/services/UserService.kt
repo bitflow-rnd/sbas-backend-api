@@ -9,10 +9,12 @@ import org.sbas.parameters.SmsSendRequest
 import org.sbas.repositories.UserInfoRepository
 import org.sbas.response.BaseCodeResponse
 import org.sbas.response.StringResponse
+import org.sbas.response.UserInfoListResponse
 import org.sbas.restclients.NaverSensRestClient
 import org.sbas.restparameters.NaverSmsMsgApiParams
 import org.sbas.restparameters.NaverSmsReqMsgs
 import org.sbas.utils.CypherUtils
+import java.lang.ProcessHandle.Info
 import javax.enterprise.context.ApplicationScoped
 import javax.inject.Inject
 import javax.transaction.Transactional
@@ -45,17 +47,36 @@ class UserService {
     }
 
     /**
+     * 백오피스에서 어드민(전산담당)이 처리하는 API
+     */
+    @Transactional
+    fun getUsers(searchData: String): UserInfoListResponse {
+        var userInfoListResponse = UserInfoListResponse()
+        val findList = repository.findLike(searchData)
+
+        userInfoListResponse.result = findList
+
+        return userInfoListResponse
+    }
+
+    /**
      * 본인인증 SMS/MMS 메시지 발송
      */
     @Transactional
-    fun sendIdentifySms(smsSendRequest: SmsSendRequest): BaseCodeResponse {
-        val ret = BaseCodeResponse()
+    fun sendIdentifySms(smsSendRequest: SmsSendRequest): StringResponse {
+        val ret = StringResponse()
+
+        var rand = ""
+        for(i: Int in 0..5){
+            rand += ('0'..'9').random()
+        }
+        ret.result = rand
 
         val smsTo = NaverSmsReqMsgs("", "", smsSendRequest.to!!)
 
         naverSensClient.messages(naversensserviceid, NaverSmsMsgApiParams(
             SbasConst.MsgType.SMS, null, SbasConst.MSG_SEND_NO, null, "COMM",
-            smsSendRequest.name + "님 안녕하세요", null, null, null, mutableListOf(smsTo), null)
+            smsSendRequest.name + "님 안녕하세요. 인증번호는 [ $rand ]입니다. 감사합니다.", null, null, null, mutableListOf(smsTo), null)
         )
 
         return ret
