@@ -75,33 +75,6 @@ class SbasTestEndpoint {
         }
     }
 
-    @Operation(summary = "E-Gen Rest API 호출 테스트", description = "RESR Client 이용하여 E-GEN API를 조회합니다.")
-    @GET
-    @Path("test4")
-    fun test4(): Response {
-        return try {
-            val res = serv1.getHosptalMedclinic()
-            log.debug("api return value is $res")
-            Response.ok(res).build()
-        } catch (e: Exception) {
-            val res = EgenCodeMastResponse()
-            res.code = "01"
-            res.message = e.localizedMessage
-            Response.status(Response.Status.INTERNAL_SERVER_ERROR)
-                .entity(res)
-                .type(MediaType.APPLICATION_JSON)
-                .build()
-        }
-    }
-
-    @GET
-    @Path("test5")
-    @Produces(MediaType.APPLICATION_JSON)
-    fun test5(): String {
-        log.debug("===============res: QUARKUS===============")
-        return serv1.getEgytBassInfoInqire().toString()
-    }
-
     @POST
     @Path("login")
     @PermitAll
