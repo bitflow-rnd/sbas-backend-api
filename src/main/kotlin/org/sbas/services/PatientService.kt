@@ -35,9 +35,7 @@ class PatientService {
     fun saveInfoPt(infoPt: InfoPt): StringResponse {
         infoPt.rgstUserId = "jiseong"
         infoPt.updtUserId = "jiseong"
-
         infoPtRepository.persist(infoPt)
-
         return StringResponse(infoPt.id)
     }
 
