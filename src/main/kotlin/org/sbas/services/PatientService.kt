@@ -40,7 +40,7 @@ class PatientService {
     }
 
     @Transactional
-    fun uploadEpidReport(param: FileUpload) {
+    fun uploadEpidReport(param: FileUpload): String? {
         val fileuri = handler1.createPublicFile(param)
         if (fileuri != null) {
             // Naver Clova OCR call
@@ -48,7 +48,9 @@ class PatientService {
             log.debug("texts are $texts")
             // Then move from public to private
             handler1.moveFilePublicToPrivate(fileuri)
+            return texts
         }
+        return null
     }
 
 }
