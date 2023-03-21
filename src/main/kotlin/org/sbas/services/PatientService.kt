@@ -4,8 +4,10 @@ import org.jboss.logging.Logger
 import org.jboss.resteasy.reactive.multipart.FileUpload
 import org.sbas.entities.info.InfoPt
 import org.sbas.handlers.FileHandler
+import org.sbas.handlers.NaverApiHandler
 import org.sbas.repositories.InfoPtRepository
 import org.sbas.response.StringResponse
+import org.sbas.restparameters.NaverOcrApiParams
 import javax.enterprise.context.ApplicationScoped
 import javax.inject.Inject
 import javax.transaction.Transactional
@@ -26,6 +28,9 @@ class PatientService {
     @Inject
     private lateinit var handler1: FileHandler
 
+    @Inject
+    private lateinit var handler2: NaverApiHandler
+
     @Transactional
     fun saveInfoPt(infoPt: InfoPt): StringResponse {
         infoPt.rgstUserId = "jiseong"
@@ -39,10 +44,11 @@ class PatientService {
     @Transactional
     fun uploadEpidReport(param: FileUpload) {
         val fileuri = handler1.createPublicFile(param)
-        // Todo: Naver Clova OCR call
-
-        // Todo: Then move from public to private
         if (fileuri != null) {
+            // Naver Clova OCR call
+            val texts = handler2.recognizeImage(fileuri)
+            log.debug("texts $texts")
+            // Then move from public to private
             handler1.moveFilePublicToPrivate(fileuri)
         }
     }

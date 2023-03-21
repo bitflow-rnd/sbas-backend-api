@@ -2,7 +2,7 @@ package org.sbas.restparameters
 
 import javax.validation.constraints.NotNull
 
-data class NaverClovaOcrApiParams(
+data class NaverOcrApiParams(
 
         @field: NotNull (message = "이미지 정보가 누락되었습니다")
         var images: List<OcrApiImagesParam>,
@@ -15,7 +15,7 @@ data class NaverClovaOcrApiParams(
         var requestId: String,
 
         @field: NotNull (message = "API 호출 Timestamp가 누락되었습니다")
-        var timestamp: String,
+        var timestamp: Long,
         // OCR 인식시 요청할 언어 정보
         var lang: String?
 

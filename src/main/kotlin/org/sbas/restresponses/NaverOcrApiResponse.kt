@@ -1,9 +1,9 @@
 package org.sbas.restresponses
 
-data class ClovaOcrApiResponse(
+data class NaverOcrApiResponse(
     var version: String,
     var requestId: String,
-    var timestamp: String,
+    var timestamp: Long,
     var images: List<OcrImages>
 )
 
@@ -19,7 +19,6 @@ data class OcrImages(
 data class OcrImageValidationResult(
     var result: String
 )
-
 
 data class OcrImageFields(
     var valueType: String,

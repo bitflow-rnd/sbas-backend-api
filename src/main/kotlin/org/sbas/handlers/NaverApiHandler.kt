@@ -3,19 +3,14 @@ package org.sbas.handlers
 import org.eclipse.microprofile.config.inject.ConfigProperty
 import org.eclipse.microprofile.rest.client.inject.RestClient
 import org.jboss.logging.Logger
-import org.jboss.resteasy.reactive.multipart.FileUpload
+import org.sbas.constants.NaverApiConst
 import org.sbas.restclients.NaverOcrRestClient
-import org.sbas.restclients.NaverSensRestClient
-import org.sbas.restparameters.NaverClovaOcrApiParams
-import java.io.File
-import java.nio.file.Files
-import java.nio.file.StandardCopyOption
+import org.sbas.restparameters.NaverOcrApiParams
+import org.sbas.restparameters.OcrApiImagesParam
 import java.time.Instant
-import java.time.LocalDateTime
-import java.time.format.DateTimeFormatter
 import javax.enterprise.context.ApplicationScoped
 import javax.inject.Inject
-import kotlin.io.path.readBytes
+import javax.validation.constraints.NotNull
 
 
 /**
@@ -30,8 +25,41 @@ class NaverApiHandler {
     @RestClient
     lateinit var naverOcrClient: NaverOcrRestClient
 
-    fun clovaOcrRecognize(param: NaverClovaOcrApiParams) {
-        naverOcrClient.recognize(param)
+    @ConfigProperty(name = "restclient.naverocr.secret.key")
+    lateinit var secretkey: String
+
+    @ConfigProperty(name = "domain.this")
+    lateinit var serverDomain: String
+
+    @ConfigProperty(name = "upload.path.relative")
+    lateinit var uploadRelPath: String
+
+
+    fun recognizeImage(param: String): String {
+        val dotIdx = param.lastIndexOf(".")
+        val image = OcrApiImagesParam(
+            param.substring(dotIdx + 1),
+            "edpireportimg",
+            null,
+            "$serverDomain/$uploadRelPath/$param"
+        )
+        val now = System.currentTimeMillis()
+        val images = mutableListOf<OcrApiImagesParam>()
+        images.add(image)
+        val reqparam = NaverOcrApiParams(
+            images,
+            NaverApiConst.ClovaOcr.VERSION,
+            now.toString(),
+            now,
+            NaverApiConst.ClovaOcr.LANG
+        )
+        val res = naverOcrClient.recognize(reqparam)
+        val texts = res.images[0].fields
+        val textlist = ArrayList<String>()
+        for (field in texts) {
+            textlist.add(field.inferText)
+        }
+        return textlist.joinToString("|")
     }
 
 }
