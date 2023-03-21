@@ -34,8 +34,8 @@ class PrivatePatientEndpoint {
     @Operation(summary = "", description = "")
     @Path("upldepidreport")
     fun upldepidreport(@RestForm param1: String, @RestForm param2: FileUpload): Response {
-        patientService.uploadEpidReport(param2)
-        return Response.ok().build()
+        val res = patientService.uploadEpidReport(param2)
+        return Response.ok(res).build()
     }
 
     @Operation(summary = "", description = "")
