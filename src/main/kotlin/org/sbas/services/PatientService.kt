@@ -5,6 +5,8 @@ import org.jboss.resteasy.reactive.multipart.FileUpload
 import org.sbas.constants.SbasConst
 import org.sbas.entities.base.BaseAttc
 import org.sbas.entities.info.InfoPt
+import org.sbas.entities.info.InfoPtSaveReq
+import org.sbas.entities.info.toEntity
 import org.sbas.handlers.FileHandler
 import org.sbas.handlers.NaverApiHandler
 import org.sbas.repositories.BaseAttcRepository
@@ -41,7 +43,8 @@ class PatientService {
     private lateinit var handler3: BaseAttcRepository
 
     @Transactional
-    fun saveInfoPt(infoPt: InfoPt): StringResponse {
+    fun saveInfoPt(infoPtSaveReq: InfoPtSaveReq): StringResponse {
+        val infoPt = infoPtSaveReq.toEntity()
         infoPt.rgstUserId = "jiseong"
         infoPt.updtUserId = "jiseong"
         infoPtRepository.persist(infoPt)

@@ -26,7 +26,7 @@ class OrganiztnService {
     fun findInfoCrews(): MutableMap<String, Any> {
         val res = mutableMapOf<String, Any>()
         val infoCrews = infoCrewRepository.findAll().list()
-        val count = infoCrewRepository.count()
+        val count = infoCrews.size
         res["infoCrews"] = infoCrews
         res["count"] = count
         return res

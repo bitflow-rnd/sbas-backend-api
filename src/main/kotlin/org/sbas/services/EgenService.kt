@@ -123,7 +123,7 @@ class EgenService {
     /**
      * 응급의료기관 목록정보 조회
      */
-    fun getEgytListInfoInqire(): JSONObject {
+    fun getEgytListInfoInqire(param: EgenApiListInfoParams): JSONObject {
         val jsonObject = JSONObject(
             egenRestClient.getEgytListInfoInqire(
                 serviceKey = serviceKey,
@@ -138,7 +138,7 @@ class EgenService {
     /**
      * 응급의료기관 위치정보 조회
      */
-    fun getEgytLcinfoInqire(): JSONObject {
+    fun getEgytLcinfoInqire(param: EgenApiLcInfoParams): JSONObject {
         val jsonObject = JSONObject(
             egenRestClient.getEgytLcinfoInqire(
                 serviceKey = serviceKey,
@@ -154,7 +154,7 @@ class EgenService {
     /**
      * 응급의료기관 기본정보 조회
      */
-    fun getEgytBassInfoInqire(): JSONObject {
+    fun getEgytBassInfoInqire(param: EgenApiBassInfoParams): JSONObject {
         val jsonObject = JSONObject(
             egenRestClient.getEgytBassInfoInqire(
                 serviceKey = serviceKey,

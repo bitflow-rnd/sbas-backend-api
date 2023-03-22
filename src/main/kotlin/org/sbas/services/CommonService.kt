@@ -43,6 +43,7 @@ class CommonService {
 
     @Transactional
     fun findGuguns(cdGrpId: String): List<BaseCode> {
+        //TODO 공통코드 조회랑 같음 -> 쿼리 변경
         return baseCodeRepository.find("cd_grp_id = ?1", cdGrpId).list()
     }
 
