@@ -4,6 +4,7 @@ import org.eclipse.microprofile.config.inject.ConfigProperty
 import org.eclipse.microprofile.rest.client.inject.RestClient
 import org.jboss.logging.Logger
 import org.sbas.constants.NaverApiConst
+import org.sbas.response.patient.EpidResult
 import org.sbas.restclients.NaverOcrRestClient
 import org.sbas.restparameters.NaverOcrApiParams
 import org.sbas.restparameters.OcrApiImagesParam
@@ -33,7 +34,7 @@ class NaverApiHandler {
     lateinit var uploadRelPath: String
 
 
-    fun recognizeImage(param: String): String {
+    fun recognizeImage(param: String): EpidResult {
         val dotIdx = param.lastIndexOf(".")
         val image = OcrApiImagesParam(
             param.substring(dotIdx + 1),
@@ -53,11 +54,41 @@ class NaverApiHandler {
         )
         val res = naverOcrClient.recognize(reqparam)
         val texts = res.images[0].fields
-        val textlist = ArrayList<String>()
+        val list = ArrayList<String>()
+        val ret = EpidResult()
         for (field in texts!!) {
-            textlist.add(field.inferText!!)
+            list.add(field.inferText!!)
         }
-        return textlist.joinToString("|")
+        ret.rcptPhc = list[1]
+        ret.ptNm = list[4]
+        ret.rrno1 = list[5].split("-")[0]
+        ret.rrno2 = list[5].split("-")[1]
+        ret.gndr = list[9]
+        ret.dstr1Cd = list[13]
+        ret.dstr2Cd = list[14]
+        ret.baseAddr = list[13] + " " + list[14] + " " + list[15] + " " + list[16]
+        ret.dtlAddr = list[18]
+        ret.fullAddr = list[13] + " " + list[14] + " " + list[15] + " " + list[16] + " " + list[17] + " " + list[18]
+        ret.rcptPhc = list[1]
+        ret.telno = list[18]
+        ret.diagNm = list[24]
+        ret.diagGrde = list[26]
+        ret.job = list[28]
+        ret.occrDt = list[34]
+        ret.diagDt = list[36]
+        ret.rptDt = list[38]
+        ret.dfdgExamRslt = list[40]
+        ret.ptCatg = list[42]
+        ret.admsYn = list[44]
+        ret.dethYn = list[46]
+        ret.rmk = list[50] + list[51]
+        ret.instNm = list[53]
+        ret.instId = list[55]
+        ret.instTelno = list[57]
+        ret.instAddr = list[59] + " " + list[60] + " " + list[61] + " " + list[62]
+        ret.diagDrNm = list[65]
+        ret.rptChfNm = list[67]
+        return ret
     }
 
 }
