@@ -27,6 +27,7 @@ dependencies {
     implementation("io.quarkus:quarkus-rest-client-reactive-jaxb")
     implementation("io.quarkus:quarkus-rest-client-reactive-jackson")
     implementation("io.quarkus:quarkus-scheduler")
+    implementation("io.quarkus:quarkus-cache")
     implementation("io.quarkus:quarkus-smallrye-jwt")
     implementation("io.quarkus:quarkus-logging-json")
     implementation("io.quarkus:quarkus-smallrye-jwt-build")

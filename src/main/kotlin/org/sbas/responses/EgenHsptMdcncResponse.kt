@@ -1,4 +1,4 @@
-package org.sbas.response
+package org.sbas.responses
 
 import org.eclipse.microprofile.openapi.annotations.media.Schema
 import org.sbas.restresponses.EgenHsptMdcncApiResponse.HsptMdcncBody.HsptMdcncItems.HsptlMdcncItem

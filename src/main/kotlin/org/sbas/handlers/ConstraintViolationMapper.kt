@@ -1,10 +1,8 @@
 package org.sbas.handlers
 
 import org.sbas.constants.SbasConst
-import org.sbas.response.CommonResponse
+import org.sbas.responses.CommonResponse
 import javax.validation.ConstraintViolationException
-import javax.ws.rs.NotFoundException
-import javax.ws.rs.core.MediaType
 import javax.ws.rs.core.Response
 import javax.ws.rs.ext.ExceptionMapper
 import javax.ws.rs.ext.Provider

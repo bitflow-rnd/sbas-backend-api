@@ -1,10 +1,15 @@
 package org.sbas.services
 
+import io.quarkus.cache.CacheInvalidate
+import io.quarkus.cache.CacheKey
+import io.quarkus.cache.CacheResult
 import org.jboss.logging.Logger
 import org.jboss.resteasy.reactive.multipart.FileUpload
+import org.sbas.entities.base.BaseAttc
 import org.sbas.entities.base.BaseCode
 import org.sbas.entities.base.BaseCodeId
 import org.sbas.handlers.FileHandler
+import org.sbas.repositories.BaseAttcRepository
 import org.sbas.repositories.BaseCodeRepository
 import javax.enterprise.context.ApplicationScoped
 import javax.inject.Inject
@@ -24,6 +29,9 @@ class CommonService {
     private lateinit var baseCodeRepository: BaseCodeRepository
 
     @Inject
+    lateinit var repo1: BaseAttcRepository
+
+    @Inject
     private lateinit var handler1: FileHandler
 
     @Transactional
@@ -32,17 +40,20 @@ class CommonService {
     }
 
     @Transactional
-    fun findBaseCodeByCdGrpId(cdGrpId: String): List<BaseCode> {
+    @CacheResult(cacheName = "cdGrpId")
+    fun findBaseCodeByCdGrpId(@CacheKey cdGrpId: String): List<BaseCode> {
         return baseCodeRepository.findBaseCodeByCdGrpId(cdGrpId = cdGrpId)
     }
 
     @Transactional
+    @CacheResult(cacheName = "sido")
     fun findSidos(): List<BaseCode> {
         return baseCodeRepository.find("cd_grp_id = 'SIDO'").list()
     }
 
     @Transactional
-    fun findGuguns(cdGrpId: String): List<BaseCode> {
+    @CacheResult(cacheName = "cdGrpId")
+    fun findGuguns(@CacheKey cdGrpId: String): List<BaseCode> {
         return baseCodeRepository.find("cd_grp_id = ?1", cdGrpId).list()
     }
 
@@ -52,6 +63,14 @@ class CommonService {
         if (findBaseCode != null) {
             baseCodeRepository.delete(findBaseCode)
         }
+    }
+
+    /**
+     * 비공개 권한 파일그룹 목록 리턴
+     */
+    @Transactional
+    fun findFiles(attcGrpId: String): List<BaseAttc> {
+        return repo1.list("attc_grp_id", attcGrpId)
     }
 
     /**

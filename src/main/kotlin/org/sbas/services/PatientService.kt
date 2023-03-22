@@ -9,11 +9,10 @@ import org.sbas.handlers.FileHandler
 import org.sbas.handlers.NaverApiHandler
 import org.sbas.repositories.BaseAttcRepository
 import org.sbas.repositories.InfoPtRepository
-import org.sbas.response.CommonResponse
-import org.sbas.response.StringResponse
-import org.sbas.response.patient.EpidResult
+import org.sbas.responses.CommonResponse
+import org.sbas.responses.StringResponse
+import org.sbas.responses.patient.EpidResult
 import org.sbas.utils.StringUtils
-import java.math.BigDecimal
 import javax.enterprise.context.ApplicationScoped
 import javax.inject.Inject
 import javax.transaction.Transactional
@@ -51,19 +50,19 @@ class PatientService {
     @Transactional
     fun uploadEpidReport(param: FileUpload): CommonResponse<EpidResult>? {
         val userId = "test"
-        val fileurinext = handler1.createPublicFile(param)
-        if (fileurinext != null) {
+        val fileinfo = handler1.createPublicFile(param)
+        if (fileinfo != null) {
             // Naver Clova OCR call
-            val res = handler2.recognizeImage(fileurinext[0])
+            val res = handler2.recognizeImage(fileinfo.uriPath, fileinfo.filename)
             log.debug("texts are $res")
             // Then move from public to private
-            handler1.moveFilePublicToPrivate(fileurinext[0])
+            handler1.moveFilePublicToPrivate(fileinfo.localPath, fileinfo.filename)
             val item = BaseAttc()
-            item.uriPath = fileurinext[0]
             item.attcDt = StringUtils.getYyyyMmDd()
             item.attcTm = StringUtils.getHhMmSs()
-            item.loclPath = fileurinext[1]
-            item.uriPath = fileurinext[2]
+            item.loclPath = fileinfo.localPath
+            item.uriPath = fileinfo.uriPath
+            item.fileNm = fileinfo.filename
             item.fileTypeCd = SbasConst.FileTypeCd.IMAGE
             item.rgstUserId = userId
             item.updtUserId = userId

@@ -4,15 +4,12 @@ import org.eclipse.microprofile.jwt.JsonWebToken
 import org.eclipse.microprofile.openapi.annotations.Operation
 import org.eclipse.microprofile.openapi.annotations.parameters.RequestBody
 import org.eclipse.microprofile.openapi.annotations.tags.Tag
-import org.eclipse.microprofile.rest.client.inject.RestClient
 import org.jboss.logging.Logger
-import org.json.JSONObject
-import org.locationtech.jts.geom.Coordinate
 import org.sbas.entities.info.InfoUser
 import org.sbas.handlers.GeocodingHandler
 import org.sbas.parameters.BaseCodeRequest
-import org.sbas.response.BaseCodeResponse
-import org.sbas.response.EgenCodeMastResponse
+import org.sbas.responses.BaseCodeResponse
+import org.sbas.responses.EgenCodeMastResponse
 import org.sbas.restparameters.NaverGeocodingApiParams
 import org.sbas.restresponses.NaverGeocodingApiResponse
 import org.sbas.services.TestUserService
@@ -23,8 +20,6 @@ import javax.validation.Valid
 import javax.ws.rs.GET
 import javax.ws.rs.POST
 import javax.ws.rs.Path
-import javax.ws.rs.Produces
-import javax.ws.rs.QueryParam
 import javax.ws.rs.core.*
 
 

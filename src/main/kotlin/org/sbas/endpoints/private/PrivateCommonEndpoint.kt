@@ -4,6 +4,8 @@ import org.eclipse.microprofile.openapi.annotations.Operation
 import org.eclipse.microprofile.openapi.annotations.tags.Tag
 import org.jboss.logging.Logger
 import org.jboss.resteasy.reactive.RestPath
+import org.sbas.repositories.BaseAttcRepository
+import org.sbas.services.CommonService
 import javax.inject.Inject
 import javax.ws.rs.GET
 import javax.ws.rs.POST
@@ -16,6 +18,16 @@ class PrivateCommonEndpoint {
 
     @Inject
     lateinit var log: Logger
+
+    @Inject
+    lateinit var service1: CommonService
+
+    @Operation(summary = "", description = "")
+    @GET
+    @Path("files/{attcGrpId}")
+    fun files(@RestPath attcGrpId: String): Response {
+        return Response.ok(service1.findFiles(attcGrpId)).build()
+    }
 
     @Operation(summary = "", description = "")
     @GET

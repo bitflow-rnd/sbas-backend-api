@@ -5,13 +5,11 @@ import org.eclipse.microprofile.openapi.annotations.tags.Tag
 import org.jboss.resteasy.reactive.RestResponse
 import org.jboss.resteasy.reactive.RestResponse.ResponseBuilder
 import org.sbas.constants.SbasConst
-import org.sbas.response.CommonResponse
+import org.sbas.responses.CommonResponse
 import org.sbas.services.DashboardService
 import javax.inject.Inject
 import javax.ws.rs.GET
 import javax.ws.rs.Path
-import javax.ws.rs.Produces
-import javax.ws.rs.core.MediaType
 import javax.ws.rs.core.Response
 
 @Tag(name = "대시보드 조회(사용자용)", description = "로그인 된 사용자(세부권한별 분기) - 개인별 커스텀 대시보드")

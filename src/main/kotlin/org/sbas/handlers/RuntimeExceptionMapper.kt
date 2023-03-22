@@ -1,7 +1,7 @@
 package org.sbas.handlers
 
 import org.sbas.constants.SbasConst
-import org.sbas.response.CommonResponse
+import org.sbas.responses.CommonResponse
 import javax.ws.rs.NotFoundException
 import javax.ws.rs.core.MediaType
 import javax.ws.rs.core.Response
