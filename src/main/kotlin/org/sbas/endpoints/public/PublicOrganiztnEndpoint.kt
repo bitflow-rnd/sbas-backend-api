@@ -40,9 +40,9 @@ class PublicOrganiztnEndpoint {
     @Operation(summary = "구급대 목록", description = "")
     @GET
     @Path("firestatns")
-    fun firestatns(): Response {
-        val res = mutableMapOf<String, String>()
-        return Response.ok().build()
+    fun firestatns(): CommonResponse<*> {
+        val res = organiztnService.findInfoCrews()
+        return CommonResponse(SbasConst.ResCode.SUCCESS, "success", res)
     }
 
     @Operation(summary = "구급대 상세", description = "특정 구급대 소속의 구급대원 목록 및 차량번호 조회")

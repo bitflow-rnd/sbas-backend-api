@@ -23,13 +23,18 @@ class OrganiztnService {
     private lateinit var infoCrewRepository: InfoCrewRepository
 
     @Transactional
-    fun findInfoCrewById(instId: String, crewId: String): InfoCrew {
-        val infoCrewId = InfoCrewId(instId = instId, crewId = crewId)
-        return infoCrewRepository.findById(infoCrewId) ?: throw NotFoundException("crew not found")
+    fun findInfoCrews(): MutableMap<String, Any> {
+        val res = mutableMapOf<String, Any>()
+        val infoCrews = infoCrewRepository.findAll().list()
+        val count = infoCrewRepository.count()
+        res["infoCrews"] = infoCrews
+        res["count"] = count
+        return res
     }
 
     @Transactional
-    fun countInfoCrew(): Long {
-        return infoCrewRepository.count()
+    fun findInfoCrewById(instId: String, crewId: String): InfoCrew {
+        val infoCrewId = InfoCrewId(instId = instId, crewId = crewId)
+        return infoCrewRepository.findById(infoCrewId) ?: throw NotFoundException("crew not found")
     }
 }

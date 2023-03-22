@@ -32,6 +32,21 @@ class CommonService {
     }
 
     @Transactional
+    fun findBaseCodeByCdGrpId(cdGrpId: String): List<BaseCode> {
+        return baseCodeRepository.findBaseCodeByCdGrpId(cdGrpId = cdGrpId)
+    }
+
+    @Transactional
+    fun findSidos(): List<BaseCode> {
+        return baseCodeRepository.find("cd_grp_id = 'SIDO'").list()
+    }
+
+    @Transactional
+    fun findGuguns(cdGrpId: String): List<BaseCode> {
+        return baseCodeRepository.find("cd_grp_id = ?1", cdGrpId).list()
+    }
+
+    @Transactional
     fun delCodeGrps(baseCodeId: BaseCodeId) {
         val findBaseCode = baseCodeRepository.findById(baseCodeId)
         if (findBaseCode != null) {

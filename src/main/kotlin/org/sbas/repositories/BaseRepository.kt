@@ -5,7 +5,12 @@ import org.sbas.entities.base.*
 import javax.enterprise.context.ApplicationScoped
 
 @ApplicationScoped
-class BaseCodeRepository : PanacheRepositoryBase<BaseCode, BaseCodeId>
+class BaseCodeRepository : PanacheRepositoryBase<BaseCode, BaseCodeId> {
+
+    fun findBaseCodeByCdGrpId(cdGrpId: String): List<BaseCode> {
+        return find("cd_grp_id = ?1", cdGrpId).list()
+    }
+}
 
 @ApplicationScoped
 class BaseCodeEgenRepository : PanacheRepositoryBase<BaseCodeEgen, BaseCodeEgenId>
