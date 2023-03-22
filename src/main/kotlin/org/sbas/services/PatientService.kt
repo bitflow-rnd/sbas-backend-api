@@ -2,6 +2,7 @@ package org.sbas.services
 
 import org.jboss.logging.Logger
 import org.jboss.resteasy.reactive.multipart.FileUpload
+import org.sbas.constants.SbasConst
 import org.sbas.entities.info.InfoPt
 import org.sbas.handlers.FileHandler
 import org.sbas.handlers.NaverApiHandler
@@ -44,17 +45,15 @@ class PatientService {
     @Transactional
     fun uploadEpidReport(param: FileUpload): CommonResponse<EpidResult>? {
 
-        val ret = CommonResponse<EpidResult>()
-
         val fileuri = handler1.createPublicFile(param)
         if (fileuri != null) {
             // Naver Clova OCR call
-            val texts = handler2.recognizeImage(fileuri)
-            log.debug("texts are $texts")
+            val res = handler2.recognizeImage(fileuri)
+            log.debug("texts are $res")
             // Then move from public to private
             handler1.moveFilePublicToPrivate(fileuri)
             // return texts
-            return ret
+            return CommonResponse(SbasConst.ResCode.SUCCESS, null, res)
         }
         return null
     }
