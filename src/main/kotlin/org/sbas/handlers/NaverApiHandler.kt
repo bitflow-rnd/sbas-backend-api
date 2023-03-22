@@ -30,7 +30,7 @@ class NaverApiHandler {
     @ConfigProperty(name = "domain.this")
     lateinit var serverDomain: String
 
-    @ConfigProperty(name = "upload.path.relative")
+    @ConfigProperty(name = "upload.path.middle")
     lateinit var uploadRelPath: String
 
 
