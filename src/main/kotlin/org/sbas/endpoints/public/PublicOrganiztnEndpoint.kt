@@ -36,8 +36,9 @@ class PublicOrganiztnEndpoint {
     fun medinst(@RestPath param: String): Response {
         return Response.ok().build()
     }
-
-    @Operation(summary = "구급대 목록", description = "")
+    
+    //TODO 특정 지역 조건 추가
+    @Operation(summary = "구급대 목록", description = "특정 지역 코드에 해당하는 구급대 목록")
     @GET
     @Path("firestatns")
     fun firestatns(): CommonResponse<*> {

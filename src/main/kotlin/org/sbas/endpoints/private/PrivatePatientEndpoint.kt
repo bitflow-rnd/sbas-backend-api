@@ -9,7 +9,7 @@ import org.jboss.resteasy.reactive.RestPath
 import org.jboss.resteasy.reactive.RestResponse
 import org.jboss.resteasy.reactive.RestResponse.ResponseBuilder
 import org.jboss.resteasy.reactive.multipart.FileUpload
-import org.sbas.entities.info.InfoPt
+import org.sbas.entities.info.InfoPtSaveReq
 import org.sbas.responses.CommonResponse
 import org.sbas.responses.StringResponse
 import org.sbas.responses.patient.EpidResult
@@ -53,9 +53,9 @@ class PrivatePatientEndpoint {
     @Operation(summary = "환자기본정보 등록", description = "")
     @POST
     @Path("regbasicinfo")
-    fun regbasicinfo(@RequestBody infoPt: InfoPt): RestResponse<StringResponse> {
+    fun regbasicinfo(@RequestBody infoPtSaveReq: InfoPtSaveReq): RestResponse<StringResponse> {
         return try {
-            val res = patientService.saveInfoPt(infoPt)
+            val res = patientService.saveInfoPt(infoPtSaveReq)
             ResponseBuilder.ok(res).build()
         } catch (e: Exception) {
             val res = StringResponse()
