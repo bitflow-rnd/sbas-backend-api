@@ -20,6 +20,11 @@ object SbasConst {
         const val FAIL_VALIDATION = "02"
     }
 
+    object FileTypeCd {
+        const val IMAGE = "FLTP0001"
+        const val VIDEO = "FLTP0002"
+    }
+
     /**
      * 공통코드그룹 ID
      */

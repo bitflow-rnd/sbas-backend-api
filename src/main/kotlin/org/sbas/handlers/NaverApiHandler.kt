@@ -81,7 +81,7 @@ class NaverApiHandler {
         ret.ptCatg = list[42]
         ret.admsYn = list[44]
         ret.dethYn = list[46]
-        ret.rmk = list[50] + list[51]
+        ret.rmk = list[50] + " " + list[51]
         ret.instNm = list[53]
         ret.instId = list[55]
         ret.instTelno = list[57]
