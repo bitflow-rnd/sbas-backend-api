@@ -10,6 +10,8 @@ class UserInfoRepository : PanacheRepository<InfoUser> {
 
     fun findByUserId(userId: String) = find("id", userId).firstResult()
 
+    fun deleteByUser(infoUser: InfoUser) = delete(infoUser)
+
     fun findLike(searchData: String): List<InfoUser> = find("select u from InfoUser u where u.id like '%$searchData%' or u.userNm like '%$searchData%'").list()
 
 }

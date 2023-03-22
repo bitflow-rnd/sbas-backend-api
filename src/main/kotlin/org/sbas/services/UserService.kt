@@ -82,4 +82,16 @@ class UserService {
         return ret
     }
 
+    @Transactional
+    fun deleteUser(user: InfoUser): StringResponse {
+        var response = StringResponse()
+
+        val findUser = repository.deleteByUser(user)
+
+        response.result = "${user.id} 계정을 삭제하였습니다."
+
+        return response
+
+    }
+
 }
