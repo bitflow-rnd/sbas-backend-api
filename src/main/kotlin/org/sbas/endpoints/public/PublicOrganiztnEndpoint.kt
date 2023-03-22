@@ -5,7 +5,7 @@ import org.eclipse.microprofile.openapi.annotations.tags.Tag
 import org.jboss.logging.Logger
 import org.jboss.resteasy.reactive.RestPath
 import org.sbas.constants.SbasConst
-import org.sbas.response.CommonResponse
+import org.sbas.responses.CommonResponse
 import org.sbas.services.OrganiztnService
 import javax.inject.Inject
 import javax.ws.rs.GET

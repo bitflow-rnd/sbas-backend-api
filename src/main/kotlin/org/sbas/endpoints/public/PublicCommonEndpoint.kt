@@ -8,7 +8,7 @@ import org.jboss.resteasy.reactive.RestPath
 import org.jboss.resteasy.reactive.multipart.FileUpload
 import org.sbas.constants.SbasConst
 import org.sbas.entities.base.BaseCode
-import org.sbas.response.CommonResponse
+import org.sbas.responses.CommonResponse
 import org.sbas.services.CommonService
 import javax.inject.Inject
 import javax.ws.rs.GET
@@ -86,15 +86,6 @@ class PublicCommonEndpoint {
         service1.fileUpload(param1, param2)
         // Todo: JSON result에 파일 URI 반환
         return Response.ok("OK").build()
-    }
-
-    @Operation(summary = "", description = "")
-    @GET
-    @Path("files/{param}")
-    fun files(@RestPath param: String): Response {
-        Response.ok("{\"location\":  \"German\"}")
-            .header("Content-Disposition", "attachment;filename=\"config.json\"")
-        return Response.ok().build()
     }
 
     @Operation(summary = "", description = "")

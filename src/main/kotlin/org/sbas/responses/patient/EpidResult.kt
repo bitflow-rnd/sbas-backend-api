@@ -1,9 +1,6 @@
-package org.sbas.response.patient
+package org.sbas.responses.patient
 
 import org.eclipse.microprofile.openapi.annotations.media.Schema
-import org.sbas.constants.SbasConst
-import javax.validation.constraints.NotEmpty
-import javax.validation.constraints.NotNull
 
 data class EpidResult (
 

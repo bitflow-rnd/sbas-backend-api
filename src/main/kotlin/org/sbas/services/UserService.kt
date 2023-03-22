@@ -8,12 +8,11 @@ import org.sbas.entities.info.InfoUser
 import org.sbas.parameters.SmsSendRequest
 import org.sbas.parameters.UserRequest
 import org.sbas.repositories.UserInfoRepository
-import org.sbas.response.StringResponse
-import org.sbas.response.UserInfoListResponse
+import org.sbas.responses.StringResponse
+import org.sbas.responses.UserInfoListResponse
 import org.sbas.restclients.NaverSensRestClient
 import org.sbas.restparameters.NaverSmsMsgApiParams
 import org.sbas.restparameters.NaverSmsReqMsgs
-import org.sbas.utils.CypherUtils
 import java.time.Instant
 import javax.enterprise.context.ApplicationScoped
 import javax.inject.Inject

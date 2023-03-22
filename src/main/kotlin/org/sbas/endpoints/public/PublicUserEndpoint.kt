@@ -5,7 +5,7 @@ import org.eclipse.microprofile.openapi.annotations.tags.Tag
 import org.jboss.logging.Logger
 import org.sbas.entities.info.InfoUser
 import org.sbas.parameters.SmsSendRequest
-import org.sbas.response.StringResponse
+import org.sbas.responses.StringResponse
 import org.sbas.services.UserService
 import javax.annotation.security.PermitAll
 import javax.inject.Inject

@@ -4,7 +4,7 @@ import org.eclipse.microprofile.config.inject.ConfigProperty
 import org.eclipse.microprofile.rest.client.inject.RestClient
 import org.jboss.logging.Logger
 import org.sbas.constants.NaverApiConst
-import org.sbas.response.patient.EpidResult
+import org.sbas.responses.patient.EpidResult
 import org.sbas.restclients.NaverOcrRestClient
 import org.sbas.restparameters.NaverOcrApiParams
 import org.sbas.restparameters.OcrApiImagesParam
@@ -28,19 +28,19 @@ class NaverApiHandler {
     lateinit var secretkey: String
 
     @ConfigProperty(name = "domain.this")
-    lateinit var serverDomain: String
+    lateinit var serverdomain: String
 
     @ConfigProperty(name = "upload.path.middle")
     lateinit var uploadRelPath: String
 
 
-    fun recognizeImage(param: String): EpidResult {
-        val dotIdx = param.lastIndexOf(".")
+    fun recognizeImage(uri: String, filename: String): EpidResult {
+        val dotIdx = filename.lastIndexOf(".")
         val image = OcrApiImagesParam(
-            param.substring(dotIdx + 1),
+            filename.substring(dotIdx + 1),
             "edpireportimg",
             null,
-            "$serverDomain/$uploadRelPath/$param"
+            "$serverdomain/$uri/$filename"
         )
         val now = System.currentTimeMillis()
         val images = mutableListOf<OcrApiImagesParam>()

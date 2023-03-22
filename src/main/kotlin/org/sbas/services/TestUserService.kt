@@ -13,9 +13,9 @@ import org.sbas.parameters.BaseCodeRequest
 import org.sbas.repositories.BaseCodeEgenRepository
 import org.sbas.repositories.BaseCodeRepository
 import org.sbas.repositories.TestUserRepository
-import org.sbas.response.BaseCodeResponse
-import org.sbas.response.EgenCodeMastResponse
-import org.sbas.response.StringResponse
+import org.sbas.responses.BaseCodeResponse
+import org.sbas.responses.EgenCodeMastResponse
+import org.sbas.responses.StringResponse
 import org.sbas.restclients.EgenRestClient
 import org.sbas.restresponses.EgenCodeMastApiResponse.CodeMastBody.CodeMastItems.CodeMastItem
 import org.sbas.utils.TokenUtils

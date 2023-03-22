@@ -10,9 +10,9 @@ import org.jboss.resteasy.reactive.RestResponse
 import org.jboss.resteasy.reactive.RestResponse.ResponseBuilder
 import org.jboss.resteasy.reactive.multipart.FileUpload
 import org.sbas.entities.info.InfoPtSaveReq
-import org.sbas.response.CommonResponse
-import org.sbas.response.StringResponse
-import org.sbas.response.patient.EpidResult
+import org.sbas.responses.CommonResponse
+import org.sbas.responses.StringResponse
+import org.sbas.responses.patient.EpidResult
 import org.sbas.services.CommonService
 import org.sbas.services.PatientService
 import javax.inject.Inject

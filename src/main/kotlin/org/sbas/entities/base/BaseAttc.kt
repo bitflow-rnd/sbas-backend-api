@@ -49,6 +49,9 @@ class BaseAttc(
 
     @Column(name = "file_type_cd", nullable = false, length = 8)
     var fileTypeCd: String? = null, // 파일 형식 코드
+    
+    @Column(name = "file_nm", nullable = false, length = 100)
+    var fileNm: String? = null, // 파일명
 
     @Column(name = "locl_path", nullable = false, length = 200)
     var loclPath: String? = null, // 로컬 저장 경로

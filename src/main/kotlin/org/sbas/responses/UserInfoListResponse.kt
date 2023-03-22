@@ -1,7 +1,6 @@
-package org.sbas.response
+package org.sbas.responses
 
 import org.sbas.entities.info.InfoUser
-import java.util.stream.Stream
 
 data class UserInfoListResponse (
         override var result: List<InfoUser>? = null

@@ -9,7 +9,7 @@ import org.jboss.resteasy.reactive.RestResponse.ResponseBuilder
 import org.sbas.constants.SbasConst
 import org.sbas.entities.base.BaseCode
 import org.sbas.entities.base.BaseCodeId
-import org.sbas.response.CommonResponse
+import org.sbas.responses.CommonResponse
 import org.sbas.services.CommonService
 import javax.inject.Inject
 import javax.ws.rs.GET

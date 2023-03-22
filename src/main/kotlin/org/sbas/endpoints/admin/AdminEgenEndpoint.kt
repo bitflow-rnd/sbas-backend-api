@@ -70,7 +70,7 @@ class AdminEgenEndpoint {
 
     @Operation(summary = "응급의료기관 목록정보 조회", description = "")
     @GET
-    @Path("hsptlMdcncList")
+    @Path("egytList")
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
     fun egytList(param: EgenApiListInfoParams): String {
@@ -79,7 +79,7 @@ class AdminEgenEndpoint {
 
     @Operation(summary = "응급의료기관 위치정보 조회", description = "")
     @GET
-    @Path("hsptlMdcncList")
+    @Path("egytLcInfo")
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
     fun egytLcInfo(param: EgenApiLcInfoParams): String {
@@ -88,7 +88,7 @@ class AdminEgenEndpoint {
 
     @Operation(summary = "응급의료기관 기본정보 조회", description = "")
     @GET
-    @Path("hsptlMdcncList")
+    @Path("egytBassInfo")
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
     fun egytBassInfo(param: EgenApiBassInfoParams): String {

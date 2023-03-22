@@ -3,6 +3,7 @@ package org.sbas.handlers
 import org.eclipse.microprofile.config.inject.ConfigProperty
 import org.jboss.logging.Logger
 import org.jboss.resteasy.reactive.multipart.FileUpload
+import org.sbas.dtos.FileDto
 import java.io.File
 import java.nio.file.Files
 import java.nio.file.StandardCopyOption
@@ -24,10 +25,10 @@ class FileHandler {
     lateinit var log: Logger
 
     @ConfigProperty(name = "upload.public.dir")
-    lateinit var UPLOAD_DIR_PUBLIC: String
+    lateinit var UPLOAD_PATH_LOCAL_PUBLIC: String
 
     @ConfigProperty(name = "upload.private.dir")
-    lateinit var UPLOAD_DIR_PRIVATE: String
+    lateinit var UPLOAD_PATH_LOCAL_PRIVATE: String
 
     @ConfigProperty(name = "upload.path.middle")
     lateinit var UPLOAD_PATH_MIDDLE: String
@@ -36,24 +37,25 @@ class FileHandler {
     /**
      * 전체 공개 권한 파일 업로드
      */
-    fun createPublicFile(param: FileUpload): Array<String>? {
-        val now = LocalDateTime.now()
+    fun createPublicFile(param: FileUpload): FileDto? {
         val format = DateTimeFormatter.ofPattern("yyyyMM")
-        val fileName = Instant.now().toEpochMilli()
-        val dirName = now.format(format)
-        val path = "$UPLOAD_DIR_PUBLIC/$dirName"
-        val dir = File(path)
-        if (!dir.exists()) {
-            dir.mkdirs()
+        val yyyyMm = LocalDateTime.now().format(format)
+        val absolutLocalUplodPathStr = "$UPLOAD_PATH_LOCAL_PUBLIC/$yyyyMm"
+        val absolutLocalUplodDir = File(absolutLocalUplodPathStr)
+        if (!absolutLocalUplodDir.exists()) {
+            absolutLocalUplodDir.mkdirs()
         }
         val dotPos = param.fileName().lastIndexOf(".")
-        val fileExt = param.fileName().substring(dotPos + 1)
-        val file = File("$path/$fileName.${fileExt.lowercase()}")
+        val fileExt = param.fileName().substring(dotPos + 1).lowercase()
+        val fileNameWithExt = "${Instant.now().toEpochMilli()}.$fileExt"
+        val file = File("$absolutLocalUplodPathStr/$fileNameWithExt")
         val created = file.createNewFile()
+        val ret = FileDto(fileNameWithExt, absolutLocalUplodPathStr, "/$UPLOAD_PATH_MIDDLE/$yyyyMm")
+
         return if (created) {
             file.writeBytes(param.uploadedFile().readBytes())
             log.debug("file uploaded at ${file.absolutePath}")
-            arrayOf("$dirName/$fileName.${fileExt.lowercase()}", path, "/$UPLOAD_PATH_MIDDLE/$dirName", fileExt)
+            ret
         } else {
             null
         }
@@ -67,7 +69,7 @@ class FileHandler {
         val format = DateTimeFormatter.ofPattern("yyyyMM")
         val fileName = Instant.now().toEpochMilli()
         val dirName = now.format(format)
-        val path = "$UPLOAD_DIR_PRIVATE/$dirName"
+        val path = "$UPLOAD_PATH_LOCAL_PRIVATE/$dirName"
         val dir = File(path)
         if (!dir.exists()) {
             dir.mkdirs()
@@ -85,22 +87,19 @@ class FileHandler {
         }
     }
 
-    fun moveFilePublicToPrivate(uri: String): Boolean {
-        val dotPos = uri.lastIndexOf("/")
-        val subpath = uri.substring(0, dotPos)
-        val filename = uri.substring(dotPos + 1)
-        val path = "$UPLOAD_DIR_PRIVATE/$subpath"
-        val dir = File(path)
+    fun moveFilePublicToPrivate(publcLocalPath: String, filename: String): Boolean {
+        val privtLocalPath = publcLocalPath.replace("/public/", "/private/")
+        val dir = File(privtLocalPath)
         if (!dir.exists()) {
             dir.mkdirs()
         }
         try {
             Files.move(
-                File("$UPLOAD_DIR_PUBLIC/$uri").toPath(),
-                File("$UPLOAD_DIR_PRIVATE/$uri").toPath(),
+                File("$publcLocalPath/$filename").toPath(),
+                File("$privtLocalPath/$filename").toPath(),
                 StandardCopyOption.REPLACE_EXISTING
             )
-            log.debug("file moved to $UPLOAD_DIR_PRIVATE/$uri")
+            log.debug("file moved to $privtLocalPath/$filename")
             return true
         } catch (e: Exception) {
             log.error("exception when moving file")
