@@ -7,18 +7,24 @@ import org.eclipse.microprofile.openapi.annotations.tags.Tag
 import org.eclipse.microprofile.rest.client.inject.RestClient
 import org.jboss.logging.Logger
 import org.json.JSONObject
+import org.locationtech.jts.geom.Coordinate
 import org.sbas.entities.info.InfoUser
+import org.sbas.handlers.GeocodingHandler
 import org.sbas.parameters.BaseCodeRequest
 import org.sbas.response.BaseCodeResponse
 import org.sbas.response.EgenCodeMastResponse
+import org.sbas.restparameters.NaverGeocodingApiParams
+import org.sbas.restresponses.NaverGeocodingApiResponse
 import org.sbas.services.TestUserService
 import javax.annotation.security.PermitAll
 import javax.annotation.security.RolesAllowed
 import javax.inject.Inject
+import javax.validation.Valid
 import javax.ws.rs.GET
 import javax.ws.rs.POST
 import javax.ws.rs.Path
 import javax.ws.rs.Produces
+import javax.ws.rs.QueryParam
 import javax.ws.rs.core.*
 
 
@@ -31,6 +37,9 @@ class SbasTestEndpoint {
 
     @Inject
     lateinit var serv1: TestUserService
+
+    @Inject
+    lateinit var geoHandler: GeocodingHandler
 
     @Inject
     lateinit var security: SecurityContext
@@ -91,5 +100,12 @@ class SbasTestEndpoint {
         return Response.ok(object {
             val token: JsonWebToken = serv1.getUser()
         }).build()
+    }
+
+    @POST
+    @Path("geocoding-test")
+    @PermitAll
+    fun geocodingTest(@Valid params: NaverGeocodingApiParams): NaverGeocodingApiResponse{
+        return geoHandler.getGeocoding(params)
     }
 }

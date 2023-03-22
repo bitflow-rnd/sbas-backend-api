@@ -1,8 +1,6 @@
 package org.sbas.endpoints.admin
 
-import io.quarkus.vertx.web.Param
 import org.eclipse.microprofile.openapi.annotations.Operation
-import org.eclipse.microprofile.openapi.annotations.parameters.RequestBody
 import org.eclipse.microprofile.openapi.annotations.tags.Tag
 import org.jboss.logging.Logger
 import org.sbas.entities.info.InfoUser
@@ -28,7 +26,7 @@ class AdminUserEndpoint {
     @Inject
     lateinit var service: UserService
 
-    @Operation(summary = "회원가입", description = "백오피스에서 어드민(전산담당)이 처리하는 API")
+    @Operation(summary = "회원가입", description = "백오피스에서 어드민(전산담당)이 처리하는 회원가입 API")
     @POST
     @Path("reg")
     fun reg(@Valid infoUser: InfoUser): Response {
@@ -45,7 +43,7 @@ class AdminUserEndpoint {
         }
     }
 
-    @Operation(summary = "", description = "")
+    @Operation(summary = "사용자 목록", description = "백오피스에서 어드민(전산담당)이 처리하는 사용자 목록 API")
     @GET
     @PermitAll
     @Path("users")
@@ -60,11 +58,21 @@ class AdminUserEndpoint {
         return Response.ok().build()
     }
 
-    @Operation(summary = "", description = "")
+    @Operation(summary = "사용자 삭제", description = "백오피스에서 어드민(전산담당)이 처리하는 사용자 삭제 API")
     @POST
     @Path("del")
-    fun del(): Response {
-        return Response.ok().build()
+    fun deleteUser(@Valid user: InfoUser): Response {
+        return try {
+            Response.ok(service.deleteUser(user)).build()
+        }catch(e: Exception){
+            val res = StringResponse()
+            res.code = "01"
+            res.message = e.localizedMessage
+            Response.status(Response.Status.INTERNAL_SERVER_ERROR)
+                    .entity(res)
+                    .type(MediaType.APPLICATION_JSON)
+                    .build()
+        }
     }
 
     @Operation(summary = "", description = "")
