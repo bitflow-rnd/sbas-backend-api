@@ -1,20 +1,14 @@
 package org.sbas.services
 
-import org.eclipse.microprofile.config.inject.ConfigProperty
 import org.jboss.logging.Logger
 import org.jboss.resteasy.reactive.multipart.FileUpload
 import org.sbas.entities.base.BaseCode
 import org.sbas.entities.base.BaseCodeId
 import org.sbas.handlers.FileHandler
 import org.sbas.repositories.BaseCodeRepository
-import java.io.File
-import java.time.Instant
-import java.time.LocalDateTime
-import java.time.format.DateTimeFormatter
 import javax.enterprise.context.ApplicationScoped
 import javax.inject.Inject
 import javax.transaction.Transactional
-import kotlin.io.path.readBytes
 
 
 /**
@@ -35,6 +29,21 @@ class CommonService {
     @Transactional
     fun findBaseCode(): List<BaseCode> {
         return baseCodeRepository.findAll().list()
+    }
+
+    @Transactional
+    fun findBaseCodeByCdGrpId(cdGrpId: String): List<BaseCode> {
+        return baseCodeRepository.findBaseCodeByCdGrpId(cdGrpId = cdGrpId)
+    }
+
+    @Transactional
+    fun findSidos(): List<BaseCode> {
+        return baseCodeRepository.find("cd_grp_id = 'SIDO'").list()
+    }
+
+    @Transactional
+    fun findGuguns(cdGrpId: String): List<BaseCode> {
+        return baseCodeRepository.find("cd_grp_id = ?1", cdGrpId).list()
     }
 
     @Transactional

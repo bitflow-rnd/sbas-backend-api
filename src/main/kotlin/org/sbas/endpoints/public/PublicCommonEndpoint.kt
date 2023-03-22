@@ -1,14 +1,15 @@
 package org.sbas.endpoints.public
 
-import org.eclipse.microprofile.config.inject.ConfigProperty
 import org.eclipse.microprofile.openapi.annotations.Operation
 import org.eclipse.microprofile.openapi.annotations.tags.Tag
 import org.jboss.logging.Logger
 import org.jboss.resteasy.reactive.RestForm
 import org.jboss.resteasy.reactive.RestPath
 import org.jboss.resteasy.reactive.multipart.FileUpload
+import org.sbas.constants.SbasConst
+import org.sbas.entities.base.BaseCode
+import org.sbas.response.CommonResponse
 import org.sbas.services.CommonService
-import java.io.File
 import javax.inject.Inject
 import javax.ws.rs.GET
 import javax.ws.rs.POST
@@ -43,6 +44,13 @@ class PublicCommonEndpoint {
         return Response.ok().build()
     }
 
+    @Operation(summary = "공통코드 목록", description = "")
+    @GET
+    @Path("codes/{cdGrpId}")
+    fun codes(@RestPath cdGrpId: String): CommonResponse<List<BaseCode>> {
+        return CommonResponse(SbasConst.ResCode.SUCCESS, "success", service1.findBaseCodeByCdGrpId(cdGrpId))
+    }
+
     @Operation(summary = "", description = "")
     @GET
     @Path("egencodes/{param}")
@@ -50,25 +58,18 @@ class PublicCommonEndpoint {
         return Response.ok().build()
     }
 
-    @Operation(summary = "", description = "")
+    @Operation(summary = "시/도 목록", description = "")
     @GET
     @Path("sidos")
-    fun sidos(): Response {
-        return Response.ok().build()
+    fun sidos(): CommonResponse<List<BaseCode>> {
+        return CommonResponse(SbasConst.ResCode.SUCCESS, "success", service1.findSidos())
     }
 
-    @Operation(summary = "", description = "")
+    @Operation(summary = "시/군/구 목록", description = "")
     @GET
-    @Path("guguns/{param}")
-    fun guguns(@RestPath param: String): Response {
-        return Response.ok().build()
-    }
-
-    @Operation(summary = "", description = "")
-    @GET
-    @Path("codes/{param}")
-    fun codes(@RestPath param: String): Response {
-        return Response.ok().build()
+    @Path("guguns/{cdGrpId}")
+    fun guguns(@RestPath cdGrpId: String): CommonResponse<List<BaseCode>> {
+        return CommonResponse(SbasConst.ResCode.SUCCESS, "success", service1.findGuguns(cdGrpId))
     }
 
     @Operation(summary = "", description = "")
