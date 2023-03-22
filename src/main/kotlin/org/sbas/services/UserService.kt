@@ -36,7 +36,6 @@ class UserService {
 
     @Transactional
     fun reqUserReg(infoUser: InfoUser): StringResponse {
-        infoUser.pw = CypherUtils.crypto(infoUser.pw!!)
 
         infoUser.rgstUserId = infoUser.id
         infoUser.updtUserId = infoUser.id
