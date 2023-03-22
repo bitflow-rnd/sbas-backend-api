@@ -4,6 +4,7 @@ import org.eclipse.microprofile.openapi.annotations.Operation
 import org.eclipse.microprofile.openapi.annotations.tags.Tag
 import org.jboss.logging.Logger
 import org.sbas.entities.info.InfoUser
+import org.sbas.parameters.UserRequest
 import org.sbas.response.StringResponse
 import org.sbas.services.UserService
 import javax.annotation.security.PermitAll
@@ -24,14 +25,14 @@ class AdminUserEndpoint {
     lateinit var log: Logger
 
     @Inject
-    lateinit var service: UserService
+    lateinit var userService: UserService
 
-    @Operation(summary = "회원가입", description = "백오피스에서 어드민(전산담당)이 처리하는 회원가입 API")
+    @Operation(summary = "사용자등록 승인", description = "백오피스에서 어드민(전산담당)이 처리하는 사용자 등록 승인 API")
     @POST
     @Path("reg")
-    fun reg(@Valid infoUser: InfoUser): Response {
+    fun reg(@Valid request: UserRequest): Response {
         return try {
-            Response.ok(service.reg(infoUser)).build()
+            Response.ok(userService.reg(request)).build()
         }catch (e: Exception) {
             val res = StringResponse()
             res.code = "01"
@@ -48,7 +49,7 @@ class AdminUserEndpoint {
     @PermitAll
     @Path("users")
     fun getUsers(@QueryParam("searchData") requestData: String): Response {
-        return Response.ok(service.getUsers(requestData)).build()
+        return Response.ok(userService.getUsers(requestData)).build()
     }
 
     @Operation(summary = "", description = "")
@@ -61,9 +62,9 @@ class AdminUserEndpoint {
     @Operation(summary = "사용자 삭제", description = "백오피스에서 어드민(전산담당)이 처리하는 사용자 삭제 API")
     @POST
     @Path("del")
-    fun deleteUser(@Valid user: InfoUser): Response {
+    fun deleteUser(@Valid request: UserRequest): Response {
         return try {
-            Response.ok(service.deleteUser(user)).build()
+            Response.ok(userService.deleteUser(request)).build()
         }catch(e: Exception){
             val res = StringResponse()
             res.code = "01"

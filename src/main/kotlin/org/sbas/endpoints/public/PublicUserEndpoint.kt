@@ -3,13 +3,16 @@ package org.sbas.endpoints.public
 import org.eclipse.microprofile.openapi.annotations.Operation
 import org.eclipse.microprofile.openapi.annotations.tags.Tag
 import org.jboss.logging.Logger
+import org.sbas.entities.info.InfoUser
 import org.sbas.parameters.SmsSendRequest
+import org.sbas.response.StringResponse
 import org.sbas.services.UserService
 import javax.annotation.security.PermitAll
 import javax.inject.Inject
 import javax.validation.Valid
 import javax.ws.rs.POST
 import javax.ws.rs.Path
+import javax.ws.rs.core.MediaType
 import javax.ws.rs.core.Response
 import javax.ws.rs.core.SecurityContext
 
@@ -58,8 +61,18 @@ class PublicUserEndpoint {
     @Operation(summary = "", description = "")
     @POST
     @Path("requserreg")
-    fun requserreg(): Response {
-        return Response.ok().build()
+    fun reqUserReg(@Valid infoUser: InfoUser): Response {
+        return try {
+            Response.ok(userService.reqUserReg(infoUser)).build()
+        }catch (e: Exception) {
+            val res = StringResponse()
+            res.code = "01"
+            res.message = e.localizedMessage
+            Response.status(Response.Status.INTERNAL_SERVER_ERROR)
+                    .entity(res)
+                    .type(MediaType.APPLICATION_JSON)
+                    .build()
+        }
     }
 
     @Operation(summary = "", description = "")

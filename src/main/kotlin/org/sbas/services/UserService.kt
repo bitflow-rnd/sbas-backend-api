@@ -6,15 +6,15 @@ import org.jboss.logging.Logger
 import org.sbas.constants.SbasConst
 import org.sbas.entities.info.InfoUser
 import org.sbas.parameters.SmsSendRequest
+import org.sbas.parameters.UserRequest
 import org.sbas.repositories.UserInfoRepository
-import org.sbas.response.BaseCodeResponse
 import org.sbas.response.StringResponse
 import org.sbas.response.UserInfoListResponse
 import org.sbas.restclients.NaverSensRestClient
 import org.sbas.restparameters.NaverSmsMsgApiParams
 import org.sbas.restparameters.NaverSmsReqMsgs
 import org.sbas.utils.CypherUtils
-import java.lang.ProcessHandle.Info
+import java.time.Instant
 import javax.enterprise.context.ApplicationScoped
 import javax.inject.Inject
 import javax.transaction.Transactional
@@ -35,15 +35,14 @@ class UserService {
     lateinit var naversensserviceid: String
 
     @Transactional
-    fun reg(infoUser: InfoUser): StringResponse {
-        infoUser.pw = CypherUtils.crypto(infoUser.pw!!)
+    fun reqUserReg(infoUser: InfoUser): StringResponse {
 
-        infoUser.rgstUserId = "method76"
-        infoUser.updtUserId = "method76"
+        infoUser.rgstUserId = infoUser.id
+        infoUser.updtUserId = infoUser.id
 
         repository.persist(infoUser)
 
-        return StringResponse(infoUser.id)
+        return StringResponse("${infoUser.userNm}님 사용자 등록을 요청하였습니다.")
     }
 
     /**
@@ -83,14 +82,25 @@ class UserService {
     }
 
     @Transactional
-    fun deleteUser(user: InfoUser): StringResponse {
-        var response = StringResponse()
+    fun reg(request: UserRequest): StringResponse {
+        var findUser = repository.findByUserId(request.id)
 
-        val findUser = repository.deleteByUser(user)
+        findUser!!.aprvDttm = Instant.now()
+        findUser.statClas = "USER"
+        findUser.updtUserId = request.adminId
+        findUser.aprvUserId = request.adminId
 
-        response.result = "${user.id} 계정을 삭제하였습니다."
+        return StringResponse("${findUser.userNm}님 사용자 등록을 승인하였습니다.")
+    }
 
-        return response
+    @Transactional
+    fun deleteUser(request: UserRequest): StringResponse {
+        val findUser = repository.findByUserId(request.id)
+
+        findUser!!.statClas = "DEL"
+        findUser.updtUserId = request.adminId
+
+        return StringResponse("${request.id} 계정을 삭제하였습니다.")
 
     }
 

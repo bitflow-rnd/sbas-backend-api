@@ -15,6 +15,7 @@ import org.sbas.repositories.BaseCodeRepository
 import org.sbas.repositories.TestUserRepository
 import org.sbas.response.BaseCodeResponse
 import org.sbas.response.EgenCodeMastResponse
+import org.sbas.response.StringResponse
 import org.sbas.restclients.EgenRestClient
 import org.sbas.restresponses.EgenCodeMastApiResponse.CodeMastBody.CodeMastItems.CodeMastItem
 import org.sbas.utils.TokenUtils
@@ -111,19 +112,18 @@ class TestUserService {
     }
 
     @Transactional
-    fun login(infoUser: InfoUser): String{
+    fun login(infoUser: InfoUser): StringResponse{
         val findUser = userRepo.findByUserId(infoUser.id!!)
 
         return if(findUser!!.pw.equals(infoUser.pw)){
-            TokenUtils.generateUserToken(findUser.id!!)
+            StringResponse(TokenUtils.generateUserToken(findUser.id!!))
         }else {
-            "FAIL"
+            StringResponse("FAIL")
         }
     }
 
     @Transactional
     fun getUser(): JsonWebToken{
-        log.warn("jenkins test~~~~~222")
         return jwt
     }
     
