@@ -88,9 +88,7 @@ class SbasTestEndpoint {
     @Path("login")
     @PermitAll
     fun login(@RequestBody infoUser: InfoUser): Response {
-        return Response.ok(object {
-            val token: String = serv1.login(infoUser)
-        }).build()
+        return Response.ok(serv1.login(infoUser)).build()
     }
 
     @GET
