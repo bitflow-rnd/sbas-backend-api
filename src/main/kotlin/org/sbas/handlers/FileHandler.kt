@@ -32,7 +32,7 @@ class FileHandler {
     /**
      * 전체 공개 권한 파일 업로드
      */
-    fun createPublicFile(param: FileUpload): String? {
+    fun createPublicFile(param: FileUpload): Array<String>? {
         val now = LocalDateTime.now()
         val format = DateTimeFormatter.ofPattern("yyyyMM")
         val fileName = Instant.now().toEpochMilli()
@@ -49,7 +49,7 @@ class FileHandler {
         return if (created) {
             file.writeBytes(param.uploadedFile().readBytes())
             log.debug("file uploaded at ${file.absolutePath}")
-            "$dirName/$fileName.${fileExt.lowercase()}"
+            arrayOf("$dirName/$fileName.${fileExt.lowercase()}", path, dirName, fileExt)
         } else {
             null
         }
