@@ -29,6 +29,10 @@ class FileHandler {
     @ConfigProperty(name = "upload.private.dir")
     lateinit var UPLOAD_DIR_PRIVATE: String
 
+    @ConfigProperty(name = "upload.path.middle")
+    lateinit var UPLOAD_PATH_MIDDLE: String
+
+
     /**
      * 전체 공개 권한 파일 업로드
      */
@@ -49,7 +53,7 @@ class FileHandler {
         return if (created) {
             file.writeBytes(param.uploadedFile().readBytes())
             log.debug("file uploaded at ${file.absolutePath}")
-            arrayOf("$dirName/$fileName.${fileExt.lowercase()}", path, dirName, fileExt)
+            arrayOf("$dirName/$fileName.${fileExt.lowercase()}", path, "/$UPLOAD_PATH_MIDDLE/$dirName", fileExt)
         } else {
             null
         }

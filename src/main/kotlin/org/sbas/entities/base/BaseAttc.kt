@@ -15,6 +15,7 @@ import javax.persistence.*
 @Table(name = "base_attc")
 class BaseAttc(
 
+    @Id
     @GenericGenerator(
         name = "base_attc_grp_seq",
         strategy = "org.sbas.entities.StringPrefixedSequenceIdGenerator",
@@ -33,10 +34,11 @@ class BaseAttc(
         strategy = "org.sbas.entities.StringPrefixedSequenceIdGenerator",
         parameters = [
             Parameter(name = StringPrefixedSequenceIdGenerator.VALUE_PREFIX_PARAMETER, value = "AT"),
-            Parameter(name = StringPrefixedSequenceIdGenerator.NUMBER_FORMAT_PARAMETER, value = "%10d"),
+            Parameter(name = StringPrefixedSequenceIdGenerator.NUMBER_FORMAT_PARAMETER, value = "%010d"),
             Parameter(name = StringPrefixedSequenceIdGenerator.incrementSize, value = "1")
         ]) // AT0000000001
-    @Column(name = "base_attc_id_seq", nullable = false, length = 12)
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "base_attc_id_seq")
+    @Column(name = "attc_id", nullable = false, length = 12)
     var attcId: String? = null, // 첨부파일 ID
 
     @Column(name = "attc_dt", nullable = false, length = 8)
@@ -57,4 +59,8 @@ class BaseAttc(
     @Column(name = "rmk", length = 200)
     var rmk: String? = null, // 비고
 
-) : CommonEntity()
+) : CommonEntity(), Serializable {
+    companion object {
+        private const val serialVersionUID = -7627032719191928277L
+    }
+}
