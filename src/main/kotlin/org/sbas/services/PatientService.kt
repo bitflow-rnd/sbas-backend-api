@@ -4,8 +4,12 @@ import org.jboss.logging.Logger
 import org.jboss.resteasy.reactive.multipart.FileUpload
 import org.sbas.entities.info.InfoPt
 import org.sbas.handlers.FileHandler
+import org.sbas.handlers.NaverApiHandler
 import org.sbas.repositories.InfoPtRepository
+import org.sbas.response.CommonResponse
 import org.sbas.response.StringResponse
+import org.sbas.response.patient.EpidResult
+import org.sbas.restparameters.NaverOcrApiParams
 import javax.enterprise.context.ApplicationScoped
 import javax.inject.Inject
 import javax.transaction.Transactional
@@ -26,20 +30,33 @@ class PatientService {
     @Inject
     private lateinit var handler1: FileHandler
 
+    @Inject
+    private lateinit var handler2: NaverApiHandler
+
     @Transactional
     fun saveInfoPt(infoPt: InfoPt): StringResponse {
         infoPt.rgstUserId = "jiseong"
         infoPt.updtUserId = "jiseong"
-
         infoPtRepository.persist(infoPt)
-
         return StringResponse(infoPt.id)
     }
 
     @Transactional
-    fun uploadEpidReport(param: FileUpload) {
-        val fileName = handler1.createPrivateFile(param)
-        // Todo: Naver Clova OCR call
+    fun uploadEpidReport(param: FileUpload): CommonResponse<EpidResult>? {
+
+        val ret = CommonResponse<EpidResult>()
+
+        val fileuri = handler1.createPublicFile(param)
+        if (fileuri != null) {
+            // Naver Clova OCR call
+            val texts = handler2.recognizeImage(fileuri)
+            log.debug("texts are $texts")
+            // Then move from public to private
+            handler1.moveFilePublicToPrivate(fileuri)
+            // return texts
+            return ret
+        }
+        return null
     }
 
 }

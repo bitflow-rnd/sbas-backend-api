@@ -4,6 +4,10 @@ import org.eclipse.microprofile.openapi.annotations.Operation
 import org.eclipse.microprofile.openapi.annotations.tags.Tag
 import org.jboss.logging.Logger
 import org.jboss.resteasy.reactive.RestPath
+import org.jboss.resteasy.reactive.RestResponse
+import org.jboss.resteasy.reactive.RestResponse.ResponseBuilder
+import org.sbas.constants.SbasConst
+import org.sbas.entities.base.BaseCode
 import org.sbas.entities.base.BaseCodeId
 import org.sbas.response.CommonResponse
 import org.sbas.services.CommonService
@@ -26,8 +30,10 @@ class AdminCommonEndpoint {
     @Operation(summary = "공통코드 그룹 조회", description = "공통코드 그룹 조회")
     @GET
     @Path("codegrps")
-    fun codegrps(): CommonResponse<*> {
-        return CommonResponse(Response.Status.OK, "조회 성공", commonService.findBaseCode())
+    fun codegrps(): RestResponse<CommonResponse<List<BaseCode>>>? {
+        return ResponseBuilder.ok(CommonResponse(
+            SbasConst.ResCode.SUCCESS,
+            null, commonService.findBaseCode())).build()
     }
 
     @Operation(summary = "", description = "")
