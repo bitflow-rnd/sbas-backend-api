@@ -8,6 +8,7 @@ import org.jboss.resteasy.reactive.RestPath
 import org.jboss.resteasy.reactive.multipart.FileUpload
 import org.sbas.constants.SbasConst
 import org.sbas.entities.base.BaseCode
+import org.sbas.entities.base.BaseCodeEgen
 import org.sbas.responses.CommonResponse
 import org.sbas.services.CommonService
 import javax.inject.Inject
@@ -44,6 +45,13 @@ class PublicCommonEndpoint {
         return Response.ok().build()
     }
 
+    @Operation(summary = "E-GEN 공통코드 목록", description = "")
+    @GET
+    @Path("egencodes/{cmMid}")
+    fun egencodes(@RestPath cmMid: String): CommonResponse<List<BaseCodeEgen>> {
+        return CommonResponse(SbasConst.ResCode.SUCCESS, "success", service1.findEgenCode(cmMid))
+    }
+
     @Operation(summary = "공통코드 목록", description = "")
     @GET
     @Path("codes/{cdGrpId}")
@@ -51,12 +59,6 @@ class PublicCommonEndpoint {
         return CommonResponse(SbasConst.ResCode.SUCCESS, "success", service1.findBaseCodeByCdGrpId(cdGrpId))
     }
 
-    @Operation(summary = "", description = "")
-    @GET
-    @Path("egencodes/{param}")
-    fun egencodes(@RestPath param: String): Response {
-        return Response.ok().build()
-    }
 
     @Operation(summary = "시/도 목록", description = "")
     @GET

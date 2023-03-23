@@ -1,15 +1,16 @@
 package org.sbas.services
 
-import io.quarkus.cache.CacheInvalidate
 import io.quarkus.cache.CacheKey
 import io.quarkus.cache.CacheResult
 import org.jboss.logging.Logger
 import org.jboss.resteasy.reactive.multipart.FileUpload
 import org.sbas.entities.base.BaseAttc
 import org.sbas.entities.base.BaseCode
+import org.sbas.entities.base.BaseCodeEgen
 import org.sbas.entities.base.BaseCodeId
 import org.sbas.handlers.FileHandler
 import org.sbas.repositories.BaseAttcRepository
+import org.sbas.repositories.BaseCodeEgenRepository
 import org.sbas.repositories.BaseCodeRepository
 import javax.enterprise.context.ApplicationScoped
 import javax.inject.Inject
@@ -29,10 +30,19 @@ class CommonService {
     private lateinit var baseCodeRepository: BaseCodeRepository
 
     @Inject
+    private lateinit var egenCodeRepository: BaseCodeEgenRepository
+
+    @Inject
     lateinit var repo1: BaseAttcRepository
 
     @Inject
     private lateinit var handler1: FileHandler
+
+    @Transactional
+    @CacheResult(cacheName = "cmMid")
+    fun findEgenCode(cmMid: String): List<BaseCodeEgen> {
+        return egenCodeRepository.find("cm_mid = ?1", cmMid).list()
+    }
 
     @Transactional
     fun findBaseCode(): List<BaseCode> {
@@ -54,7 +64,6 @@ class CommonService {
     @Transactional
     @CacheResult(cacheName = "cdGrpId")
     fun findGuguns(@CacheKey cdGrpId: String): List<BaseCode> {
-        //TODO 공통코드 조회랑 같음 -> 쿼리 변경
         return baseCodeRepository.find("cd_grp_id = ?1", cdGrpId).list()
     }
 

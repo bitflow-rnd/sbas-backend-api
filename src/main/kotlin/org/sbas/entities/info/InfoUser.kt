@@ -15,7 +15,7 @@ import javax.persistence.Table
 @Table(name = "info_user")
 class InfoUser(
         @Id
-        @Column(name = "user_id", nullable = false, length = 10)
+        @Column(name = "user_id", nullable = false, length = 15)
         var id: String? = null,  // 사용자 ID
 
         @Column(name = "pw", nullable = false, length = 100)
@@ -67,15 +67,18 @@ class InfoUser(
         var attcId: String? = null, // 첨부 ID
 
         @Column(name = "stat_clas", length = 8)
-        var statClas: String = "",
+        var statClas: String = "", // 상태 구분
 
         @Column(name = "aprv_user_id", length = 10)
-        var aprvUserId: String? = null,
+        var aprvUserId: String? = null, // 승인자 ID
 
         @Column(name = "aprv_dttm")
-        var aprvDttm: Instant? = null,
+        var aprvDttm: Instant? = null, // 승인 일시
 
         @Column(name = "btdt", length = 8)
-        var btDt: String = "",
+        var btDt: String = "", // 생년월일
+
+        @Column(name = "pw_err_cnt")
+        var pwErrCnt: Int? = 0, // 비밀번호 오류 횟수
 
 ) : CommonEntity()

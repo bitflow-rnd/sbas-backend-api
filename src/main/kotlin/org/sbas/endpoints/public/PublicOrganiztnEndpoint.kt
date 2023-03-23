@@ -23,14 +23,14 @@ class PublicOrganiztnEndpoint {
     @Inject
     lateinit var organiztnService: OrganiztnService
 
-    @Operation(summary = "", description = "")
+    @Operation(summary = "의료기관 목록", description = "")
     @GET
     @Path("medinsts")
     fun medinsts(): Response {
         return Response.ok().build()
     }
 
-    @Operation(summary = "", description = "")
+    @Operation(summary = "의료기관 상세", description = "")
     @GET
     @Path("medinst/{param}")
     fun medinst(@RestPath param: String): Response {

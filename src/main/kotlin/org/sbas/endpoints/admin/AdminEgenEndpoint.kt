@@ -46,10 +46,11 @@ class AdminEgenEndpoint {
     @Operation(summary = "병‧의원 목록정보 조회", description = "병‧의원 목록정보 조회")
     @GET
     @Path("hsptlMdcncList")
-    @Produces(MediaType.APPLICATION_JSON)
-    @Consumes(MediaType.APPLICATION_JSON)
-    fun hsptlMdcncList(param: EgenApiListInfoParams): String {
-        return egenService.getHsptlMdcncListInfoInqire(param).toString()
+    fun hsptlMdcncList(param: EgenApiListInfoParams): Response {
+        return Response.ok(Response.Status.OK)
+            .entity(egenService.getHsptlMdcncListInfoInqire(param).toString())
+            .type(MediaType.APPLICATION_JSON_TYPE)
+            .build()
     }
 
     @Operation(summary = "병‧의원 위치정보 조회", description = "")

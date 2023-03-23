@@ -3,10 +3,10 @@ package org.sbas.services
 import org.jboss.logging.Logger
 import org.jboss.resteasy.reactive.multipart.FileUpload
 import org.sbas.constants.SbasConst
+import org.sbas.dtos.InfoPtReq
+import org.sbas.dtos.toEntity
 import org.sbas.entities.base.BaseAttc
 import org.sbas.entities.info.InfoPt
-import org.sbas.entities.info.InfoPtSaveReq
-import org.sbas.entities.info.toEntity
 import org.sbas.handlers.FileHandler
 import org.sbas.handlers.NaverApiHandler
 import org.sbas.repositories.BaseAttcRepository
@@ -42,12 +42,26 @@ class PatientService {
     private lateinit var handler3: BaseAttcRepository
 
     @Transactional
-    fun saveInfoPt(infoPtSaveReq: InfoPtSaveReq): StringResponse {
-        val infoPt = infoPtSaveReq.toEntity()
+    fun saveInfoPt(infoPtReq: InfoPtReq): StringResponse {
+        val infoPt = infoPtReq.toEntity()
         infoPt.rgstUserId = "jiseong"
         infoPt.updtUserId = "jiseong"
         infoPtRepository.persist(infoPt)
         return StringResponse(infoPt.id)
+    }
+
+    @Transactional
+    fun check(infoPtReq: InfoPtReq): InfoPt? {
+        val findInfoPt = infoPtRepository.findByPtNmAndRrno(
+            ptNm = infoPtReq.ptNm,
+            rrno1 = infoPtReq.rrno1,
+            rrno2 = infoPtReq.rrno2,
+        )
+
+        if (findInfoPt != null) { // 등록된 환자 존재
+            return findInfoPt
+        }
+        return null
     }
 
     @Transactional

@@ -1,7 +1,6 @@
 package org.sbas.endpoints.private
 
 import org.eclipse.microprofile.openapi.annotations.Operation
-import org.eclipse.microprofile.openapi.annotations.parameters.RequestBody
 import org.eclipse.microprofile.openapi.annotations.tags.Tag
 import org.jboss.logging.Logger
 import org.jboss.resteasy.reactive.RestForm
@@ -9,7 +8,8 @@ import org.jboss.resteasy.reactive.RestPath
 import org.jboss.resteasy.reactive.RestResponse
 import org.jboss.resteasy.reactive.RestResponse.ResponseBuilder
 import org.jboss.resteasy.reactive.multipart.FileUpload
-import org.sbas.entities.info.InfoPtSaveReq
+import org.sbas.constants.SbasConst
+import org.sbas.dtos.InfoPtReq
 import org.sbas.responses.CommonResponse
 import org.sbas.responses.StringResponse
 import org.sbas.responses.patient.EpidResult
@@ -53,9 +53,9 @@ class PrivatePatientEndpoint {
     @Operation(summary = "환자기본정보 등록", description = "")
     @POST
     @Path("regbasicinfo")
-    fun regbasicinfo(@RequestBody infoPtSaveReq: InfoPtSaveReq): RestResponse<StringResponse> {
+    fun regbasicinfo(infoPtReq: InfoPtReq): RestResponse<StringResponse> {
         return try {
-            val res = patientService.saveInfoPt(infoPtSaveReq)
+            val res = patientService.saveInfoPt(infoPtReq)
             ResponseBuilder.ok(res).build()
         } catch (e: Exception) {
             val res = StringResponse()
@@ -68,11 +68,12 @@ class PrivatePatientEndpoint {
         }
     }
 
-    @Operation(summary = "", description = "")
+    @Operation(summary = "환자 중복 유효성 검사", description = "")
     @POST
     @Path("exist")
-    fun exist():  RestResponse<StringResponse> {
-        return ResponseBuilder.ok<StringResponse>().build()
+    fun exist(infoPtReq: InfoPtReq): CommonResponse<*> {
+        val res = patientService.check(infoPtReq) ?: "신규 등록 환자"
+        return CommonResponse(SbasConst.ResCode.SUCCESS, "success", res)
     }
 
     @Operation(summary = "", description = "")

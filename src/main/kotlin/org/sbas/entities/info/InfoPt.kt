@@ -56,29 +56,3 @@ class InfoPt(
     @Column(name = "pica_ver", length = 10)
     var picaVer: String? = null, // 개인정보수집동의 버전
 ) : CommonEntity()
-
-data class InfoPtSaveReq(
-    val ptNm: String?,
-    val gndr: String?,
-    val rrno1: String?,
-    val rrno2: String?,
-    val dstr1Cd: String?,
-    val dstr2Cd: String?,
-    val addr: String?,
-    val telno: String?,
-    val natiCd: String?,
-)
-
-fun InfoPtSaveReq.toEntity(): InfoPt {
-    return InfoPt(
-        ptNm = this.ptNm,
-        gndr = this.gndr,
-        rrno1 = this.rrno1,
-        rrno2 = this.rrno2,
-        dstr1Cd = this.dstr1Cd,
-        dstr2Cd = this.dstr2Cd,
-        addr = this.addr,
-        telno = this.telno,
-        natiCd = this.natiCd,
-    )
-}
