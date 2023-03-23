@@ -36,8 +36,8 @@ class UserService {
     @Transactional
     fun reqUserReg(infoUser: InfoUser): StringResponse {
 
-        infoUser.rgstUserId = infoUser.id
-        infoUser.updtUserId = infoUser.id
+        infoUser.rgstUserId = "admin"
+        infoUser.updtUserId = "admin"
 
         repository.persist(infoUser)
 
