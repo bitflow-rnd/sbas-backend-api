@@ -15,12 +15,13 @@ class GeocodingHandler {
 
     fun getGeocoding(naverGeocodingApiParams: NaverGeocodingApiParams): NaverGeocodingApiResponse {
         return naverGeocodingRestClient.getAddressInfo(
-                naverGeocodingApiParams.query,
-                naverGeocodingApiParams.coordinate,
-                naverGeocodingApiParams.filter,
-                naverGeocodingApiParams.language,
-                naverGeocodingApiParams.page,
-                naverGeocodingApiParams.count)
+            naverGeocodingApiParams.query,
+            naverGeocodingApiParams.coordinate,
+            naverGeocodingApiParams.filter,
+            naverGeocodingApiParams.language,
+            naverGeocodingApiParams.page,
+            naverGeocodingApiParams.count,
+        )
     }
 
 }

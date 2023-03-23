@@ -59,14 +59,14 @@ class AdminCommonEndpoint {
         return Response.ok().build()
     }
 
-    @Operation(summary = "", description = "")
+    @Operation(summary = "곻통코드 수정", description = "")
     @POST
     @Path("modcode/{param}")
     fun modcode(@RestPath param: String): Response {
         return Response.ok().build()
     }
 
-    @Operation(summary = "", description = "")
+    @Operation(summary = "공통코드 삭제", description = "")
     @POST
     @Path("delcode/{param}")
     fun delcode(@RestPath param: String): Response {

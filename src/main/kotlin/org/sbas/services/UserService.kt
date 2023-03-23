@@ -103,4 +103,20 @@ class UserService {
 
     }
 
+    @Transactional
+    fun checkUserId(userId: String): Pair<Boolean, String> {
+        return when {
+            repository.existByUserId(userId) -> Pair(true, "이미 사용중인 아이디입니다.")
+            else -> Pair(false, "사용 가능한 아이디입니다.")
+        }
+    }
+
+    @Transactional
+    fun checkTelNo(telno: String): Pair<Boolean, String> {
+        return when {
+            repository.existByTelNo(telno) -> Pair(true, "이미 사용중인 번호입니다.")
+            else -> Pair(false, "사용 가능한 번호입니다.")
+        }
+    }
+
 }

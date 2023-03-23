@@ -3,8 +3,11 @@ package org.sbas.endpoints.public
 import org.eclipse.microprofile.openapi.annotations.Operation
 import org.eclipse.microprofile.openapi.annotations.tags.Tag
 import org.jboss.logging.Logger
+import org.sbas.constants.SbasConst
 import org.sbas.entities.info.InfoUser
+import org.sbas.parameters.DuplicateParameters
 import org.sbas.parameters.SmsSendRequest
+import org.sbas.responses.CommonResponse
 import org.sbas.responses.StringResponse
 import org.sbas.services.UserService
 import javax.annotation.security.PermitAll
@@ -29,18 +32,20 @@ class PublicUserEndpoint {
     @Inject
     lateinit var userService: UserService
 
-    @Operation(summary = "", description = "")
+    @Operation(summary = "사용자 아이디 중복 조회", description = "")
     @POST
     @Path("existid")
-    fun existid(): Response {
-        return Response.ok().build()
+    fun existid(param: DuplicateParameters): CommonResponse<*> {
+        val (res, message) = userService.checkUserId(param.userId)
+        return CommonResponse(SbasConst.ResCode.SUCCESS, message, res)
     }
 
-    @Operation(summary = "", description = "")
+    @Operation(summary = "사용자 휴대폰번호 중보 조회", description = "")
     @POST
     @Path("existcellp")
-    fun existcellp(): Response {
-        return Response.ok().build()
+    fun existcellp(param: DuplicateParameters):  CommonResponse<*> {
+        val (res, message) = userService.checkTelNo(param.telno)
+        return CommonResponse(SbasConst.ResCode.SUCCESS, message, res)
     }
 
     @Operation(summary = "", description = "")
