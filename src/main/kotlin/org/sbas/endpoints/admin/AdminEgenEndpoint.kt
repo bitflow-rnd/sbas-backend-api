@@ -104,7 +104,7 @@ class AdminEgenEndpoint {
     @GET
     @Path("saveegencode")
     fun saveEgenCode() {
-        egenService.saveBaseCode()
+        egenService.saveEgenCode()
     }
 
     /**

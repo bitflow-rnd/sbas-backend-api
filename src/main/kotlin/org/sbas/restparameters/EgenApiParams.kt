@@ -1,17 +1,21 @@
 package org.sbas.restparameters
 
+import org.sbas.utils.NoArg
+
+@NoArg
 data class EgenApiListInfoParams(
-    val q0: String? = null,
-    val q1: String? = null,
-    val qz: String? = null,
-    val qd: String? = null,
-    val qt: String? = null,
-    val qn: String? = null,
-    val ord: String? = null,
+    val q0: String,
+    val q1: String,
+    val qz: String,
+    val qd: String,
+    val qt: String,
+    val qn: String,
+    val ord: String,
     val pageNo: String = "1",
     val numOfRows: String = "10",
 )
 
+@NoArg
 data class EgenApiLcInfoParams(
     val wgs84Lon: String,
     val wgs84Lat: String,
@@ -19,8 +23,9 @@ data class EgenApiLcInfoParams(
     val numOfRows: String = "10",
 )
 
+@NoArg
 data class EgenApiBassInfoParams(
-    val hpId: String? = null,
+    val hpId: String,
     val pageNo: String = "1",
     val numOfRows: String = "10",
 )

@@ -4,6 +4,8 @@ import io.quarkus.cache.CacheKey
 import io.quarkus.cache.CacheResult
 import org.jboss.logging.Logger
 import org.jboss.resteasy.reactive.multipart.FileUpload
+import org.sbas.dtos.BaseCodeDto
+import org.sbas.dtos.toEntity
 import org.sbas.entities.base.BaseAttc
 import org.sbas.entities.base.BaseCode
 import org.sbas.entities.base.BaseCodeEgen
@@ -41,7 +43,7 @@ class CommonService {
 
     /**
      * E-GEN 공통코드 목록 조회
-     * @param cmMid: 대분류 코드
+     * @param cmMid 대분류 코드
      */
     @Transactional
     @CacheResult(cacheName = "cmMid")
@@ -51,7 +53,7 @@ class CommonService {
 
     /**
      * 공통코드 목록 조회
-     * @param cdGrpId: 코드 그룹 ID
+     * @param cdGrpId 코드 그룹 ID
      */
     @Transactional
     @CacheResult(cacheName = "cdGrpId")
@@ -70,7 +72,7 @@ class CommonService {
 
     /**
      * 시/군/구 목록 조회
-     * @param cdGrpId: 시/도의 코드 그룹 ID ex) SIDO11, SIDO26 ...
+     * @param cdGrpId 시/도의 코드 그룹 ID ex) SIDO11, SIDO26...
      */
     @Transactional
     @CacheResult(cacheName = "cdGrpId")
@@ -81,8 +83,18 @@ class CommonService {
         }
     }
 
+    /**
+     * 공통코드 등록
+     * @param baseCodeDto
+     */
+    @Transactional
+    fun saveBaseCode(baseCodeDto: BaseCodeDto) {
+        baseCodeRepository.persist(baseCodeDto.toEntity())
+    }
+
     @Transactional
     fun findBaseCode(): List<BaseCode> {
+        //TODO 그룹만 나오게 변경 필요
         return baseCodeRepository.findAll().list()
     }
 
@@ -109,11 +121,4 @@ class CommonService {
     fun fileUpload(param1: String, param2: FileUpload) {
         val fileName = handler1.createPublicFile(param2)
     }
-
-    @Transactional
-    fun saveBaseCode() {
-
-        TODO("Not yet implemented")
-    }
-
 }

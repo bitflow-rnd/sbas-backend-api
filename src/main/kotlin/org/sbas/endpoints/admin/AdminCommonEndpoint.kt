@@ -7,6 +7,7 @@ import org.jboss.resteasy.reactive.RestPath
 import org.jboss.resteasy.reactive.RestResponse
 import org.jboss.resteasy.reactive.RestResponse.ResponseBuilder
 import org.sbas.constants.SbasConst
+import org.sbas.dtos.BaseCodeDto
 import org.sbas.entities.base.BaseCode
 import org.sbas.entities.base.BaseCodeId
 import org.sbas.responses.CommonResponse
@@ -55,8 +56,8 @@ class AdminCommonEndpoint {
     @Operation(summary = "공통코드 등록", description = "공통코드 등록")
     @POST
     @Path("regcode")
-    fun regcode(): Response {
-        commonService.saveBaseCode()
+    fun regcode(baseCodeDto: BaseCodeDto): Response {
+        commonService.saveBaseCode(baseCodeDto)
         return Response.ok().build()
     }
 

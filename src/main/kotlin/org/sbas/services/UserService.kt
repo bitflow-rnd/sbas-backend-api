@@ -103,6 +103,10 @@ class UserService {
 
     }
 
+    /**
+     * 사용자 아이디 중복 체크
+     * @param userId
+     */
     @Transactional
     fun checkUserId(userId: String): Pair<Boolean, String> {
         return when {
@@ -111,6 +115,10 @@ class UserService {
         }
     }
 
+    /**
+     * 사용자 전화번호 중복 체크
+     * @param telno
+     */
     @Transactional
     fun checkTelNo(telno: String): Pair<Boolean, String> {
         return when {

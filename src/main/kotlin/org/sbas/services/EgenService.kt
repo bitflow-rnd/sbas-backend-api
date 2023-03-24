@@ -175,9 +175,11 @@ class EgenService {
         return extractBody(jsonObject)
     }
 
+    /**
+     * E-GEN 코드 마스터 정보를 DB에 저장
+     */
     @Transactional
-    fun saveBaseCode() {
-
+    fun saveEgenCode() {
         var res: EgenBaseCodeDto
         EgenCmMid.values().forEach { egenCmMid ->
             val jsonObject = getCodeMastInfo(egenCmMid)

@@ -2,15 +2,12 @@ package org.sbas.services
 
 import org.jboss.logging.Logger
 import org.sbas.entities.info.InfoCrew
-import org.sbas.entities.info.InfoCrewId
 import org.sbas.repositories.InfoCrewRepository
 import org.sbas.repositories.InfoHospRepository
 import org.sbas.repositories.InfoInstRepository
 import javax.enterprise.context.ApplicationScoped
 import javax.inject.Inject
 import javax.transaction.Transactional
-import javax.ws.rs.NotFoundException
-import kotlin.streams.toList
 
 
 /**
@@ -36,6 +33,11 @@ class OrganiztnService {
         val infoHospList = infoHospRepository.findAll().list()
     }
 
+    /**
+     * 구급대 목록 조회
+     * @param dstrCd1
+     * @param dstrCd2
+     */
     @Transactional
     fun findFireStatns(dstrCd1: String, dstrCd2: String): MutableMap<String, Any> {
         val res = mutableMapOf<String, Any>()
