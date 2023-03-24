@@ -1,13 +1,13 @@
 package org.sbas.constants
 
-class EgenConst {
-    companion object {
-        const val SUCCESS = "00"
-//        val EGEN_GRP_CDS = arrayOf("Z000", "Y009", "Y008")
-        val EGEN_GRP_CDS = arrayOf("Y000", "SIDO", "P004", "P001", "O000", "N000", "M000", "J004", "J002", "J000", "H030", "H020", "H000")
-    }
+enum class EgenCmMid {
+    Z000, Y009, Y008, Y007, Y006, Y005, Y004, Y003, Y002, Y001, Y000,
+    SIDO, S000, P004, P003, P002, P001, O000, N000, M000, L000,
+    J004, J003, J002, J001, J000,
+    H050, H040, H030, H020, H010, H000,
+    D001, D000, AMBL, AED2, AED1, AED0,
+    L, K, J, I, H, G, F, E, D, C, B, A,
 }
-
 /*
 Z000[정보센터]
 Y009[중증이용_연락번호구분]

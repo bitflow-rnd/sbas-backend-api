@@ -9,7 +9,6 @@ import org.sbas.entities.info.InfoUser
 import org.sbas.handlers.GeocodingHandler
 import org.sbas.parameters.BaseCodeRequest
 import org.sbas.responses.BaseCodeResponse
-import org.sbas.responses.EgenCodeMastResponse
 import org.sbas.restparameters.NaverGeocodingApiParams
 import org.sbas.restresponses.NaverGeocodingApiResponse
 import org.sbas.services.TestUserService
@@ -57,26 +56,6 @@ class SbasTestEndpoint {
         var name = user.name
         val ret = serv1.getBaseCode(param1, ctx)
         return ret
-    }
-
-    @Operation(summary = "E-Gen Rest API 호출 테스트", description = "RESR Client 이용하여 E-GEN API를 조회합니다.")
-    @GET
-    @Path("test3")
-    fun test3(): Response {
-        var res: EgenCodeMastResponse?
-        return try {
-            res = serv1.getCodeMast()
-            log.debug("api return value is $res");
-            Response.ok(res).build()
-        } catch (e: Exception) {
-            res = EgenCodeMastResponse()
-            res.code = "01"
-            res.message = e.message
-            Response.status(Response.Status.INTERNAL_SERVER_ERROR)
-                .entity(res)
-                .type(MediaType.APPLICATION_JSON)
-                .build()
-        }
     }
 
     @POST

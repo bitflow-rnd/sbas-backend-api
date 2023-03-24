@@ -40,7 +40,7 @@ class PublicUserEndpoint {
         return CommonResponse(SbasConst.ResCode.SUCCESS, message, res)
     }
 
-    @Operation(summary = "사용자 휴대폰번호 중보 조회", description = "")
+    @Operation(summary = "사용자 휴대폰번호 중복 조회", description = "")
     @POST
     @Path("existcellp")
     fun existcellp(param: DuplicateParameters):  CommonResponse<*> {

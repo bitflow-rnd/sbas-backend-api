@@ -11,38 +11,34 @@ import javax.validation.constraints.Size
  */
 @Entity
 @Table(name = "base_code_egen")
-class BaseCodeEgen : CommonEntity() {
-
+class BaseCodeEgen(
     @EmbeddedId
-    var id: BaseCodeEgenId? = null
+    var id: BaseCodeEgenId,
 
     @Size(max = 100)
     @NotNull
     @Column(name = "cm_mnm", nullable = false, length = 100)
-    var cmMnm: String? = null // 코드 이름
+    var cmMnm: String, // 코드 이름
 
     @Size(max = 100)
     @NotNull
     @Column(name = "cm_snm", nullable = false, length = 100)
-    var cmSnm: String? = null // 코드 약어
-
-}
+    var cmSnm: String, // 코드 약어
+) : CommonEntity()
 
 @Embeddable
-class BaseCodeEgenId : Serializable {
-
+class BaseCodeEgenId(
     @Size(max = 10)
     @NotNull
     @Column(name = "cm_mid", nullable = false, length = 10)
-    var cmMid: String? = null // 대분류 코드
+    var cmMid: String, // 대분류 코드
 
     @Size(max = 10)
     @NotNull
     @Column(name = "cm_sid", nullable = false, length = 10)
-    var cmSid: String? = null // 소분류 코드
-
+    var cmSid: String, // 소분류 코드
+) : Serializable {
     companion object {
         private const val serialVersionUID = 8837760559231563619L
     }
-
 }

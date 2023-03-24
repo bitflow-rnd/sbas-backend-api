@@ -7,9 +7,7 @@ import javax.enterprise.context.ApplicationScoped
 @ApplicationScoped
 class BaseCodeRepository : PanacheRepositoryBase<BaseCode, BaseCodeId> {
 
-    fun findBaseCodeByCdGrpId(cdGrpId: String): List<BaseCode> {
-        return find("cd_grp_id = ?1", cdGrpId).list()
-    }
+    fun findBaseCodeByCdGrpId(cdGrpId: String): List<BaseCode> = find("cd_grp_id = ?1", cdGrpId).list()
 }
 
 @ApplicationScoped

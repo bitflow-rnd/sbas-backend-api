@@ -20,7 +20,7 @@ interface EgenRestClient {
     @GET
     @Path("CodeMast/info")
     fun getCodeMastInfo(@QueryParam("serviceKey") serviceKey: String, @QueryParam("CM_MID") cmMid: String,
-                        @QueryParam("pageNo") pageNo: String, @QueryParam("numOfRows") numOfRows: String): EgenCodeMastApiResponse
+                        @QueryParam("pageNo") pageNo: String, @QueryParam("numOfRows") numOfRows: String): String
 
     /**
      * 병‧의원 목록정보 조회

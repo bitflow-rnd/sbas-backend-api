@@ -27,7 +27,7 @@ class AdminCommonEndpoint {
     @Inject
     private lateinit var commonService: CommonService
 
-    @Operation(summary = "공통코드 그룹 조회", description = "공통코드 그룹 조회")
+    @Operation(summary = "공통코드 그룹 목록", description = "공통코드 그룹 목록")
     @GET
     @Path("codegrps")
     fun codegrps(): RestResponse<CommonResponse<List<BaseCode>>>? {
@@ -36,7 +36,7 @@ class AdminCommonEndpoint {
             null, commonService.findBaseCode())).build()
     }
 
-    @Operation(summary = "", description = "")
+    @Operation(summary = "공통코드 그룹 수정", description = "공통코드 그룹 수정")
     @POST
     @Path("modcodegrps/{param}")
     fun modcodegrps(@RestPath param: String): Response {
@@ -56,6 +56,7 @@ class AdminCommonEndpoint {
     @POST
     @Path("regcode")
     fun regcode(): Response {
+        commonService.saveBaseCode()
         return Response.ok().build()
     }
 

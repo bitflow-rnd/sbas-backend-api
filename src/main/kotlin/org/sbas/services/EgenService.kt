@@ -1,15 +1,21 @@
 package org.sbas.services
 
+import com.fasterxml.jackson.databind.ObjectMapper
 import org.eclipse.microprofile.config.inject.ConfigProperty
 import org.eclipse.microprofile.rest.client.inject.RestClient
 import org.jboss.logging.Logger
 import org.json.JSONObject
+import org.sbas.constants.EgenCmMid
+import org.sbas.dtos.EgenBaseCodeDto
+import org.sbas.dtos.toEntity
+import org.sbas.repositories.BaseCodeEgenRepository
 import org.sbas.restclients.EgenRestClient
 import org.sbas.restparameters.EgenApiBassInfoParams
 import org.sbas.restparameters.EgenApiLcInfoParams
 import org.sbas.restparameters.EgenApiListInfoParams
 import javax.enterprise.context.ApplicationScoped
 import javax.inject.Inject
+import javax.transaction.Transactional
 
 
 /**
@@ -21,6 +27,9 @@ class EgenService {
     @Inject
     lateinit var log: Logger
 
+    @Inject
+    private lateinit var baseCodeEgenRepository: BaseCodeEgenRepository
+
     @RestClient
     private lateinit var egenRestClient: EgenRestClient
 
@@ -30,13 +39,13 @@ class EgenService {
     /**
      * 코드 마스터 정보 조회
      */
-    fun getCodeMastInfo(): JSONObject {
+    fun getCodeMastInfo(cmMid: EgenCmMid): JSONObject {
         val jsonObject = JSONObject(
             egenRestClient.getCodeMastInfo(
                 serviceKey = serviceKey,
-                cmMid = "",
-                pageNo = "",
-                numOfRows = ""
+                cmMid = cmMid.name,
+                pageNo = "1",
+                numOfRows = "50"
             )
         )
         return extractBody(jsonObject)
@@ -164,6 +173,19 @@ class EgenService {
             )
         )
         return extractBody(jsonObject)
+    }
+
+    @Transactional
+    fun saveBaseCode() {
+
+        var res: EgenBaseCodeDto
+        EgenCmMid.values().forEach { egenCmMid ->
+            val jsonObject = getCodeMastInfo(egenCmMid)
+            jsonObject.getJSONArray("item").forEach {
+                res = ObjectMapper().readValue(it.toString(), EgenBaseCodeDto::class.java)
+                baseCodeEgenRepository.getEntityManager().merge(res.toEntity())
+            }
+        }
     }
 
     private fun extractBody(jsonObject: JSONObject): JSONObject {

@@ -3,6 +3,7 @@ package org.sbas.endpoints.admin
 import org.eclipse.microprofile.openapi.annotations.Operation
 import org.eclipse.microprofile.openapi.annotations.tags.Tag
 import org.jboss.logging.Logger
+import org.sbas.constants.EgenCmMid
 import org.sbas.restparameters.EgenApiBassInfoParams
 import org.sbas.restparameters.EgenApiLcInfoParams
 import org.sbas.restparameters.EgenApiListInfoParams
@@ -43,56 +44,75 @@ class AdminEgenEndpoint {
         return Response.ok().build()
     }
 
+    @Operation(summary = "E-GEN 코드마스터 정보 조회", description = "E-GEN 코드마스터 정보 조회")
+    @GET
+    @Path("getCodeMastInfo/{cmMid}")
+    fun codeMastInfo(cmMid: EgenCmMid): Response {
+        val res = egenService.getCodeMastInfo(cmMid).toString()
+        return makeToSuccessResponseWith(res)
+    }
+
     @Operation(summary = "병‧의원 목록정보 조회", description = "병‧의원 목록정보 조회")
     @GET
     @Path("hsptlMdcncList")
     fun hsptlMdcncList(param: EgenApiListInfoParams): Response {
-        return Response.ok(Response.Status.OK)
-            .entity(egenService.getHsptlMdcncListInfoInqire(param).toString())
-            .type(MediaType.APPLICATION_JSON_TYPE)
-            .build()
+        val res = egenService.getHsptlMdcncListInfoInqire(param).toString()
+        return makeToSuccessResponseWith(res)
     }
 
     @Operation(summary = "병‧의원 위치정보 조회", description = "")
     @GET
     @Path("hsptlMdcncLcInfo")
-    @Produces(MediaType.APPLICATION_JSON)
-    fun hsptlMdcncLcInfo(param: EgenApiLcInfoParams): String {
-        return egenService.getHsptlMdcncLcinfoInqire(param).toString()
+    fun hsptlMdcncLcInfo(param: EgenApiLcInfoParams): Response {
+        val res = egenService.getHsptlMdcncLcinfoInqire(param).toString()
+        return makeToSuccessResponseWith(res)
     }
 
     @Operation(summary = "병의원 기본정보 조회", description = "")
     @GET
     @Path("hsptlBassInfo")
-    @Produces(MediaType.APPLICATION_JSON)
-    fun hsptlBassInfo(param: EgenApiBassInfoParams): String {
-        return egenService.getHsptlBassInfoInqire(param).toString()
+    fun hsptlBassInfo(param: EgenApiBassInfoParams): Response {
+        val res = egenService.getHsptlBassInfoInqire(param).toString()
+        return makeToSuccessResponseWith(res)
     }
 
     @Operation(summary = "응급의료기관 목록정보 조회", description = "")
     @GET
     @Path("egytList")
-    @Produces(MediaType.APPLICATION_JSON)
-    @Consumes(MediaType.APPLICATION_JSON)
-    fun egytList(param: EgenApiListInfoParams): String {
-        return egenService.getEgytListInfoInqire(param).toString()
+    fun egytList(param: EgenApiListInfoParams): Response {
+        val res = egenService.getEgytListInfoInqire(param).toString()
+        return makeToSuccessResponseWith(res)
     }
 
     @Operation(summary = "응급의료기관 위치정보 조회", description = "")
     @GET
     @Path("egytLcInfo")
-    @Produces(MediaType.APPLICATION_JSON)
-    @Consumes(MediaType.APPLICATION_JSON)
-    fun egytLcInfo(param: EgenApiLcInfoParams): String {
-        return egenService.getEgytLcinfoInqire(param).toString()
+    fun egytLcInfo(param: EgenApiLcInfoParams): Response {
+        val res = egenService.getEgytLcinfoInqire(param).toString()
+        return makeToSuccessResponseWith(res)
     }
 
     @Operation(summary = "응급의료기관 기본정보 조회", description = "")
     @GET
     @Path("egytBassInfo")
-    @Produces(MediaType.APPLICATION_JSON)
-    @Consumes(MediaType.APPLICATION_JSON)
-    fun egytBassInfo(param: EgenApiBassInfoParams): String {
-        return egenService.getEgytBassInfoInqire(param).toString()
+    fun egytBassInfo(param: EgenApiBassInfoParams): Response {
+        val res = egenService.getEgytBassInfoInqire(param).toString()
+        return makeToSuccessResponseWith(res)
     }
+
+    @Operation(summary = "E-GEN 코드 목록 DB에 저장", description = "")
+    @GET
+    @Path("saveegencode")
+    fun saveEgenCode() {
+        egenService.saveBaseCode()
+    }
+
+    /**
+     * 조회 결과를 Response 객체로 만들어주는 function
+     */
+    private fun makeToSuccessResponseWith(res: String): Response =
+        Response.ok(Response.Status.OK)
+            .entity(res)
+            .type(MediaType.APPLICATION_JSON_TYPE)
+            .build()
 }

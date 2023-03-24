@@ -1,23 +1,14 @@
 package org.sbas.services
 
-import org.eclipse.microprofile.config.inject.ConfigProperty
 import org.eclipse.microprofile.jwt.JsonWebToken
-import org.eclipse.microprofile.rest.client.inject.RestClient
 import org.jboss.logging.Logger
-import org.sbas.constants.EgenConst
-import org.sbas.entities.base.BaseCodeEgen
-import org.sbas.entities.base.BaseCodeEgenId
 import org.sbas.entities.base.BaseCodeId
 import org.sbas.entities.info.InfoUser
 import org.sbas.parameters.BaseCodeRequest
-import org.sbas.repositories.BaseCodeEgenRepository
 import org.sbas.repositories.BaseCodeRepository
 import org.sbas.repositories.TestUserRepository
 import org.sbas.responses.BaseCodeResponse
-import org.sbas.responses.EgenCodeMastResponse
 import org.sbas.responses.StringResponse
-import org.sbas.restclients.EgenRestClient
-import org.sbas.restresponses.EgenCodeMastApiResponse.CodeMastBody.CodeMastItems.CodeMastItem
 import org.sbas.utils.TokenUtils
 import javax.enterprise.context.ApplicationScoped
 import javax.inject.Inject
@@ -41,16 +32,7 @@ class TestUserService {
     lateinit var repo1: BaseCodeRepository
 
     @Inject
-    lateinit var repo2: BaseCodeEgenRepository
-
-    @Inject
     lateinit var userRepo: TestUserRepository
-
-    @RestClient
-    lateinit var egenapi: EgenRestClient
-
-    @ConfigProperty(name = "restclient.egen.service.key")
-    lateinit var serviceKey: String
 
     @Transactional
     fun getBaseCode(): BaseCodeResponse {
@@ -64,40 +46,6 @@ class TestUserService {
             ret.cdNm = res1.cdNm
         }
         return ret
-    }
-
-    @Transactional
-    fun getCodeMast(): EgenCodeMastResponse {
-        val retlist = mutableListOf<CodeMastItem>()
-        val savelist = mutableListOf<BaseCodeEgen>()
-
-        for (cmMid: String in EgenConst.EGEN_GRP_CDS) {
-            val res = egenapi.getCodeMastInfo(serviceKey, cmMid, "1", "10")
-            if (res.header?.resultCode == EgenConst.SUCCESS) {
-                log.debug("SUCCESS")
-                //val list = ItemWrapper(res.body?.items?.item!!)
-                for (item in res.body?.items?.item!!) {
-                    log.debug("item")
-                    retlist.add(item)
-                    val entity = BaseCodeEgen()
-                    entity.id = BaseCodeEgenId()
-                    entity.id!!.cmMid = item.cmMid
-                    entity.id!!.cmSid = item.cmSid
-                    entity.cmMnm = item.cmMnm
-                    entity.cmSnm = item.cmSnm
-                    entity.rgstUserId = "method76"
-                    entity.updtUserId = "method76"
-                    savelist.add(entity)
-                }
-            }
-        }
-        try {
-//            repo2.persist(savelist)
-        } catch (e: Exception) {
-        } finally {
-
-        }
-        return EgenCodeMastResponse(retlist)
     }
 
     @Transactional

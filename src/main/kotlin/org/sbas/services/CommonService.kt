@@ -15,6 +15,7 @@ import org.sbas.repositories.BaseCodeRepository
 import javax.enterprise.context.ApplicationScoped
 import javax.inject.Inject
 import javax.transaction.Transactional
+import javax.ws.rs.NotFoundException
 
 
 /**
@@ -38,33 +39,51 @@ class CommonService {
     @Inject
     private lateinit var handler1: FileHandler
 
+    /**
+     * E-GEN 공통코드 목록 조회
+     * @param cmMid: 대분류 코드
+     */
     @Transactional
     @CacheResult(cacheName = "cmMid")
-    fun findEgenCode(cmMid: String): List<BaseCodeEgen> {
+    fun findEgenCodeByCmMid(cmMid: String): List<BaseCodeEgen> {
         return egenCodeRepository.find("cm_mid = ?1", cmMid).list()
     }
 
-    @Transactional
-    fun findBaseCode(): List<BaseCode> {
-        return baseCodeRepository.findAll().list()
-    }
-
+    /**
+     * 공통코드 목록 조회
+     * @param cdGrpId: 코드 그룹 ID
+     */
     @Transactional
     @CacheResult(cacheName = "cdGrpId")
     fun findBaseCodeByCdGrpId(@CacheKey cdGrpId: String): List<BaseCode> {
         return baseCodeRepository.findBaseCodeByCdGrpId(cdGrpId = cdGrpId)
     }
 
+    /**
+     * 시/도 목록 조회
+     */
     @Transactional
     @CacheResult(cacheName = "sido")
     fun findSidos(): List<BaseCode> {
         return baseCodeRepository.find("cd_grp_id = 'SIDO'").list()
     }
 
+    /**
+     * 시/군/구 목록 조회
+     * @param cdGrpId: 시/도의 코드 그룹 ID ex) SIDO11, SIDO26 ...
+     */
     @Transactional
     @CacheResult(cacheName = "cdGrpId")
     fun findGuguns(@CacheKey cdGrpId: String): List<BaseCode> {
-        return baseCodeRepository.find("cd_grp_id = ?1", cdGrpId).list()
+        return when {
+            cdGrpId.matches(Regex("^(SIDO)\\d+")) -> baseCodeRepository.find("cd_grp_id", cdGrpId).list()
+            else -> throw NotFoundException("$cdGrpId not found")
+        }
+    }
+
+    @Transactional
+    fun findBaseCode(): List<BaseCode> {
+        return baseCodeRepository.findAll().list()
     }
 
     @Transactional
@@ -89,6 +108,12 @@ class CommonService {
     @Transactional
     fun fileUpload(param1: String, param2: FileUpload) {
         val fileName = handler1.createPublicFile(param2)
+    }
+
+    @Transactional
+    fun saveBaseCode() {
+
+        TODO("Not yet implemented")
     }
 
 }
