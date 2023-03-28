@@ -3,12 +3,9 @@ package org.sbas.services
 import org.eclipse.microprofile.jwt.JsonWebToken
 import org.jboss.logging.Logger
 import org.sbas.entities.base.BaseCodeId
-import org.sbas.entities.info.InfoUser
 import org.sbas.parameters.BaseCodeRequest
 import org.sbas.repositories.BaseCodeRepository
-import org.sbas.repositories.TestUserRepository
 import org.sbas.responses.BaseCodeResponse
-import org.sbas.responses.StringResponse
 import org.sbas.utils.TokenUtils
 import javax.enterprise.context.ApplicationScoped
 import javax.inject.Inject
@@ -30,9 +27,6 @@ class TestUserService {
 
     @Inject
     lateinit var repo1: BaseCodeRepository
-
-    @Inject
-    lateinit var userRepo: TestUserRepository
 
     @Transactional
     fun getBaseCode(): BaseCodeResponse {

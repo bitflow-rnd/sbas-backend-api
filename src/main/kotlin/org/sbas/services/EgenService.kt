@@ -6,7 +6,7 @@ import org.eclipse.microprofile.rest.client.inject.RestClient
 import org.jboss.logging.Logger
 import org.json.JSONObject
 import org.sbas.constants.EgenCmMid
-import org.sbas.dtos.EgenBaseCodeDto
+import org.sbas.dtos.BaseCodeEgenSaveReq
 import org.sbas.dtos.toEntity
 import org.sbas.repositories.BaseCodeEgenRepository
 import org.sbas.restclients.EgenRestClient
@@ -180,11 +180,11 @@ class EgenService {
      */
     @Transactional
     fun saveEgenCode() {
-        var res: EgenBaseCodeDto
-        EgenCmMid.values().forEach { egenCmMid ->
-            val jsonObject = getCodeMastInfo(egenCmMid)
+        var res: BaseCodeEgenSaveReq
+        EgenCmMid.values().forEach {
+            egenCmMid -> val jsonObject = getCodeMastInfo(egenCmMid)
             jsonObject.getJSONArray("item").forEach {
-                res = ObjectMapper().readValue(it.toString(), EgenBaseCodeDto::class.java)
+                res = ObjectMapper().readValue(it.toString(), BaseCodeEgenSaveReq::class.java)
                 baseCodeEgenRepository.getEntityManager().merge(res.toEntity())
             }
         }

@@ -4,8 +4,7 @@ import io.quarkus.cache.CacheKey
 import io.quarkus.cache.CacheResult
 import org.jboss.logging.Logger
 import org.jboss.resteasy.reactive.multipart.FileUpload
-import org.sbas.dtos.BaseCodeDto
-import org.sbas.dtos.toEntity
+import org.sbas.dtos.*
 import org.sbas.entities.base.BaseAttc
 import org.sbas.entities.base.BaseCode
 import org.sbas.entities.base.BaseCodeEgen
@@ -85,11 +84,30 @@ class CommonService {
 
     /**
      * 공통코드 등록
-     * @param baseCodeDto
+     * @param bascCodeSaveReq
      */
     @Transactional
-    fun saveBaseCode(baseCodeDto: BaseCodeDto) {
-        baseCodeRepository.persist(baseCodeDto.toEntity())
+    fun saveBaseCode(bascCodeSaveReq: BascCodeSaveReq) {
+        baseCodeRepository.persist(bascCodeSaveReq.toEntity())
+    }
+
+    /**
+     * 공통코드 수정
+     */
+    @Transactional
+    fun updateBaseCode(baseCodeUpdateReq: BaseCodeUpdateReq): BaseCodeId {
+        val baseCodeId = baseCodeUpdateReq.getId()
+        val findBaseCode = baseCodeRepository.findById(baseCodeId) ?: throw NotFoundException("$baseCodeId Not found")
+        return baseCodeUpdateReq.update(findBaseCode)
+    }
+
+    /**
+     * 공통코드 삭제
+     */
+    @Transactional
+    fun deleteBaseCode(baseCodeUpdateReq: BaseCodeUpdateReq): Boolean {
+        val baseCodeId = baseCodeUpdateReq.getId()
+        return baseCodeRepository.deleteById(baseCodeId)
     }
 
     @Transactional

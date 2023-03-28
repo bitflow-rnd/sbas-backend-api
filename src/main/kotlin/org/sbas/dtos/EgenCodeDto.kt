@@ -5,14 +5,14 @@ import org.sbas.entities.base.BaseCodeEgenId
 import org.sbas.utils.NoArg
 
 @NoArg
-data class EgenBaseCodeDto (
+data class BaseCodeEgenSaveReq (
     var cmMid: String,
     var cmMnm: String,
     var cmSid: String,
     var cmSnm: String,
 )
 
-fun EgenBaseCodeDto.toEntity(): BaseCodeEgen {
+fun BaseCodeEgenSaveReq.toEntity(): BaseCodeEgen {
     val entity = BaseCodeEgen(
         id = BaseCodeEgenId(cmMid = this.cmMid, cmSid = this.cmSid),
         cmMnm = this.cmMnm,

@@ -7,7 +7,8 @@ import org.jboss.resteasy.reactive.RestPath
 import org.jboss.resteasy.reactive.RestResponse
 import org.jboss.resteasy.reactive.RestResponse.ResponseBuilder
 import org.sbas.constants.SbasConst
-import org.sbas.dtos.BaseCodeDto
+import org.sbas.dtos.BascCodeSaveReq
+import org.sbas.dtos.BaseCodeUpdateReq
 import org.sbas.entities.base.BaseCode
 import org.sbas.entities.base.BaseCodeId
 import org.sbas.responses.CommonResponse
@@ -56,23 +57,23 @@ class AdminCommonEndpoint {
     @Operation(summary = "공통코드 등록", description = "공통코드 등록")
     @POST
     @Path("regcode")
-    fun regcode(baseCodeDto: BaseCodeDto): Response {
-        commonService.saveBaseCode(baseCodeDto)
+    fun regcode(bascCodeSaveReq: BascCodeSaveReq): Response {
+        commonService.saveBaseCode(bascCodeSaveReq)
         return Response.ok().build()
     }
 
     @Operation(summary = "곻통코드 수정", description = "")
     @POST
-    @Path("modcode/{param}")
-    fun modcode(@RestPath param: String): Response {
-        return Response.ok().build()
+    @Path("modcode")
+    fun modcode(baseCodeUpdateReq: BaseCodeUpdateReq): CommonResponse<*> {
+        return CommonResponse(SbasConst.ResCode.SUCCESS, "success", commonService.updateBaseCode(baseCodeUpdateReq))
     }
 
     @Operation(summary = "공통코드 삭제", description = "")
     @POST
-    @Path("delcode/{param}")
-    fun delcode(@RestPath param: String): Response {
-        return Response.ok().build()
+    @Path("delcode")
+    fun delcode(baseCodeUpdateReq: BaseCodeUpdateReq): CommonResponse<*> {
+        return CommonResponse(SbasConst.ResCode.SUCCESS, "success", commonService.deleteBaseCode(baseCodeUpdateReq))
     }
 
     @Operation(summary = "", description = "")

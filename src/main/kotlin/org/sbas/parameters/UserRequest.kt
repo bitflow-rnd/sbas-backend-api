@@ -10,8 +10,8 @@ data class UserRequest (
 )
 
 data class modifyPwRequest (
-        @JsonProperty("id")
-        var id: String,
-        @JsonProperty("modifyPw")
-        var modifyPw: String,
+    @JsonProperty("id")
+    var id: String,
+    @JsonProperty("modifyPw")
+    var modifyPw: String,
 )
