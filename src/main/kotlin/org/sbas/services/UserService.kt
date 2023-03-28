@@ -10,7 +10,7 @@ import org.sbas.parameters.UserRequest
 import org.sbas.parameters.modifyPwRequest
 import org.sbas.repositories.UserInfoRepository
 import org.sbas.responses.StringResponse
-import org.sbas.responses.UserInfoListResponse
+import org.sbas.responses.InfoUserListResponse
 import org.sbas.restclients.NaverSensRestClient
 import org.sbas.restparameters.NaverSmsMsgApiParams
 import org.sbas.restparameters.NaverSmsReqMsgs
@@ -50,13 +50,13 @@ class UserService {
      * 백오피스에서 어드민(전산담당)이 처리하는 API
      */
     @Transactional
-    fun getUsers(searchData: String): UserInfoListResponse {
-        var userInfoListResponse = UserInfoListResponse()
+    fun getUsers(searchData: String): InfoUserListResponse {
+        var infoUserListResponse = InfoUserListResponse()
         val findList = repository.findLike(searchData)
 
-        userInfoListResponse.result = findList
+        infoUserListResponse.result = findList
 
-        return userInfoListResponse
+        return infoUserListResponse
     }
 
     /**
@@ -76,7 +76,7 @@ class UserService {
 
         naverSensClient.messages(naversensserviceid, NaverSmsMsgApiParams(
             SbasConst.MsgType.SMS, null, SbasConst.MSG_SEND_NO, null, "COMM",
-            smsSendRequest.name + "님 안녕하세요. 인증번호는 [ $rand ]입니다. 감사합니다.", null, null, null, mutableListOf(smsTo), null)
+            "안녕하세요. SBAS 인증번호는 [ $rand ]입니다. 감사합니다.", null, null, null, mutableListOf(smsTo), null)
         )
 
         return ret

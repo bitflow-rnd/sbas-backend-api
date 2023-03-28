@@ -2,9 +2,11 @@ package org.sbas.services
 
 import org.jboss.logging.Logger
 import org.sbas.entities.info.InfoCrew
+import org.sbas.parameters.InstCdParameters
 import org.sbas.repositories.InfoCrewRepository
 import org.sbas.repositories.InfoHospRepository
 import org.sbas.repositories.InfoInstRepository
+import org.sbas.responses.InfoInstResponse
 import javax.enterprise.context.ApplicationScoped
 import javax.inject.Inject
 import javax.transaction.Transactional
@@ -35,17 +37,10 @@ class OrganiztnService {
 
     /**
      * 구급대 목록 조회
-     * @param dstrCd1
-     * @param dstrCd2
      */
     @Transactional
-    fun findFireStatns(dstrCd1: String, dstrCd2: String): MutableMap<String, Any> {
-        val res = mutableMapOf<String, Any>()
-        val fireStatns = infoInstRepository.findFireStatns(dstrCd1, dstrCd2)
-        val count = fireStatns.size
-        res["fireStatns"] = fireStatns
-        res["count"] = count
-        return res
+    fun getInstCodes(param: InstCdParameters): InfoInstResponse {
+        return InfoInstResponse(infoInstRepository.findInstCodeList(param))
     }
 
     @Transactional

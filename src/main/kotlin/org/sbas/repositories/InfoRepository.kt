@@ -2,6 +2,7 @@ package org.sbas.repositories
 
 import io.quarkus.hibernate.orm.panache.kotlin.PanacheRepositoryBase
 import org.sbas.entities.info.*
+import org.sbas.parameters.InstCdParameters
 import javax.enterprise.context.ApplicationScoped
 
 @ApplicationScoped
@@ -22,6 +23,7 @@ class InfoHospRepository : PanacheRepositoryBase<InfoHosp, String>
 @ApplicationScoped
 class InfoInstRepository : PanacheRepositoryBase<InfoInst, String> {
 
-    fun findFireStatns(dstrCd1: String, dstrCd2: String) =
-        find("dstr_cd_1 = ?1 AND dstr_cd_2 = ?2", dstrCd1, dstrCd2).list()
+    fun findInstCodeList(param: InstCdParameters) =
+        find("dstr_cd_1 = ?1 AND dstr_cd_2 = ?2 AND inst_type_cd = ?3", param.dstrCd1, param.dstrCd2, param.instTypeCd).list()
+
 }
