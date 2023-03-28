@@ -5,7 +5,7 @@ import org.eclipse.microprofile.openapi.annotations.tags.Tag
 import org.jboss.logging.Logger
 import org.jboss.resteasy.reactive.RestPath
 import org.sbas.constants.SbasConst
-import org.sbas.parameters.DstrCdParameters
+import org.sbas.parameters.InstCdParameters
 import org.sbas.responses.CommonResponse
 import org.sbas.services.OrganiztnService
 import javax.inject.Inject
@@ -23,26 +23,25 @@ class PublicOrganiztnEndpoint {
     @Inject
     lateinit var organiztnService: OrganiztnService
 
-    @Operation(summary = "의료기관 목록", description = "")
-    @GET
-    @Path("medinsts")
-    fun medinsts(): Response {
-        return Response.ok().build()
-    }
+//    @Operation(summary = "의료기관 목록", description = "")
+//    @GET
+//    @Path("medinsts")
+//    fun medinsts(): Response {
+//        return Response.ok().build()
+//    }
+//
+//    @Operation(summary = "의료기관 상세", description = "")
+//    @GET
+//    @Path("medinst/{param}")
+//    fun medinst(@RestPath param: String): Response {
+//        return Response.ok().build()
+//    }
 
-    @Operation(summary = "의료기관 상세", description = "")
+    @Operation(summary = "기관코드 목록", description = "기관코드 목록")
     @GET
-    @Path("medinst/{param}")
-    fun medinst(@RestPath param: String): Response {
-        return Response.ok().build()
-    }
-
-    @Operation(summary = "구급대 목록", description = "특정 지역 코드에 해당하는 구급대 목록")
-    @GET
-    @Path("firestatns")
-    fun firestatns(param: DstrCdParameters): CommonResponse<*> {
-        val res = organiztnService.findFireStatns(param.dstrCd1, param.dstrCd2)
-        return CommonResponse(SbasConst.ResCode.SUCCESS, "success", res)
+    @Path("codes/inst-codes")
+    fun getInstCodes(param: InstCdParameters): Response {
+        return Response.ok(organiztnService.getInstCodes(param)).build()
     }
 
     @Operation(summary = "구급대 상세", description = "특정 구급대 소속의 구급대원 목록 및 차량번호 조회")
@@ -53,10 +52,10 @@ class PublicOrganiztnEndpoint {
         return CommonResponse(SbasConst.ResCode.SUCCESS, "find crew", infoCrew)
     }
 
-    @Operation(summary = "", description = "")
-    @GET
-    @Path("organiztns/{param}")
-    fun organiztns(@RestPath param: String): Response {
-        return Response.ok().build()
-    }
+//    @Operation(summary = "", description = "")
+//    @GET
+//    @Path("organiztns/{param}")
+//    fun organiztns(@RestPath param: String): Response {
+//        return Response.ok().build()
+//    }
 }
