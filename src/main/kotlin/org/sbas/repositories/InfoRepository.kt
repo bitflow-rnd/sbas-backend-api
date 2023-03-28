@@ -26,4 +26,6 @@ class InfoInstRepository : PanacheRepositoryBase<InfoInst, String> {
     fun findInstCodeList(param: InstCdParameters) =
         find("dstr_cd_1 = ?1 AND dstr_cd_2 = ?2 AND inst_type_cd = ?3", param.dstrCd1, param.dstrCd2, param.instTypeCd).list()
 
+    fun findFireStatns(param: InstCdParameters) =
+        find("inst_type_cd = 'ORGN0002' and dstr_cd_1 = ?1 and dstr_cd_2 = ?2", param.dstrCd1, param.dstrCd2).list()
 }

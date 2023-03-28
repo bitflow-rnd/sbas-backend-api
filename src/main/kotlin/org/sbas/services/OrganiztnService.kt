@@ -2,6 +2,7 @@ package org.sbas.services
 
 import org.jboss.logging.Logger
 import org.sbas.entities.info.InfoCrew
+import org.sbas.entities.info.InfoInst
 import org.sbas.parameters.InstCdParameters
 import org.sbas.repositories.InfoCrewRepository
 import org.sbas.repositories.InfoHospRepository
@@ -36,7 +37,7 @@ class OrganiztnService {
     }
 
     /**
-     * 구급대 목록 조회
+     * 기관코드 목록 조회
      */
     @Transactional
     fun getInstCodes(param: InstCdParameters): InfoInstResponse {
@@ -44,7 +45,14 @@ class OrganiztnService {
     }
 
     @Transactional
+    fun findFireStatns(param: InstCdParameters): List<InfoInst> {
+        return infoInstRepository.findFireStatns(param)
+    }
+
+    @Transactional
     fun findInfoCrews(instId: String): List<InfoCrew> {
         return infoCrewRepository.findInfoCrews(instId)
     }
+
+
 }

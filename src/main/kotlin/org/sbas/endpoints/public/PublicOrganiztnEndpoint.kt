@@ -44,6 +44,20 @@ class PublicOrganiztnEndpoint {
         return Response.ok(organiztnService.getInstCodes(param)).build()
     }
 
+    @Path("medinst/{param}")
+    fun medinst(@RestPath param: String): Response {
+        return Response.ok().build()
+    }
+
+    @Operation(summary = "구급대 목록", description = "특정 지역 코드에 해당하는 구급대 목록")
+    @GET
+    @Path("firestatns")
+    fun firestatns(param: InstCdParameters): CommonResponse<*> {
+        //TODO 검색조건 추가(구급대명, 구급대 ID)
+        val res = organiztnService.findFireStatns(param)
+        return CommonResponse(SbasConst.ResCode.SUCCESS, "success", res)
+    }
+
     @Operation(summary = "구급대 상세", description = "특정 구급대 소속의 구급대원 목록 및 차량번호 조회")
     @GET
     @Path("firestatn/{instId}")

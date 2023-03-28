@@ -1,6 +1,7 @@
 package org.sbas.dtos
 
 import org.sbas.entities.info.InfoPt
+import org.sbas.utils.NoArg
 
 data class InfoPtReq(
     val ptNm: String,
@@ -27,3 +28,14 @@ fun InfoPtReq.toEntity(): InfoPt {
         natiCd = this.natiCd,
     )
 }
+
+@NoArg
+data class NewsScoreParam(
+    var breath: Int,  // 분당호흡수
+    var spo2: Int,    // 산소포화도
+    var o2Apply: String, // 산소투여여부
+    var sbp: Int,     // 수축기혈압
+    var pulse: Int,   // 맥박
+    var avpu: String,    // 의식상태
+    var bdTemp: Double,  // 체온
+)

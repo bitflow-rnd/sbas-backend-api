@@ -14,7 +14,7 @@ import javax.ws.rs.ext.Provider
  */
 //TODO 수정필요
 @Provider
-class RuntimeExceptionMapper : ExceptionMapper<NotFoundException> {
+class NotFoundExceptionMapper : ExceptionMapper<NotFoundException> {
 
     override fun toResponse(exception: NotFoundException): Response {
         return Response.status(Response.Status.NOT_FOUND)

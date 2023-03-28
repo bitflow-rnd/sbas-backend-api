@@ -4,6 +4,7 @@ import org.jboss.logging.Logger
 import org.jboss.resteasy.reactive.multipart.FileUpload
 import org.sbas.constants.SbasConst
 import org.sbas.dtos.InfoPtReq
+import org.sbas.dtos.NewsScoreParam
 import org.sbas.dtos.toEntity
 import org.sbas.entities.base.BaseAttc
 import org.sbas.entities.info.InfoPt
@@ -44,8 +45,8 @@ class PatientService {
     @Transactional
     fun saveInfoPt(infoPtReq: InfoPtReq): StringResponse {
         val infoPt = infoPtReq.toEntity()
-        infoPt.rgstUserId = "jiseong"
-        infoPt.updtUserId = "jiseong"
+        infoPt.rgstUserId = "ADMIN"
+        infoPt.updtUserId = "ADMIN"
         infoPtRepository.persist(infoPt)
         return StringResponse(infoPt.id)
     }
@@ -62,6 +63,56 @@ class PatientService {
             return findInfoPt
         }
         return null
+    }
+
+    fun calculateNewsScore(param: NewsScoreParam): Int {
+        val list = mutableListOf<Int>()
+        when {
+            param.breath <= 8 -> list.add(0, 3)
+            param.breath in 9..11 -> list.add(0, 1)
+            param.breath in 12..20 -> list.add(0, 0)
+            param.breath in 21..24 -> list.add(0, 2)
+            else -> list.add(0, 3)
+        }
+        when {
+            param.spo2 <= 91 -> list.add(1, 3)
+            param.spo2 in 92..93 -> list.add(1, 2)
+            param.spo2 in 94..95 -> list.add(1, 1)
+            else -> list.add(1, 0)
+        }
+        when (param.o2Apply) {
+            "Oxygen" -> list.add(2, 2)
+            "Air" -> list.add(2, 0)
+            else -> list.add(2, 0)
+        }
+        when {
+            param.sbp <= 90 -> list.add(3,3)
+            param.sbp in 91..100 -> list.add(3,2)
+            param.sbp in 101..110 -> list.add(3,1)
+            param.sbp in 111..219 -> list.add(3,0)
+            else -> list.add(3,3)
+        }
+        when {
+            param.pulse <= 40 -> list.add(4, 3)
+            param.pulse in 41..50 -> list.add(4, 1)
+            param.pulse in 51..90 -> list.add(4, 0)
+            param.pulse in 91..110 -> list.add(4, 1)
+            param.pulse in 111..130 -> list.add(4, 2)
+            else -> list.add(4, 3)
+        }
+        when (param.avpu) {
+            "Alert" -> list.add(5, 0)
+            "CVPU" -> list.add(5, 3)
+            else -> list.add(5, 0)
+        }
+        when {
+            param.bdTemp <= 35.0 -> list.add(6, 3)
+            param.bdTemp in 35.1..36.0 -> list.add(6, 1)
+            param.bdTemp in 36.1..38.0 -> list.add(6, 0)
+            param.bdTemp in 38.1..39.0 -> list.add(6, 1)
+            param.bdTemp >= 39.1 -> list.add(6, 2)
+        }
+        return list.sum()
     }
 
     @Transactional

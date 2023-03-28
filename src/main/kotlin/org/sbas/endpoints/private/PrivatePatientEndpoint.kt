@@ -10,6 +10,7 @@ import org.jboss.resteasy.reactive.RestResponse.ResponseBuilder
 import org.jboss.resteasy.reactive.multipart.FileUpload
 import org.sbas.constants.SbasConst
 import org.sbas.dtos.InfoPtReq
+import org.sbas.dtos.NewsScoreParam
 import org.sbas.responses.CommonResponse
 import org.sbas.responses.StringResponse
 import org.sbas.responses.patient.EpidResult
@@ -104,18 +105,20 @@ class PrivatePatientEndpoint {
         return ResponseBuilder.ok<StringResponse>().build()
     }
 
-    @Operation(summary = "", description = "")
+    @Operation(summary = "중증정보 등록", description = "")
     @GET
     @Path("sevrinfo/{param1}/{param2}")
     fun sevrinfo(@RestPath param1: String, @RestPath param2: String):  RestResponse<StringResponse> {
         return ResponseBuilder.ok<StringResponse>().build()
     }
 
-    @Operation(summary = "", description = "")
+    @Operation(summary = "생체정보입력 분석", description = "생체정보 입력 시 경북대학교 로직(NEWS Score)에 따른 중증분류 값 리턴")
     @POST
     @Path("bioinfoanlys")
-    fun bioinfoanlys():  RestResponse<StringResponse> {
-        return ResponseBuilder.ok<StringResponse>().build()
+    //TODO 테이블(svrt_anly)에 값들 저장
+    fun bioinfoanlys(param: NewsScoreParam): RestResponse<Int>? {
+        patientService.calculateNewsScore(param)
+        return ResponseBuilder.ok(patientService.calculateNewsScore(param)).build()
     }
 
     @Operation(summary = "", description = "")
