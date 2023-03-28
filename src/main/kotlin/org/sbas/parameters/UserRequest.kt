@@ -8,3 +8,10 @@ data class UserRequest (
     @JsonProperty("adminId")
     var adminId: String,
 )
+
+data class modifyPwRequest (
+        @JsonProperty("id")
+        var id: String,
+        @JsonProperty("modifyPw")
+        var modifyPw: String,
+)

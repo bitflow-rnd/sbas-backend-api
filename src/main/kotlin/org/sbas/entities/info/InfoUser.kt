@@ -81,4 +81,7 @@ class InfoUser(
         @Column(name = "pw_err_cnt")
         var pwErrCnt: Int? = 0, // 비밀번호 오류 횟수
 
+        @Column(name = "auth_cd", length = 8)
+        var authCd: String = "" // 세부권한
+
 ) : CommonEntity()

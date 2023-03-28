@@ -58,13 +58,6 @@ class SbasTestEndpoint {
         return ret
     }
 
-    @POST
-    @Path("login")
-    @PermitAll
-    fun login(@RequestBody infoUser: InfoUser): Response {
-        return Response.ok(serv1.login(infoUser)).build()
-    }
-
     @GET
     @Path("user")
     @RolesAllowed("USER", "ADMIN")
