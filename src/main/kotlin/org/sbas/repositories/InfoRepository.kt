@@ -24,6 +24,11 @@ class InfoHospRepository : PanacheRepositoryBase<InfoHosp, String>
 class InfoInstRepository : PanacheRepositoryBase<InfoInst, String> {
 
     fun findInstCodeList(param: InstCdParameters) =
-        find("dstr_cd_1 = ?1 AND dstr_cd_2 = ?2 AND inst_type_cd = ?3", param.dstrCd1, param.dstrCd2, param.instTypeCd).list()
+        find(
+            "select i from InfoInst i where " +
+                "('${param.dstrCd1}' = 'null' or i.dstrCd1 = '${param.dstrCd1}') and " +
+                "('${param.dstrCd2}' = 'null' or i.dstrCd2 = '${param.dstrCd2}') and " +
+                "('${param.instTypeCd}' = 'null' or i.instTypeCd = '${param.instTypeCd}')"
+        ).list()
 
 }

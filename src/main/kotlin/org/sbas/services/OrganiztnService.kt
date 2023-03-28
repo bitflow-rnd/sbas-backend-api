@@ -6,6 +6,7 @@ import org.sbas.parameters.InstCdParameters
 import org.sbas.repositories.InfoCrewRepository
 import org.sbas.repositories.InfoHospRepository
 import org.sbas.repositories.InfoInstRepository
+import org.sbas.responses.CommonResponse
 import org.sbas.responses.InfoInstResponse
 import javax.enterprise.context.ApplicationScoped
 import javax.inject.Inject
@@ -40,6 +41,7 @@ class OrganiztnService {
      */
     @Transactional
     fun getInstCodes(param: InstCdParameters): InfoInstResponse {
+        CommonResponse(infoInstRepository.findInstCodeList(param))
         return InfoInstResponse(infoInstRepository.findInstCodeList(param))
     }
 

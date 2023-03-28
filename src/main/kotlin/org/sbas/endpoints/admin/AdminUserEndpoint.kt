@@ -54,8 +54,8 @@ class AdminUserEndpoint {
 
     @Operation(summary = "", description = "")
     @POST
-    @Path("invit")
-    fun invit(): Response {
+    @Path("invite")
+    fun invite(): Response {
         return Response.ok().build()
     }
 
