@@ -4,9 +4,9 @@ import org.eclipse.microprofile.openapi.annotations.Operation
 import org.eclipse.microprofile.openapi.annotations.tags.Tag
 import org.jboss.logging.Logger
 import org.sbas.parameters.UserRequest
+import org.sbas.parameters.modifyPwRequest
 import org.sbas.responses.StringResponse
 import org.sbas.services.UserService
-import javax.annotation.security.PermitAll
 import javax.inject.Inject
 import javax.validation.Valid
 import javax.ws.rs.GET
@@ -28,6 +28,7 @@ class AdminUserEndpoint {
 
     @Operation(summary = "사용자등록 승인", description = "백오피스에서 어드민(전산담당)이 처리하는 사용자 등록 승인 API")
     @POST
+//    @RolesAllowed("ADMIN")
     @Path("reg")
     fun reg(@Valid request: UserRequest): Response {
         return try {
@@ -45,7 +46,7 @@ class AdminUserEndpoint {
 
     @Operation(summary = "사용자 목록", description = "백오피스에서 어드민(전산담당)이 처리하는 사용자 목록 API")
     @GET
-    @PermitAll
+//    @RolesAllowed("ADMIN")
     @Path("users")
     fun getUsers(@QueryParam("searchData") requestData: String): Response {
         return Response.ok(userService.getUsers(requestData)).build()
@@ -60,6 +61,7 @@ class AdminUserEndpoint {
 
     @Operation(summary = "사용자 삭제", description = "백오피스에서 어드민(전산담당)이 처리하는 사용자 삭제 API")
     @POST
+//    @RolesAllowed("ADMIN")
     @Path("del")
     fun deleteUser(@Valid request: UserRequest): Response {
         return try {
@@ -81,4 +83,22 @@ class AdminUserEndpoint {
     fun initpw(): Response {
         return Response.ok().build()
     }
+
+    @Operation(summary = "", description = "")
+    @POST
+    @Path("modpw")
+    fun modifyPw(@Valid modifyPwRequest: modifyPwRequest): Response {
+        return try {
+            Response.ok(userService.modifyPw(modifyPwRequest)).build()
+        }catch (e:Exception){
+            val res = StringResponse()
+            res.code = "01"
+            res.message = e.localizedMessage
+            Response.status(Response.Status.INTERNAL_SERVER_ERROR)
+                    .entity(res)
+                    .type(MediaType.APPLICATION_JSON)
+                    .build()
+        }
+    }
+
 }

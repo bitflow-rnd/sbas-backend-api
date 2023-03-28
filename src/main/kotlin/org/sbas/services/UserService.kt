@@ -7,12 +7,14 @@ import org.sbas.constants.SbasConst
 import org.sbas.entities.info.InfoUser
 import org.sbas.parameters.SmsSendRequest
 import org.sbas.parameters.UserRequest
+import org.sbas.parameters.modifyPwRequest
 import org.sbas.repositories.UserInfoRepository
 import org.sbas.responses.StringResponse
 import org.sbas.responses.UserInfoListResponse
 import org.sbas.restclients.NaverSensRestClient
 import org.sbas.restparameters.NaverSmsMsgApiParams
 import org.sbas.restparameters.NaverSmsReqMsgs
+import org.sbas.utils.TokenUtils
 import java.time.Instant
 import javax.enterprise.context.ApplicationScoped
 import javax.inject.Inject
@@ -100,7 +102,21 @@ class UserService {
         findUser.updtUserId = request.adminId
 
         return StringResponse("${request.id} 계정을 삭제하였습니다.")
+    }
 
+    @Transactional
+    fun modifyPw(modifyPwRequest: modifyPwRequest): StringResponse {
+        val response: StringResponse = StringResponse()
+        val findUser = repository.findByUserId(modifyPwRequest.id)
+
+        if(findUser != null){
+            findUser.pw = modifyPwRequest.modifyPw
+            response.result = "SUCCESS"
+        }else {
+            response.result = "FAIL"
+        }
+
+        return response
     }
 
     /**
@@ -125,6 +141,35 @@ class UserService {
             repository.existByTelNo(telno) -> Pair(true, "이미 사용중인 번호입니다.")
             else -> Pair(false, "사용 가능한 번호입니다.")
         }
+    }
+
+    /**
+     * 로그인
+     */
+    @Transactional
+    fun login(infoUser: InfoUser): StringResponse{
+        val findUser = repository.findByUserId(infoUser.id!!)
+
+        return if(findUser!!.pw.equals(infoUser.pw)){
+            if(findUser.statClas.startsWith("URST")){
+                StringResponse(TokenUtils.generateUserToken(findUser.id!!))
+            }else {
+                StringResponse(TokenUtils.generateAdminToken(findUser.id!!))
+            }
+        }else {
+            StringResponse("사용자 정보가 일치하지 않습니다.")
+        }
+    }
+
+    /**
+     * 아이디 찾기
+     */
+    @Transactional
+    fun findId(infoUser: InfoUser): StringResponse{
+        val findUser = repository.findId(infoUser)
+
+        return StringResponse(findUser!!.id)
+
     }
 
 }

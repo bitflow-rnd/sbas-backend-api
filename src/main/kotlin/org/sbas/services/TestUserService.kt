@@ -60,17 +60,6 @@ class TestUserService {
     }
 
     @Transactional
-    fun login(infoUser: InfoUser): StringResponse{
-        val findUser = userRepo.findByUserId(infoUser.id!!)
-
-        return if(findUser!!.pw.equals(infoUser.pw)){
-            StringResponse(TokenUtils.generateUserToken(findUser.id!!))
-        }else {
-            StringResponse("FAIL")
-        }
-    }
-
-    @Transactional
     fun getUser(): JsonWebToken{
         return jwt
     }

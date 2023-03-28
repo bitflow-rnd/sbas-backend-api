@@ -83,15 +83,36 @@ class PublicUserEndpoint {
     @Operation(summary = "", description = "")
     @POST
     @Path("login")
-    fun login(): Response {
-       return Response.ok().build()
+    fun login(@Valid infoUser: InfoUser): Response {
+       return try {
+           Response.ok(userService.login(infoUser)).build()
+       }catch (e: Exception){
+           val res = StringResponse()
+           res.code = "01"
+           res.message = e.localizedMessage
+           Response.status(Response.Status.INTERNAL_SERVER_ERROR)
+                   .entity(res)
+                   .type(MediaType.APPLICATION_JSON)
+                   .build()
+       }
+
     }
 
     @Operation(summary = "", description = "")
     @POST
     @Path("findid")
-    fun findid(): Response {
-        return Response.ok().build()
+    fun findId(@Valid infoUser: InfoUser): Response {
+        return try{
+            Response.ok(userService.findId(infoUser)).build()
+        }catch (e: Exception){
+            val res = StringResponse()
+            res.code = "01"
+            res.message = e.localizedMessage
+            Response.status(Response.Status.INTERNAL_SERVER_ERROR)
+                    .entity(res)
+                    .type(MediaType.APPLICATION_JSON)
+                    .build()
+        }
     }
 
     @Operation(summary = "", description = "")
