@@ -9,8 +9,8 @@ import org.sbas.parameters.SmsSendRequest
 import org.sbas.parameters.UserRequest
 import org.sbas.parameters.modifyPwRequest
 import org.sbas.repositories.UserInfoRepository
+import org.sbas.responses.CommonResponse
 import org.sbas.responses.StringResponse
-import org.sbas.responses.InfoUserListResponse
 import org.sbas.restclients.NaverSensRestClient
 import org.sbas.restparameters.NaverSmsMsgApiParams
 import org.sbas.restparameters.NaverSmsReqMsgs
@@ -50,27 +50,20 @@ class UserService {
      * 백오피스에서 어드민(전산담당)이 처리하는 API
      */
     @Transactional
-    fun getUsers(searchData: String): InfoUserListResponse {
-        var infoUserListResponse = InfoUserListResponse()
-        val findList = repository.findLike(searchData)
+    fun getUsers(searchData: String): CommonResponse<List<InfoUser>> {
 
-        infoUserListResponse.result = findList
-
-        return infoUserListResponse
+        return CommonResponse(repository.findLike(searchData))
     }
 
     /**
      * 본인인증 SMS/MMS 메시지 발송
      */
     @Transactional
-    fun sendIdentifySms(smsSendRequest: SmsSendRequest): StringResponse {
-        val ret = StringResponse()
-
+    fun sendIdentifySms(smsSendRequest: SmsSendRequest): CommonResponse<String> {
         var rand = ""
         for(i: Int in 0..5){
             rand += ('0'..'9').random()
         }
-        ret.result = rand
 
         val smsTo = NaverSmsReqMsgs("", "", smsSendRequest.to!!)
 
@@ -79,11 +72,11 @@ class UserService {
             "안녕하세요. SBAS 인증번호는 [ $rand ]입니다. 감사합니다.", null, null, null, mutableListOf(smsTo), null)
         )
 
-        return ret
+        return CommonResponse(rand)
     }
 
     @Transactional
-    fun reg(request: UserRequest): StringResponse {
+    fun reg(request: UserRequest): CommonResponse<String> {
         var findUser = repository.findByUserId(request.id)
 
         findUser!!.aprvDttm = Instant.now()
@@ -91,17 +84,17 @@ class UserService {
         findUser.updtUserId = request.adminId
         findUser.aprvUserId = request.adminId
 
-        return StringResponse("${findUser.userNm}님 사용자 등록을 승인하였습니다.")
+        return CommonResponse("${findUser.userNm}님 사용자 등록을 승인하였습니다.")
     }
 
     @Transactional
-    fun deleteUser(request: UserRequest): StringResponse {
+    fun deleteUser(request: UserRequest): CommonResponse<String> {
         val findUser = repository.findByUserId(request.id)
 
         findUser!!.statClas = "DEL"
         findUser.updtUserId = request.adminId
 
-        return StringResponse("${request.id} 계정을 삭제하였습니다.")
+        return CommonResponse("${request.id} 계정을 삭제하였습니다.")
     }
 
     @Transactional

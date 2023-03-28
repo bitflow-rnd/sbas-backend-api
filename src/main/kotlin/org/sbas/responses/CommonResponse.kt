@@ -14,5 +14,14 @@ data class CommonResponse<T>(
     val message: String?,
     val result: T?
 ){
-    constructor() : this(SbasConst.ResCode.FAIL, null, null )
+//    constructor() : this(SbasConst.ResCode.FAIL, null, null )
+
+    constructor(result: T): this(SbasConst.ResCode.SUCCESS, "SUCCESS", result)
+
+    constructor(message: String, result: T): this(SbasConst.ResCode.SUCCESS, message, result)
+
+    fun fail(e: Exception) : CommonResponse<Exception> {
+        return CommonResponse(SbasConst.ResCode.FAIL, e.message, null)
+    }
+
 }
