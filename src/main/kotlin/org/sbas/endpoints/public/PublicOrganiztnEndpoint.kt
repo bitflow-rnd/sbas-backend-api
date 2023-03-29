@@ -2,6 +2,7 @@ package org.sbas.endpoints.public
 
 import org.eclipse.microprofile.openapi.annotations.Operation
 import org.eclipse.microprofile.openapi.annotations.tags.Tag
+import org.hibernate.validator.constraints.Length
 import org.jboss.logging.Logger
 import org.jboss.resteasy.reactive.RestPath
 import org.sbas.constants.SbasConst
@@ -11,6 +12,7 @@ import org.sbas.services.OrganiztnService
 import javax.inject.Inject
 import javax.ws.rs.GET
 import javax.ws.rs.Path
+import javax.ws.rs.QueryParam
 import javax.ws.rs.core.Response
 
 @Tag(name = "기관 조회(공개 권한용)", description = "비 로그인 사용자 - 기관 정보 조회")
@@ -39,9 +41,11 @@ class PublicOrganiztnEndpoint {
 
     @Operation(summary = "기관코드 목록", description = "기관코드 목록")
     @GET
-    @Path("codes/inst-codes")
-    fun getInstCodes(param: InstCdParameters): Response {
-        return Response.ok(organiztnService.getInstCodes(param)).build()
+    @Path("codes")
+    fun getInstCodes(@QueryParam("dstrCd1") @Length(max = 2) dstrCd1: String?,
+                     @QueryParam("dstrCd2") @Length(max = 4) dstrCd2: String?,
+                     @QueryParam("instTypeCd") instTypeCd: String?): Response {
+        return Response.ok(organiztnService.getInstCodes(dstrCd1, dstrCd2, instTypeCd)).build()
     }
 
     @Path("medinst/{param}")

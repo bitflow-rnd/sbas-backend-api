@@ -79,13 +79,6 @@ class AdminUserEndpoint {
 
     @Operation(summary = "", description = "")
     @POST
-    @Path("initpw")
-    fun initpw(): Response {
-        return Response.ok().build()
-    }
-
-    @Operation(summary = "", description = "")
-    @POST
     @Path("modpw")
     fun modifyPw(@Valid modifyPwRequest: modifyPwRequest): Response {
         return try {

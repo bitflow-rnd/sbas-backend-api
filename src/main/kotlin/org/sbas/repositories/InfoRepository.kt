@@ -23,14 +23,17 @@ class InfoHospRepository : PanacheRepositoryBase<InfoHosp, String>
 @ApplicationScoped
 class InfoInstRepository : PanacheRepositoryBase<InfoInst, String> {
 
-    fun findInstCodeList(param: InstCdParameters) =
+    fun findInstCodeList(dstrCd1: String, dstrCd2: String, instTypeCd: String) =
         find(
             "select i from InfoInst i where " +
-                "('${param.dstrCd1}' = 'null' or i.dstrCd1 = '${param.dstrCd1}') and " +
-                "('${param.dstrCd2}' = 'null' or i.dstrCd2 = '${param.dstrCd2}') and " +
-                "('${param.instTypeCd}' = 'null' or i.instTypeCd = '${param.instTypeCd}')"
+                "('$dstrCd1' = '' or i.dstrCd1 = '$dstrCd1') and " +
+                "('$dstrCd2' = '' or i.dstrCd2 = '$dstrCd2') and " +
+                "('$instTypeCd' = '' or i.instTypeCd = '$instTypeCd')"
         ).list()
 
     fun findFireStatns(param: InstCdParameters) =
         find("inst_type_cd = 'ORGN0002' and dstr_cd_1 = ?1 and dstr_cd_2 = ?2", param.dstrCd1!!, param.dstrCd2!!).list()
 }
+
+@ApplicationScoped
+class InfoCertRepository : PanacheRepositoryBase<InfoCert, String>
