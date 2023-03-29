@@ -8,6 +8,7 @@ import org.sbas.entities.info.InfoUser
 import org.sbas.parameters.CheckCertNoRequest
 import org.sbas.parameters.DuplicateParameters
 import org.sbas.parameters.SmsSendRequest
+import org.sbas.parameters.LoginRequest
 import org.sbas.responses.CommonResponse
 import org.sbas.responses.StringResponse
 import org.sbas.services.UserService
@@ -64,7 +65,7 @@ class PublicUserEndpoint {
         return Response.ok(userService.checkCertNo(checkCertNoRequest)).build()
     }
 
-    @Operation(summary = "", description = "")
+    @Operation(summary = "사용자 등록 요청", description = "사용자 조직 사용자 또는 어드민에게 요청 전송 API")
     @POST
     @Path("requserreg")
     fun reqUserReg(@Valid infoUser: InfoUser): Response {
@@ -81,12 +82,12 @@ class PublicUserEndpoint {
         }
     }
 
-    @Operation(summary = "", description = "")
+    @Operation(summary = "로그인", description = "로그인 API")
     @POST
     @Path("login")
-    fun login(@Valid infoUser: InfoUser): Response {
+    fun login(@Valid loginRequest: LoginRequest): Response {
        return try {
-           Response.ok(userService.login(infoUser)).build()
+           Response.ok(userService.login(loginRequest)).build()
        }catch (e: Exception){
            val res = StringResponse()
            res.code = "01"
@@ -99,7 +100,7 @@ class PublicUserEndpoint {
 
     }
 
-    @Operation(summary = "", description = "")
+    @Operation(summary = "아이디찾기", description = "아이디 찾기 API")
     @POST
     @Path("findid")
     fun findId(@Valid infoUser: InfoUser): Response {
@@ -114,13 +115,6 @@ class PublicUserEndpoint {
                     .type(MediaType.APPLICATION_JSON)
                     .build()
         }
-    }
-
-    @Operation(summary = "", description = "")
-    @POST
-    @Path("findpw")
-    fun findpw(): Response {
-        return Response.ok().build()
     }
 
 }

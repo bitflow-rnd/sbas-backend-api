@@ -4,7 +4,7 @@ import org.eclipse.microprofile.openapi.annotations.Operation
 import org.eclipse.microprofile.openapi.annotations.tags.Tag
 import org.jboss.logging.Logger
 import org.sbas.parameters.UserRequest
-import org.sbas.parameters.modifyPwRequest
+import org.sbas.parameters.ModifyPwRequest
 import org.sbas.responses.StringResponse
 import org.sbas.services.UserService
 import javax.inject.Inject
@@ -80,7 +80,7 @@ class AdminUserEndpoint {
     @Operation(summary = "", description = "")
     @POST
     @Path("modpw")
-    fun modifyPw(@Valid modifyPwRequest: modifyPwRequest): Response {
+    fun modifyPw(@Valid modifyPwRequest: ModifyPwRequest): Response {
         return try {
             Response.ok(userService.modifyPw(modifyPwRequest)).build()
         }catch (e:Exception){

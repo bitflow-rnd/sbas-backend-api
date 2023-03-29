@@ -9,9 +9,16 @@ data class UserRequest (
     var adminId: String,
 )
 
-data class modifyPwRequest (
+data class ModifyPwRequest (
     @JsonProperty("id")
     var id: String,
     @JsonProperty("modifyPw")
     var modifyPw: String,
+)
+
+data class LoginRequest (
+    @JsonProperty("id")
+    var id: String,
+    @JsonProperty("pw")
+    var pw: String,
 )
