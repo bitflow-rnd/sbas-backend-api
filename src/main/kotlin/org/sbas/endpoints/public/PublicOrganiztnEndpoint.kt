@@ -6,6 +6,7 @@ import org.hibernate.validator.constraints.Length
 import org.jboss.logging.Logger
 import org.jboss.resteasy.reactive.RestPath
 import org.sbas.constants.SbasConst
+import org.sbas.entities.info.InfoHosp
 import org.sbas.parameters.InstCdParameters
 import org.sbas.responses.CommonResponse
 import org.sbas.services.OrganiztnService
@@ -25,19 +26,20 @@ class PublicOrganiztnEndpoint {
     @Inject
     lateinit var organiztnService: OrganiztnService
 
-//    @Operation(summary = "의료기관 목록", description = "")
-//    @GET
-//    @Path("medinsts")
-//    fun medinsts(): Response {
-//        return Response.ok().build()
-//    }
-//
-//    @Operation(summary = "의료기관 상세", description = "")
-//    @GET
-//    @Path("medinst/{param}")
-//    fun medinst(@RestPath param: String): Response {
-//        return Response.ok().build()
-//    }
+    @Operation(summary = "의료기관 목록", description = "")
+    @GET
+    @Path("medinsts")
+    fun medinsts(): CommonResponse<List<InfoHosp>> {
+        //TODO 검색조건 추가
+        return CommonResponse(organiztnService.findInfoHospList())
+    }
+
+    @Operation(summary = "의료기관 상세", description = "")
+    @GET
+    @Path("medinst/{hospId}")
+    fun medinst(@RestPath hospId: String): CommonResponse<InfoHosp> {
+        return CommonResponse(organiztnService.findInfoHospById(hospId))
+    }
 
     @Operation(summary = "기관코드 목록", description = "기관코드 목록")
     @GET
@@ -46,11 +48,6 @@ class PublicOrganiztnEndpoint {
                      @QueryParam("dstrCd2") @Length(max = 4) dstrCd2: String?,
                      @QueryParam("instTypeCd") instTypeCd: String?): Response {
         return Response.ok(organiztnService.getInstCodes(dstrCd1, dstrCd2, instTypeCd)).build()
-    }
-
-    @Path("medinst/{param}")
-    fun medinst(@RestPath param: String): Response {
-        return Response.ok().build()
     }
 
     @Operation(summary = "구급대 목록", description = "특정 지역 코드에 해당하는 구급대 목록")

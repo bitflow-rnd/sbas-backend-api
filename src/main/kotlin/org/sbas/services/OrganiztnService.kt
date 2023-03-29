@@ -2,16 +2,17 @@ package org.sbas.services
 
 import org.jboss.logging.Logger
 import org.sbas.entities.info.InfoCrew
+import org.sbas.entities.info.InfoHosp
 import org.sbas.entities.info.InfoInst
 import org.sbas.parameters.InstCdParameters
 import org.sbas.repositories.InfoCrewRepository
 import org.sbas.repositories.InfoHospRepository
 import org.sbas.repositories.InfoInstRepository
 import org.sbas.responses.CommonResponse
-import org.sbas.responses.InfoInstResponse
 import javax.enterprise.context.ApplicationScoped
 import javax.inject.Inject
 import javax.transaction.Transactional
+import javax.ws.rs.NotFoundException
 
 
 /**
@@ -32,9 +33,19 @@ class OrganiztnService {
     @Inject
     private lateinit var infoInstRepository: InfoInstRepository
 
+    /**
+     * 의료기관(병원) 목록 조회
+     */
     @Transactional
-    fun findInfoHosp() {
-        val infoHospList = infoHospRepository.findAll().list()
+    fun findInfoHospList(): List<InfoHosp> {
+        return infoHospRepository.findAll().list()
+    }
+
+    /**
+     * 의료기관 상세 조회
+     */
+    fun findInfoHospById(hospId: String): InfoHosp {
+        return infoHospRepository.findById(hospId) ?: throw NotFoundException("$hospId Not found")
     }
 
     /**
@@ -54,6 +65,4 @@ class OrganiztnService {
     fun findInfoCrews(instId: String): List<InfoCrew> {
         return infoCrewRepository.findInfoCrews(instId)
     }
-
-
 }

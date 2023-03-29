@@ -45,7 +45,7 @@ class EgenService {
                 serviceKey = serviceKey,
                 cmMid = cmMid.name,
                 pageNo = "1",
-                numOfRows = "50"
+                numOfRows = "2000"
             )
         )
         return extractBody(jsonObject)
