@@ -6,10 +6,7 @@ import org.jboss.logging.Logger
 import org.sbas.constants.SbasConst
 import org.sbas.entities.info.InfoCert
 import org.sbas.entities.info.InfoUser
-import org.sbas.parameters.CheckCertNoRequest
-import org.sbas.parameters.SmsSendRequest
-import org.sbas.parameters.UserRequest
-import org.sbas.parameters.modifyPwRequest
+import org.sbas.parameters.*
 import org.sbas.repositories.InfoCertRepository
 import org.sbas.repositories.InfoUserRepository
 import org.sbas.responses.CommonResponse
@@ -118,7 +115,7 @@ class UserService {
     }
 
     @Transactional
-    fun modifyPw(modifyPwRequest: modifyPwRequest): CommonResponse<String> {
+    fun modifyPw(modifyPwRequest: ModifyPwRequest): CommonResponse<String> {
         val findUser = userRepository.findByUserId(modifyPwRequest.id)
 
         return if(findUser != null){
@@ -157,14 +154,15 @@ class UserService {
      * 로그인
      */
     @Transactional
-    fun login(infoUser: InfoUser): CommonResponse<String>{
-        val findUser = userRepository.findByUserId(infoUser.id!!)
+    fun login(loginRequest: LoginRequest): CommonResponse<String>{
+        val findUser = userRepository.findByUserId(loginRequest.id)
 
-        return if(findUser!!.pw.equals(infoUser.pw)){
+        return if(findUser!!.pw.equals(loginRequest.pw)){
+            val token = TokenUtils.generateUserToken(findUser.id!!)
             if(findUser.statClas.startsWith("URST")){
-                CommonResponse(TokenUtils.generateUserToken(findUser.id!!))
+                CommonResponse(token)
             }else {
-                CommonResponse(TokenUtils.generateAdminToken(findUser.id!!))
+                CommonResponse(token)
             }
         }else {
             CommonResponse("사용자 정보가 일치하지 않습니다.")
