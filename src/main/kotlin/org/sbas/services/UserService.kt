@@ -4,11 +4,14 @@ import org.eclipse.microprofile.config.inject.ConfigProperty
 import org.eclipse.microprofile.rest.client.inject.RestClient
 import org.jboss.logging.Logger
 import org.sbas.constants.SbasConst
+import org.sbas.entities.info.InfoCert
 import org.sbas.entities.info.InfoUser
+import org.sbas.parameters.CheckCertNoRequest
 import org.sbas.parameters.SmsSendRequest
 import org.sbas.parameters.UserRequest
 import org.sbas.parameters.modifyPwRequest
-import org.sbas.repositories.UserInfoRepository
+import org.sbas.repositories.InfoCertRepository
+import org.sbas.repositories.InfoUserRepository
 import org.sbas.responses.CommonResponse
 import org.sbas.responses.StringResponse
 import org.sbas.restclients.NaverSensRestClient
@@ -24,16 +27,19 @@ import javax.transaction.Transactional
 class UserService {
 
     @Inject
-    lateinit var log: Logger
+    private lateinit var log: Logger
 
     @Inject
-    lateinit var repository: UserInfoRepository
+    private lateinit var userRepository: InfoUserRepository
+
+    @Inject
+    private lateinit var certRepository: InfoCertRepository
 
     @RestClient
-    lateinit var naverSensClient: NaverSensRestClient
+    private lateinit var naverSensClient: NaverSensRestClient
 
     @ConfigProperty(name = "restclient.naversens.serviceid")
-    lateinit var naversensserviceid: String
+    private lateinit var naversensserviceid: String
 
     @Transactional
     fun reqUserReg(infoUser: InfoUser): StringResponse {
@@ -41,7 +47,7 @@ class UserService {
         infoUser.rgstUserId = "admin"
         infoUser.updtUserId = "admin"
 
-        repository.persist(infoUser)
+        userRepository.persist(infoUser)
 
         return StringResponse("${infoUser.userNm}님 사용자 등록을 요청하였습니다.")
     }
@@ -52,7 +58,7 @@ class UserService {
     @Transactional
     fun getUsers(searchData: String): CommonResponse<List<InfoUser>> {
 
-        return CommonResponse(repository.findLike(searchData))
+        return CommonResponse(userRepository.findLike(searchData))
     }
 
     /**
@@ -72,12 +78,26 @@ class UserService {
             "안녕하세요. SBAS 인증번호는 [ $rand ]입니다. 감사합니다.", null, null, null, mutableListOf(smsTo), null)
         )
 
+        val now = Instant.now()
+
+        var findCert = certRepository.find("phone_no", smsSendRequest.to!!).firstResult()
+
+        if(findCert == null) {
+            val insertCertNo = InfoCert(smsSendRequest.to!!, rand, now, now.plusSeconds(180))
+
+            certRepository.persist(insertCertNo)
+        }else {
+            findCert.certNo = rand
+            findCert.createdDttm = now
+            findCert.expiresDttm = now.plusSeconds(180)
+        }
+
         return CommonResponse(rand)
     }
 
     @Transactional
     fun reg(request: UserRequest): CommonResponse<String> {
-        var findUser = repository.findByUserId(request.id)
+        var findUser = userRepository.findByUserId(request.id)
 
         findUser!!.aprvDttm = Instant.now()
         findUser.statClas = "USER"
@@ -89,7 +109,7 @@ class UserService {
 
     @Transactional
     fun deleteUser(request: UserRequest): CommonResponse<String> {
-        val findUser = repository.findByUserId(request.id)
+        val findUser = userRepository.findByUserId(request.id)
 
         findUser!!.statClas = "DEL"
         findUser.updtUserId = request.adminId
@@ -98,18 +118,15 @@ class UserService {
     }
 
     @Transactional
-    fun modifyPw(modifyPwRequest: modifyPwRequest): StringResponse {
-        val response: StringResponse = StringResponse()
-        val findUser = repository.findByUserId(modifyPwRequest.id)
+    fun modifyPw(modifyPwRequest: modifyPwRequest): CommonResponse<String> {
+        val findUser = userRepository.findByUserId(modifyPwRequest.id)
 
-        if(findUser != null){
+        return if(findUser != null){
             findUser.pw = modifyPwRequest.modifyPw
-            response.result = "SUCCESS"
+            CommonResponse("SUCCESS")
         }else {
-            response.result = "FAIL"
+            CommonResponse("FAIL")
         }
-
-        return response
     }
 
     /**
@@ -119,7 +136,7 @@ class UserService {
     @Transactional
     fun checkUserId(userId: String): Pair<Boolean, String> {
         return when {
-            repository.existByUserId(userId) -> Pair(true, "이미 사용중인 아이디입니다.")
+            userRepository.existByUserId(userId) -> Pair(true, "이미 사용중인 아이디입니다.")
             else -> Pair(false, "사용 가능한 아이디입니다.")
         }
     }
@@ -131,7 +148,7 @@ class UserService {
     @Transactional
     fun checkTelNo(telno: String): Pair<Boolean, String> {
         return when {
-            repository.existByTelNo(telno) -> Pair(true, "이미 사용중인 번호입니다.")
+            userRepository.existByTelNo(telno) -> Pair(true, "이미 사용중인 번호입니다.")
             else -> Pair(false, "사용 가능한 번호입니다.")
         }
     }
@@ -140,17 +157,17 @@ class UserService {
      * 로그인
      */
     @Transactional
-    fun login(infoUser: InfoUser): StringResponse{
-        val findUser = repository.findByUserId(infoUser.id!!)
+    fun login(infoUser: InfoUser): CommonResponse<String>{
+        val findUser = userRepository.findByUserId(infoUser.id!!)
 
         return if(findUser!!.pw.equals(infoUser.pw)){
             if(findUser.statClas.startsWith("URST")){
-                StringResponse(TokenUtils.generateUserToken(findUser.id!!))
+                CommonResponse(TokenUtils.generateUserToken(findUser.id!!))
             }else {
-                StringResponse(TokenUtils.generateAdminToken(findUser.id!!))
+                CommonResponse(TokenUtils.generateAdminToken(findUser.id!!))
             }
         }else {
-            StringResponse("사용자 정보가 일치하지 않습니다.")
+            CommonResponse("사용자 정보가 일치하지 않습니다.")
         }
     }
 
@@ -158,11 +175,26 @@ class UserService {
      * 아이디 찾기
      */
     @Transactional
-    fun findId(infoUser: InfoUser): StringResponse{
-        val findUser = repository.findId(infoUser)
+    fun findId(infoUser: InfoUser): CommonResponse<String?> {
+        val findUser = userRepository.findId(infoUser)
 
-        return StringResponse(findUser!!.id)
+        return CommonResponse(findUser!!.id)
 
+    }
+
+    /**
+     * 인증번호 확인
+     */
+    @Transactional
+    fun checkCertNo(checkCertNoRequest: CheckCertNoRequest): CommonResponse<String> {
+        val findCert = certRepository.find("phone_no", checkCertNoRequest.phoneNo).firstResult()!!
+
+        return if(findCert.expiresDttm.isAfter(Instant.now()) && findCert.certNo == checkCertNoRequest.certNo){
+            certRepository.delete(findCert)
+            CommonResponse("SUCCESS")
+        }else {
+            CommonResponse("인증번호가 유효하지 않습니다.")
+        }
     }
 
 }

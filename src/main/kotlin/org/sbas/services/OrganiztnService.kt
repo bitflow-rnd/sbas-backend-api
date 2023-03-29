@@ -41,9 +41,8 @@ class OrganiztnService {
      * 기관코드 목록 조회
      */
     @Transactional
-    fun getInstCodes(param: InstCdParameters): InfoInstResponse {
-        CommonResponse(infoInstRepository.findInstCodeList(param))
-        return InfoInstResponse(infoInstRepository.findInstCodeList(param))
+    fun getInstCodes(dstrCd1: String?, dstrCd2: String?, instTypeCd: String?): CommonResponse<List<InfoInst>> {
+        return CommonResponse(infoInstRepository.findInstCodeList(dstrCd1 ?: "", dstrCd2 ?: "", instTypeCd ?: ""))
     }
 
     @Transactional

@@ -5,6 +5,7 @@ import org.eclipse.microprofile.openapi.annotations.tags.Tag
 import org.jboss.logging.Logger
 import org.sbas.constants.SbasConst
 import org.sbas.entities.info.InfoUser
+import org.sbas.parameters.CheckCertNoRequest
 import org.sbas.parameters.DuplicateParameters
 import org.sbas.parameters.SmsSendRequest
 import org.sbas.responses.CommonResponse
@@ -48,7 +49,7 @@ class PublicUserEndpoint {
         return CommonResponse(SbasConst.ResCode.SUCCESS, message, res)
     }
 
-    @Operation(summary = "", description = "")
+    @Operation(summary = "sms 인증번호 전송", description = "sms 인증번호 전송 / 재전송")
     @POST
     @Path("smssend")
     @PermitAll
@@ -56,11 +57,11 @@ class PublicUserEndpoint {
         return Response.ok(userService.sendIdentifySms(smsSendRequest)).build()
     }
 
-    @Operation(summary = "", description = "")
+    @Operation(summary = "sms 인증번호 확인", description = "sms 인증번호 확인 및 row 삭제")
     @POST
     @Path("confirmsms")
-    fun confirmsms(): Response {
-        return Response.ok().build()
+    fun checkCertNo(@Valid checkCertNoRequest: CheckCertNoRequest): Response {
+        return Response.ok(userService.checkCertNo(checkCertNoRequest)).build()
     }
 
     @Operation(summary = "", description = "")
