@@ -2,6 +2,7 @@ package org.sbas.handlers
 
 import org.sbas.constants.SbasConst
 import org.sbas.responses.CommonResponse
+import javax.persistence.RollbackException
 import javax.ws.rs.BadRequestException
 import javax.ws.rs.InternalServerErrorException
 import javax.ws.rs.NotFoundException
@@ -69,6 +70,16 @@ class EnumConstantNotPresentExceptionMapper: ExceptionMapper<EnumConstantNotPres
 class InternalServerErrorExceptionMapper: ExceptionMapper<InternalServerErrorException> {
     override fun toResponse(exception: InternalServerErrorException): Response {
         return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
+            .type(MediaType.APPLICATION_JSON)
+            .entity(CommonResponse(SbasConst.ResCode.FAIL, exception.message!!, null))
+            .build()
+    }
+}
+
+@Provider
+class RollbackExceptionMapper: ExceptionMapper<RollbackException> {
+    override fun toResponse(exception: RollbackException): Response {
+        return Response.status(Response.Status.BAD_REQUEST)
             .type(MediaType.APPLICATION_JSON)
             .entity(CommonResponse(SbasConst.ResCode.FAIL, exception.message!!, null))
             .build()
