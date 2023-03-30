@@ -89,11 +89,8 @@ class PublicUserEndpoint {
        return try {
            Response.ok(userService.login(loginRequest)).build()
        }catch (e: Exception){
-           val res = StringResponse()
-           res.code = "01"
-           res.message = e.localizedMessage
            Response.status(Response.Status.INTERNAL_SERVER_ERROR)
-                   .entity(res)
+                   .entity(CommonResponse(SbasConst.ResCode.FAIL, e.message, null))
                    .type(MediaType.APPLICATION_JSON)
                    .build()
        }
