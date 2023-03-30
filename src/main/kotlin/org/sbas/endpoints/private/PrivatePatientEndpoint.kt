@@ -21,6 +21,7 @@ import javax.ws.rs.GET
 import javax.ws.rs.POST
 import javax.ws.rs.Path
 import javax.ws.rs.core.MediaType
+import javax.ws.rs.core.Response
 
 @Tag(name = "환자 관리(사용자 권한용)", description = "로그인 된 사용자(세부권한별 분기) - 환자 등록 및 조회 등")
 @Path("v1/private/patient")
@@ -47,8 +48,8 @@ class PrivatePatientEndpoint {
     @Operation(summary = "", description = "")
     @POST
     @Path("delepidreport")
-    fun delepidreport():  RestResponse<StringResponse> {
-        return ResponseBuilder.ok<StringResponse>().build()
+    fun delepidreport():  Response {
+        return Response.ok().build()
     }
 
     @Operation(summary = "환자기본정보 등록", description = "")

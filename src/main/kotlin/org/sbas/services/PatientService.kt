@@ -13,7 +13,6 @@ import org.sbas.handlers.NaverApiHandler
 import org.sbas.repositories.BaseAttcRepository
 import org.sbas.repositories.InfoPtRepository
 import org.sbas.responses.CommonResponse
-import org.sbas.responses.StringResponse
 import org.sbas.responses.patient.EpidResult
 import org.sbas.utils.StringUtils
 import javax.enterprise.context.ApplicationScoped
@@ -43,12 +42,12 @@ class PatientService {
     private lateinit var handler3: BaseAttcRepository
 
     @Transactional
-    fun saveInfoPt(infoPtReq: InfoPtReq): StringResponse {
+    fun saveInfoPt(infoPtReq: InfoPtReq): CommonResponse<String?> {
         val infoPt = infoPtReq.toEntity()
         infoPt.rgstUserId = "ADMIN"
         infoPt.updtUserId = "ADMIN"
         infoPtRepository.persist(infoPt)
-        return StringResponse(infoPt.id)
+        return CommonResponse(infoPt.id)
     }
 
     @Transactional
