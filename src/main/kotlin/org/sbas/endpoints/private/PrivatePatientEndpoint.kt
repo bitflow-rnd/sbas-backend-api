@@ -55,8 +55,8 @@ class PrivatePatientEndpoint {
     @Operation(summary = "환자기본정보 등록", description = "")
     @POST
     @Path("regbasicinfo")
-    fun regbasicinfo(infoPtReq: InfoPtReq): RestResponse<StringResponse> {
-        return ResponseBuilder.ok(patientService.saveInfoPt(infoPtReq)).build()
+    fun regbasicinfo(infoPtReq: InfoPtReq): Response {
+        return Response.ok(patientService.saveInfoPt(infoPtReq)).build()
     }
 
     @Operation(summary = "환자 중복 유효성 검사", description = "")

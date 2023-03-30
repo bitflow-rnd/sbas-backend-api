@@ -3,9 +3,8 @@ package org.sbas.endpoints.admin
 import org.eclipse.microprofile.openapi.annotations.Operation
 import org.eclipse.microprofile.openapi.annotations.tags.Tag
 import org.jboss.logging.Logger
-import org.sbas.parameters.UserRequest
 import org.sbas.parameters.ModifyPwRequest
-import org.sbas.responses.StringResponse
+import org.sbas.parameters.UserRequest
 import org.sbas.services.UserService
 import javax.inject.Inject
 import javax.validation.Valid
@@ -13,7 +12,6 @@ import javax.ws.rs.GET
 import javax.ws.rs.POST
 import javax.ws.rs.Path
 import javax.ws.rs.QueryParam
-import javax.ws.rs.core.MediaType
 import javax.ws.rs.core.Response
 
 @Tag(name = "사용자 관리(어드민 권한용)", description = "System Admin 사용자 - 사용자 등록, 수정, 삭제 등")
