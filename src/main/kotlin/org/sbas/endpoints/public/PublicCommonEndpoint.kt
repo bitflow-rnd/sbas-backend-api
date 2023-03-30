@@ -49,14 +49,14 @@ class PublicCommonEndpoint {
     @GET
     @Path("egencodes/{cmMid}")
     fun egencodes(@RestPath cmMid: String): CommonResponse<List<BaseCodeEgen>> {
-        return CommonResponse(SbasConst.ResCode.SUCCESS, "success", service1.findEgenCodeByCmMid(cmMid))
+        return CommonResponse(SbasConst.ResCode.SUCCESS, "success", service1.findEgenCodeList(cmMid))
     }
 
     @Operation(summary = "공통코드 목록", description = "특정 코드 그룹에 따른 하위 공통코드 목록 조회")
     @GET
     @Path("codes/{cdGrpId}")
     fun codes(@RestPath cdGrpId: String): CommonResponse<List<BaseCode>> {
-        return CommonResponse(SbasConst.ResCode.SUCCESS, "success", service1.findBaseCodeByCdGrpId(cdGrpId))
+        return CommonResponse(SbasConst.ResCode.SUCCESS, "success", service1.findBaseCodeList(cdGrpId))
     }
 
     @Operation(summary = "시/도 목록", description = "")

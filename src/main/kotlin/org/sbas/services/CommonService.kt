@@ -2,6 +2,7 @@ package org.sbas.services
 
 import io.quarkus.cache.CacheKey
 import io.quarkus.cache.CacheResult
+import io.quarkus.panache.common.Sort
 import org.jboss.logging.Logger
 import org.jboss.resteasy.reactive.multipart.FileUpload
 import org.sbas.dtos.*
@@ -17,6 +18,7 @@ import org.sbas.responses.CommonResponse
 import javax.enterprise.context.ApplicationScoped
 import javax.inject.Inject
 import javax.transaction.Transactional
+import javax.ws.rs.InternalServerErrorException
 import javax.ws.rs.NotFoundException
 
 
@@ -47,7 +49,7 @@ class CommonService {
      */
     @Transactional
     @CacheResult(cacheName = "cmMid")
-    fun findEgenCodeByCmMid(cmMid: String): List<BaseCodeEgen> {
+    fun findEgenCodeList(cmMid: String): List<BaseCodeEgen> {
         return egenCodeRepository.find("cm_mid = ?1", cmMid).list()
     }
 
@@ -57,7 +59,7 @@ class CommonService {
      */
     @Transactional
     @CacheResult(cacheName = "cdGrpId")
-    fun findBaseCodeByCdGrpId(@CacheKey cdGrpId: String): List<BaseCode> {
+    fun findBaseCodeList(@CacheKey cdGrpId: String): List<BaseCode> {
         return baseCodeRepository.findBaseCodeByCdGrpId(cdGrpId = cdGrpId)
     }
 
@@ -84,45 +86,66 @@ class CommonService {
     }
 
     /**
-     * 공통코드 등록
-     * @param bascCodeSaveReq
+     * 공통코드 그룹 등록
+     * @param saveReq
      */
     @Transactional
-    fun saveBaseCode(bascCodeSaveReq: BascCodeSaveReq) {
-        baseCodeRepository.persist(bascCodeSaveReq.toEntity())
+    fun saveBaseCodeGrp(saveReq: BaseCodeSaveReq): BaseCode {
+        val baseCode = saveReq.toCdGprIdEntity()
+        baseCodeRepository.persist(baseCode)
+        return when {
+            baseCodeRepository.isPersistent(baseCode) -> saveReq.toCdGprIdEntity()
+            else -> throw InternalServerErrorException("등록 실패")
+        }
+    }
+
+    /**
+     * 공통코드 그룹 목록
+     */
+    @Transactional
+    fun findBaseCdGrpList(): List<BaseCode> {
+        return baseCodeRepository.findBaseCdGrpList()
+    }
+
+    /**
+     * 공통코드 그룹 삭제
+     */
+    @Transactional
+    fun deleteBaseCdGrp(cdGrpId: String): String {
+        val findBaseCode = baseCodeRepository.findBaseCodeByCdGrpId(cdGrpId)
+        if (findBaseCode.isNotEmpty()) {
+            findBaseCode.forEach{ baseCodeRepository.delete(it) }
+            return "삭제 성공"
+        }
+        return "삭제 실패"
+    }
+
+    /**
+     * 공통코드 등록
+     */
+    @Transactional
+    fun saveBaseCode(saveReq: BaseCodeSaveReq): BaseCode {
+        val baseCodeId = saveReq.toCdIdEntity().id
+        return baseCodeRepository.find("cd_grp_id = ?1", Sort.by("cdSeq"), baseCodeId.cdGrpId).list().first()
     }
 
     /**
      * 공통코드 수정
      */
     @Transactional
-    fun updateBaseCode(baseCodeUpdateReq: BaseCodeUpdateReq): BaseCodeId {
-        val baseCodeId = baseCodeUpdateReq.getId()
+    fun updateBaseCode(updateReq: BaseCodeUpdateReq): BaseCodeId {
+        val baseCodeId = updateReq.getId()
         val findBaseCode = baseCodeRepository.findById(baseCodeId) ?: throw NotFoundException("$baseCodeId Not found")
-        return baseCodeUpdateReq.update(findBaseCode)
+        return updateReq.update(findBaseCode)
     }
 
     /**
      * 공통코드 삭제
      */
     @Transactional
-    fun deleteBaseCode(baseCodeUpdateReq: BaseCodeUpdateReq): Boolean {
-        val baseCodeId = baseCodeUpdateReq.getId()
+    fun deleteBaseCode(updateReq: BaseCodeUpdateReq): Boolean {
+        val baseCodeId = updateReq.getId()
         return baseCodeRepository.deleteById(baseCodeId)
-    }
-
-    @Transactional
-    fun findBaseCode(): List<BaseCode> {
-        //TODO 그룹만 나오게 변경 필요
-        return baseCodeRepository.findAll().list()
-    }
-
-    @Transactional
-    fun delCodeGrps(baseCodeId: BaseCodeId) {
-        val findBaseCode = baseCodeRepository.findById(baseCodeId)
-        if (findBaseCode != null) {
-            baseCodeRepository.delete(findBaseCode)
-        }
     }
 
     /**

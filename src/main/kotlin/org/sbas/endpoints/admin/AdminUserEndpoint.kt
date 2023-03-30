@@ -31,17 +31,7 @@ class AdminUserEndpoint {
 //    @RolesAllowed("ADMIN")
     @Path("reg")
     fun reg(@Valid request: UserRequest): Response {
-        return try {
-            Response.ok(userService.reg(request)).build()
-        }catch (e: Exception) {
-            val res = StringResponse()
-            res.code = "01"
-            res.message = e.localizedMessage
-            Response.status(Response.Status.INTERNAL_SERVER_ERROR)
-                    .entity(res)
-                    .type(MediaType.APPLICATION_JSON)
-                    .build()
-        }
+        return Response.ok(userService.reg(request)).build()
     }
 
     @Operation(summary = "사용자 목록", description = "백오피스에서 어드민(전산담당)이 처리하는 사용자 목록 API")
@@ -64,34 +54,14 @@ class AdminUserEndpoint {
 //    @RolesAllowed("ADMIN")
     @Path("del")
     fun deleteUser(@Valid request: UserRequest): Response {
-        return try {
-            Response.ok(userService.deleteUser(request)).build()
-        }catch(e: Exception){
-            val res = StringResponse()
-            res.code = "01"
-            res.message = e.localizedMessage
-            Response.status(Response.Status.INTERNAL_SERVER_ERROR)
-                    .entity(res)
-                    .type(MediaType.APPLICATION_JSON)
-                    .build()
-        }
+        return Response.ok(userService.deleteUser(request)).build()
     }
 
     @Operation(summary = "", description = "")
     @POST
     @Path("modpw")
     fun modifyPw(@Valid modifyPwRequest: ModifyPwRequest): Response {
-        return try {
-            Response.ok(userService.modifyPw(modifyPwRequest)).build()
-        }catch (e:Exception){
-            val res = StringResponse()
-            res.code = "01"
-            res.message = e.localizedMessage
-            Response.status(Response.Status.INTERNAL_SERVER_ERROR)
-                    .entity(res)
-                    .type(MediaType.APPLICATION_JSON)
-                    .build()
-        }
+        return Response.ok(userService.modifyPw(modifyPwRequest)).build()
     }
 
 }

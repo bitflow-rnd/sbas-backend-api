@@ -4,13 +4,9 @@ import org.eclipse.microprofile.openapi.annotations.Operation
 import org.eclipse.microprofile.openapi.annotations.tags.Tag
 import org.jboss.logging.Logger
 import org.jboss.resteasy.reactive.RestPath
-import org.jboss.resteasy.reactive.RestResponse
-import org.jboss.resteasy.reactive.RestResponse.ResponseBuilder
-import org.sbas.constants.SbasConst
-import org.sbas.dtos.BascCodeSaveReq
+import org.sbas.dtos.BaseCodeSaveReq
 import org.sbas.dtos.BaseCodeUpdateReq
 import org.sbas.entities.base.BaseCode
-import org.sbas.entities.base.BaseCodeId
 import org.sbas.responses.CommonResponse
 import org.sbas.services.CommonService
 import javax.inject.Inject
@@ -29,13 +25,18 @@ class AdminCommonEndpoint {
     @Inject
     private lateinit var commonService: CommonService
 
-    @Operation(summary = "공통코드 그룹 목록", description = "공통코드 그룹 목록")
+    @Operation(summary = "공통코드 그룹 등록", description = "공통코드 그룹 등록")
+    @POST
+    @Path("regcodegrp")
+    fun regcodegrp(baseCodeSaveReq: BaseCodeSaveReq): CommonResponse<BaseCode> {
+        return CommonResponse(commonService.saveBaseCodeGrp(baseCodeSaveReq))
+    }
+
+    @Operation(summary = "공통코드 그룹 목록", description = "공통코드 그룹 목록 조회")
     @GET
     @Path("codegrps")
-    fun codegrps(): RestResponse<CommonResponse<List<BaseCode>>>? {
-        return ResponseBuilder.ok(CommonResponse(
-            SbasConst.ResCode.SUCCESS,
-            null, commonService.findBaseCode())).build()
+    fun codegrps(): CommonResponse<List<BaseCode>> {
+        return CommonResponse(commonService.findBaseCdGrpList())
     }
 
     @Operation(summary = "공통코드 그룹 수정", description = "공통코드 그룹 수정")
@@ -47,33 +48,30 @@ class AdminCommonEndpoint {
 
     @Operation(summary = "공통코드 그룹 삭제", description = "공통코드 그룹 삭제")
     @POST
-    @Path("delcodegrps/{cdGrpId}/{cdId}")
-    fun delcodegrps(@RestPath cdGrpId: String,
-                    @RestPath cdId: String): Response {
-        commonService.delCodeGrps(BaseCodeId(cdGrpId = cdGrpId, cdId = cdId))
-        return Response.ok().build()
+    @Path("delcodegrps/{cdGrpId}")
+    fun delcodegrps(@RestPath cdGrpId: String): CommonResponse<String> {
+        return CommonResponse(commonService.deleteBaseCdGrp(cdGrpId))
     }
 
     @Operation(summary = "공통코드 등록", description = "공통코드 등록")
     @POST
     @Path("regcode")
-    fun regcode(bascCodeSaveReq: BascCodeSaveReq): Response {
-        commonService.saveBaseCode(bascCodeSaveReq)
-        return Response.ok().build()
+    fun regcode(baseCodeSaveReq: BaseCodeSaveReq): CommonResponse<BaseCode> {
+        return CommonResponse(commonService.saveBaseCode(baseCodeSaveReq))
     }
 
     @Operation(summary = "곻통코드 수정", description = "")
     @POST
     @Path("modcode")
     fun modcode(baseCodeUpdateReq: BaseCodeUpdateReq): CommonResponse<*> {
-        return CommonResponse(SbasConst.ResCode.SUCCESS, "success", commonService.updateBaseCode(baseCodeUpdateReq))
+        return CommonResponse(commonService.updateBaseCode(baseCodeUpdateReq))
     }
 
     @Operation(summary = "공통코드 삭제", description = "")
     @POST
     @Path("delcode")
     fun delcode(baseCodeUpdateReq: BaseCodeUpdateReq): CommonResponse<*> {
-        return CommonResponse(SbasConst.ResCode.SUCCESS, "success", commonService.deleteBaseCode(baseCodeUpdateReq))
+        return CommonResponse(commonService.deleteBaseCode(baseCodeUpdateReq))
     }
 
     @Operation(summary = "", description = "")
