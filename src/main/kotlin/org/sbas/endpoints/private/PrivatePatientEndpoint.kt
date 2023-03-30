@@ -55,18 +55,7 @@ class PrivatePatientEndpoint {
     @POST
     @Path("regbasicinfo")
     fun regbasicinfo(infoPtReq: InfoPtReq): RestResponse<StringResponse> {
-        return try {
-            val res = patientService.saveInfoPt(infoPtReq)
-            ResponseBuilder.ok(res).build()
-        } catch (e: Exception) {
-            val res = StringResponse()
-            res.code = "01"
-            res.message = e.localizedMessage
-            ResponseBuilder.serverError<StringResponse>()
-                .entity(res)
-                .type(MediaType.APPLICATION_JSON)
-                .build()
-        }
+        return ResponseBuilder.ok(patientService.saveInfoPt(infoPtReq)).build()
     }
 
     @Operation(summary = "환자 중복 유효성 검사", description = "")
@@ -105,7 +94,7 @@ class PrivatePatientEndpoint {
         return ResponseBuilder.ok<StringResponse>().build()
     }
 
-    @Operation(summary = "중증정보 등록", description = "")
+    @Operation(summary = "", description = "")
     @GET
     @Path("sevrinfo/{param1}/{param2}")
     fun sevrinfo(@RestPath param1: String, @RestPath param2: String):  RestResponse<StringResponse> {
@@ -121,21 +110,21 @@ class PrivatePatientEndpoint {
         return ResponseBuilder.ok(patientService.calculateNewsScore(param)).build()
     }
 
-    @Operation(summary = "", description = "")
+    @Operation(summary = "질병(감염병) 정보 등록", description = "")
     @POST
     @Path("regdisesinfo")
     fun regdisesinfo():  RestResponse<StringResponse> {
         return ResponseBuilder.ok<StringResponse>().build()
     }
 
-    @Operation(summary = "", description = "")
+    @Operation(summary = "중증정보 등록", description = "")
     @POST
     @Path("regsevrinfo")
     fun regsevrinfo():  RestResponse<StringResponse> {
         return ResponseBuilder.ok<StringResponse>().build()
     }
 
-    @Operation(summary = "", description = "")
+    @Operation(summary = "출발지정보 등록 (병상 요청 완료)", description = "")
     @POST
     @Path("regstrtpoint")
     fun regstrtpoint():  RestResponse<StringResponse> {

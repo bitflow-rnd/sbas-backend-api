@@ -7,17 +7,15 @@ import org.sbas.constants.SbasConst
 import org.sbas.entities.info.InfoUser
 import org.sbas.parameters.CheckCertNoRequest
 import org.sbas.parameters.DuplicateParameters
-import org.sbas.parameters.SmsSendRequest
 import org.sbas.parameters.LoginRequest
+import org.sbas.parameters.SmsSendRequest
 import org.sbas.responses.CommonResponse
-import org.sbas.responses.StringResponse
 import org.sbas.services.UserService
 import javax.annotation.security.PermitAll
 import javax.inject.Inject
 import javax.validation.Valid
 import javax.ws.rs.POST
 import javax.ws.rs.Path
-import javax.ws.rs.core.MediaType
 import javax.ws.rs.core.Response
 import javax.ws.rs.core.SecurityContext
 
@@ -69,52 +67,21 @@ class PublicUserEndpoint {
     @POST
     @Path("requserreg")
     fun reqUserReg(@Valid infoUser: InfoUser): Response {
-        return try {
-            Response.ok(userService.reqUserReg(infoUser)).build()
-        }catch (e: Exception) {
-            val res = StringResponse()
-            res.code = "01"
-            res.message = e.localizedMessage
-            Response.status(Response.Status.INTERNAL_SERVER_ERROR)
-                    .entity(res)
-                    .type(MediaType.APPLICATION_JSON)
-                    .build()
-        }
+        return Response.ok(userService.reqUserReg(infoUser)).build()
     }
 
     @Operation(summary = "로그인", description = "로그인 API")
     @POST
     @Path("login")
     fun login(@Valid loginRequest: LoginRequest): Response {
-       return try {
-           Response.ok(userService.login(loginRequest)).build()
-       }catch (e: Exception){
-           val res = StringResponse()
-           res.code = "01"
-           res.message = e.localizedMessage
-           Response.status(Response.Status.INTERNAL_SERVER_ERROR)
-                   .entity(res)
-                   .type(MediaType.APPLICATION_JSON)
-                   .build()
-       }
-
+       return Response.ok(userService.login(loginRequest)).build()
     }
 
     @Operation(summary = "아이디찾기", description = "아이디 찾기 API")
     @POST
     @Path("findid")
     fun findId(@Valid infoUser: InfoUser): Response {
-        return try{
-            Response.ok(userService.findId(infoUser)).build()
-        }catch (e: Exception){
-            val res = StringResponse()
-            res.code = "01"
-            res.message = e.localizedMessage
-            Response.status(Response.Status.INTERNAL_SERVER_ERROR)
-                    .entity(res)
-                    .type(MediaType.APPLICATION_JSON)
-                    .build()
-        }
+        return Response.ok(userService.findId(infoUser)).build()
     }
 
 }
