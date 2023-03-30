@@ -4,6 +4,7 @@ import org.eclipse.microprofile.config.inject.ConfigProperty
 import org.eclipse.microprofile.rest.client.inject.RestClient
 import org.jboss.logging.Logger
 import org.sbas.constants.SbasConst
+import org.sbas.constants.StatClas
 import org.sbas.entities.info.InfoCert
 import org.sbas.entities.info.InfoUser
 import org.sbas.parameters.*
@@ -43,6 +44,7 @@ class UserService {
 
         infoUser.rgstUserId = "admin"
         infoUser.updtUserId = "admin"
+        infoUser.statClas = StatClas.URST0001
 
         userRepository.persist(infoUser)
 
@@ -97,7 +99,7 @@ class UserService {
         var findUser = userRepository.findByUserId(request.id)
 
         findUser!!.aprvDttm = Instant.now()
-        findUser.statClas = "USER"
+        findUser.statClas = StatClas.URST0002
         findUser.updtUserId = request.adminId
         findUser.aprvUserId = request.adminId
 
@@ -108,7 +110,7 @@ class UserService {
     fun deleteUser(request: UserRequest): CommonResponse<String> {
         val findUser = userRepository.findByUserId(request.id)
 
-        findUser!!.statClas = "DEL"
+        findUser!!.statClas = StatClas.URST0006
         findUser.updtUserId = request.adminId
 
         return CommonResponse("${request.id} 계정을 삭제하였습니다.")
@@ -158,12 +160,7 @@ class UserService {
         val findUser = userRepository.findByUserId(loginRequest.id)
 
         return if(findUser!!.pw.equals(loginRequest.pw)){
-            val token = TokenUtils.generateUserToken(findUser.id!!)
-            if(findUser.statClas.startsWith("URST")){
-                CommonResponse(token)
-            }else {
-                CommonResponse(token)
-            }
+            CommonResponse(TokenUtils.generateUserToken(findUser.id!!))
         }else {
             CommonResponse("사용자 정보가 일치하지 않습니다.")
         }

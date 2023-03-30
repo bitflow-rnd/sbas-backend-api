@@ -13,6 +13,7 @@ import org.sbas.handlers.FileHandler
 import org.sbas.repositories.BaseAttcRepository
 import org.sbas.repositories.BaseCodeEgenRepository
 import org.sbas.repositories.BaseCodeRepository
+import org.sbas.responses.CommonResponse
 import javax.enterprise.context.ApplicationScoped
 import javax.inject.Inject
 import javax.transaction.Transactional
@@ -136,7 +137,23 @@ class CommonService {
      * 전체 공개 권한 파일 업로드
      */
     @Transactional
-    fun fileUpload(param1: String, param2: FileUpload) {
+    fun fileUpload(param1: String, param2: FileUpload): CommonResponse<String?> {
         val fileName = handler1.createPublicFile(param2)
+
+        val dotPos = fileName!!.filename.lastIndexOf(".")
+        val fileExt = fileName!!.filename.substring(dotPos + 1).lowercase()
+
+        val fileTypeCd = if(fileExt == "bmp" || fileExt == "jpeg" || fileExt == "jpg"
+            || fileExt == "gif" || fileExt == "png" || fileExt == "pdf"){
+            "FLTP0001"
+        }else {
+            "FLTP0002"
+        }
+
+        val result = fileName!!.toEntity(fileTypeCd, null)
+
+        repo1.persist(result)
+
+        return CommonResponse(result.attcId)
     }
 }
