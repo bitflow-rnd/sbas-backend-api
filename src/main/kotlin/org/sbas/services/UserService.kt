@@ -191,7 +191,7 @@ class UserService {
             certRepository.delete(findCert)
             CommonResponse("SUCCESS")
         }else {
-            throw CustomizedException("FAIL", Response.Status.NOT_ACCEPTABLE)
+            throw CustomizedException("유효하지 않은 인증번호입니다.", Response.Status.NOT_ACCEPTABLE)
         }
     }
 
