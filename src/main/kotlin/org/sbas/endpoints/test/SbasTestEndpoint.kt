@@ -1,14 +1,9 @@
 package org.sbas.endpoints.test
 
 import org.eclipse.microprofile.jwt.JsonWebToken
-import org.eclipse.microprofile.openapi.annotations.Operation
-import org.eclipse.microprofile.openapi.annotations.parameters.RequestBody
 import org.eclipse.microprofile.openapi.annotations.tags.Tag
 import org.jboss.logging.Logger
-import org.sbas.entities.info.InfoUser
 import org.sbas.handlers.GeocodingHandler
-import org.sbas.parameters.BaseCodeRequest
-import org.sbas.responses.BaseCodeResponse
 import org.sbas.restparameters.NaverGeocodingApiParams
 import org.sbas.restresponses.NaverGeocodingApiResponse
 import org.sbas.services.TestUserService
@@ -37,26 +32,6 @@ class SbasTestEndpoint {
 
     @Inject
     lateinit var security: SecurityContext
-
-    @Operation(summary = "회원 조회", description = "id를 이용하여 user 레코드를 조회합니다.")
-    @GET
-    @Path("test1")
-    fun test1(): BaseCodeResponse {
-        val ret = serv1.getBaseCode()
-        log.debug("api return value is $ret");
-        return ret
-    }
-
-    @Operation(summary = "회원 조회 Advanced", description = "test1에 JWT와 접근권한 설정 등을 추가한 더 복잡한 예제입니다")
-    @GET
-    @Path("test2")
-    @RolesAllowed("USER", "ADMIN")
-    fun test2(param1: BaseCodeRequest, @Context ctx: SecurityContext): BaseCodeResponse {
-        val user = security.userPrincipal
-        var name = user.name
-        val ret = serv1.getBaseCode(param1, ctx)
-        return ret
-    }
 
     @GET
     @Path("user")

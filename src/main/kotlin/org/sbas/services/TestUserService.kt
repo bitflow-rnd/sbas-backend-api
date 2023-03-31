@@ -2,15 +2,9 @@ package org.sbas.services
 
 import org.eclipse.microprofile.jwt.JsonWebToken
 import org.jboss.logging.Logger
-import org.sbas.entities.base.BaseCodeId
-import org.sbas.parameters.BaseCodeRequest
-import org.sbas.repositories.BaseCodeRepository
-import org.sbas.responses.BaseCodeResponse
-import org.sbas.utils.TokenUtils
 import javax.enterprise.context.ApplicationScoped
 import javax.inject.Inject
 import javax.transaction.Transactional
-import javax.ws.rs.core.SecurityContext
 
 
 /**
@@ -24,34 +18,6 @@ class TestUserService {
 
     @Inject
     lateinit var jwt: JsonWebToken
-
-    @Inject
-    lateinit var repo1: BaseCodeRepository
-
-    @Transactional
-    fun getBaseCode(): BaseCodeResponse {
-        val param2 = BaseCodeId("12345678", "23456789")
-        val res1 = repo1.findById(param2)
-        val ret = BaseCodeResponse()
-        if (res1?.id != null) {
-            ret.cdGrpId = res1.id!!.cdGrpId
-            ret.cdId = res1.id!!.cdId
-            ret.cdGrpNm = res1.cdGrpNm
-            ret.cdNm = res1.cdNm
-        }
-        return ret
-    }
-
-    @Transactional
-    fun getBaseCode(param1: BaseCodeRequest?, ctx: SecurityContext): BaseCodeResponse {
-        val jwtString = TokenUtils.debugJwtContent(jwt, ctx)
-        log.debug("jwtString is $jwtString");
-        val param2 = BaseCodeId(param1!!.cdGrpId!!, param1!!.cdId!!)
-        val res1 = repo1.findById(param2)
-        // some programming logic should be placed here
-        val ret = BaseCodeResponse()
-        return ret
-    }
 
     @Transactional
     fun getUser(): JsonWebToken{
