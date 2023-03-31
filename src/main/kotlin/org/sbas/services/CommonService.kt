@@ -2,9 +2,10 @@ package org.sbas.services
 
 import io.quarkus.cache.CacheKey
 import io.quarkus.cache.CacheResult
-import io.quarkus.panache.common.Sort
 import org.jboss.logging.Logger
 import org.jboss.resteasy.reactive.multipart.FileUpload
+import org.postgresql.util.PSQLException
+import org.postgresql.util.ServerErrorMessage
 import org.sbas.dtos.*
 import org.sbas.entities.base.BaseAttc
 import org.sbas.entities.base.BaseCode
@@ -18,7 +19,6 @@ import org.sbas.responses.CommonResponse
 import javax.enterprise.context.ApplicationScoped
 import javax.inject.Inject
 import javax.transaction.Transactional
-import javax.ws.rs.InternalServerErrorException
 import javax.ws.rs.NotFoundException
 
 
@@ -92,11 +92,12 @@ class CommonService {
     @Transactional
     fun saveBaseCodeGrp(saveReq: BaseCodeSaveReq): BaseCode {
         val baseCode = saveReq.toCdGprIdEntity()
-        baseCodeRepository.persist(baseCode)
-        return when {
-            baseCodeRepository.isPersistent(baseCode) -> saveReq.toCdGprIdEntity()
-            else -> throw InternalServerErrorException("등록 실패")
+        val findBaseCode = baseCodeRepository.findBaseCodeByCdGrpId(saveReq.cdGrpId)
+        when {
+            findBaseCode.isEmpty() -> baseCodeRepository.persist(baseCode)
+            baseCodeRepository.isPersistent(findBaseCode.first()) -> throw PSQLException(ServerErrorMessage(""))
         }
+        return baseCode
     }
 
     /**
@@ -125,8 +126,13 @@ class CommonService {
      */
     @Transactional
     fun saveBaseCode(saveReq: BaseCodeSaveReq): BaseCode {
-        val baseCodeId = saveReq.toCdIdEntity().id
-        return baseCodeRepository.find("cd_grp_id = ?1", Sort.by("cdSeq"), baseCodeId.cdGrpId).list().first()
+        val findById = baseCodeRepository.findById(saveReq.toCdIdEntity().id)
+        return if (findById == null) {
+            baseCodeRepository.persist(saveReq.toCdIdEntity())
+            saveReq.toCdIdEntity()
+        } else {
+            findById
+        }
     }
 
     /**

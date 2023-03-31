@@ -3,12 +3,14 @@ package org.sbas.dtos
 import org.sbas.entities.base.BaseCode
 import org.sbas.entities.base.BaseCodeId
 import org.sbas.utils.NoArg
+import javax.validation.constraints.NotBlank
 
 /**
  * 공통코드 등록 Dto
  */
 @NoArg
 data class BaseCodeSaveReq(
+    @field: NotBlank(message = "코드 그룹 ID는 필수 값입니다.")
     var cdGrpId: String,
     var cdGrpNm: String,
     var cdId: String,
@@ -17,7 +19,7 @@ data class BaseCodeSaveReq(
 )
 
 fun BaseCodeSaveReq.toCdGprIdEntity(): BaseCode {
-    val baseCodeId = BaseCodeId(cdGrpId = this.cdGrpId, cdId = this.cdGrpId + "0001")
+    val baseCodeId = BaseCodeId(cdGrpId = this.cdGrpId, cdId = this.cdGrpId + "01")
     val entity = BaseCode(
         id = baseCodeId,
         cdGrpNm = this.cdGrpNm,
@@ -56,7 +58,7 @@ data class BaseCodeUpdateReq(
 )
 
 fun BaseCodeUpdateReq.getId(): BaseCodeId {
-    return BaseCodeId(cdGrpId = cdGrpId, cdId = cdId)
+    return BaseCodeId(cdGrpId = this.cdGrpId, cdId = this.cdId)
 }
 
 fun BaseCodeUpdateReq.update(entity: BaseCode): BaseCodeId {
