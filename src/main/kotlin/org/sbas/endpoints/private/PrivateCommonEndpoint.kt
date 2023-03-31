@@ -3,7 +3,9 @@ package org.sbas.endpoints.private
 import org.eclipse.microprofile.openapi.annotations.Operation
 import org.eclipse.microprofile.openapi.annotations.tags.Tag
 import org.jboss.logging.Logger
+import org.jboss.resteasy.reactive.RestForm
 import org.jboss.resteasy.reactive.RestPath
+import org.jboss.resteasy.reactive.multipart.FileUpload
 import org.sbas.repositories.BaseAttcRepository
 import org.sbas.services.CommonService
 import javax.inject.Inject
@@ -36,11 +38,11 @@ class PrivateCommonEndpoint {
         return Response.ok().build()
     }
 
-    @Operation(summary = "", description = "")
+    @Operation(summary = "private 파일 업로드", description = "private 파일 업로드 API")
     @POST
     @Path("upload")
-    fun upload(): Response {
-        return Response.ok().build()
+    fun upload(@RestForm param1: String, @RestForm param2: FileUpload): Response {
+        return Response.ok(service1.privateFileUpload(param1, param2)).build()
     }
 
     @Operation(summary = "", description = "")

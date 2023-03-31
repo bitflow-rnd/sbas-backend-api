@@ -7,6 +7,7 @@ import org.sbas.constants.SbasConst
 import org.sbas.constants.StatClas
 import org.sbas.entities.info.InfoCert
 import org.sbas.entities.info.InfoUser
+import org.sbas.utils.CustomizedException
 import org.sbas.parameters.*
 import org.sbas.repositories.InfoCertRepository
 import org.sbas.repositories.InfoUserRepository
@@ -20,6 +21,7 @@ import java.time.Instant
 import javax.enterprise.context.ApplicationScoped
 import javax.inject.Inject
 import javax.transaction.Transactional
+import javax.ws.rs.core.Response
 
 @ApplicationScoped
 class UserService {
@@ -188,7 +190,7 @@ class UserService {
             certRepository.delete(findCert)
             CommonResponse("SUCCESS")
         }else {
-            CommonResponse("인증번호가 유효하지 않습니다.")
+            throw CustomizedException("인증번호가 유효하지 않습니다.", Response.Status.NOT_ACCEPTABLE)
         }
     }
 

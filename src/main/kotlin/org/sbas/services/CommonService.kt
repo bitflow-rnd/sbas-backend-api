@@ -160,11 +160,11 @@ class CommonService {
      * 전체 공개 권한 파일 업로드
      */
     @Transactional
-    fun fileUpload(param1: String, param2: FileUpload): CommonResponse<String?> {
+    fun publicFileUpload(param1: String, param2: FileUpload): CommonResponse<String?> {
         val fileName = handler1.createPublicFile(param2)
 
         val dotPos = fileName!!.filename.lastIndexOf(".")
-        val fileExt = fileName!!.filename.substring(dotPos + 1).lowercase()
+        val fileExt = fileName.filename.substring(dotPos + 1).lowercase()
 
         val fileTypeCd = if(fileExt == "bmp" || fileExt == "jpeg" || fileExt == "jpg"
             || fileExt == "gif" || fileExt == "png" || fileExt == "pdf"){
@@ -173,10 +173,18 @@ class CommonService {
             "FLTP0002"
         }
 
-        val result = fileName!!.toEntity(fileTypeCd, null)
+        val result = fileName.toEntity(fileTypeCd, null)
 
         repo1.persist(result)
 
         return CommonResponse(result.attcId)
     }
+
+    @Transactional
+    fun privateFileUpload(param1: String, param2: FileUpload): CommonResponse<String?> {
+        val fileName = handler1.createPrivateFile(param2)
+
+        return CommonResponse(fileName)
+    }
+
 }
