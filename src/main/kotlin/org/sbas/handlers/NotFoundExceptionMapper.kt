@@ -1,5 +1,6 @@
 package org.sbas.handlers
 
+import org.postgresql.util.PSQLException
 import org.sbas.constants.SbasConst
 import org.sbas.responses.CommonResponse
 import javax.persistence.RollbackException
@@ -21,7 +22,7 @@ class NotFoundExceptionMapper : ExceptionMapper<NotFoundException> {
     override fun toResponse(exception: NotFoundException): Response {
         return Response.status(Response.Status.NOT_FOUND)
             .type(MediaType.APPLICATION_JSON)
-            .entity(CommonResponse(SbasConst.ResCode.FAIL, exception.message!!, null))
+            .entity(CommonResponse(SbasConst.ResCode.FAIL, "NotFoundException", null))
             .build()
     }
 }
@@ -31,7 +32,7 @@ class BadRequestExceptionMapper : ExceptionMapper<BadRequestException> {
     override fun toResponse(exception: BadRequestException): Response {
         return Response.status(Response.Status.BAD_REQUEST)
             .type(MediaType.APPLICATION_JSON)
-            .entity(CommonResponse(SbasConst.ResCode.FAIL, exception.message!!, null))
+            .entity(CommonResponse(SbasConst.ResCode.FAIL, "BadRequestException", null))
             .build()
     }
 }
@@ -41,7 +42,7 @@ class ArrayIndexOutOfBoundsExceptionMapper : ExceptionMapper<ArrayIndexOutOfBoun
     override fun toResponse(exception: ArrayIndexOutOfBoundsException): Response {
         return Response.status(Response.Status.NOT_FOUND)
             .type(MediaType.APPLICATION_JSON)
-            .entity(CommonResponse(SbasConst.ResCode.FAIL, exception.message!!, null))
+            .entity(CommonResponse(SbasConst.ResCode.FAIL, "ArrayIndexOutOfBoundsException", null))
             .build()
     }
 }
@@ -51,7 +52,7 @@ class StringIndexOutOfBoundsExceptionMapper: ExceptionMapper<StringIndexOutOfBou
     override fun toResponse(exception: StringIndexOutOfBoundsException): Response {
         return Response.status(Response.Status.NOT_FOUND)
             .type(MediaType.APPLICATION_JSON)
-            .entity(CommonResponse(SbasConst.ResCode.FAIL, exception.message!!, null))
+            .entity(CommonResponse(SbasConst.ResCode.FAIL, "StringIndexOutOfBoundsException", null))
             .build()
     }
 }
@@ -61,7 +62,7 @@ class EnumConstantNotPresentExceptionMapper: ExceptionMapper<EnumConstantNotPres
     override fun toResponse(exception: EnumConstantNotPresentException): Response {
         return Response.status(Response.Status.NOT_FOUND)
             .type(MediaType.APPLICATION_JSON)
-            .entity(CommonResponse(SbasConst.ResCode.FAIL, exception.message!!, null))
+            .entity(CommonResponse(SbasConst.ResCode.FAIL, "EnumConstantNotPresentException", null))
             .build()
     }
 }
@@ -71,17 +72,27 @@ class InternalServerErrorExceptionMapper: ExceptionMapper<InternalServerErrorExc
     override fun toResponse(exception: InternalServerErrorException): Response {
         return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
             .type(MediaType.APPLICATION_JSON)
-            .entity(CommonResponse(SbasConst.ResCode.FAIL, exception.message!!, null))
+            .entity(CommonResponse(SbasConst.ResCode.FAIL, "InternalServerErrorException", null))
             .build()
     }
 }
 
 @Provider
-class RollbackExceptionMapper: ExceptionMapper<RollbackException> {
-    override fun toResponse(exception: RollbackException): Response {
+class PSQLExceptionMapper: ExceptionMapper<PSQLException> {
+    override fun toResponse(exception: PSQLException): Response {
+        return Response.status(Response.Status.CONFLICT)
+            .type(MediaType.APPLICATION_JSON)
+            .entity(CommonResponse(SbasConst.ResCode.FAIL, "PSQLException", null))
+            .build()
+    }
+}
+
+@Provider
+class NullPointerExceptionMapper: ExceptionMapper<NullPointerException> {
+    override fun toResponse(exception: NullPointerException): Response {
         return Response.status(Response.Status.BAD_REQUEST)
             .type(MediaType.APPLICATION_JSON)
-            .entity(CommonResponse(SbasConst.ResCode.FAIL, exception.message!!, null))
+            .entity(CommonResponse(SbasConst.ResCode.FAIL, "NullPointerException", null))
             .build()
     }
 }
