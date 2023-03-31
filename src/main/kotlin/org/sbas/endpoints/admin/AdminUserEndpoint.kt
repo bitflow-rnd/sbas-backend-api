@@ -55,7 +55,7 @@ class AdminUserEndpoint {
         return Response.ok(userService.deleteUser(request)).build()
     }
 
-    @Operation(summary = "", description = "")
+    @Operation(summary = "비밀번호 변경", description = "")
     @POST
     @Path("modpw")
     fun modifyPw(@Valid modifyPwRequest: ModifyPwRequest): Response {

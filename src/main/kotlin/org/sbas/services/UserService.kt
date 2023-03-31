@@ -21,6 +21,7 @@ import java.time.Instant
 import javax.enterprise.context.ApplicationScoped
 import javax.inject.Inject
 import javax.transaction.Transactional
+import javax.ws.rs.NotFoundException
 import javax.ws.rs.core.Response
 
 @ApplicationScoped
@@ -184,13 +185,13 @@ class UserService {
      */
     @Transactional
     fun checkCertNo(checkCertNoRequest: CheckCertNoRequest): CommonResponse<String> {
-        val findCert = certRepository.find("phone_no", checkCertNoRequest.phoneNo).firstResult()!!
+        val findCert = certRepository.findById(checkCertNoRequest.phoneNo) ?: throw NotFoundException("FAIL")
 
         return if(findCert.expiresDttm.isAfter(Instant.now()) && findCert.certNo == checkCertNoRequest.certNo){
             certRepository.delete(findCert)
             CommonResponse("SUCCESS")
         }else {
-            throw CustomizedException("인증번호가 유효하지 않습니다.", Response.Status.NOT_ACCEPTABLE)
+            throw CustomizedException("유효하지 않은 인증번호입니다.", Response.Status.NOT_ACCEPTABLE)
         }
     }
 

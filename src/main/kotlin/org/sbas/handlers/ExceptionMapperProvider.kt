@@ -22,7 +22,7 @@ class NotFoundExceptionMapper : ExceptionMapper<NotFoundException> {
     override fun toResponse(exception: NotFoundException): Response {
         return Response.status(Response.Status.NOT_FOUND)
             .type(MediaType.APPLICATION_JSON)
-            .entity(CommonResponse(SbasConst.ResCode.FAIL, "NotFoundException", null))
+            .entity(CommonResponse(SbasConst.ResCode.FAIL, exception.message, null))
             .build()
     }
 }
@@ -102,7 +102,7 @@ class CustomizedExceptionMapper: ExceptionMapper<CustomizedException> {
     override fun toResponse(exception: CustomizedException?): Response {
         return Response.status(exception!!.status)
             .type(MediaType.APPLICATION_JSON)
-            .entity(CommonResponse(SbasConst.ResCode.FAIL, exception!!.message, null))
+            .entity(CommonResponse(SbasConst.ResCode.FAIL, exception.message, null))
             .build()
     }
 }

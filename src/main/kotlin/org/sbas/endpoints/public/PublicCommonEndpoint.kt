@@ -12,6 +12,7 @@ import org.sbas.entities.base.BaseCodeEgen
 import org.sbas.responses.CommonResponse
 import org.sbas.services.CommonService
 import javax.inject.Inject
+import javax.validation.Valid
 import javax.ws.rs.GET
 import javax.ws.rs.POST
 import javax.ws.rs.Path

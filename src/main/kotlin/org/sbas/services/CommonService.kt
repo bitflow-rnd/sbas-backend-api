@@ -16,10 +16,12 @@ import org.sbas.repositories.BaseAttcRepository
 import org.sbas.repositories.BaseCodeEgenRepository
 import org.sbas.repositories.BaseCodeRepository
 import org.sbas.responses.CommonResponse
+import org.sbas.utils.CustomizedException
 import javax.enterprise.context.ApplicationScoped
 import javax.inject.Inject
 import javax.transaction.Transactional
 import javax.ws.rs.NotFoundException
+import javax.ws.rs.core.Response
 
 
 /**
@@ -167,6 +169,8 @@ class CommonService {
      */
     @Transactional
     fun publicFileUpload(param1: String, param2: FileUpload): CommonResponse<String?> {
+        if(param2.fileName()=="") throw CustomizedException("파일을 등록하시오.", Response.Status.BAD_REQUEST)
+
         val fileName = handler1.createPublicFile(param2)
 
         val dotPos = fileName!!.filename.lastIndexOf(".")
