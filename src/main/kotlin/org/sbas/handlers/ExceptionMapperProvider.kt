@@ -3,7 +3,7 @@ package org.sbas.handlers
 import org.postgresql.util.PSQLException
 import org.sbas.constants.SbasConst
 import org.sbas.responses.CommonResponse
-import javax.persistence.RollbackException
+import org.sbas.utils.CustomizedException
 import javax.ws.rs.BadRequestException
 import javax.ws.rs.InternalServerErrorException
 import javax.ws.rs.NotFoundException
@@ -93,6 +93,16 @@ class NullPointerExceptionMapper: ExceptionMapper<NullPointerException> {
         return Response.status(Response.Status.BAD_REQUEST)
             .type(MediaType.APPLICATION_JSON)
             .entity(CommonResponse(SbasConst.ResCode.FAIL, "NullPointerException", null))
+            .build()
+    }
+}
+
+@Provider
+class CustomizedExceptionMapper: ExceptionMapper<CustomizedException> {
+    override fun toResponse(exception: CustomizedException?): Response {
+        return Response.status(exception!!.status)
+            .type(MediaType.APPLICATION_JSON)
+            .entity(CommonResponse(SbasConst.ResCode.FAIL, exception!!.message, null))
             .build()
     }
 }

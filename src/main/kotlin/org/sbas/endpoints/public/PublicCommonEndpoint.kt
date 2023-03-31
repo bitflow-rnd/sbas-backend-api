@@ -84,8 +84,8 @@ class PublicCommonEndpoint {
     @POST
     @Path("upload")
     fun upload(@RestForm param1: String, @RestForm param2: FileUpload): Response {
-        // Todo: JSON result에 파일 URI 반환
-        return Response.ok(service1.fileUpload(param1, param2)).build()
+        // Todo: JSON result에 파일 ID(attcId) 반환
+        return Response.ok(service1.publicFileUpload(param1, param2)).build()
     }
 
     @Operation(summary = "", description = "")
