@@ -21,6 +21,7 @@ import java.time.Instant
 import javax.enterprise.context.ApplicationScoped
 import javax.inject.Inject
 import javax.transaction.Transactional
+import javax.ws.rs.NotFoundException
 import javax.ws.rs.core.Response
 
 @ApplicationScoped
@@ -184,7 +185,7 @@ class UserService {
      */
     @Transactional
     fun checkCertNo(checkCertNoRequest: CheckCertNoRequest): CommonResponse<String> {
-        val findCert = certRepository.find("phone_no", checkCertNoRequest.phoneNo).firstResult()!!
+        val findCert = certRepository.findById(checkCertNoRequest.phoneNo) ?: throw NotFoundException("FAIL")
 
         return if(findCert.expiresDttm.isAfter(Instant.now()) && findCert.certNo == checkCertNoRequest.certNo){
             certRepository.delete(findCert)
