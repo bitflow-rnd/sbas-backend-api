@@ -3,9 +3,12 @@ package org.sbas.endpoints.admin
 import org.eclipse.microprofile.openapi.annotations.Operation
 import org.eclipse.microprofile.openapi.annotations.tags.Tag
 import org.jboss.logging.Logger
+import org.sbas.entities.info.InfoUser
 import org.sbas.parameters.ModifyPwRequest
+import org.sbas.parameters.ModifyTelnoRequest
 import org.sbas.parameters.UserRequest
 import org.sbas.services.UserService
+import javax.annotation.security.PermitAll
 import javax.inject.Inject
 import javax.validation.Valid
 import javax.ws.rs.GET
@@ -57,9 +60,23 @@ class AdminUserEndpoint {
 
     @Operation(summary = "비밀번호 변경", description = "")
     @POST
-    @Path("modpw")
+    @Path("modify-pw")
     fun modifyPw(@Valid modifyPwRequest: ModifyPwRequest): Response {
         return Response.ok(userService.modifyPw(modifyPwRequest)).build()
+    }
+
+    @Operation(summary = "전화번호 변경", description = "")
+    @POST
+    @Path("modify-telno")
+    fun modifyTelNo(@Valid modifyTelnoRequest: ModifyTelnoRequest): Response{
+        return Response.ok(userService.modifyTelno(modifyTelnoRequest)).build()
+    }
+
+    @Operation(summary = "기본정보 수정", description = "")
+    @POST
+    @Path("modify-info")
+    fun modifyInfo(@Valid infoUser: InfoUser) : Response {
+        return Response.ok(userService.modifyInfo(infoUser)).build()
     }
 
 }

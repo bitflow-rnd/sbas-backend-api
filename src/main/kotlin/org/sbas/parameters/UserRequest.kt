@@ -16,6 +16,11 @@ data class ModifyPwRequest (
     var modifyPw: String,
 )
 
+data class ModifyTelnoRequest (
+    var id: String,
+    var modifyTelno: String,
+)
+
 data class LoginRequest (
     @JsonProperty("id")
     var id: String,

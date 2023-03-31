@@ -79,7 +79,7 @@ class PublicUserEndpoint {
 
     @Operation(summary = "아이디찾기", description = "아이디 찾기 API")
     @POST
-    @Path("findid")
+    @Path("find-id")
     fun findId(@Valid infoUser: InfoUser): Response {
         return Response.ok(userService.findId(infoUser)).build()
     }

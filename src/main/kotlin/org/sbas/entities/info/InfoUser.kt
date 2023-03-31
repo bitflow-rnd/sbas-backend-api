@@ -60,7 +60,7 @@ class InfoUser(
     @Column(name = "duty_addr", length = 100)
     var dutyAddr: String? = null, // 근무지 주소
 
-    @Column(name = "attc_id", length = 10)
+    @Column(name = "attc_id", length = 12)
     var attcId: String? = null, // 첨부 ID
 
     @Column(name = "stat_clas", length = 8)

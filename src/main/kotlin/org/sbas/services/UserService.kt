@@ -17,6 +17,7 @@ import org.sbas.restclients.NaverSensRestClient
 import org.sbas.restparameters.NaverSmsMsgApiParams
 import org.sbas.restparameters.NaverSmsReqMsgs
 import org.sbas.utils.TokenUtils
+import java.lang.ProcessHandle.Info
 import java.time.Instant
 import javax.enterprise.context.ApplicationScoped
 import javax.inject.Inject
@@ -127,7 +128,19 @@ class UserService {
             findUser.pw = modifyPwRequest.modifyPw
             CommonResponse("SUCCESS")
         }else {
-            CommonResponse("FAIL")
+            throw CustomizedException("유저 정보가 없습니다.", Response.Status.NOT_FOUND)
+        }
+    }
+
+    @Transactional
+    fun modifyTelno(modifyTelnoRequest: ModifyTelnoRequest): CommonResponse<String> {
+        val findUser = userRepository.findByUserId(modifyTelnoRequest.id)
+
+        return if(findUser != null){
+            findUser.telno = modifyTelnoRequest.modifyTelno
+            CommonResponse("SUCCESS")
+        }else {
+            throw CustomizedException("유저 정보가 없습니다.", Response.Status.NOT_FOUND)
         }
     }
 
@@ -160,12 +173,20 @@ class UserService {
      */
     @Transactional
     fun login(loginRequest: LoginRequest): CommonResponse<String>{
-        val findUser = userRepository.findByUserId(loginRequest.id)
+        var findUser = userRepository.findByUserId(loginRequest.id)
 
-        return if(findUser!!.pw.equals(loginRequest.pw)){
-            CommonResponse(TokenUtils.generateUserToken(findUser.id!!))
-        }else {
-            CommonResponse("사용자 정보가 일치하지 않습니다.")
+        return when {
+            findUser!!.pwErrCnt!! <= 5 -> {
+                throw CustomizedException("비밀번호 불일치 5회 발생", Response.Status.FORBIDDEN)
+            }
+            findUser.pw.equals(loginRequest.pw) -> {
+                findUser.pwErrCnt = 0
+                CommonResponse(TokenUtils.generateUserToken(findUser.id!!))
+            }
+            else -> {
+                findUser.pwErrCnt = findUser.pwErrCnt!! + 1
+                throw CustomizedException("사용자 정보가 일치하지 않습니다.", Response.Status.BAD_REQUEST)
+            }
         }
     }
 
@@ -177,7 +198,6 @@ class UserService {
         val findUser = userRepository.findId(infoUser)
 
         return CommonResponse(findUser!!.id)
-
     }
 
     /**
@@ -187,12 +207,35 @@ class UserService {
     fun checkCertNo(checkCertNoRequest: CheckCertNoRequest): CommonResponse<String> {
         val findCert = certRepository.findById(checkCertNoRequest.phoneNo) ?: throw NotFoundException("FAIL")
 
-        return if(findCert.expiresDttm.isAfter(Instant.now()) && findCert.certNo == checkCertNoRequest.certNo){
-            certRepository.delete(findCert)
-            CommonResponse("SUCCESS")
-        }else {
-            throw CustomizedException("유효하지 않은 인증번호입니다.", Response.Status.NOT_ACCEPTABLE)
+        return when {
+            findCert.expiresDttm.isAfter(Instant.now()) && findCert.certNo == checkCertNoRequest.certNo -> {
+                certRepository.delete(findCert)
+                CommonResponse("SUCCESS")
+            }
+            else -> {
+                throw CustomizedException("유효하지 않은 인증번호입니다.", Response.Status.NOT_ACCEPTABLE)
+            }
         }
+    }
+
+    @Transactional
+    fun modifyInfo(infoUser: InfoUser) : CommonResponse<String> {
+        var findUser = userRepository.findByUserId(infoUser.id!!)
+
+        findUser!!.jobCd = infoUser.jobCd
+        findUser.ocpCd = infoUser.ocpCd
+        findUser.ptTypeCd = infoUser.ptTypeCd
+        findUser.instTypeCd = infoUser.instTypeCd
+        findUser.instId = infoUser.instId
+        findUser.instNm = findUser.instNm
+        findUser.dutyDstr1Cd = findUser.dutyDstr1Cd
+        findUser.dutyDstr2Cd = findUser.dutyDstr2Cd
+        findUser.dutyAddr = findUser.dutyAddr
+        findUser.attcId = findUser.attcId
+        findUser.updtUserId = infoUser.id
+
+        return CommonResponse("SUCCESS")
+
     }
 
 }
