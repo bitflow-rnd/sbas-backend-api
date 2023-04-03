@@ -1,6 +1,7 @@
 package org.sbas.services
 
 import org.eclipse.microprofile.config.inject.ConfigProperty
+import org.eclipse.microprofile.jwt.JsonWebToken
 import org.eclipse.microprofile.rest.client.inject.RestClient
 import org.jboss.logging.Logger
 import org.sbas.constants.SbasConst
@@ -32,16 +33,23 @@ class UserService {
     private lateinit var log: Logger
 
     @Inject
-    private lateinit var userRepository: InfoUserRepository
+    private lateinit var userRepository : InfoUserRepository
 
     @Inject
-    private lateinit var certRepository: InfoCertRepository
+    private lateinit var certRepository : InfoCertRepository
 
     @RestClient
-    private lateinit var naverSensClient: NaverSensRestClient
+    private lateinit var naverSensClient : NaverSensRestClient
+
+    @Inject
+    private lateinit var jwt : JsonWebToken
 
     @ConfigProperty(name = "restclient.naversens.serviceid")
     private lateinit var naversensserviceid: String
+
+    fun checkToken(adminId: String): Boolean {
+        return jwt.name == adminId
+    }
 
     @Transactional
     fun reqUserReg(infoUser: InfoUser): StringResponse {
@@ -100,7 +108,9 @@ class UserService {
 
     @Transactional
     fun reg(request: UserRequest): CommonResponse<String> {
-        var findUser = userRepository.findByUserId(request.id)
+        if(!checkToken(request.adminId)) return CommonResponse("token id와 adminId가 일치하지 않습니다.")
+
+        val findUser = userRepository.findByUserId(request.id)
 
         findUser!!.aprvDttm = Instant.now()
         findUser.statClas = StatClas.URST0002
@@ -112,6 +122,8 @@ class UserService {
 
     @Transactional
     fun deleteUser(request: UserRequest): CommonResponse<String> {
+        if(!checkToken(request.adminId)) return CommonResponse("token id와 adminId가 일치하지 않습니다.")
+
         val findUser = userRepository.findByUserId(request.id)
 
         findUser!!.statClas = StatClas.URST0006
@@ -122,6 +134,8 @@ class UserService {
 
     @Transactional
     fun modifyPw(modifyPwRequest: ModifyPwRequest): CommonResponse<String> {
+        if(!checkToken(modifyPwRequest.id)) return CommonResponse("token id와 id가 일치하지 않습니다.")
+
         val findUser = userRepository.findByUserId(modifyPwRequest.id)
 
         return if(findUser != null){
@@ -134,6 +148,8 @@ class UserService {
 
     @Transactional
     fun modifyTelno(modifyTelnoRequest: ModifyTelnoRequest): CommonResponse<String> {
+        if(!checkToken(modifyTelnoRequest.id)) return CommonResponse("token id와 id가 일치하지 않습니다.")
+
         val findUser = userRepository.findByUserId(modifyTelnoRequest.id)
 
         return if(findUser != null){
@@ -220,6 +236,8 @@ class UserService {
 
     @Transactional
     fun modifyInfo(infoUser: InfoUser) : CommonResponse<String> {
+        if(!checkToken(infoUser.id!!)) return CommonResponse("token id와 id가 일치하지 않습니다.")
+
         var findUser = userRepository.findByUserId(infoUser.id!!)
 
         findUser!!.jobCd = infoUser.jobCd
