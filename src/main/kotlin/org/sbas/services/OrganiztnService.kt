@@ -1,7 +1,9 @@
 package org.sbas.services
 
+import org.eclipse.microprofile.jwt.JsonWebToken
 import org.jboss.logging.Logger
 import org.sbas.dtos.FireStatnSaveReq
+import org.sbas.dtos.InfoCrewRegDto
 import org.sbas.dtos.InfoInstUpdateDto
 import org.sbas.entities.info.InfoCrew
 import org.sbas.entities.info.InfoHosp
@@ -36,6 +38,9 @@ class OrganiztnService {
 
     @Inject
     private lateinit var infoInstRepository: InfoInstRepository
+
+    @Inject
+    private lateinit var jwt: JsonWebToken
 
     /**
      * 의료기관(병원) 목록 조회
@@ -106,4 +111,17 @@ class OrganiztnService {
     fun findInfoCrews(instId: String): List<InfoCrew> {
         return infoCrewRepository.findInfoCrews(instId)
     }
+
+    /**
+     * 구급대원 등록
+     */
+    @Transactional
+    fun regFireman(infoCrewRegDto: InfoCrewRegDto): CommonResponse<String> {
+        infoCrewRegDto.adminId = jwt.name
+
+        infoCrewRepository.persist(infoCrewRegDto.toEntity())
+
+        return CommonResponse("등록 성공")
+    }
+
 }

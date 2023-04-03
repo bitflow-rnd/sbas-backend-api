@@ -5,13 +5,17 @@ import org.eclipse.microprofile.openapi.annotations.tags.Tag
 import org.jboss.logging.Logger
 import org.jboss.resteasy.reactive.RestPath
 import org.sbas.dtos.FireStatnSaveReq
+import org.sbas.dtos.InfoCrewRegDto
 import org.sbas.services.OrganiztnService
+import javax.annotation.security.RolesAllowed
 import javax.inject.Inject
+import javax.validation.Valid
 import javax.ws.rs.POST
 import javax.ws.rs.Path
 import javax.ws.rs.core.Response
 
 @Tag(name = "기관 관리(어드민 권한용)", description = "System Admin 사용자 - 기관 등록, 수정, 삭제 등")
+@RolesAllowed("USER")
 @Path("v1/admin/organ")
 class AdminOrganiztnEndpoint{
 
@@ -42,11 +46,11 @@ class AdminOrganiztnEndpoint{
         return Response.ok(organiztnService.deleteFireStatn(instId)).build()
     }
 
-    @Operation(summary = "", description = "")
+    @Operation(summary = "구급대원 등록", description = "구급대원 등록 API")
     @POST
-    @Path("regfireman/{param}")
-    fun regfireman(@RestPath param: String): Response {
-        return Response.ok().build()
+    @Path("reg-fireman")
+    fun regFireman(@Valid infoCrewRegDto: InfoCrewRegDto): Response {
+        return Response.ok(organiztnService.regFireman(infoCrewRegDto)).build()
     }
 
     @Operation(summary = "", description = "")

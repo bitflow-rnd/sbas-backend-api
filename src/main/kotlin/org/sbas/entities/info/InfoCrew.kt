@@ -21,6 +21,10 @@ class InfoCrew(
 
     @Column(name = "rmk", length = 200)
     var rmk: String? = null, // 비고
+
+    @Column(name = "pstn", length = 15)
+    var pstn: String? = null,
+
 ) : CommonEntity()
 
 @Embeddable
@@ -28,7 +32,7 @@ data class InfoCrewId(
     @Column(name = "inst_id", nullable = false, length = 10)
     var instId: String? = null, // 기관 ID
 
-    @Column(name = "crew_id", nullable = false, length = 10)
+    @Column(name = "crew_id", nullable = false, length = 15)
     var crewId: String? = null, // 구급대원 ID
 ) : Serializable {
 

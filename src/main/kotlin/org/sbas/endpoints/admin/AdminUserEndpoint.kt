@@ -7,6 +7,7 @@ import org.jboss.logging.Logger
 import org.sbas.entities.info.InfoUser
 import org.sbas.parameters.ModifyPwRequest
 import org.sbas.parameters.ModifyTelnoRequest
+import org.sbas.parameters.UserIdRequest
 import org.sbas.parameters.UserRequest
 import org.sbas.services.UserService
 import javax.annotation.security.PermitAll
@@ -32,14 +33,14 @@ class AdminUserEndpoint {
     @Inject
     lateinit var userService: UserService
 
-    @Operation(summary = "사용자등록 승인", description = "백오피스에서 어드민(전산담당)이 처리하는 사용자 등록 승인 API")
+    @Operation(summary = "사용자등록 승인/반려", description = "백오피스에서 어드민(전산담당)이 처리하는 사용자 등록 승인/반려 API")
     @POST
     @Path("reg")
     fun reg(@Valid request: UserRequest): Response {
         return Response.ok(userService.reg(request)).build()
     }
 
-    @Operation(summary = "사용자 목록", description = "백오피스에서 어드민(전산담당)이 처리하는 사용자 목록 API")
+    @Operation(summary = "사용자 목록", description = "백오피스에서 어드민(전산담당)이 처리하는 사용자 목록 조회 API")
     @GET
     @Path("users")
     fun getUsers(@QueryParam("searchData") requestData: String): Response {
@@ -56,25 +57,25 @@ class AdminUserEndpoint {
     @Operation(summary = "사용자 삭제", description = "백오피스에서 어드민(전산담당)이 처리하는 사용자 삭제 API")
     @POST
     @Path("del")
-    fun deleteUser(@Valid request: UserRequest): Response {
+    fun deleteUser(@Valid request: UserIdRequest): Response {
         return Response.ok(userService.deleteUser(request)).build()
     }
 
-    @Operation(summary = "비밀번호 변경", description = "")
+    @Operation(summary = "비밀번호 변경", description = "유저정보에서 비밀번호 변경 API")
     @POST
     @Path("modify-pw")
     fun modifyPw(@Valid modifyPwRequest: ModifyPwRequest): Response {
         return Response.ok(userService.modifyPw(modifyPwRequest)).build()
     }
 
-    @Operation(summary = "핸드폰번호 변경", description = "")
+    @Operation(summary = "핸드폰번호 변경", description = "유저정보에서 핸드폰번호 변경 API")
     @POST
     @Path("modify-telno")
     fun modifyTelNo(@Valid modifyTelnoRequest: ModifyTelnoRequest): Response{
         return Response.ok(userService.modifyTelno(modifyTelnoRequest)).build()
     }
 
-    @Operation(summary = "기본정보 수정", description = "")
+    @Operation(summary = "기본정보 수정", description = "유저정보에서 기본정보 수정 API")
     @POST
     @Path("modify-info")
     fun modifyInfo(@Valid infoUser: InfoUser) : Response {

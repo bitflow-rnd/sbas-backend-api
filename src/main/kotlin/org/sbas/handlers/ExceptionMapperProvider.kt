@@ -2,10 +2,13 @@ package org.sbas.handlers
 
 import io.quarkus.arc.Priority
 import io.quarkus.security.AuthenticationFailedException
+import io.quarkus.security.ForbiddenException
+import io.quarkus.security.UnauthorizedException
 import org.postgresql.util.PSQLException
 import org.sbas.constants.SbasConst
 import org.sbas.responses.CommonResponse
 import org.sbas.utils.CustomizedException
+import javax.persistence.PersistenceException
 import javax.ws.rs.BadRequestException
 import javax.ws.rs.InternalServerErrorException
 import javax.ws.rs.NotFoundException
@@ -112,11 +115,41 @@ class CustomizedExceptionMapper: ExceptionMapper<CustomizedException> {
 
 @Provider
 @Priority(Priorities.AUTHENTICATION)
-class AuthenticationFailedExceptionMapper : ExceptionMapper<AuthenticationFailedException?> {
-    override fun toResponse(exception: AuthenticationFailedException?): Response {
+class AuthenticationFailedExceptionMapper : ExceptionMapper<AuthenticationFailedException> {
+    override fun toResponse(exception: AuthenticationFailedException): Response {
         return Response.status(401)
             .header("WWW-Authenticate", "Basic realm=\"Quarkus\"")
             .entity(CommonResponse(SbasConst.ResCode.FAIL, "token 불일치", null))
+            .build()
+    }
+}
+
+@Provider
+class UnauthorizedExceptionMapper : ExceptionMapper<UnauthorizedException> {
+    override fun toResponse(exception: UnauthorizedException): Response {
+        return Response.status(Response.Status.UNAUTHORIZED)
+            .type(MediaType.APPLICATION_JSON)
+            .entity(CommonResponse(SbasConst.ResCode.FAIL, "로그인 후 이용해 주세요.", null))
+            .build()
+    }
+}
+
+@Provider
+class ForbiddenExceptionMapper : ExceptionMapper<ForbiddenException> {
+    override fun toResponse(exception: ForbiddenException): Response {
+        return Response.status(Response.Status.FORBIDDEN)
+            .type(MediaType.APPLICATION_JSON)
+            .entity(CommonResponse(SbasConst.ResCode.FAIL, "권한이 없습니다.", null))
+            .build()
+    }
+}
+
+@Provider
+class PersistenceExceptionMapper: ExceptionMapper<PersistenceException> {
+    override fun toResponse(exception: PersistenceException): Response {
+        return Response.status(Response.Status.CONFLICT)
+            .type(MediaType.APPLICATION_JSON)
+            .entity(CommonResponse(SbasConst.ResCode.FAIL, "PK 중복입니다.", null))
             .build()
     }
 }

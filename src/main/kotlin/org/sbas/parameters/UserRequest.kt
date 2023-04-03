@@ -4,9 +4,18 @@ import com.fasterxml.jackson.annotation.JsonProperty
 
 data class UserRequest (
     @JsonProperty("id")
+    var id : String,
+    @JsonProperty("adminId")
+    var adminId : String? = null,
+    @JsonProperty("isApproved")
+    var isApproved : Boolean,
+)
+
+data class UserIdRequest(
+    @JsonProperty("id")
     var id: String,
     @JsonProperty("adminId")
-    var adminId: String,
+    var adminId : String? = null
 )
 
 data class ModifyPwRequest (

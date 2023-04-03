@@ -104,21 +104,25 @@ class UserService {
 
     @Transactional
     fun reg(request: UserRequest): CommonResponse<String> {
-        if(jwt.name != request.adminId) return CommonResponse("token id와 adminId가 일치하지 않습니다.")
+        request.adminId = jwt.name
 
         val findUser = userRepository.findByUserId(request.id)
 
         findUser!!.aprvDttm = Instant.now()
-        findUser.statClas = StatClas.URST0002
         findUser.updtUserId = request.adminId
         findUser.aprvUserId = request.adminId
-
-        return CommonResponse("${findUser.userNm}님 사용자 등록을 승인하였습니다.")
+        if(request.isApproved) {
+            findUser.statClas = StatClas.URST0002
+            return CommonResponse("${findUser.userNm}님 사용자 등록을 승인하였습니다.")
+        }else {
+            findUser.statClas = StatClas.URST0003
+            return CommonResponse("${findUser.userNm}님 사용자 등록이 반려되었습니다.")
+        }
     }
 
     @Transactional
-    fun deleteUser(request: UserRequest): CommonResponse<String> {
-        if(jwt.name != request.adminId) return CommonResponse("token id와 adminId가 일치하지 않습니다.")
+    fun deleteUser(request: UserIdRequest): CommonResponse<String> {
+        request.adminId = jwt.name
 
         val findUser = userRepository.findByUserId(request.id)
 
