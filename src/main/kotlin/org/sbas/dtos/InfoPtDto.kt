@@ -3,6 +3,7 @@ package org.sbas.dtos
 import org.sbas.entities.info.InfoPt
 import org.sbas.utils.NoArg
 
+@NoArg
 data class InfoPtReq(
     val ptNm: String,
     val gndr: String,

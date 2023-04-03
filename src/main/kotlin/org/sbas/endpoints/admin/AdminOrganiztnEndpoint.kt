@@ -4,6 +4,8 @@ import org.eclipse.microprofile.openapi.annotations.Operation
 import org.eclipse.microprofile.openapi.annotations.tags.Tag
 import org.jboss.logging.Logger
 import org.jboss.resteasy.reactive.RestPath
+import org.sbas.dtos.FireStatnSaveReq
+import org.sbas.services.OrganiztnService
 import javax.inject.Inject
 import javax.ws.rs.POST
 import javax.ws.rs.Path
@@ -16,25 +18,28 @@ class AdminOrganiztnEndpoint{
     @Inject
     lateinit var log: Logger
 
-    @Operation(summary = "", description = "")
+    @Inject
+    private lateinit var organiztnService: OrganiztnService
+
+    @Operation(summary = "구급대 등록", description = "")
     @POST
     @Path("regfirestatn")
-    fun regfirestatn(): Response {
-        return Response.ok().build()
+    fun regfirestatn(fireStatnSaveReq: FireStatnSaveReq): Response {
+        return Response.ok(organiztnService.saveFireStatn(fireStatnSaveReq)).build()
     }
 
-    @Operation(summary = "", description = "")
+    @Operation(summary = "구급대 수정", description = "")
     @POST
     @Path("modfirestatn/{param}")
     fun modfirestatn(@RestPath param: String): Response {
         return Response.ok().build()
     }
 
-    @Operation(summary = "", description = "")
+    @Operation(summary = "구급대 삭제", description = "")
     @POST
-    @Path("delfirestatn/{param}")
-    fun delfirestatn(@RestPath param: String): Response {
-        return Response.ok().build()
+    @Path("delfirestatn/{instId}")
+    fun delfirestatn(@RestPath instId: String): Response {
+        return Response.ok(organiztnService.deleteFireStatn(instId)).build()
     }
 
     @Operation(summary = "", description = "")

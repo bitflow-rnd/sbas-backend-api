@@ -1,5 +1,6 @@
 package org.sbas.entities.info
 
+import org.sbas.dtos.InfoInstUpdateDto
 import org.sbas.entities.CommonEntity
 import javax.persistence.Column
 import javax.persistence.Entity
@@ -52,3 +53,18 @@ class InfoInst(
     @Column(name = "attc_id", length = 10)
     var attcId: String? = null, // 첨부 ID
 ) : CommonEntity()
+
+fun InfoInst.update(infoInst: InfoInstUpdateDto) {
+    this.instNm = infoInst.instNm
+    this.dstrCd1 = infoInst.dstrCd1
+    this.dstrCd2 = infoInst.dstrCd2
+    this.chrgId = infoInst.chrgId
+    this.chrgNm = infoInst.chrgNm
+    this.chrgTelno = infoInst.chrgTelno
+    this.baseAddr = infoInst.baseAddr
+    this.lat = infoInst.lat
+    this.lon = infoInst.lon
+    this.rmk = infoInst.rmk
+    this.attcId = infoInst.attcId
+    this.updtUserId = "ADMIN"
+}

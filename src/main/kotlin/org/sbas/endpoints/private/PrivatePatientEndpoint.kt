@@ -20,7 +20,6 @@ import javax.inject.Inject
 import javax.ws.rs.GET
 import javax.ws.rs.POST
 import javax.ws.rs.Path
-import javax.ws.rs.core.MediaType
 import javax.ws.rs.core.Response
 
 @Tag(name = "환자 관리(사용자 권한용)", description = "로그인 된 사용자(세부권한별 분기) - 환자 등록 및 조회 등")
@@ -139,17 +138,18 @@ class PrivatePatientEndpoint {
         return ResponseBuilder.ok<StringResponse>().build()
     }
 
-    @Operation(summary = "", description = "")
+    @Operation(summary = "전국 환자검색", description = "")
     @POST
     @Path("search")
-    fun search():  RestResponse<StringResponse> {
-        return ResponseBuilder.ok<StringResponse>().build()
+    fun search(): Response {
+        val findInfoPt = patientService.findInfoPt()
+        return Response.ok(findInfoPt).build()
     }
 
-    @Operation(summary = "", description = "")
+    @Operation(summary = "내 기관 관련 환자목록", description = "")
     @POST
     @Path("myorganiztn")
-    fun myorganiztn():  RestResponse<StringResponse> {
-        return ResponseBuilder.ok<StringResponse>().build()
+    fun myorganiztn(): Response {
+        return Response.ok(patientService.findInfoPtWithMyOrgan()).build()
     }
 }

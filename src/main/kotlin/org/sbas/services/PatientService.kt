@@ -1,5 +1,6 @@
 package org.sbas.services
 
+import org.eclipse.microprofile.jwt.JsonWebToken
 import org.jboss.logging.Logger
 import org.jboss.resteasy.reactive.multipart.FileUpload
 import org.sbas.constants.SbasConst
@@ -11,13 +12,16 @@ import org.sbas.entities.info.InfoPt
 import org.sbas.handlers.FileHandler
 import org.sbas.handlers.NaverApiHandler
 import org.sbas.repositories.BaseAttcRepository
+import org.sbas.repositories.InfoInstRepository
 import org.sbas.repositories.InfoPtRepository
+import org.sbas.repositories.InfoUserRepository
 import org.sbas.responses.CommonResponse
 import org.sbas.responses.patient.EpidResult
 import org.sbas.utils.StringUtils
 import javax.enterprise.context.ApplicationScoped
 import javax.inject.Inject
 import javax.transaction.Transactional
+import javax.ws.rs.NotFoundException
 
 
 /**
@@ -33,13 +37,22 @@ class PatientService {
     private lateinit var infoPtRepository: InfoPtRepository
 
     @Inject
-    private lateinit var handler1: FileHandler
+    private lateinit var infoUserRepository: InfoUserRepository
 
     @Inject
-    private lateinit var handler2: NaverApiHandler
+    private lateinit var infoInstRepository: InfoInstRepository
+
+    @Inject
+    private lateinit var fileHandler: FileHandler
+
+    @Inject
+    private lateinit var naverApiHandler: NaverApiHandler
     
     @Inject
-    private lateinit var handler3: BaseAttcRepository
+    private lateinit var baseAttcRepository: BaseAttcRepository
+
+    @Inject
+    private lateinit var jwt: JsonWebToken
 
     @Transactional
     fun saveInfoPt(infoPtReq: InfoPtReq): CommonResponse<String?> {
@@ -117,13 +130,13 @@ class PatientService {
     @Transactional
     fun uploadEpidReport(param: FileUpload): CommonResponse<EpidResult>? {
         val userId = "test"
-        val fileinfo = handler1.createPublicFile(param)
+        val fileinfo = fileHandler.createPublicFile(param)
         if (fileinfo != null) {
             // Naver Clova OCR call
-            val res = handler2.recognizeImage(fileinfo.uriPath, fileinfo.filename)
+            val res = naverApiHandler.recognizeImage(fileinfo.uriPath, fileinfo.filename)
             log.debug("texts are $res")
             // Then move from public to private
-            handler1.moveFilePublicToPrivate(fileinfo.localPath, fileinfo.filename)
+            fileHandler.moveFilePublicToPrivate(fileinfo.localPath, fileinfo.filename)
             val item = BaseAttc()
             item.attcDt = StringUtils.getYyyyMmDd()
             item.attcTm = StringUtils.getHhMmSs()
@@ -133,10 +146,30 @@ class PatientService {
             item.fileTypeCd = SbasConst.FileTypeCd.IMAGE
             item.rgstUserId = userId
             item.updtUserId = userId
-            handler3.persist(item)
+            baseAttcRepository.persist(item)
             return CommonResponse(SbasConst.ResCode.SUCCESS, null, res)
         }
         return null
+    }
+
+    @Transactional
+    fun findInfoPt(): CommonResponse<List<InfoPt>> {
+        val infoPtList = infoPtRepository.findAll().list()
+        val count = infoPtList.count()
+        if (count == 0) {
+            throw NotFoundException()
+        }
+        return CommonResponse(infoPtList)
+    }
+
+    @Transactional
+    fun findInfoPtWithMyOrgan(): CommonResponse<*> {
+        // infoUser 에 있는 dstrCd를 사용해도 되나?
+        val infoUser = infoUserRepository.findById(jwt.name) ?: throw NotFoundException()
+        val infoInst = infoInstRepository.findById(infoUser.instId!!) ?: throw NotFoundException()
+        val infoPtList = infoPtRepository.findByDstrCd(infoInst.dstrCd1!!, infoInst.dstrCd2!!)
+        val count = infoPtList.count()
+        return CommonResponse(Pair(infoPtList, count))
     }
 
 }
