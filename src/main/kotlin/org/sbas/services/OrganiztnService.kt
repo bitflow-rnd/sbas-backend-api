@@ -115,6 +115,18 @@ class OrganiztnService {
     }
 
     /**
+     * 구급대원 리스트 조회
+     */
+    @Transactional
+    fun getFiremen(instId: String): CommonResponse<List<InfoCrew>> {
+        val findInfoCrew = infoCrewRepository.findInfoCrews(instId)
+
+        if(findInfoCrew.isEmpty()) throw NotFoundException("해당 구급대에 구급대원이 없습니다.")
+
+        return CommonResponse(findInfoCrew)
+    }
+
+    /**
      * 구급대원 등록
      */
     @Transactional

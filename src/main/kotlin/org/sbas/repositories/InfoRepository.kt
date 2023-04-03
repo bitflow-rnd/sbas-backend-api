@@ -18,7 +18,7 @@ class InfoPtRepository : PanacheRepositoryBase<InfoPt, String> {
 
 @ApplicationScoped
 class InfoCrewRepository : PanacheRepositoryBase<InfoCrew, InfoCrewId> {
-    fun findInfoCrews(instId: String) = find("inst_id = ?1", instId).list()
+    fun findInfoCrews(instId: String) = find("inst_id = '$instId'").list()
 }
 
 @ApplicationScoped

@@ -11,6 +11,7 @@ import org.sbas.services.OrganiztnService
 import javax.annotation.security.RolesAllowed
 import javax.inject.Inject
 import javax.validation.Valid
+import javax.ws.rs.GET
 import javax.ws.rs.POST
 import javax.ws.rs.Path
 import javax.ws.rs.core.Response
@@ -45,6 +46,13 @@ class AdminOrganiztnEndpoint{
     @Path("delfirestatn/{instId}")
     fun delfirestatn(@RestPath instId: String): Response {
         return Response.ok(organiztnService.deleteFireStatn(instId)).build()
+    }
+
+    @Operation(summary = "구급대원 조회", description = "구급대원 목록 조회 API")
+    @GET
+    @Path("firemen/{instId}")
+    fun getFiremen(@RestPath instId: String): Response {
+        return Response.ok(organiztnService.getFiremen(instId)).build()
     }
 
     @Operation(summary = "구급대원 등록", description = "구급대원 등록 API")
