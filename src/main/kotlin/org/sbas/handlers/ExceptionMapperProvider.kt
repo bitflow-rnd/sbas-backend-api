@@ -1,5 +1,7 @@
 package org.sbas.handlers
 
+import io.quarkus.arc.Priority
+import io.quarkus.security.AuthenticationFailedException
 import org.postgresql.util.PSQLException
 import org.sbas.constants.SbasConst
 import org.sbas.responses.CommonResponse
@@ -7,6 +9,7 @@ import org.sbas.utils.CustomizedException
 import javax.ws.rs.BadRequestException
 import javax.ws.rs.InternalServerErrorException
 import javax.ws.rs.NotFoundException
+import javax.ws.rs.Priorities
 import javax.ws.rs.core.MediaType
 import javax.ws.rs.core.Response
 import javax.ws.rs.ext.ExceptionMapper
@@ -103,6 +106,17 @@ class CustomizedExceptionMapper: ExceptionMapper<CustomizedException> {
         return Response.status(exception!!.status)
             .type(MediaType.APPLICATION_JSON)
             .entity(CommonResponse(SbasConst.ResCode.FAIL, exception.message, null))
+            .build()
+    }
+}
+
+@Provider
+@Priority(Priorities.AUTHENTICATION)
+class AuthenticationFailedExceptionMapper : ExceptionMapper<AuthenticationFailedException?> {
+    override fun toResponse(exception: AuthenticationFailedException?): Response {
+        return Response.status(401)
+            .header("WWW-Authenticate", "Basic realm=\"Quarkus\"")
+            .entity(CommonResponse(SbasConst.ResCode.FAIL, "token 불일치", null))
             .build()
     }
 }
