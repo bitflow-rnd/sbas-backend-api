@@ -11,6 +11,7 @@ import org.jboss.resteasy.reactive.multipart.FileUpload
 import org.sbas.constants.SbasConst
 import org.sbas.dtos.InfoPtReq
 import org.sbas.dtos.NewsScoreParam
+import org.sbas.parameters.SearchParameters
 import org.sbas.responses.CommonResponse
 import org.sbas.responses.StringResponse
 import org.sbas.responses.patient.EpidResult
@@ -141,9 +142,8 @@ class PrivatePatientEndpoint {
     @Operation(summary = "전국 환자검색", description = "")
     @POST
     @Path("search")
-    fun search(): Response {
-        val findInfoPt = patientService.findInfoPt()
-        return Response.ok(findInfoPt).build()
+    fun search(searchParameters: SearchParameters): Response {
+        return Response.ok(patientService.findInfoPt(searchParameters)).build()
     }
 
     @Operation(summary = "내 기관 관련 환자목록", description = "")
