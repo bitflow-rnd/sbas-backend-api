@@ -47,10 +47,6 @@ class UserService {
     @ConfigProperty(name = "restclient.naversens.serviceid")
     private lateinit var naversensserviceid: String
 
-    fun checkToken(adminId: String): Boolean {
-        return jwt.name == adminId
-    }
-
     @Transactional
     fun reqUserReg(infoUser: InfoUser): StringResponse {
 
@@ -108,7 +104,7 @@ class UserService {
 
     @Transactional
     fun reg(request: UserRequest): CommonResponse<String> {
-        if(!checkToken(request.adminId)) return CommonResponse("token id와 adminId가 일치하지 않습니다.")
+        if(jwt.name != request.adminId) return CommonResponse("token id와 adminId가 일치하지 않습니다.")
 
         val findUser = userRepository.findByUserId(request.id)
 
@@ -122,7 +118,7 @@ class UserService {
 
     @Transactional
     fun deleteUser(request: UserRequest): CommonResponse<String> {
-        if(!checkToken(request.adminId)) return CommonResponse("token id와 adminId가 일치하지 않습니다.")
+        if(jwt.name != request.adminId) return CommonResponse("token id와 adminId가 일치하지 않습니다.")
 
         val findUser = userRepository.findByUserId(request.id)
 
@@ -134,7 +130,7 @@ class UserService {
 
     @Transactional
     fun modifyPw(modifyPwRequest: ModifyPwRequest): CommonResponse<String> {
-        if(!checkToken(modifyPwRequest.id)) return CommonResponse("token id와 id가 일치하지 않습니다.")
+        if(jwt.name != modifyPwRequest.id) return CommonResponse("token id와 id가 일치하지 않습니다.")
 
         val findUser = userRepository.findByUserId(modifyPwRequest.id)
 
@@ -148,7 +144,7 @@ class UserService {
 
     @Transactional
     fun modifyTelno(modifyTelnoRequest: ModifyTelnoRequest): CommonResponse<String> {
-        if(!checkToken(modifyTelnoRequest.id)) return CommonResponse("token id와 id가 일치하지 않습니다.")
+        if(jwt.name != modifyTelnoRequest.id) return CommonResponse("token id와 id가 일치하지 않습니다.")
 
         val findUser = userRepository.findByUserId(modifyTelnoRequest.id)
 
@@ -236,7 +232,7 @@ class UserService {
 
     @Transactional
     fun modifyInfo(infoUser: InfoUser) : CommonResponse<String> {
-        if(!checkToken(infoUser.id!!)) return CommonResponse("token id와 id가 일치하지 않습니다.")
+        if(jwt.name != infoUser.id!!) return CommonResponse("token id와 id가 일치하지 않습니다.")
 
         var findUser = userRepository.findByUserId(infoUser.id!!)
 
