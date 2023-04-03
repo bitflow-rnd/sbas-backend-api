@@ -176,7 +176,7 @@ class UserService {
         var findUser = userRepository.findByUserId(loginRequest.id)
 
         return when {
-            findUser!!.pwErrCnt!! <= 5 -> {
+            findUser!!.pwErrCnt!! >= 5 -> {
                 throw CustomizedException("비밀번호 불일치 5회 발생", Response.Status.FORBIDDEN)
             }
             findUser.pw.equals(loginRequest.pw) -> {
