@@ -2,10 +2,12 @@ package org.sbas.services
 
 import org.eclipse.microprofile.jwt.JsonWebToken
 import org.jboss.logging.Logger
+import org.jboss.resteasy.reactive.RestResponse
 import org.sbas.dtos.FireStatnSaveReq
 import org.sbas.dtos.InfoCrewRegDto
 import org.sbas.dtos.InfoInstUpdateDto
 import org.sbas.entities.info.InfoCrew
+import org.sbas.entities.info.InfoCrewId
 import org.sbas.entities.info.InfoHosp
 import org.sbas.entities.info.InfoInst
 import org.sbas.parameters.InstCdParameters
@@ -117,11 +119,39 @@ class OrganiztnService {
      */
     @Transactional
     fun regFireman(infoCrewRegDto: InfoCrewRegDto): CommonResponse<String> {
-        infoCrewRegDto.adminId = jwt.name
-
-        infoCrewRepository.persist(infoCrewRegDto.toEntity())
+        infoCrewRepository.persist(infoCrewRegDto.toEntityForInsert(jwt.name))
 
         return CommonResponse("등록 성공")
+    }
+
+    /**
+     * 구급대원 수정
+     */
+    @Transactional
+    fun modFireman(infoCrewRegDto: InfoCrewRegDto): CommonResponse<String>{
+        val findInfoCrew = infoCrewRepository.findById(InfoCrewId(infoCrewRegDto.instId, infoCrewRegDto.crewId))
+            ?: throw CustomizedException("해당 구급대원이 없습니다.", RestResponse.Status.NOT_FOUND)
+
+        findInfoCrew.pstn = infoCrewRegDto.pstn
+        findInfoCrew.crewNm = infoCrewRegDto.crewNm
+        findInfoCrew.telno = infoCrewRegDto.telno
+        findInfoCrew.rmk = infoCrewRegDto.rmk
+        findInfoCrew.updtUserId = jwt.name
+
+        return CommonResponse("${findInfoCrew.crewNm} 구급대원의 정보가 수정되었습니다.")
+    }
+
+    /**
+     * 구급대원 삭제
+     */
+    @Transactional
+    fun delFireman(infoCrewId: InfoCrewId): CommonResponse<String>{
+        val findInfoCrew = infoCrewRepository.findById(infoCrewId)
+            ?: throw CustomizedException("해당 구급대원이 없습니다.", RestResponse.Status.NOT_FOUND)
+
+        infoCrewRepository.delete(findInfoCrew)
+
+        return CommonResponse("${findInfoCrew.crewNm} 구급대원을 삭제했습니다.")
     }
 
 }

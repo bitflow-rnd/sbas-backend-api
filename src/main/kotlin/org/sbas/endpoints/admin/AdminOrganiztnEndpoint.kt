@@ -6,6 +6,7 @@ import org.jboss.logging.Logger
 import org.jboss.resteasy.reactive.RestPath
 import org.sbas.dtos.FireStatnSaveReq
 import org.sbas.dtos.InfoCrewRegDto
+import org.sbas.entities.info.InfoCrewId
 import org.sbas.services.OrganiztnService
 import javax.annotation.security.RolesAllowed
 import javax.inject.Inject
@@ -53,17 +54,17 @@ class AdminOrganiztnEndpoint{
         return Response.ok(organiztnService.regFireman(infoCrewRegDto)).build()
     }
 
-    @Operation(summary = "", description = "")
+    @Operation(summary = "구급대원 수정", description = "구급대원 수정 API")
     @POST
-    @Path("modfireman/{param}")
-    fun modfireman(@RestPath param: String): Response {
-        return Response.ok().build()
+    @Path("mod-fireman")
+    fun modFireman(@Valid infoCrewRegDto: InfoCrewRegDto): Response {
+        return Response.ok(organiztnService.modFireman(infoCrewRegDto)).build()
     }
 
-    @Operation(summary = "", description = "")
+    @Operation(summary = "구급대원 삭제", description = "구급대원 삭제 API")
     @POST
-    @Path("delfireman/{param}")
-    fun delfireman(@RestPath param: String): Response {
-        return Response.ok().build()
+    @Path("del-fireman")
+    fun delFireman(@Valid infoCrewId: InfoCrewId): Response {
+        return Response.ok(organiztnService.delFireman(infoCrewId)).build()
     }
 }

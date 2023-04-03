@@ -18,7 +18,6 @@ import org.sbas.restclients.NaverSensRestClient
 import org.sbas.restparameters.NaverSmsMsgApiParams
 import org.sbas.restparameters.NaverSmsReqMsgs
 import org.sbas.utils.TokenUtils
-import java.lang.ProcessHandle.Info
 import java.time.Instant
 import javax.enterprise.context.ApplicationScoped
 import javax.inject.Inject
@@ -107,8 +106,9 @@ class UserService {
         request.adminId = jwt.name
 
         val findUser = userRepository.findByUserId(request.id)
+            ?: throw CustomizedException("선택한 유저 ID가 없습니다.", Response.Status.NOT_FOUND)
 
-        findUser!!.aprvDttm = Instant.now()
+        findUser.aprvDttm = Instant.now()
         findUser.updtUserId = request.adminId
         findUser.aprvUserId = request.adminId
         if(request.isApproved) {
@@ -125,8 +125,9 @@ class UserService {
         request.adminId = jwt.name
 
         val findUser = userRepository.findByUserId(request.id)
+            ?: throw CustomizedException("선택한 유저 ID가 없습니다.", Response.Status.NOT_FOUND)
 
-        findUser!!.statClas = StatClas.URST0006
+        findUser.statClas = StatClas.URST0006
         findUser.updtUserId = request.adminId
 
         return CommonResponse("${request.id} 계정을 삭제하였습니다.")
@@ -137,13 +138,12 @@ class UserService {
         if(jwt.name != modifyPwRequest.id) return CommonResponse("token id와 id가 일치하지 않습니다.")
 
         val findUser = userRepository.findByUserId(modifyPwRequest.id)
+            ?: throw CustomizedException("유저 정보가 없습니다.", Response.Status.NOT_FOUND)
 
-        return if(findUser != null){
-            findUser.pw = modifyPwRequest.modifyPw
-            CommonResponse("SUCCESS")
-        }else {
-            throw CustomizedException("유저 정보가 없습니다.", Response.Status.NOT_FOUND)
-        }
+        findUser.pw = modifyPwRequest.modifyPw
+
+        return CommonResponse("${findUser.userNm}님의 비밀번호가 수정되었습니다.")
+
     }
 
     @Transactional
@@ -151,13 +151,11 @@ class UserService {
         if(jwt.name != modifyTelnoRequest.id) return CommonResponse("token id와 id가 일치하지 않습니다.")
 
         val findUser = userRepository.findByUserId(modifyTelnoRequest.id)
+            ?: throw CustomizedException("유저 정보가 없습니다.", Response.Status.NOT_FOUND)
 
-        return if(findUser != null){
-            findUser.telno = modifyTelnoRequest.modifyTelno
-            CommonResponse("SUCCESS")
-        }else {
-            throw CustomizedException("유저 정보가 없습니다.", Response.Status.NOT_FOUND)
-        }
+        findUser.telno = modifyTelnoRequest.modifyTelno
+
+        return CommonResponse("${findUser.userNm}님의 핸드폰번호가 수정되었습니다.")
     }
 
     /**
@@ -190,9 +188,10 @@ class UserService {
     @Transactional
     fun login(loginRequest: LoginRequest): CommonResponse<String>{
         var findUser = userRepository.findByUserId(loginRequest.id)
+            ?: throw CustomizedException("등록된 ID가 없습니다.", Response.Status.NOT_FOUND)
 
         return when {
-            findUser!!.pwErrCnt!! >= 5 -> {
+            findUser.pwErrCnt!! >= 5 -> {
                 throw CustomizedException("비밀번호 불일치 5회 발생", Response.Status.FORBIDDEN)
             }
             findUser.pw.equals(loginRequest.pw) -> {
@@ -212,8 +211,9 @@ class UserService {
     @Transactional
     fun findId(infoUser: InfoUser): CommonResponse<String?> {
         val findUser = userRepository.findId(infoUser)
+            ?: throw CustomizedException("등록된 ID가 없습니다.", Response.Status.NOT_FOUND)
 
-        return CommonResponse(findUser!!.id)
+        return CommonResponse(findUser.id)
     }
 
     /**
@@ -239,8 +239,9 @@ class UserService {
         if(jwt.name != infoUser.id!!) return CommonResponse("token id와 id가 일치하지 않습니다.")
 
         var findUser = userRepository.findByUserId(infoUser.id!!)
+            ?: throw CustomizedException("등록된 ID가 없습니다.", Response.Status.NOT_FOUND)
 
-        findUser!!.jobCd = infoUser.jobCd
+        findUser.jobCd = infoUser.jobCd
         findUser.ocpCd = infoUser.ocpCd
         findUser.ptTypeCd = infoUser.ptTypeCd
         findUser.instTypeCd = infoUser.instTypeCd
