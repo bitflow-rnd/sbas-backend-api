@@ -11,6 +11,7 @@ import org.sbas.entities.base.BaseAttc
 import org.sbas.entities.info.InfoPt
 import org.sbas.handlers.FileHandler
 import org.sbas.handlers.NaverApiHandler
+import org.sbas.parameters.SearchParameters
 import org.sbas.repositories.BaseAttcRepository
 import org.sbas.repositories.InfoInstRepository
 import org.sbas.repositories.InfoPtRepository
@@ -18,6 +19,7 @@ import org.sbas.repositories.InfoUserRepository
 import org.sbas.responses.CommonResponse
 import org.sbas.responses.patient.EpidResult
 import org.sbas.utils.StringUtils
+import java.util.stream.Collectors
 import javax.enterprise.context.ApplicationScoped
 import javax.inject.Inject
 import javax.transaction.Transactional
@@ -31,7 +33,7 @@ import javax.ws.rs.NotFoundException
 class PatientService {
 
     @Inject
-    lateinit var log: Logger
+    private lateinit var log: Logger
 
     @Inject
     private lateinit var infoPtRepository: InfoPtRepository
@@ -153,13 +155,26 @@ class PatientService {
     }
 
     @Transactional
-    fun findInfoPt(): CommonResponse<List<InfoPt>> {
-        val infoPtList = infoPtRepository.findAll().list()
+    fun findInfoPt(param: SearchParameters): CommonResponse<*> {
+        val map = mutableMapOf<String, Any>()
+        addIfNotNull(map, "gndr", param.gndr)
+        addIfNotNull(map, "nati_cd", param.natiCd)
+        addIfNotNull(map, "dstr_1_cd", param.dstr1Cd)
+        addIfNotNull(map, "dstr_2_cd", param.dstr2Cd)
+
+//        if (map.isEmpty()) {
+//            return CommonResponse(infoPtRepository.findAll().list())
+//        }
+
+        val query = map.entries.stream()
+            .map { entry -> "${entry.key}='${entry.value}'" }
+            .collect(Collectors.joining(" and "))
+
+        log.debug("res========> $query")
+        val infoPtList = infoPtRepository.find(query).list()
         val count = infoPtList.count()
-        if (count == 0) {
-            throw NotFoundException()
-        }
-        return CommonResponse(infoPtList)
+
+        return CommonResponse(Pair(infoPtList, count))
     }
 
     @Transactional
@@ -172,4 +187,10 @@ class PatientService {
         return CommonResponse(Pair(infoPtList, count))
     }
 
+
+    private fun addIfNotNull(map: MutableMap<String, Any>, key: String, value: String?) {
+        if (value != null) {
+            map[key] = value
+        }
+    }
 }
