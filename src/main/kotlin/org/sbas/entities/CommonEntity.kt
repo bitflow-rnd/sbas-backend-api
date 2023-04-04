@@ -2,12 +2,12 @@ package org.sbas.entities
 
 import org.hibernate.annotations.CreationTimestamp
 import org.hibernate.annotations.UpdateTimestamp
-import org.sbas.utils.MyEntityListener
+import org.sbas.utils.CommonEntityListener
 import java.time.Instant
 import javax.persistence.*
 
 @MappedSuperclass
-@EntityListeners(MyEntityListener::class)
+@EntityListeners(CommonEntityListener::class)
 abstract class CommonEntity (
     @Column(name = "rgst_user_id", nullable = false, length = 15)
     var rgstUserId: String? = null, // 등록 사용자 ID
