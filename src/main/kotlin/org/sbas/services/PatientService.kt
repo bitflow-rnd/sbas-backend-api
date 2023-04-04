@@ -59,8 +59,6 @@ class PatientService {
     @Transactional
     fun saveInfoPt(infoPtReq: InfoPtReq): CommonResponse<String?> {
         val infoPt = infoPtReq.toEntity()
-        infoPt.rgstUserId = "ADMIN"
-        infoPt.updtUserId = "ADMIN"
         infoPtRepository.persist(infoPt)
         return CommonResponse(infoPt.id)
     }
@@ -187,9 +185,8 @@ class PatientService {
         return CommonResponse(Pair(infoPtList, count))
     }
 
-
     private fun addIfNotNull(map: MutableMap<String, Any>, key: String, value: String?) {
-        if (value != null) {
+        if (value != null && value !== "") {
             map[key] = value
         }
     }

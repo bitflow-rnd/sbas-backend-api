@@ -6,10 +6,7 @@ import org.jboss.resteasy.reactive.RestResponse
 import org.sbas.dtos.FireStatnSaveReq
 import org.sbas.dtos.InfoCrewRegDto
 import org.sbas.dtos.InfoInstUpdateDto
-import org.sbas.entities.info.InfoCrew
-import org.sbas.entities.info.InfoCrewId
-import org.sbas.entities.info.InfoHosp
-import org.sbas.entities.info.InfoInst
+import org.sbas.entities.info.*
 import org.sbas.parameters.InstCdParameters
 import org.sbas.repositories.InfoCrewRepository
 import org.sbas.repositories.InfoHospRepository
@@ -71,18 +68,21 @@ class OrganiztnService {
      * 구급대 등록
      */
     @Transactional
-    fun saveFireStatn(fireStatnSaveReq: FireStatnSaveReq) {
+    fun saveFireStatn(fireStatnSaveReq: FireStatnSaveReq): CommonResponse<String> {
         infoInstRepository.persist(fireStatnSaveReq.toEntity())
+        return CommonResponse("등록 성공")
     }
 
     /**
      * 구급대 수정
      */
     @Transactional
-    fun updateFireStatn(fireStatnUpdateReq: InfoInstUpdateDto) {
+    fun updateFireStatn(updateReq: InfoInstUpdateDto): CommonResponse<String> {
+        val infoInst = infoInstRepository.findById(updateReq.instId)
+            ?: throw CustomizedException("${updateReq.instId} not found", Response.Status.NOT_FOUND)
+        infoInst.update(updateReq)
 
-        infoInstRepository.getEntityManager().merge(fireStatnUpdateReq)
-
+        return CommonResponse("${updateReq.instId}의 정보가 수정되었습니다.")
     }
 
     /**
@@ -90,7 +90,9 @@ class OrganiztnService {
      */
     @Transactional
     fun deleteFireStatn(instId: String): CommonResponse<String> {
-        val fireStatn = infoInstRepository.findById(instId) ?: throw NotFoundException("$instId not found")
+        val fireStatn = infoInstRepository.findById(instId)
+            ?: throw CustomizedException("$instId not found", Response.Status.NOT_FOUND)
+
         if (infoInstRepository.isPersistent(fireStatn)) {
             infoInstRepository.deleteById(instId)
             return CommonResponse("삭제 성공")

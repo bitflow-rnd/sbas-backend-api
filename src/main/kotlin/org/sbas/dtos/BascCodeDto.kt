@@ -20,28 +20,22 @@ data class BaseCodeSaveReq(
 
 fun BaseCodeSaveReq.toCdGprIdEntity(): BaseCode {
     val baseCodeId = BaseCodeId(cdGrpId = this.cdGrpId, cdId = this.cdGrpId + "01")
-    val entity = BaseCode(
+    return BaseCode(
         id = baseCodeId,
-        cdGrpNm = this.cdGrpNm,
+        cdGrpNm = cdGrpNm,
         cdNm = "-",
         cdSeq = 1,
     )
-    entity.rgstUserId = "ADMIN"
-    entity.updtUserId = "ADMIN"
-    return entity
 }
 
 fun BaseCodeSaveReq.toCdIdEntity(): BaseCode {
     val baseCodeId = BaseCodeId(cdGrpId = this.cdGrpId, cdId = this.cdId)
-    val entity = BaseCode(
+    return BaseCode(
         id = baseCodeId,
-        cdGrpNm = this.cdGrpNm,
-        cdNm = this.cdNm,
-        cdSeq = this.cdSeq,
+        cdGrpNm = cdGrpNm,
+        cdNm = cdNm,
+        cdSeq = cdSeq,
     )
-    entity.rgstUserId = "ADMIN"
-    entity.updtUserId = "ADMIN"
-    return entity
 }
 
 /**
@@ -66,6 +60,5 @@ fun BaseCodeUpdateReq.update(entity: BaseCode): BaseCodeId {
     entity.cdVal = this.cdVal
     entity.cdSeq = this.cdSeq
     entity.rmk = this.rmk
-    entity.updtUserId = "ADMIN"
     return entity.id
 }

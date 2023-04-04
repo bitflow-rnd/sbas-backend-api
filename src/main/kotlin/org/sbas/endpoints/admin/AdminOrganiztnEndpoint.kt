@@ -6,6 +6,7 @@ import org.jboss.logging.Logger
 import org.jboss.resteasy.reactive.RestPath
 import org.sbas.dtos.FireStatnSaveReq
 import org.sbas.dtos.InfoCrewRegDto
+import org.sbas.dtos.InfoInstUpdateDto
 import org.sbas.entities.info.InfoCrewId
 import org.sbas.services.OrganiztnService
 import javax.annotation.security.RolesAllowed
@@ -36,9 +37,9 @@ class AdminOrganiztnEndpoint{
 
     @Operation(summary = "구급대 수정", description = "")
     @POST
-    @Path("modfirestatn/{param}")
-    fun modfirestatn(@RestPath param: String): Response {
-        return Response.ok().build()
+    @Path("modfirestatn")
+    fun modfirestatn(infoInstUpdateDto: InfoInstUpdateDto): Response {
+        return Response.ok(organiztnService.updateFireStatn(infoInstUpdateDto)).build()
     }
 
     @Operation(summary = "구급대 삭제", description = "")

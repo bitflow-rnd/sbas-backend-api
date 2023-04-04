@@ -13,12 +13,9 @@ data class BaseCodeEgenSaveReq (
 )
 
 fun BaseCodeEgenSaveReq.toEntity(): BaseCodeEgen {
-    val entity = BaseCodeEgen(
-        id = BaseCodeEgenId(cmMid = this.cmMid, cmSid = this.cmSid),
-        cmMnm = this.cmMnm,
-        cmSnm = this.cmSnm,
+    return BaseCodeEgen(
+        id = BaseCodeEgenId(cmMid = cmMid, cmSid = cmSid),
+        cmMnm = cmMnm,
+        cmSnm = cmSnm,
     )
-    entity.rgstUserId = "ADMIN"
-    entity.updtUserId = "ADMIN"
-    return entity
 }

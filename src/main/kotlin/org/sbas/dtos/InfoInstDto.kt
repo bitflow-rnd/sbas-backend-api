@@ -34,9 +34,10 @@ data class FireStatnSaveReq(
     var lon: String,
 ) {
     fun toEntity(): InfoInst {
-        val infoInst = InfoInst(
+        return InfoInst(
             id = instId,
             instTypeCd = "ORGN0002",
+            instNm = instNm,
             dstrCd1 = dstrCd1,
             dstrCd2 = dstrCd2,
             chrgId = chrgId,
@@ -47,9 +48,6 @@ data class FireStatnSaveReq(
             lat = lat,
             lon = lon,
         )
-        infoInst.rgstUserId = "admin"
-        infoInst.updtUserId = "admin"
-        return infoInst
     }
 }
 

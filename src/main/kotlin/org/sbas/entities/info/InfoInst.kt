@@ -66,5 +66,4 @@ fun InfoInst.update(infoInst: InfoInstUpdateDto) {
     this.lon = infoInst.lon
     this.rmk = infoInst.rmk
     this.attcId = infoInst.attcId
-    this.updtUserId = "ADMIN"
 }

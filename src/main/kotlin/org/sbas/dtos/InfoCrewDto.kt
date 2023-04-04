@@ -15,15 +15,12 @@ data class InfoCrewRegDto (
 ) {
     fun toEntityForInsert(adminId: String): InfoCrew {
         val infoCrewId = InfoCrewId(instId, crewId)
-        val infoCrew = InfoCrew(
+        return InfoCrew(
             id = infoCrewId,
             crewNm = crewNm,
             telno = telno,
             rmk = rmk,
             pstn = pstn
         )
-        infoCrew.rgstUserId = adminId
-        infoCrew.updtUserId = adminId
-        return infoCrew
     }
 }

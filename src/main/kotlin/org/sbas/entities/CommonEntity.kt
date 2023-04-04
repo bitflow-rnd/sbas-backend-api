@@ -9,7 +9,7 @@ import javax.persistence.*
 @MappedSuperclass
 @EntityListeners(CommonEntityListener::class)
 abstract class CommonEntity (
-    @Column(name = "rgst_user_id", nullable = false, length = 15)
+    @Column(name = "rgst_user_id", nullable = false, length = 15, updatable = false)
     var rgstUserId: String? = null, // 등록 사용자 ID
 
     @Column(name = "rgst_dttm", nullable = false, updatable = false)
