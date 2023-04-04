@@ -4,11 +4,10 @@ import org.eclipse.microprofile.jwt.JsonWebToken
 import org.jboss.logging.Logger
 import org.jboss.resteasy.reactive.multipart.FileUpload
 import org.sbas.constants.SbasConst
-import org.sbas.dtos.InfoPtReq
+import org.sbas.dtos.InfoPtSaveReq
 import org.sbas.dtos.NewsScoreParam
 import org.sbas.dtos.toEntity
 import org.sbas.entities.base.BaseAttc
-import org.sbas.entities.info.InfoPt
 import org.sbas.handlers.FileHandler
 import org.sbas.handlers.NaverApiHandler
 import org.sbas.parameters.SearchParameters
@@ -57,24 +56,24 @@ class PatientService {
     private lateinit var jwt: JsonWebToken
 
     @Transactional
-    fun saveInfoPt(infoPtReq: InfoPtReq): CommonResponse<String?> {
-        val infoPt = infoPtReq.toEntity()
+    fun saveInfoPt(infoPtSaveReq: InfoPtSaveReq): CommonResponse<String?> {
+        val infoPt = infoPtSaveReq.toEntity()
         infoPtRepository.persist(infoPt)
         return CommonResponse(infoPt.id)
     }
 
     @Transactional
-    fun check(infoPtReq: InfoPtReq): InfoPt? {
+    fun check(infoPtSaveReq: InfoPtSaveReq): CommonResponse<String> {
         val findInfoPt = infoPtRepository.findByPtNmAndRrno(
-            ptNm = infoPtReq.ptNm,
-            rrno1 = infoPtReq.rrno1,
-            rrno2 = infoPtReq.rrno2,
+            ptNm = infoPtSaveReq.ptNm,
+            rrno1 = infoPtSaveReq.rrno1,
+            rrno2 = infoPtSaveReq.rrno2,
         )
 
         if (findInfoPt != null) { // 등록된 환자 존재
-            return findInfoPt
+            return CommonResponse("등록된 환자가 존재합니다.")
         }
-        return null
+        return CommonResponse("등록된 환자가 존재하지 않습니다.")
     }
 
     fun calculateNewsScore(param: NewsScoreParam): Int {

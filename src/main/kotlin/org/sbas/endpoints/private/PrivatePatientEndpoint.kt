@@ -8,8 +8,7 @@ import org.jboss.resteasy.reactive.RestPath
 import org.jboss.resteasy.reactive.RestResponse
 import org.jboss.resteasy.reactive.RestResponse.ResponseBuilder
 import org.jboss.resteasy.reactive.multipart.FileUpload
-import org.sbas.constants.SbasConst
-import org.sbas.dtos.InfoPtReq
+import org.sbas.dtos.InfoPtSaveReq
 import org.sbas.dtos.NewsScoreParam
 import org.sbas.parameters.SearchParameters
 import org.sbas.responses.CommonResponse
@@ -55,16 +54,15 @@ class PrivatePatientEndpoint {
     @Operation(summary = "환자기본정보 등록", description = "")
     @POST
     @Path("regbasicinfo")
-    fun regbasicinfo(infoPtReq: InfoPtReq): Response {
-        return Response.ok(patientService.saveInfoPt(infoPtReq)).build()
+    fun regbasicinfo(infoPtSaveReq: InfoPtSaveReq): Response {
+        return Response.ok(patientService.saveInfoPt(infoPtSaveReq)).build()
     }
 
     @Operation(summary = "환자 중복 유효성 검사", description = "")
     @POST
     @Path("exist")
-    fun exist(infoPtReq: InfoPtReq): CommonResponse<*> {
-        val res = patientService.check(infoPtReq) ?: "신규 등록 환자"
-        return CommonResponse(SbasConst.ResCode.SUCCESS, "success", res)
+    fun exist(infoPtSaveReq: InfoPtSaveReq): Response {
+        return Response.ok(patientService.check(infoPtSaveReq)).build()
     }
 
     @Operation(summary = "", description = "")

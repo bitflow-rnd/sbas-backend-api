@@ -55,4 +55,19 @@ class InfoPt(
 
     @Column(name = "pica_ver", length = 10)
     var picaVer: String? = null, // 개인정보수집동의 버전
+
+    @Column(name = "deth_yn", nullable = false, length = 10)
+    var dethYn: String = "N", // 사망여부
+
+    @Column(name = "nok_nm", length = 10)
+    var nokNm: String? = null, // 보호자 이름
+
+    @Column(name = "mpno", length = 11)
+    var mpno: String? = null, // 휴대전화번호
+
+    @Column(name = "job", length = 20)
+    var job: String? = null, // 직업
+
+    @Column(name = "attc_id", length = 12)
+    var attcId: String? = null, // 첨부 ID
 ) : CommonEntity()

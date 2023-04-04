@@ -4,7 +4,7 @@ import org.sbas.entities.info.InfoPt
 import org.sbas.utils.NoArg
 
 @NoArg
-data class InfoPtReq(
+data class InfoPtSaveReq(
     val ptNm: String,
     val gndr: String,
     val rrno1: String,
@@ -14,9 +14,15 @@ data class InfoPtReq(
     val addr: String,
     val telno: String,
     val natiCd: String,
+    val picaVer: String,
+    val dethYn: String,
+    val nokNm: String,
+    val mpno: String,
+    val job: String,
+    val attcId: String,
 )
 
-fun InfoPtReq.toEntity(): InfoPt {
+fun InfoPtSaveReq.toEntity(): InfoPt {
     return InfoPt(
         ptNm = this.ptNm,
         gndr = this.gndr,
@@ -27,6 +33,12 @@ fun InfoPtReq.toEntity(): InfoPt {
         addr = this.addr,
         telno = this.telno,
         natiCd = this.natiCd,
+        picaVer = this.picaVer,
+        dethYn = this.dethYn,
+        nokNm = this.nokNm,
+        mpno = this.mpno,
+        job = this.job,
+        attcId = this.attcId,
     )
 }
 
