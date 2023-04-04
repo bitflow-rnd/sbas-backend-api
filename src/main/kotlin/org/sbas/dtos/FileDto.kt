@@ -24,8 +24,6 @@ fun FileDto.toEntity(fileTypeCd: String, rmk: String?): BaseAttc {
         uriPath = uriPath,
         rmk = rmk,
     )
-    entity.rgstUserId = "admin"
-    entity.updtUserId = "admin"
 
     return entity
 }

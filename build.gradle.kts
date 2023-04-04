@@ -34,6 +34,7 @@ dependencies {
     implementation("io.quarkus:quarkus-jdbc-postgresql")
     implementation("io.quarkus:quarkus-jdbc-h2")
     implementation("org.json:json:20230227")
+    implementation("io.quarkus:quarkus-websockets")
 //    implementation("com.fasterxml.jackson.module:jackson-module-kotlin:2.14.2")
     implementation("io.quarkus:quarkus-arc")
     implementation("io.quarkus:quarkus-hibernate-orm")
