@@ -2,10 +2,12 @@ package org.sbas.services
 
 import org.eclipse.microprofile.jwt.JsonWebToken
 import org.sbas.entities.talk.TalkMsg
-import org.sbas.entities.talk.TalkUser
+import org.sbas.entities.talk.TalkRoom
 import org.sbas.repositories.TalkMsgRepository
+import org.sbas.repositories.TalkRoomRepository
 import org.sbas.repositories.TalkUserRepository
 import org.sbas.responses.CommonResponse
+import org.sbas.responses.messages.TalkRoomResponse
 import javax.enterprise.context.ApplicationScoped
 import javax.inject.Inject
 import javax.ws.rs.NotFoundException
@@ -19,8 +21,14 @@ class TalkService {
     @Inject
     private lateinit var talkMsgRepository: TalkMsgRepository
 
-    fun getMyChats(jwt: JsonWebToken): CommonResponse<List<TalkUser>> {
-        val findChatRooms = talkUserRepository.findChatsByUserId(jwt.name)
+    @Inject
+    private lateinit var talkRoomRepository: TalkRoomRepository
+
+    @Inject
+    private lateinit var jwt: JsonWebToken
+
+    fun getMyChats(jwt: JsonWebToken): CommonResponse<List<TalkRoomResponse>> {
+        val findChatRooms = talkRoomRepository.findTalkRoomResponse(jwt.name)
 
         if(findChatRooms.isEmpty()) throw NotFoundException("대화중인 채팅방이 없습니다.")
 

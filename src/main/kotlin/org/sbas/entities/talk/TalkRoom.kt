@@ -1,11 +1,8 @@
 package org.sbas.entities.talk
 
-import org.hibernate.Hibernate
 import org.sbas.entities.CommonEntity
 import java.io.Serializable
 import java.math.BigDecimal
-import java.time.Instant
-import java.util.*
 import javax.persistence.*
 import javax.validation.constraints.NotNull
 import javax.validation.constraints.Size

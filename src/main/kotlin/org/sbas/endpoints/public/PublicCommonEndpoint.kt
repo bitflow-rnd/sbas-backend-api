@@ -11,6 +11,7 @@ import org.sbas.entities.base.BaseCode
 import org.sbas.entities.base.BaseCodeEgen
 import org.sbas.responses.CommonResponse
 import org.sbas.services.CommonService
+import javax.annotation.security.PermitAll
 import javax.inject.Inject
 import javax.validation.Valid
 import javax.ws.rs.GET
@@ -20,6 +21,7 @@ import javax.ws.rs.core.Response
 import javax.ws.rs.core.SecurityContext
 
 @Tag(name = "공통 조회(공개 권한용)", description = "비 로그인 사용자 - 코드조회 등")
+@PermitAll
 @Path("v1/public/common")
 class PublicCommonEndpoint {
 

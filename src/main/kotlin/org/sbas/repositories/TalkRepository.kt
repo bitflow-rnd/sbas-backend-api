@@ -1,21 +1,41 @@
 package org.sbas.repositories
 
 import io.quarkus.hibernate.orm.panache.kotlin.PanacheRepositoryBase
-import org.sbas.entities.info.InfoPt
-import org.sbas.entities.talk.TalkMsg
-import org.sbas.entities.talk.TalkUser
+import org.sbas.entities.talk.*
+import org.sbas.responses.messages.TalkRoomResponse
 import javax.enterprise.context.ApplicationScoped
 
 @ApplicationScoped
-class TalkUserRepository : PanacheRepositoryBase<TalkUser, String> {
+class TalkUserRepository : PanacheRepositoryBase<TalkUser, TalkUserId>
 
-    fun findChatsByUserId(userId: String) = find("select tu.id.tkrmId from TalkUser tu where tu.id.userId = '$userId'").list()
+@ApplicationScoped
+class TalkMsgRepository : PanacheRepositoryBase<TalkMsg, TalkMsgId> {
+
+    fun findChatDetail(tkrmId: String) = find("select tm from TalkMsg tm where tm.id.tkrmId = '$tkrmId' order by tm.id.msgSeq").list()
+
+    fun findRecentlyMsg(tkrmId: String?) = find("SELECT tm FROM TalkMsg tm WHERE tm.id.tkrmId = '$tkrmId' ORDER BY tm.id.msgSeq DESC").firstResult()
 
 }
 
 @ApplicationScoped
-class TalkMsgRepository : PanacheRepositoryBase<TalkMsg, String> {
+class TalkRoomRepository : PanacheRepositoryBase<TalkRoom, TalkRoomId> {
 
-    fun findChatDetail(tkrmId: String) = find("select tm from TalkMsg tm where tm.id.tkrmId = '$tkrmId' order by tm.id.msgSeq").list()
+    fun findMyRooms(userId: String) = find("select tr from TalkRoom tr join TalkUser tu on tr.id.tkrmId = tu.id.tkrmId and tu.id.userId = '$userId'").list()
 
+    fun findTalkRoomResponse(userId: String): List<TalkRoomResponse> {
+        val resultList = ArrayList<TalkRoomResponse>()
+        val talkRooms = findMyRooms(userId)
+        val talkMsgRepository = TalkMsgRepository()
+
+        talkRooms.forEach {
+            val talkMsg = talkMsgRepository.findRecentlyMsg(it.id?.tkrmId)
+            if (talkMsg != null) {
+                resultList.add(TalkRoomResponse(it.id?.tkrmId, it.tkrmNm, talkMsg.msg, talkMsg.rgstDttm))
+            } else {
+                resultList.add(TalkRoomResponse(it.id?.tkrmId, it.tkrmNm, null, it.rgstDttm))
+            }
+        }
+
+        return resultList
+    }
 }
