@@ -13,7 +13,6 @@ import org.sbas.parameters.*
 import org.sbas.repositories.InfoCertRepository
 import org.sbas.repositories.InfoUserRepository
 import org.sbas.responses.CommonResponse
-import org.sbas.responses.StringResponse
 import org.sbas.restclients.NaverSensRestClient
 import org.sbas.restparameters.NaverSmsMsgApiParams
 import org.sbas.restparameters.NaverSmsReqMsgs
@@ -47,7 +46,7 @@ class UserService {
     private lateinit var naversensserviceid: String
 
     @Transactional
-    fun reqUserReg(infoUser: InfoUser): StringResponse {
+    fun reqUserReg(infoUser: InfoUser): CommonResponse<String> {
 
         infoUser.rgstUserId = "admin"
         infoUser.updtUserId = "admin"
@@ -55,7 +54,7 @@ class UserService {
 
         userRepository.persist(infoUser)
 
-        return StringResponse("${infoUser.userNm}님 사용자 등록을 요청하였습니다.")
+        return CommonResponse("${infoUser.userNm}님 사용자 등록을 요청하였습니다.")
     }
 
     /**

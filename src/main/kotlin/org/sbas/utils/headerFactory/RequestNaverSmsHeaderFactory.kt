@@ -1,18 +1,11 @@
-package org.sbas.utils
+package org.sbas.utils.headerFactory
 
 import org.eclipse.microprofile.config.inject.ConfigProperty
 import org.eclipse.microprofile.rest.client.ext.ClientHeadersFactory
-import org.jboss.logging.Logger
 import org.jose4j.base64url.internal.apache.commons.codec.binary.Base64
-import java.security.Timestamp
-import java.time.Instant
-import java.time.LocalDateTime
-import java.time.format.DateTimeFormatter
-import java.util.*
 import javax.crypto.Mac
 import javax.crypto.spec.SecretKeySpec
 import javax.enterprise.context.ApplicationScoped
-import javax.inject.Inject
 import javax.ws.rs.core.MultivaluedHashMap
 import javax.ws.rs.core.MultivaluedMap
 

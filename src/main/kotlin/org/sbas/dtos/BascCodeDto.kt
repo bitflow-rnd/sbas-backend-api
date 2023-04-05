@@ -39,7 +39,7 @@ fun BaseCodeSaveReq.toCdIdEntity(): BaseCode {
 }
 
 /**
- *
+ * 공통코드 수정 Dto
  */
 @NoArg
 data class BaseCodeUpdateReq(

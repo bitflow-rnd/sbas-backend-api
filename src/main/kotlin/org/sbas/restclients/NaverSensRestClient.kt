@@ -4,7 +4,7 @@ import org.eclipse.microprofile.rest.client.annotation.RegisterClientHeaders
 import org.eclipse.microprofile.rest.client.inject.RegisterRestClient
 import org.sbas.restparameters.NaverSmsMsgApiParams
 import org.sbas.restresponses.NaverSmsMsgApiResponse
-import org.sbas.utils.RequestNaverSmsHeaderFactory
+import org.sbas.utils.headerFactory.RequestNaverSmsHeaderFactory
 import javax.validation.Valid
 import javax.ws.rs.POST
 import javax.ws.rs.Path

@@ -1,11 +1,10 @@
 package org.sbas.restclients
 
-import org.eclipse.microprofile.rest.client.annotation.ClientHeaderParam
 import org.eclipse.microprofile.rest.client.annotation.RegisterClientHeaders
 import org.eclipse.microprofile.rest.client.inject.RegisterRestClient
 import org.sbas.restparameters.NaverOcrApiParams
 import org.sbas.restresponses.NaverOcrApiResponse
-import org.sbas.utils.NaverOcrHeaderFactory
+import org.sbas.utils.headerFactory.NaverOcrHeaderFactory
 import javax.validation.Valid
 import javax.ws.rs.POST
 import javax.ws.rs.Path

@@ -1,4 +1,4 @@
-package org.sbas.utils
+package org.sbas.utils.headerFactory
 
 import org.eclipse.microprofile.config.inject.ConfigProperty
 import org.eclipse.microprofile.rest.client.ext.ClientHeadersFactory

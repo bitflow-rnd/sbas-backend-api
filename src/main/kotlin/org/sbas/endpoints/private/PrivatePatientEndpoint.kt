@@ -12,7 +12,6 @@ import org.sbas.dtos.InfoPtSaveReq
 import org.sbas.dtos.NewsScoreParam
 import org.sbas.parameters.SearchParameters
 import org.sbas.responses.CommonResponse
-import org.sbas.responses.StringResponse
 import org.sbas.responses.patient.EpidResult
 import org.sbas.services.CommonService
 import org.sbas.services.PatientService
@@ -68,36 +67,36 @@ class PrivatePatientEndpoint {
     @Operation(summary = "", description = "")
     @POST
     @Path("modinfo")
-    fun modinfo():  RestResponse<StringResponse> {
-        return ResponseBuilder.ok<StringResponse>().build()
+    fun modinfo(): Response {
+        return Response.ok().build()
     }
 
     @Operation(summary = "", description = "")
     @GET
     @Path("basicinfo/{param}")
-    fun basicinfo(@RestPath param: String):  RestResponse<StringResponse> {
-        return ResponseBuilder.ok<StringResponse>().build()
+    fun basicinfo(@RestPath param: String): Response{
+        return Response.ok().build()
     }
 
     @Operation(summary = "", description = "")
     @GET
     @Path("timeline/{param1}/{param2}")
-    fun timeline(@RestPath param1: String, @RestPath param2: String):  RestResponse<StringResponse> {
-        return ResponseBuilder.ok<StringResponse>().build()
+    fun timeline(@RestPath param1: String, @RestPath param2: String): Response? {
+        return Response.ok().build()
     }
 
     @Operation(summary = "", description = "")
     @GET
     @Path("disesinfo/{param1}/{param2}")
-    fun disesinfo(@RestPath param1: String, @RestPath param2: String):  RestResponse<StringResponse> {
-        return ResponseBuilder.ok<StringResponse>().build()
+    fun disesinfo(@RestPath param1: String, @RestPath param2: String): Response? {
+        return Response.ok().build()
     }
 
     @Operation(summary = "", description = "")
     @GET
     @Path("sevrinfo/{param1}/{param2}")
-    fun sevrinfo(@RestPath param1: String, @RestPath param2: String):  RestResponse<StringResponse> {
-        return ResponseBuilder.ok<StringResponse>().build()
+    fun sevrinfo(@RestPath param1: String, @RestPath param2: String): Response? {
+        return Response.ok().build()
     }
 
     @Operation(summary = "생체정보입력 분석", description = "생체정보 입력 시 경북대학교 로직(NEWS Score)에 따른 중증분류 값 리턴")
@@ -112,29 +111,29 @@ class PrivatePatientEndpoint {
     @Operation(summary = "질병(감염병) 정보 등록", description = "")
     @POST
     @Path("regdisesinfo")
-    fun regdisesinfo():  RestResponse<StringResponse> {
-        return ResponseBuilder.ok<StringResponse>().build()
+    fun regdisesinfo(): Response? {
+        return Response.ok().build()
     }
 
     @Operation(summary = "중증정보 등록", description = "")
     @POST
     @Path("regsevrinfo")
-    fun regsevrinfo():  RestResponse<StringResponse> {
-        return ResponseBuilder.ok<StringResponse>().build()
+    fun regsevrinfo(): Response? {
+        return Response.ok().build()
     }
 
     @Operation(summary = "출발지정보 등록 (병상 요청 완료)", description = "")
     @POST
     @Path("regstrtpoint")
-    fun regstrtpoint():  RestResponse<StringResponse> {
-        return ResponseBuilder.ok<StringResponse>().build()
+    fun regstrtpoint(): Response? {
+        return Response.ok().build()
     }
 
     @Operation(summary = "", description = "")
     @POST
     @Path("sendmsg/{param}")
-    fun sendmsg(@RestPath param: String):  RestResponse<StringResponse> {
-        return ResponseBuilder.ok<StringResponse>().build()
+    fun sendmsg(@RestPath param: String): Response? {
+        return Response.ok().build()
     }
 
     @Operation(summary = "전국 환자검색", description = "")

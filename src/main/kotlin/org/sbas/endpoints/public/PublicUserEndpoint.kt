@@ -6,7 +6,6 @@ import org.jboss.logging.Logger
 import org.sbas.constants.SbasConst
 import org.sbas.entities.info.InfoUser
 import org.sbas.parameters.CheckCertNoRequest
-import org.sbas.parameters.DuplicateParameters
 import org.sbas.parameters.LoginRequest
 import org.sbas.parameters.SmsSendRequest
 import org.sbas.responses.CommonResponse
@@ -35,16 +34,16 @@ class PublicUserEndpoint {
     @Operation(summary = "사용자 아이디 중복 조회", description = "")
     @POST
     @Path("existid")
-    fun existid(param: DuplicateParameters): CommonResponse<*> {
-        val (res, message) = userService.checkUserId(param.userId)
+    fun existid(userId: String): CommonResponse<*> {
+        val (res, message) = userService.checkUserId(userId)
         return CommonResponse(SbasConst.ResCode.SUCCESS, message, res)
     }
 
     @Operation(summary = "사용자 휴대폰번호 중복 조회", description = "")
     @POST
     @Path("existcellp")
-    fun existcellp(param: DuplicateParameters):  CommonResponse<*> {
-        val (res, message) = userService.checkTelNo(param.telno)
+    fun existcellp(telno: String):  CommonResponse<*> {
+        val (res, message) = userService.checkTelNo(telno)
         return CommonResponse(SbasConst.ResCode.SUCCESS, message, res)
     }
 

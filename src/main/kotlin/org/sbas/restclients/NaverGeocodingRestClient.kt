@@ -2,16 +2,10 @@ package org.sbas.restclients
 
 import org.eclipse.microprofile.rest.client.annotation.RegisterClientHeaders
 import org.eclipse.microprofile.rest.client.inject.RegisterRestClient
-import org.locationtech.jts.geom.Coordinate
-import org.sbas.restparameters.NaverGeocodingApiParams
-import org.sbas.restparameters.NaverSmsMsgApiParams
 import org.sbas.restresponses.NaverGeocodingApiResponse
-import org.sbas.restresponses.NaverSmsMsgApiResponse
-import org.sbas.utils.RequestNaverGeocodingHeaderFactory
-import javax.validation.Valid
+import org.sbas.utils.headerFactory.RequestNaverGeocodingHeaderFactory
 import javax.ws.rs.GET
 import javax.ws.rs.Path
-import javax.ws.rs.PathParam
 import javax.ws.rs.QueryParam
 
 /**
