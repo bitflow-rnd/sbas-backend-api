@@ -32,7 +32,7 @@ class PrivatePatientEndpoint {
     lateinit var patientService: PatientService
 
     @Inject
-    lateinit var service1: CommonService
+    lateinit var commonService: CommonService
 
     @Operation(summary = "", description = "")
     @POST

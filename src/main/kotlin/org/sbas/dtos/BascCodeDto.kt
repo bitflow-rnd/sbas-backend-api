@@ -44,6 +44,7 @@ fun BaseCodeSaveReq.toCdIdEntity(): BaseCode {
 @NoArg
 data class BaseCodeUpdateReq(
     var cdGrpId: String,
+    var cdGrpNm: String,
     var cdId: String,
     var cdNm: String,
     var cdVal: String,
@@ -53,12 +54,4 @@ data class BaseCodeUpdateReq(
 
 fun BaseCodeUpdateReq.getId(): BaseCodeId {
     return BaseCodeId(cdGrpId = this.cdGrpId, cdId = this.cdId)
-}
-
-fun BaseCodeUpdateReq.update(entity: BaseCode): BaseCodeId {
-    entity.cdNm = this.cdNm
-    entity.cdVal = this.cdVal
-    entity.cdSeq = this.cdSeq
-    entity.rmk = this.rmk
-    return entity.id
 }

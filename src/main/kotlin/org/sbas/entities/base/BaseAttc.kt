@@ -5,7 +5,6 @@ import org.hibernate.annotations.Parameter
 import org.sbas.entities.CommonEntity
 import org.sbas.entities.StringPrefixedSequenceIdGenerator
 import java.io.Serializable
-import java.math.BigDecimal
 import javax.persistence.*
 
 /**

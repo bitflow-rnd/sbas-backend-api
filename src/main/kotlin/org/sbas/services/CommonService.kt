@@ -92,68 +92,84 @@ class CommonService {
      * @param saveReq
      */
     @Transactional
-    fun saveBaseCodeGrp(saveReq: BaseCodeSaveReq): BaseCode {
+    fun saveBaseCodeGrp(saveReq: BaseCodeSaveReq): CommonResponse<BaseCode> {
         val baseCode = saveReq.toCdGprIdEntity()
         val findBaseCode = baseCodeRepository.findBaseCodeByCdGrpId(saveReq.cdGrpId)
         when {
             findBaseCode.isEmpty() -> baseCodeRepository.persist(baseCode)
             baseCodeRepository.isPersistent(findBaseCode.first()) -> throw PSQLException(ServerErrorMessage(""))
         }
-        return baseCode
+        return CommonResponse(baseCode)
     }
 
     /**
      * 공통코드 그룹 목록
      */
     @Transactional
-    fun findBaseCdGrpList(): List<BaseCode> {
-        return baseCodeRepository.findBaseCdGrpList()
+    fun findBaseCdGrpList(): CommonResponse<List<BaseCode>> {
+        return CommonResponse(baseCodeRepository.findBaseCdGrpList())
+    }
+
+    /**
+     * 공통코드 그룹 수정
+     */
+    @Transactional
+    fun updateBaseCdGrp(updateReq: BaseCodeUpdateReq): CommonResponse<String> {
+        val baseCodeList = baseCodeRepository.findBaseCodeByCdGrpId(updateReq.cdGrpId)
+        if (baseCodeList.isNotEmpty()) {
+            baseCodeList.forEach { it.updateBaseCdGrp(updateReq.cdGrpNm) }
+            return CommonResponse("성공")
+        } else {
+            throw NotFoundException("${updateReq.cdGrpId} not found")
+        }
     }
 
     /**
      * 공통코드 그룹 삭제
      */
     @Transactional
-    fun deleteBaseCdGrp(cdGrpId: String): String {
+    fun deleteBaseCdGrp(cdGrpId: String): CommonResponse<String> {
         val findBaseCode = baseCodeRepository.findBaseCodeByCdGrpId(cdGrpId)
         if (findBaseCode.isNotEmpty()) {
             findBaseCode.forEach{ baseCodeRepository.delete(it) }
-            return "삭제 성공"
+            return CommonResponse("삭제 성공")
         }
-        return "삭제 실패"
+        return CommonResponse("삭제 실패")
     }
 
     /**
      * 공통코드 등록
      */
     @Transactional
-    fun saveBaseCode(saveReq: BaseCodeSaveReq): BaseCode {
+    fun saveBaseCode(saveReq: BaseCodeSaveReq): CommonResponse<BaseCode?> {
         val findById = baseCodeRepository.findById(saveReq.toCdIdEntity().id)
-        return if (findById == null) {
-            baseCodeRepository.persist(saveReq.toCdIdEntity())
-            saveReq.toCdIdEntity()
-        } else {
-            findById
+        when (findById) {
+            null -> {
+                baseCodeRepository.persist(saveReq.toCdIdEntity())
+                saveReq.toCdIdEntity()
+            }
         }
+        return CommonResponse(findById)
     }
 
     /**
      * 공통코드 수정
      */
     @Transactional
-    fun updateBaseCode(updateReq: BaseCodeUpdateReq): BaseCodeId {
+    fun updateBaseCode(updateReq: BaseCodeUpdateReq): CommonResponse<String> {
         val baseCodeId = updateReq.getId()
         val findBaseCode = baseCodeRepository.findById(baseCodeId) ?: throw NotFoundException("$baseCodeId Not found")
-        return updateReq.update(findBaseCode)
+        findBaseCode.updateBaseCode(updateReq)
+        return CommonResponse("수정 성공")
     }
 
     /**
      * 공통코드 삭제
      */
     @Transactional
-    fun deleteBaseCode(updateReq: BaseCodeUpdateReq): Boolean {
+    fun deleteBaseCode(updateReq: BaseCodeUpdateReq): CommonResponse<Boolean> {
         val baseCodeId = updateReq.getId()
-        return baseCodeRepository.deleteById(baseCodeId)
+        return CommonResponse(baseCodeRepository.deleteById(baseCodeId))
     }
 
     /**
@@ -196,5 +212,4 @@ class CommonService {
 
         return CommonResponse(fileName)
     }
-
 }

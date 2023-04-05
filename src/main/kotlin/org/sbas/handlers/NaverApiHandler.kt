@@ -33,7 +33,6 @@ class NaverApiHandler {
     @ConfigProperty(name = "upload.path.middle")
     lateinit var uploadRelPath: String
 
-
     fun recognizeImage(uri: String, filename: String): EpidResult {
         val dotIdx = filename.lastIndexOf(".")
         val image = OcrApiImagesParam(
@@ -55,40 +54,40 @@ class NaverApiHandler {
         val res = naverOcrClient.recognize(reqparam)
         val texts = res.images[0].fields
         val list = ArrayList<String>()
-        val ret = EpidResult()
         for (field in texts!!) {
             list.add(field.inferText!!)
         }
-        ret.rcptPhc = list[1]
-        ret.ptNm = list[4]
-        ret.rrno1 = list[5].split("-")[0]
-        ret.rrno2 = list[5].split("-")[1]
-        ret.gndr = list[9]
-        ret.dstr1Cd = list[13]
-        ret.dstr2Cd = list[14]
-        ret.baseAddr = list[13] + " " + list[14] + " " + list[15] + " " + list[16]
-        ret.dtlAddr = list[18]
-        ret.fullAddr = list[13] + " " + list[14] + " " + list[15] + " " + list[16] + " " + list[17] + " " + list[18]
-        ret.rcptPhc = list[1]
-        ret.telno = list[18]
-        ret.diagNm = list[24]
-        ret.diagGrde = list[26]
-        ret.job = list[28]
-        ret.occrDt = list[34]
-        ret.diagDt = list[36]
-        ret.rptDt = list[38]
-        ret.dfdgExamRslt = list[40]
-        ret.ptCatg = list[42]
-        ret.admsYn = list[44]
-        ret.dethYn = list[46]
-        ret.rmk = list[50] + " " + list[51]
-        ret.instNm = list[53]
-        ret.instId = list[55]
-        ret.instTelno = list[57]
-        ret.instAddr = list[59] + " " + list[60] + " " + list[61] + " " + list[62]
-        ret.diagDrNm = list[65]
-        ret.rptChfNm = list[67]
-        return ret
+
+        return EpidResult(
+            rcptPhc = list[1],
+            ptNm = list[4],
+            rrno1 = list[5].split("-")[0],
+            rrno2 = list[5].split("-")[1],
+            gndr = list[9],
+            dstr1Cd = list[13],
+            dstr2Cd = list[14],
+            baseAddr = list[13] + " " + list[14] + " " + list[15] + " " + list[16],
+            dtlAddr = list[18],
+            fullAddr = list[13] + " " + list[14] + " " + list[15] + " " + list[16] + " " + list[17] + " " + list[18],
+            telno = list[18],
+            diagNm = list[24],
+            diagGrde = list[26],
+            job = list[28],
+            occrDt = list[34],
+            diagDt = list[36],
+            rptDt = list[38],
+            dfdgExamRslt = list[40],
+            ptCatg = list[42],
+            admsYn = list[44],
+            dethYn = list[46],
+            rmk = list[50] + " " + list[51],
+            instNm = list[53],
+            instId = list[55],
+            instTelno = list[57],
+            instAddr = list[59] + " " + list[60] + " " + list[61] + " " + list[62],
+            diagDrNm = list[65],
+            rptChfNm = list[67],
+        )
     }
 
 }

@@ -128,25 +128,23 @@ class PatientService {
 
     @Transactional
     fun uploadEpidReport(param: FileUpload): CommonResponse<EpidResult>? {
-        val userId = "test"
-        val fileinfo = fileHandler.createPublicFile(param)
-        if (fileinfo != null) {
+        val fileInfo = fileHandler.createPublicFile(param)
+        if (fileInfo != null) {
             // Naver Clova OCR call
-            val res = naverApiHandler.recognizeImage(fileinfo.uriPath, fileinfo.filename)
+            val res = naverApiHandler.recognizeImage(fileInfo.uriPath, fileInfo.filename)
             log.debug("texts are $res")
             // Then move from public to private
-            fileHandler.moveFilePublicToPrivate(fileinfo.localPath, fileinfo.filename)
-            val item = BaseAttc()
-            item.attcDt = StringUtils.getYyyyMmDd()
-            item.attcTm = StringUtils.getHhMmSs()
-            item.loclPath = fileinfo.localPath
-            item.uriPath = fileinfo.uriPath
-            item.fileNm = fileinfo.filename
-            item.fileTypeCd = SbasConst.FileTypeCd.IMAGE
-            item.rgstUserId = userId
-            item.updtUserId = userId
+            fileHandler.moveFilePublicToPrivate(fileInfo.localPath, fileInfo.filename)
+            val item = BaseAttc(
+                attcDt = StringUtils.getYyyyMmDd(),
+                attcTm = StringUtils.getHhMmSs(),
+                fileTypeCd = SbasConst.FileTypeCd.IMAGE,
+                fileNm = fileInfo.filename,
+                loclPath = fileInfo.localPath,
+                uriPath = fileInfo.uriPath,
+            )
             baseAttcRepository.persist(item)
-            return CommonResponse(SbasConst.ResCode.SUCCESS, null, res)
+            return CommonResponse(res)
         }
         return null
     }

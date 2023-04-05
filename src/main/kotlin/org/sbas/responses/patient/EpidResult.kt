@@ -1,9 +1,10 @@
 package org.sbas.responses.patient
 
 import org.eclipse.microprofile.openapi.annotations.media.Schema
+import org.sbas.utils.NoArg
 
+@NoArg
 data class EpidResult (
-
 
     // idx: 1
     @Schema(description = "수신보건소", example = "대구광역시수성구보건소")
@@ -116,11 +117,7 @@ data class EpidResult (
     // idx: 67
     @Schema(description = "신고기관장 성명", example = "홍길동")
     var rptChfNm: String?
-){
-    constructor() : this(null, null, null, null, null, null, null, null,
-        null, null, null, null, null, null, null, null, null, null, null, null, null, null,
-        null, null, null, null, null, null)
-}
+)
 
 /*
 수신보건소|대구광역시수성구보건소|주민(외국인)|성명(사망자)|정예준|100817-3|보호자성명|등록번호|성별|남
