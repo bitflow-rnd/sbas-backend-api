@@ -3,52 +3,48 @@ package org.sbas.utils
 import java.util.concurrent.ConcurrentHashMap
 import java.util.function.Consumer
 import javax.enterprise.context.ApplicationScoped
-import javax.inject.Inject
 import javax.websocket.*
 import javax.websocket.server.PathParam
 import javax.websocket.server.ServerEndpoint
 
 
-@ServerEndpoint("/chat/{tkrmId}")
+@ServerEndpoint("/chat-rooms/{username}")
 @ApplicationScoped
 class ChatSocket {
-
-    var sessions: MutableMap<String, Session> = ConcurrentHashMap<String, Session>()
-
+    var sessions: MutableMap<String, Session> = ConcurrentHashMap()
     @OnOpen
-    fun onOpen(session: Session, @PathParam("tkrmId") tkrmId: String) {
-        sessions[tkrmId] = session
+    fun onOpen(session: Session, @PathParam("username") username: String) {
+        sessions[username] = session
     }
 
     @OnClose
-    fun onClose(session: Session?, @PathParam("tkrmId") tkrmId: String) {
-        sessions.remove(tkrmId)
-        broadcast("User $tkrmId left")
+    fun onClose(session: Session?, @PathParam("username") username: String) {
+        sessions.remove(username)
+        broadcast("User $username left")
     }
 
     @OnError
-    fun onError(session: Session?, @PathParam("tkrmId") tkrmId: String, throwable: Throwable) {
-        sessions.remove(tkrmId)
-        broadcast("User $tkrmId left on error: $throwable")
+    fun onError(session: Session?, @PathParam("username") username: String, throwable: Throwable) {
+        sessions.remove(username)
+        broadcast("User $username left on error: $throwable")
     }
 
     @OnMessage
-    fun onMessage(message: String, @PathParam("tkrmId") tkrmId: String) {
+    fun onMessage(message: String, @PathParam("username") username: String) {
         if (message.equals("_ready_", ignoreCase = true)) {
-            broadcast("User $tkrmId joined")
+            broadcast("User $username joined")
         } else {
-            broadcast(">> $tkrmId: $message")
+            broadcast(">> $username: $message")
         }
     }
 
     private fun broadcast(message: String) {
-        sessions.values.forEach(Consumer<Session> { s: Session ->
-            s.asyncRemote.sendObject(message) { result ->
+        sessions.values.forEach(Consumer { s: Session ->
+            s.asyncRemote.sendObject(message) { result: SendResult ->
                 if (result.exception != null) {
                     println("Unable to send message: " + result.exception)
                 }
             }
         })
     }
-
 }

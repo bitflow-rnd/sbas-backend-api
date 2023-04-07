@@ -20,6 +20,7 @@ import javax.ws.rs.core.SecurityContext
 
 @Tag(name = "사용자 관리(공개 권한용)", description = "비 로그인 사용자 - 가입요청, 인증요청 등")
 @Path("v1/public/user")
+@PermitAll
 class PublicUserEndpoint {
 
     @Inject

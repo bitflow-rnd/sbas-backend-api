@@ -2,7 +2,6 @@ package org.sbas.services
 
 import org.eclipse.microprofile.jwt.JsonWebToken
 import org.sbas.entities.talk.TalkMsg
-import org.sbas.entities.talk.TalkRoom
 import org.sbas.repositories.TalkMsgRepository
 import org.sbas.repositories.TalkRoomRepository
 import org.sbas.repositories.TalkUserRepository
@@ -23,9 +22,6 @@ class TalkService {
 
     @Inject
     private lateinit var talkRoomRepository: TalkRoomRepository
-
-    @Inject
-    private lateinit var jwt: JsonWebToken
 
     fun getMyChats(jwt: JsonWebToken): CommonResponse<List<TalkRoomResponse>> {
         val findChatRooms = talkRoomRepository.findTalkRoomResponse(jwt.name)

@@ -1,8 +1,6 @@
 package org.sbas.responses.messages
 
 import io.quarkus.runtime.annotations.RegisterForReflection
-import org.sbas.entities.talk.TalkMsg
-import org.sbas.entities.talk.TalkRoom
 import java.time.Instant
 
 @RegisterForReflection
