@@ -5,7 +5,7 @@ import org.jboss.logging.Logger
 import org.jboss.resteasy.reactive.RestResponse
 import org.sbas.dtos.FireStatnSaveReq
 import org.sbas.dtos.InfoCrewRegDto
-import org.sbas.dtos.InfoInstUpdateDto
+import org.sbas.dtos.InfoInstUpdateReq
 import org.sbas.entities.info.*
 import org.sbas.parameters.InstCdParameters
 import org.sbas.repositories.InfoCrewRepository
@@ -77,7 +77,7 @@ class OrganiztnService {
      * 구급대 수정
      */
     @Transactional
-    fun updateFireStatn(updateReq: InfoInstUpdateDto): CommonResponse<String> {
+    fun updateFireStatn(updateReq: InfoInstUpdateReq): CommonResponse<String> {
         val infoInst = infoInstRepository.findById(updateReq.instId)
             ?: throw CustomizedException("${updateReq.instId} not found", Response.Status.NOT_FOUND)
         infoInst.update(updateReq)

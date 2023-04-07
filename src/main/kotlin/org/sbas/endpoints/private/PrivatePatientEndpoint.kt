@@ -1,6 +1,7 @@
 package org.sbas.endpoints.private
 
 import org.eclipse.microprofile.openapi.annotations.Operation
+import org.eclipse.microprofile.openapi.annotations.parameters.RequestBody
 import org.eclipse.microprofile.openapi.annotations.tags.Tag
 import org.jboss.logging.Logger
 import org.jboss.resteasy.reactive.RestForm
@@ -8,7 +9,7 @@ import org.jboss.resteasy.reactive.RestPath
 import org.jboss.resteasy.reactive.RestResponse
 import org.jboss.resteasy.reactive.RestResponse.ResponseBuilder
 import org.jboss.resteasy.reactive.multipart.FileUpload
-import org.sbas.dtos.InfoPtSaveReq
+import org.sbas.dtos.InfoPtDto
 import org.sbas.dtos.NewsScoreParam
 import org.sbas.parameters.SearchParameters
 import org.sbas.responses.CommonResponse
@@ -16,9 +17,11 @@ import org.sbas.responses.patient.EpidResult
 import org.sbas.services.CommonService
 import org.sbas.services.PatientService
 import javax.inject.Inject
+import javax.ws.rs.BeanParam
 import javax.ws.rs.GET
 import javax.ws.rs.POST
 import javax.ws.rs.Path
+import javax.ws.rs.QueryParam
 import javax.ws.rs.core.Response
 
 @Tag(name = "환자 관리(사용자 권한용)", description = "로그인 된 사용자(세부권한별 분기) - 환자 등록 및 조회 등")
@@ -53,22 +56,23 @@ class PrivatePatientEndpoint {
     @Operation(summary = "환자기본정보 등록", description = "")
     @POST
     @Path("regbasicinfo")
-    fun regbasicinfo(infoPtSaveReq: InfoPtSaveReq): Response {
-        return Response.ok(patientService.saveInfoPt(infoPtSaveReq)).build()
+    fun regbasicinfo(infoPtDto: InfoPtDto): Response {
+        return Response.ok(patientService.saveInfoPt(infoPtDto)).build()
     }
 
     @Operation(summary = "환자 중복 유효성 검사", description = "")
     @POST
     @Path("exist")
-    fun exist(infoPtSaveReq: InfoPtSaveReq): Response {
-        return Response.ok(patientService.check(infoPtSaveReq)).build()
+    fun exist(infoPtDto: InfoPtDto): Response {
+        return Response.ok(patientService.check(infoPtDto)).build()
     }
 
-    @Operation(summary = "", description = "")
+    @Operation(summary = "환자정보 수정", description = "")
     @POST
-    @Path("modinfo")
-    fun modinfo(): Response {
-        return Response.ok().build()
+    @Path("modinfo/{ptId}")
+    fun modinfo(@RestPath ptId: String,@RequestBody infoPtDto: InfoPtDto): Response {
+        log.debug("res==============>>>>>>> $infoPtDto")
+        return Response.ok(patientService.updateInfoPt(ptId, infoPtDto)).build()
     }
 
     @Operation(summary = "", description = "")
@@ -137,14 +141,14 @@ class PrivatePatientEndpoint {
     }
 
     @Operation(summary = "전국 환자검색", description = "")
-    @POST
+    @GET
     @Path("search")
-    fun search(searchParameters: SearchParameters): Response {
+    fun search(@BeanParam searchParameters: SearchParameters): Response {
         return Response.ok(patientService.findInfoPt(searchParameters)).build()
     }
 
     @Operation(summary = "내 기관 관련 환자목록", description = "")
-    @POST
+    @GET
     @Path("myorganiztn")
     fun myorganiztn(): Response {
         return Response.ok(patientService.findInfoPtWithMyOrgan()).build()

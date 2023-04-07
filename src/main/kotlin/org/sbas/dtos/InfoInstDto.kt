@@ -4,19 +4,19 @@ import org.sbas.entities.info.InfoInst
 import org.sbas.utils.NoArg
 
 @NoArg
-data class InfoInstUpdateDto(
+data class InfoInstUpdateReq(
     var instId: String,
-    var instNm: String,
-    var dstrCd1: String,
-    var dstrCd2: String,
-    var chrgId: String,
-    var chrgNm: String,
-    var chrgTelno: String,
-    var rmk: String,
-    var baseAddr: String,
-    var lat: String,
-    var lon: String,
-    var attcId: String,
+    var instNm: String?,
+    var dstrCd1: String?,
+    var dstrCd2: String?,
+    var chrgId: String?,
+    var chrgNm: String?,
+    var chrgTelno: String?,
+    var rmk: String?,
+    var baseAddr: String?,
+    var lat: String?,
+    var lon: String?,
+    var attcId: String?,
 )
 
 @NoArg

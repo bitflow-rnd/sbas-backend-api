@@ -1,6 +1,6 @@
 package org.sbas.entities.info
 
-import org.sbas.dtos.InfoInstUpdateDto
+import org.sbas.dtos.InfoInstUpdateReq
 import org.sbas.entities.CommonEntity
 import javax.persistence.Column
 import javax.persistence.Entity
@@ -54,16 +54,16 @@ class InfoInst(
     var attcId: String? = null, // 첨부 ID
 ) : CommonEntity()
 
-fun InfoInst.update(infoInst: InfoInstUpdateDto) {
-    this.instNm = infoInst.instNm
-    this.dstrCd1 = infoInst.dstrCd1
-    this.dstrCd2 = infoInst.dstrCd2
-    this.chrgId = infoInst.chrgId
-    this.chrgNm = infoInst.chrgNm
-    this.chrgTelno = infoInst.chrgTelno
-    this.baseAddr = infoInst.baseAddr
-    this.lat = infoInst.lat
-    this.lon = infoInst.lon
-    this.rmk = infoInst.rmk
-    this.attcId = infoInst.attcId
+fun InfoInst.update(updateDto: InfoInstUpdateReq) {
+    this.instNm = updateDto.instNm ?: this.instNm
+    this.dstrCd1 = updateDto.dstrCd1 ?: this.dstrCd1
+    this.dstrCd2 = updateDto.dstrCd2 ?: this.dstrCd2
+    this.chrgId = updateDto.chrgId ?: this.chrgId
+    this.chrgNm = updateDto.chrgNm ?: this.chrgNm
+    this.chrgTelno = updateDto.chrgTelno ?: this.chrgTelno
+    this.baseAddr = updateDto.baseAddr ?: this.baseAddr
+    this.lat = updateDto.lat ?: this.lat
+    this.lon = updateDto.lon ?: this.lon
+    this.rmk = updateDto.rmk ?: this.rmk
+    this.attcId = updateDto.attcId ?: this.attcId
 }

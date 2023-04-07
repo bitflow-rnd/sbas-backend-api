@@ -2,6 +2,7 @@ package org.sbas.entities.info
 
 import org.hibernate.annotations.GenericGenerator
 import org.hibernate.annotations.Parameter
+import org.sbas.dtos.InfoPtDto
 import org.sbas.entities.CommonEntity
 import org.sbas.entities.StringPrefixedSequenceIdGenerator
 import javax.persistence.*
@@ -70,4 +71,23 @@ class InfoPt(
 
     @Column(name = "attc_id", length = 12)
     var attcId: String? = null, // 첨부 ID
-) : CommonEntity()
+) : CommonEntity() {
+
+    fun updateEntity(infoPtDto: InfoPtDto) {
+        this.ptNm = infoPtDto.ptNm ?: this.ptNm
+        this.gndr = infoPtDto.gndr
+        this.rrno1 = infoPtDto.rrno1
+        this.rrno2 = infoPtDto.rrno2
+        this.dstr1Cd = infoPtDto.dstr1Cd
+        this.dstr2Cd = infoPtDto.dstr2Cd
+        this.addr = infoPtDto.addr
+        this.telno = infoPtDto.telno
+        this.natiCd = infoPtDto.natiCd
+        this.picaVer = infoPtDto.picaVer
+        this.dethYn = infoPtDto.dethYn
+        this.nokNm = infoPtDto.nokNm
+        this.mpno = infoPtDto.mpno
+        this.job = infoPtDto.job
+        this.attcId = infoPtDto.attcId
+    }
+}

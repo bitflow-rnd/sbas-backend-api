@@ -27,6 +27,8 @@ class CommonEntityListener {
     fun preUpdate(entity: CommonEntity) {
         // Entity가 업데이트되기 전에 호출됩니다.
         // 이전에 수행할 로직을 여기에 작성합니다.
-        entity.updtUserId = jsonWebToken.name
+        if (jsonWebToken.name != null) {
+            entity.updtUserId = jsonWebToken.name
+        }
     }
 }

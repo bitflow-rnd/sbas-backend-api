@@ -4,7 +4,7 @@ import org.eclipse.microprofile.jwt.JsonWebToken
 import org.jboss.logging.Logger
 import org.jboss.resteasy.reactive.multipart.FileUpload
 import org.sbas.constants.SbasConst
-import org.sbas.dtos.InfoPtSaveReq
+import org.sbas.dtos.InfoPtDto
 import org.sbas.dtos.NewsScoreParam
 import org.sbas.dtos.toEntity
 import org.sbas.entities.base.BaseAttc
@@ -56,18 +56,18 @@ class PatientService {
     private lateinit var jwt: JsonWebToken
 
     @Transactional
-    fun saveInfoPt(infoPtSaveReq: InfoPtSaveReq): CommonResponse<String?> {
-        val infoPt = infoPtSaveReq.toEntity()
+    fun saveInfoPt(infoPtDto: InfoPtDto): CommonResponse<String?> {
+        val infoPt = infoPtDto.toEntity()
         infoPtRepository.persist(infoPt)
         return CommonResponse(infoPt.id)
     }
 
     @Transactional
-    fun check(infoPtSaveReq: InfoPtSaveReq): CommonResponse<String> {
+    fun check(infoPtDto: InfoPtDto): CommonResponse<String> {
         val findInfoPt = infoPtRepository.findByPtNmAndRrno(
-            ptNm = infoPtSaveReq.ptNm,
-            rrno1 = infoPtSaveReq.rrno1,
-            rrno2 = infoPtSaveReq.rrno2,
+            ptNm = infoPtDto.ptNm,
+            rrno1 = infoPtDto.rrno1,
+            rrno2 = infoPtDto.rrno2,
         )
 
         if (findInfoPt != null) { // 등록된 환자 존재
@@ -156,10 +156,14 @@ class PatientService {
         addIfNotNull(map, "nati_cd", param.natiCd)
         addIfNotNull(map, "dstr_1_cd", param.dstr1Cd)
         addIfNotNull(map, "dstr_2_cd", param.dstr2Cd)
+        val res = mutableMapOf<String, Any>()
 
-//        if (map.isEmpty()) {
-//            return CommonResponse(infoPtRepository.findAll().list())
-//        }
+        if (map.isEmpty()) {
+            val infoPtList = infoPtRepository.findAll().list()
+            res["items"] = infoPtList
+            res["count"] = infoPtList.count()
+            return CommonResponse(res)
+        }
 
         val query = map.entries.stream()
             .map { entry -> "${entry.key}='${entry.value}'" }
@@ -167,9 +171,17 @@ class PatientService {
 
         log.debug("res========> $query")
         val infoPtList = infoPtRepository.find(query).list()
-        val count = infoPtList.count()
+        res["items"] = infoPtList
+        res["count"] = infoPtList.count()
 
-        return CommonResponse(Pair(infoPtList, count))
+        return CommonResponse(res)
+    }
+
+    @Transactional
+    fun updateInfoPt(ptId: String, infoPtDto: InfoPtDto): CommonResponse<String> {
+        val findInfoPt = infoPtRepository.findById(ptId) ?: throw NotFoundException("$ptId not found")
+        findInfoPt.updateEntity(infoPtDto)
+        return CommonResponse("$ptId 수정 성공")
     }
 
     @Transactional
@@ -183,7 +195,7 @@ class PatientService {
     }
 
     private fun addIfNotNull(map: MutableMap<String, Any>, key: String, value: String?) {
-        if (value != null && value !== "") {
+        if (!value.isNullOrBlank()) {
             map[key] = value
         }
     }

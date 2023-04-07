@@ -22,7 +22,6 @@ import javax.ws.rs.ext.Provider
 /**
  * NotFoundException 발생 시 예외 응답 처리
  */
-//TODO 수정필요
 @Provider
 class NotFoundExceptionMapper : ExceptionMapper<NotFoundException> {
     override fun toResponse(exception: NotFoundException): Response {

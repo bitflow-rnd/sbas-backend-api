@@ -4,7 +4,7 @@ import org.sbas.entities.info.InfoPt
 import org.sbas.utils.NoArg
 
 @NoArg
-data class InfoPtSaveReq(
+data class InfoPtDto(
     val ptNm: String,
     val gndr: String,
     val rrno1: String,
@@ -22,7 +22,7 @@ data class InfoPtSaveReq(
     val attcId: String,
 )
 
-fun InfoPtSaveReq.toEntity(): InfoPt {
+fun InfoPtDto.toEntity(): InfoPt {
     return InfoPt(
         ptNm = this.ptNm,
         gndr = this.gndr,
