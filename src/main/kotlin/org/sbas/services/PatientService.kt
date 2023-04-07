@@ -169,7 +169,7 @@ class PatientService {
             .map { entry -> "${entry.key}='${entry.value}'" }
             .collect(Collectors.joining(" and "))
 
-        log.debug("res========> $query")
+//        log.debug("res========> $query")
         val infoPtList = infoPtRepository.find(query).list()
         res["items"] = infoPtList
         res["count"] = infoPtList.count()

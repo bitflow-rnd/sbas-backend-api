@@ -2,6 +2,7 @@ package org.sbas.entities.info
 
 import org.hibernate.annotations.GenericGenerator
 import org.hibernate.annotations.Parameter
+import org.sbas.constants.BedStat
 import org.sbas.dtos.InfoPtDto
 import org.sbas.entities.CommonEntity
 import org.sbas.entities.StringPrefixedSequenceIdGenerator
@@ -48,7 +49,7 @@ class InfoPt(
     @Column(name = "addr", nullable = false, length = 100)
     var addr: String? = null, // 주소
 
-    @Column(name = "telno", nullable = false, length = 11)
+    @Column(name = "telno", length = 11)
     var telno: String? = null, // 전화번호
 
     @Column(name = "nati_cd", nullable = false, length = 8)
@@ -71,6 +72,13 @@ class InfoPt(
 
     @Column(name = "attc_id", length = 12)
     var attcId: String? = null, // 첨부 ID
+
+    @Column(name = "bed_stat_cd", length = 8)
+    @Enumerated(value = EnumType.STRING)
+    var bedStatCd: BedStat = BedStat.BAST0001,
+
+    @Column(name = "bed_stat_nm", length = 8)
+    var bedStatNm: String = BedStat.BAST0001.cdNm,
 ) : CommonEntity() {
 
     fun updateEntity(infoPtDto: InfoPtDto) {

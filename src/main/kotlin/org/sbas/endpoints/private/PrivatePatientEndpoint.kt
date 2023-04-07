@@ -144,6 +144,7 @@ class PrivatePatientEndpoint {
     @GET
     @Path("search")
     fun search(@BeanParam searchParameters: SearchParameters): Response {
+        log.debug("searchParam: $searchParameters")
         return Response.ok(patientService.findInfoPt(searchParameters)).build()
     }
 
