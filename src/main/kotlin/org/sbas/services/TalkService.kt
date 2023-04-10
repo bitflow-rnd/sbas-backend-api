@@ -50,10 +50,11 @@ class TalkService {
 
     @Transactional
     fun sendMsg(tkrmId: String, userId: String, detail: String){
-        val findTkrm = talkRoomRepository.findTalkRoomByTkrmId(tkrmId)
         val recentMsg = talkMsgRepository.findRecentlyMsg(tkrmId)
         val addMsgId = TalkMsgId(tkrmId, recentMsg?.id?.msgSeq?.plus(BigDecimal(1)), recentMsg?.id?.histSeq)
         val addMsg = TalkMsg(addMsgId, recentMsg?.histCd, detail, null)
+        addMsg.rgstUserId = userId
+        addMsg.updtUserId = userId
         talkMsgRepository.persist(addMsg)
     }
 
