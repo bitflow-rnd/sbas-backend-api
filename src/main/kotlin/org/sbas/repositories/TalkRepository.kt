@@ -4,6 +4,7 @@ import io.quarkus.hibernate.orm.panache.kotlin.PanacheRepositoryBase
 import org.sbas.entities.talk.*
 import org.sbas.responses.messages.TalkRoomResponse
 import java.lang.NullPointerException
+import java.math.BigDecimal
 import javax.enterprise.context.ApplicationScoped
 
 @ApplicationScoped
@@ -15,6 +16,8 @@ class TalkMsgRepository : PanacheRepositoryBase<TalkMsg, TalkMsgId> {
     fun findChatDetail(tkrmId: String) = find("select tm from TalkMsg tm where tm.id.tkrmId = '$tkrmId' order by tm.id.msgSeq").list()
 
     fun findRecentlyMsg(tkrmId: String?) = find("SELECT tm FROM TalkMsg tm WHERE tm.id.tkrmId = '$tkrmId' ORDER BY tm.id.msgSeq DESC").firstResult()
+
+    fun findRecentSeq(tkrmId: String?) = find("select tm from TalkMsg tm where tm.id.tkrmId = '$tkrmId' order by tm.id.msgSeq desc limit 1").firstResult()
 
 }
 

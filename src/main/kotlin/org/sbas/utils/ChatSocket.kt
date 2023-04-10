@@ -11,7 +11,7 @@ import javax.websocket.*
 import javax.websocket.server.PathParam
 import javax.websocket.server.ServerEndpoint
 
-@ServerEndpoint("/chat-rooms/{tkrmId}/{userId}")
+@ServerEndpoint("/chat-rooms/{userId}/{tkrmId}")
 @ApplicationScoped
 class ChatSocket {
 
@@ -21,12 +21,15 @@ class ChatSocket {
 
     private lateinit var chatRoom: ChatRoom
 
+    @Inject
+    lateinit var talkService: TalkService
+
     @OnOpen
     fun onOpen(session: Session, @PathParam("tkrmId") tkrmId: String, @PathParam("userId") userId: String) {
         chatRoom = chatRooms.getOrPut(tkrmId) { ChatRoom(tkrmId) }
         chatRoom.addSession(userId, session)
         chatRoom.broadcast("$userId joined the chat")
-        updateChatRoomList()
+        updateChatRoomList(userId)
     }
 
     @OnClose
@@ -36,7 +39,7 @@ class ChatSocket {
         if (chatRoom.isEmpty()) {
             chatRooms.remove(chatRoom.id)
         }
-        updateChatRoomList()
+        updateChatRoomList(userId)
     }
 
     @OnError
@@ -46,7 +49,7 @@ class ChatSocket {
         if (chatRoom.isEmpty()) {
             chatRooms.remove(chatRoom.id)
         }
-        updateChatRoomList()
+        updateChatRoomList(userId)
     }
 
     @OnMessage
@@ -55,28 +58,24 @@ class ChatSocket {
             chatRoom.broadcast("$userId joined the chat")
         } else {
             chatRoom.broadcast(">> $userId: $message")
+            talkService.sendMsg(chatRoom.id, userId, message)
         }
     }
 
-    private fun updateChatRoomList() {
-        val chatRoomList = chatRooms.values.map { room ->
+    private fun updateChatRoomList(userId: String) {
+        val chatRoomList = chatRooms.values.filter { room ->
+            room.sessions.keys.contains(userId)
+        }.map { room ->
             room.getLastChat(room.id)
         }
-        chatRooms.values.forEach { room ->
-            room.sessions.values.forEach(Consumer { s: Session ->
-                s.asyncRemote.sendObject(chatRoomList) { result: SendResult ->
-                    if (result.exception != null) {
-                        println("Unable to send message: " + result.exception)
-                    }
-                }
-            })
+        chatRoom.sessions[userId]?.asyncRemote?.sendObject(chatRoomList) { result: SendResult ->
+            if (result.exception != null) {
+                println("Unable to send message: " + result.exception)
+            }
         }
     }
 
     class ChatRoom(val id: String) {
-
-        @Inject
-        lateinit var jwt: JsonWebToken
 
         @Inject
         private lateinit var talkService: TalkService

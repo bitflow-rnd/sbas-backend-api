@@ -2,13 +2,18 @@ package org.sbas.services
 
 import org.eclipse.microprofile.jwt.JsonWebToken
 import org.sbas.entities.talk.TalkMsg
+import org.sbas.entities.talk.TalkMsgId
+import org.sbas.entities.talk.TalkRoom
+import org.sbas.entities.talk.TalkRoomId
 import org.sbas.repositories.TalkMsgRepository
 import org.sbas.repositories.TalkRoomRepository
 import org.sbas.repositories.TalkUserRepository
 import org.sbas.responses.CommonResponse
 import org.sbas.responses.messages.TalkRoomResponse
+import java.math.BigDecimal
 import javax.enterprise.context.ApplicationScoped
 import javax.inject.Inject
+import javax.transaction.Transactional
 import javax.ws.rs.NotFoundException
 
 @ApplicationScoped
@@ -41,6 +46,15 @@ class TalkService {
 
     fun getMyChatByTkrmId(tkrmId: String): TalkRoomResponse {
         return talkRoomRepository.findTalkRoomResponseByTkrmId(tkrmId)
+    }
+
+    @Transactional
+    fun sendMsg(tkrmId: String, userId: String, detail: String){
+        val findTkrm = talkRoomRepository.findTalkRoomByTkrmId(tkrmId)
+        val recentMsg = talkMsgRepository.findRecentlyMsg(tkrmId)
+        val addMsgId = TalkMsgId(tkrmId, recentMsg?.id?.msgSeq?.plus(BigDecimal(1)), recentMsg?.id?.histSeq)
+        val addMsg = TalkMsg(addMsgId, recentMsg?.histCd, detail, null)
+        talkMsgRepository.persist(addMsg)
     }
 
 }
