@@ -39,4 +39,8 @@ class TalkService {
         return CommonResponse(findChatDetail)
     }
 
+    fun getMyChatByTkrmId(tkrmId: String): TalkRoomResponse {
+        return talkRoomRepository.findTalkRoomResponseByTkrmId(tkrmId)
+    }
+
 }

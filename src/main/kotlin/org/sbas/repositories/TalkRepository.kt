@@ -3,6 +3,7 @@ package org.sbas.repositories
 import io.quarkus.hibernate.orm.panache.kotlin.PanacheRepositoryBase
 import org.sbas.entities.talk.*
 import org.sbas.responses.messages.TalkRoomResponse
+import java.lang.NullPointerException
 import javax.enterprise.context.ApplicationScoped
 
 @ApplicationScoped
@@ -37,5 +38,21 @@ class TalkRoomRepository : PanacheRepositoryBase<TalkRoom, TalkRoomId> {
         }
 
         return resultList
+    }
+
+    fun findTalkRoomByTkrmId(tkrmId: String) = find("select tr from TalkRoom tr where tr.id.tkrmId = '$tkrmId'")
+
+    fun findTalkRoomResponseByTkrmId(tkrmId: String): TalkRoomResponse {
+        val talkRoom = findTalkRoomByTkrmId(tkrmId).firstResult()
+        val talkMsgRepository = TalkMsgRepository()
+        val talkMsg = talkMsgRepository.findRecentlyMsg(tkrmId)
+
+        if(talkRoom == null) throw NullPointerException("채팅방이 없습니다.")
+
+        return if(talkMsg != null){
+            TalkRoomResponse(tkrmId, talkRoom.tkrmNm, talkMsg.msg, talkMsg.rgstDttm)
+        }else {
+            TalkRoomResponse(tkrmId, talkRoom.tkrmNm, null, talkRoom.rgstDttm)
+        }
     }
 }
