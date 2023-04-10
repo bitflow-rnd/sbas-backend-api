@@ -1,6 +1,5 @@
 package org.sbas.utils
 
-import org.eclipse.microprofile.jwt.JsonWebToken
 import org.sbas.responses.messages.TalkRoomResponse
 import org.sbas.services.TalkService
 import java.util.concurrent.ConcurrentHashMap
@@ -55,10 +54,11 @@ class ChatSocket {
     @OnMessage
     fun onMessage(message: String, @PathParam("userId") userId: String) {
         if (message.equals("_ready_", ignoreCase = true)) {
-            chatRoom.broadcast("$userId joined the chat")
+//            chatRoom.broadcast("$userId joined the chat")
+            chatRoom.broadcast("hi")
         } else {
-            chatRoom.broadcast(">> $userId: $message")
-            talkService.sendMsg(chatRoom.id, userId, message)
+//            chatRoom.broadcast(">> $userId: $message")
+//            talkService.sendMsg(chatRoom.id, userId, message)
         }
     }
 
