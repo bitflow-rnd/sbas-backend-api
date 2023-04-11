@@ -47,7 +47,7 @@ data class EpidResult (
     var fullAddr: String?,
 
     // idx: 21
-    @Schema(description = "휴대전화번호", example = "솔샘로25길 28")
+    @Schema(description = "휴대전화번호", example = "01050680725")
     var telno: String?,
 
     // idx: 24
@@ -62,7 +62,7 @@ data class EpidResult (
     @Schema(description = "직업", example = "기타(기타)")
     var job: String?,
 
-    // idx: 32
+    // idx: 31
     @Schema(description = "코로나19 증상 및 징후", example = "열")
     var cv19Symp: String?,
 
