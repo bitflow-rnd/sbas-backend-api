@@ -8,6 +8,7 @@ import org.sbas.dtos.InfoPtDto
 import org.sbas.dtos.NewsScoreParam
 import org.sbas.dtos.toEntity
 import org.sbas.entities.base.BaseAttc
+import org.sbas.entities.info.InfoPt
 import org.sbas.handlers.FileHandler
 import org.sbas.handlers.NaverApiHandler
 import org.sbas.parameters.SearchParameters
@@ -21,6 +22,10 @@ import org.sbas.utils.StringUtils
 import java.util.stream.Collectors
 import javax.enterprise.context.ApplicationScoped
 import javax.inject.Inject
+import javax.persistence.criteria.CriteriaBuilder
+import javax.persistence.criteria.CriteriaQuery
+import javax.persistence.criteria.Predicate
+import javax.persistence.criteria.Root
 import javax.transaction.Transactional
 import javax.ws.rs.NotFoundException
 
@@ -190,13 +195,65 @@ class PatientService {
         val infoUser = infoUserRepository.findById(jwt.name) ?: throw NotFoundException()
         val infoInst = infoInstRepository.findById(infoUser.instId!!) ?: throw NotFoundException()
         val infoPtList = infoPtRepository.findByDstrCd(infoInst.dstrCd1!!, infoInst.dstrCd2!!)
-        val count = infoPtList.count()
-        return CommonResponse(Pair(infoPtList, count))
+
+        val res = mutableMapOf<String, Any>()
+        res["items"] = infoPtList
+        res["count"] = infoPtList.count()
+
+        return CommonResponse(res)
+    }
+
+    @Transactional
+    fun findInfoPt2(param: SearchParameters): CommonResponse<*> {
+        val entityManager = infoPtRepository.getEntityManager()
+        val criteriaBuilder = entityManager.criteriaBuilder
+
+        val criteriaQuery: CriteriaQuery<InfoPt> = criteriaBuilder.createQuery(InfoPt::class.java)
+        val root: Root<InfoPt> = criteriaQuery.from(InfoPt::class.java)
+
+        val predicates: MutableList<Predicate> = mutableListOf()
+
+        if (param.gndr != null) {
+            predicates.add(criteriaBuilder.equal(root.get<String>("gndr"), param.gndr))
+        }
+
+        if (param.natiCd != null) {
+            predicates.add(criteriaBuilder.equal(root.get<String>("natiCd"), param.natiCd))
+        }
+
+        if (param.dstr1Cd != null) {
+            predicates.add(criteriaBuilder.equal(root.get<String>("dstr1Cd"), param.dstr1Cd))
+        }
+
+        if (param.dstr2Cd != null) {
+            predicates.add(criteriaBuilder.equal(root.get<String>("dstr2Cd"), param.dstr2Cd))
+        }
+
+        if (predicates.isNotEmpty()) {
+            criteriaQuery.where(*predicates.toTypedArray())
+        }
+
+        val query = entityManager.createQuery(criteriaQuery)
+
+        val infoPtList = query.resultList
+        val res = mutableMapOf<String, Any>()
+        res["items"] = infoPtList
+        res["count"] = infoPtList.count()
+
+        return CommonResponse(res)
     }
 
     private fun addIfNotNull(map: MutableMap<String, Any>, key: String, value: String?) {
         if (!value.isNullOrBlank()) {
             map[key] = value
+        }
+    }
+
+    private fun addIfNotNull(criteriaBuilder: CriteriaBuilder, criteriaQuery: CriteriaQuery<*>, value: String?) {
+        val root: Root<InfoPt> = criteriaQuery.from(InfoPt::class.java)
+        val predicates: MutableList<Predicate> = mutableListOf()
+        if (!value.isNullOrBlank()) {
+            predicates.add(criteriaBuilder.equal(root.get<String>(value), value))
         }
     }
 }

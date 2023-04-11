@@ -9,11 +9,13 @@ import org.jboss.resteasy.reactive.RestPath
 import org.jboss.resteasy.reactive.RestResponse
 import org.jboss.resteasy.reactive.RestResponse.ResponseBuilder
 import org.jboss.resteasy.reactive.multipart.FileUpload
+import org.sbas.dtos.BdasEsvyDto
 import org.sbas.dtos.InfoPtDto
 import org.sbas.dtos.NewsScoreParam
 import org.sbas.parameters.SearchParameters
 import org.sbas.responses.CommonResponse
 import org.sbas.responses.patient.EpidResult
+import org.sbas.services.BedAssignService
 import org.sbas.services.CommonService
 import org.sbas.services.PatientService
 import javax.inject.Inject
@@ -36,6 +38,9 @@ class PrivatePatientEndpoint {
 
     @Inject
     lateinit var commonService: CommonService
+
+    @Inject
+    lateinit var bedAssignService: BedAssignService
 
     @Operation(summary = "", description = "")
     @POST
@@ -107,16 +112,16 @@ class PrivatePatientEndpoint {
     @POST
     @Path("bioinfoanlys")
     //TODO 테이블(svrt_anly)에 값들 저장
-    fun bioinfoanlys(param: NewsScoreParam): RestResponse<Int>? {
+    fun bioinfoanlys(param: NewsScoreParam): Response {
         patientService.calculateNewsScore(param)
-        return ResponseBuilder.ok(patientService.calculateNewsScore(param)).build()
+        return Response.ok(patientService.calculateNewsScore(param)).build()
     }
 
     @Operation(summary = "질병(감염병) 정보 등록", description = "")
     @POST
     @Path("regdisesinfo")
-    fun regdisesinfo(): Response? {
-        return Response.ok().build()
+    fun regdisesinfo(bdasEsvyDto: BdasEsvyDto): Response? {
+        return Response.ok(bedAssignService.regDisesInfo(bdasEsvyDto)).build()
     }
 
     @Operation(summary = "중증정보 등록", description = "")

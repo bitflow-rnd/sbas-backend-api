@@ -16,3 +16,6 @@ class BdasAprvRepository: PanacheRepositoryBase<BdasAprv, BdasAprvId>
 
 @ApplicationScoped
 class BdasAdmRepository: PanacheRepositoryBase<BdasAdm, BdasAdmId>
+
+@ApplicationScoped
+class BdasEsvyRepository: PanacheRepositoryBase<BdasEsvy, String>

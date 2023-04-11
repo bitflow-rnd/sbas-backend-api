@@ -2,7 +2,6 @@ package org.sbas.entities.bdas
 
 import org.sbas.entities.CommonEntity
 import java.io.Serializable
-import java.math.BigDecimal
 import javax.persistence.*
 
 /**
@@ -11,14 +10,25 @@ import javax.persistence.*
 @Entity
 @Table(name = "bdas_esvy")
 class BdasEsvy(
-    @EmbeddedId
-    var id: BdasEsvyId? = null,
+    @Id
+    @Column(name = "pt_id", nullable = false, length = 10)
+    var ptId: String? = null, // 환자 ID
+
+    @GeneratedValue(strategy = GenerationType.AUTO)
+    @Id
+    @Column(name = "bdas_seq", nullable = false, precision = 10)
+    var bdasSeq: Int? = null, // 병상 배정 순번
+
+    @GeneratedValue(strategy = GenerationType.AUTO)
+    @Id
+    @Column(name = "hist_seq", nullable = false, precision = 3)
+    var histSeq: Int? = null, // 이력 순번
 
     @Column(name = "hist_cd", nullable = false, length = 8)
     var histCd: String? = null, // 이력 코드
 
-    @Column(name = "esvy_seq", precision = 10)
-    var esvySeq: BigDecimal? = null, // 역학조사서 순번
+    @Column(name = "esvy_seq")
+    var esvySeq: Int? = null, // 역학조사서 순번
 
     @Column(name = "esvy_imsg")
     var esvyImsg: ByteArray? = null, // 역학조사서 이미지
@@ -94,21 +104,28 @@ class BdasEsvy(
 
     @Column(name = "rpt_chf_nm", length = 10)
     var rptChfNm: String? = null, // 신고 기관장 성명
-) : CommonEntity()
-
-@Embeddable
-data class BdasEsvyId(
-    @Column(name = "pt_id", nullable = false, length = 10)
-    var ptId: String? = null, // 환자 ID
-
-    @Column(name = "bdas_seq", nullable = false, precision = 10)
-    var bdasSeq: BigDecimal? = null, // 병상 배정 순번
-
-    @Column(name = "hist_seq", nullable = false, precision = 3)
-    var histSeq: BigDecimal? = null, // 이력 순번
-) : Serializable {
+) : CommonEntity(), Serializable {
 
     companion object {
         private const val serialVersionUID = 2286635814191011763L
     }
 }
+
+//@Embeddable
+//data class BdasEsvyId(
+//    @Column(name = "pt_id", nullable = false, length = 10)
+//    var ptId: String? = null, // 환자 ID
+//
+//    @GeneratedValue(strategy = GenerationType.AUTO)
+//    @Column(name = "bdas_seq", nullable = false, precision = 10)
+//    var bdasSeq: Int? = null, // 병상 배정 순번
+//
+//    @GeneratedValue(strategy = GenerationType.AUTO)
+//    @Column(name = "hist_seq", nullable = false, precision = 3)
+//    var histSeq: Int? = null, // 이력 순번
+//) : Serializable {
+//
+//    companion object {
+//        private const val serialVersionUID = 2286635814191011763L
+//    }
+//}

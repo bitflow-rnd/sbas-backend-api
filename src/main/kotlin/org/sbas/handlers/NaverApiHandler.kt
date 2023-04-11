@@ -57,7 +57,7 @@ class NaverApiHandler {
         for (field in texts!!) {
             list.add(field.inferText!!)
         }
-
+        log.debug("list ========>>>>>>>>$list")
         return EpidResult(
             rcptPhc = list[1],
             ptNm = list[4],
@@ -69,7 +69,7 @@ class NaverApiHandler {
             baseAddr = list[13] + " " + list[14] + " " + list[15] + " " + list[16],
             dtlAddr = list[18],
             fullAddr = list[13] + " " + list[14] + " " + list[15] + " " + list[16] + " " + list[17] + " " + list[18],
-            telno = list[21].replace("-", ""),
+            mpno = list[21].replace("-", ""),
             diagNm = list[24],
             diagGrde = list[26],
             job = list[28],

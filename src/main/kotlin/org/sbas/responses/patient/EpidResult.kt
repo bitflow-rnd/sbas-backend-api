@@ -48,7 +48,7 @@ data class EpidResult (
 
     // idx: 21
     @Schema(description = "휴대전화번호", example = "01050680725")
-    var telno: String?,
+    var mpno: String?,
 
     // idx: 24
     @Schema(description = "질병이름", example = "코로나바이러스감염증-19")
