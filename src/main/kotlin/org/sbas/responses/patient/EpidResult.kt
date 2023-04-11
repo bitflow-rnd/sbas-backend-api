@@ -62,6 +62,10 @@ data class EpidResult (
     @Schema(description = "직업", example = "기타(기타)")
     var job: String?,
 
+    // idx: 32
+    @Schema(description = "코로나19 증상 및 징후", example = "열")
+    var cv19Symp: String?,
+
     // idx: 34
     @Schema(description = "발병일", example = "2023-03-20")
     var occrDt: String?,
@@ -89,6 +93,10 @@ data class EpidResult (
     // idx: 46
     @Schema(description = "사망여부", example = "생존")
     var dethYn: String?,
+
+    // idx: 48
+    @Schema(description = "신고구분", example = "자동 신고")
+    var rptType: String?,
 
     // idx: 50~51
     @Schema(description = "비고", example = "전문가용 RAT")

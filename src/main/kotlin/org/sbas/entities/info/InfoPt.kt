@@ -82,7 +82,7 @@ class InfoPt(
 ) : CommonEntity() {
 
     fun updateEntity(infoPtDto: InfoPtDto) {
-        this.ptNm = infoPtDto.ptNm ?: this.ptNm
+        this.ptNm = infoPtDto.ptNm
         this.gndr = infoPtDto.gndr
         this.rrno1 = infoPtDto.rrno1
         this.rrno2 = infoPtDto.rrno2
