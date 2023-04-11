@@ -32,6 +32,6 @@ class BedAssignService {
         bdasEsvyDto.saveInfoPt(findInfoPt)
 
         bdasEsvyRepository.persist(bdasEsvyDto.toEntity())
-        return CommonResponse("등록 성공 ${bdasEsvyDto.toEntity()}")
+        return CommonResponse("등록 성공")
     }
 }
