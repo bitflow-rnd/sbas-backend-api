@@ -1,14 +1,12 @@
 package org.sbas.services
 
-import org.jetbrains.annotations.NonBlocking
-import org.sbas.responses.messages.TalkRoomResponse
 import org.sbas.entities.talk.TalkMsg
 import org.sbas.entities.talk.TalkMsgId
 import org.sbas.repositories.TalkMsgRepository
 import org.sbas.repositories.TalkRoomRepository
 import org.sbas.repositories.TalkUserRepository
 import org.sbas.responses.CommonResponse
-import java.math.BigDecimal
+import org.sbas.responses.messages.TalkRoomResponse
 import javax.enterprise.context.ApplicationScoped
 import javax.inject.Inject
 import javax.transaction.Transactional
@@ -50,7 +48,7 @@ class TalkService {
     @Transactional
     fun sendMsg(tkrmId: String, userId: String, detail: String){
         val recentMsg = talkMsgRepository.findRecentlyMsg(tkrmId)
-        val addMsgId = TalkMsgId(tkrmId, recentMsg?.id?.msgSeq?.plus(BigDecimal(1)), recentMsg?.id?.histSeq)
+        val addMsgId = TalkMsgId(tkrmId, recentMsg?.id?.msgSeq?.plus(1), recentMsg?.id?.histSeq)
         val addMsg = TalkMsg(addMsgId, recentMsg?.histCd, detail, null)
         addMsg.rgstUserId = userId
         addMsg.updtUserId = userId

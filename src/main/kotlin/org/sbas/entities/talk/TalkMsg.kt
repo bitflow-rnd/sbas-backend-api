@@ -1,8 +1,9 @@
 package org.sbas.entities.talk
 
-import org.sbas.entities.CommonEntity
+import org.hibernate.annotations.CreationTimestamp
+import org.hibernate.annotations.UpdateTimestamp
 import java.io.Serializable
-import java.math.BigDecimal
+import java.time.Instant
 import javax.persistence.*
 import javax.validation.constraints.NotNull
 import javax.validation.constraints.Size
@@ -29,7 +30,21 @@ class TalkMsg(
     @Size(max = 10)
     @Column(name = "attc_id", length = 10)
     var attcId: String? = null, // 첨부 ID
-) : CommonEntity()
+
+    @Column(name = "rgst_user_id", nullable = false, length = 15, updatable = false)
+    var rgstUserId: String? = null, // 등록 사용자 ID
+
+    @Column(name = "rgst_dttm", nullable = false, updatable = false)
+    @CreationTimestamp
+    var rgstDttm: Instant? = null, // 등록 일시
+
+    @Column(name = "updt_user_id", nullable = false, length = 15)
+    var updtUserId: String? = null, // 수정 사용자 ID
+
+    @Column(name = "updt_dttm", nullable = false)
+    @UpdateTimestamp
+    var updtDttm: Instant? = null, // 수정 일시
+)
 
 @Embeddable
 data class TalkMsgId(
@@ -40,11 +55,11 @@ data class TalkMsgId(
 
     @NotNull
     @Column(name = "msg_seq", nullable = false, precision = 3)
-    var msgSeq: BigDecimal? = null, // 메시지 순번
+    var msgSeq: Long? = null, // 메시지 순번
 
     @NotNull
     @Column(name = "hist_seq", nullable = false, precision = 3)
-    var histSeq: BigDecimal? = null, // 이력 순번
+    var histSeq: Long? = null, // 이력 순번
 ) : Serializable {
 
     companion object {
