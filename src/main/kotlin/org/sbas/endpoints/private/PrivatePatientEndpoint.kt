@@ -58,6 +58,12 @@ class PrivatePatientEndpoint {
         return Response.ok().build()
     }
 
+    @GET
+    @Path("read-epidreport/{attcId}")
+    fun readEpidReport(@RestPath attcId: String): Response {
+        return Response.ok(patientService.findEpidReportByAttcId(attcId)).build()
+    }
+
     @Operation(summary = "환자기본정보 등록", description = "")
     @POST
     @Path("regbasicinfo")

@@ -155,6 +155,13 @@ class PatientService {
     }
 
     @Transactional
+    fun findEpidReportByAttcId(attcId: String): CommonResponse<EpidResult> {
+        val baseAttc = baseAttcRepository.find("attc_id = '$attcId'").firstResult() ?: throw NotFoundException("$attcId not found")
+        val res = naverApiHandler.recognizeImage(baseAttc.uriPath!!, baseAttc.fileNm!!)
+        return CommonResponse(res)
+    }
+
+    @Transactional
     fun findInfoPt(param: SearchParameters): CommonResponse<*> {
         val map = mutableMapOf<String, Any>()
         addIfNotNull(map, "gndr", param.gndr)
