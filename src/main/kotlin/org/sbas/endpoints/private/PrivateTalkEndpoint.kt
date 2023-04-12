@@ -26,7 +26,7 @@ class PrivateTalkEndpoint {
     @GET
     @Path("my-chats")
     fun getMyChats(): Response {
-        return Response.ok(talkService.getMyChats(jwt)).build()
+        return Response.ok(talkService.getMyChats(jwt.name)).build()
     }
 
     @Operation(summary = "대화방 상세", description = "대화방 상세 API")

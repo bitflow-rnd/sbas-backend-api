@@ -1,15 +1,13 @@
 package org.sbas.services
 
-import org.eclipse.microprofile.jwt.JsonWebToken
+import org.jetbrains.annotations.NonBlocking
+import org.sbas.responses.messages.TalkRoomResponse
 import org.sbas.entities.talk.TalkMsg
 import org.sbas.entities.talk.TalkMsgId
-import org.sbas.entities.talk.TalkRoom
-import org.sbas.entities.talk.TalkRoomId
 import org.sbas.repositories.TalkMsgRepository
 import org.sbas.repositories.TalkRoomRepository
 import org.sbas.repositories.TalkUserRepository
 import org.sbas.responses.CommonResponse
-import org.sbas.responses.messages.TalkRoomResponse
 import java.math.BigDecimal
 import javax.enterprise.context.ApplicationScoped
 import javax.inject.Inject
@@ -28,8 +26,9 @@ class TalkService {
     @Inject
     private lateinit var talkRoomRepository: TalkRoomRepository
 
-    fun getMyChats(jwt: JsonWebToken): CommonResponse<List<TalkRoomResponse>> {
-        val findChatRooms = talkRoomRepository.findTalkRoomResponse(jwt.name)
+
+    fun getMyChats(userId: String): CommonResponse<List<TalkRoomResponse>> {
+        val findChatRooms = talkRoomRepository.findTalkRoomResponse(userId)
 
         if(findChatRooms.isEmpty()) throw NotFoundException("대화중인 채팅방이 없습니다.")
 
@@ -44,9 +43,9 @@ class TalkService {
         return CommonResponse(findChatDetail)
     }
 
-    fun getMyChatByTkrmId(tkrmId: String): TalkRoomResponse {
-        return talkRoomRepository.findTalkRoomResponseByTkrmId(tkrmId)
-    }
+//    fun getMyChatByTkrmId(tkrmId: String): TalkRoomResponse {
+//        return talkRoomRepository.findTalkRoomResponseByTkrmId(tkrmId)
+//    }
 
     @Transactional
     fun sendMsg(tkrmId: String, userId: String, detail: String){
