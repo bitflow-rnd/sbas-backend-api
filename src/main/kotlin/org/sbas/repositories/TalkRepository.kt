@@ -30,7 +30,7 @@ class TalkMsgRepository : PanacheRepositoryBase<TalkMsg, TalkMsgId> {
     fun findChatDetail(tkrmId: String) = find("select tm from TalkMsg tm where tm.id.tkrmId = '$tkrmId' order by tm.id.msgSeq").list()
 
     @Transactional
-    fun insertMessage(message: String, tkrmId: String, userId: String){
+    fun insertMessage(message: String, tkrmId: String, userId: String): TalkMsg{
         val recentMsgSeq = findRecentlyMsg(tkrmId)
         val insertObject = TalkMsg(
             id = TalkMsgId(tkrmId, (recentMsgSeq?.id?.msgSeq ?: 0) + 1, 1),
@@ -44,6 +44,7 @@ class TalkMsgRepository : PanacheRepositoryBase<TalkMsg, TalkMsgId> {
         runBlocking {
             persist(insertObject)
         }
+        return insertObject
     }
 
     @Transactional
