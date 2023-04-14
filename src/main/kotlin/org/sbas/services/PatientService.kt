@@ -1,5 +1,6 @@
 package org.sbas.services
 
+import org.eclipse.microprofile.config.inject.ConfigProperty
 import org.eclipse.microprofile.jwt.JsonWebToken
 import org.jboss.logging.Logger
 import org.jboss.resteasy.reactive.multipart.FileUpload
@@ -17,16 +18,14 @@ import org.sbas.repositories.InfoInstRepository
 import org.sbas.repositories.InfoPtRepository
 import org.sbas.repositories.InfoUserRepository
 import org.sbas.responses.CommonResponse
-import org.sbas.responses.patient.EpidResult
+import org.sbas.utils.DynamicQuery
 import org.sbas.utils.StringUtils
-import java.util.stream.Collectors
+import java.io.IOException
+import java.net.URL
 import javax.enterprise.context.ApplicationScoped
 import javax.inject.Inject
-import javax.persistence.criteria.CriteriaBuilder
-import javax.persistence.criteria.CriteriaQuery
-import javax.persistence.criteria.Predicate
-import javax.persistence.criteria.Root
 import javax.transaction.Transactional
+import javax.ws.rs.BadRequestException
 import javax.ws.rs.NotFoundException
 
 
@@ -59,6 +58,12 @@ class PatientService {
 
     @Inject
     private lateinit var jwt: JsonWebToken
+
+    @ConfigProperty(name = "domain.this")
+    private lateinit var serverdomain: String
+
+    @Inject
+    private lateinit var dynamicQuery: DynamicQuery
 
     @Transactional
     fun saveInfoPt(infoPtDto: InfoPtDto): CommonResponse<String?> {
@@ -132,7 +137,7 @@ class PatientService {
     }
 
     @Transactional
-    fun uploadEpidReport(param: FileUpload): CommonResponse<EpidResult>? {
+    fun uploadEpidReport(param: FileUpload): CommonResponse<*>? {
         val fileInfo = fileHandler.createPublicFile(param)
         if (fileInfo != null) {
             // Naver Clova OCR call
@@ -155,39 +160,49 @@ class PatientService {
     }
 
     @Transactional
-    fun findEpidReportByAttcId(attcId: String): CommonResponse<EpidResult> {
+    fun findEpidReportByAttcId(attcId: String): CommonResponse<*> {
         val baseAttc = baseAttcRepository.find("attc_id = '$attcId'").firstResult() ?: throw NotFoundException("$attcId not found")
-        val res = naverApiHandler.recognizeImage(baseAttc.uriPath!!, baseAttc.fileNm!!)
-        return CommonResponse(res)
-    }
 
-    @Transactional
-    fun findInfoPt(param: SearchParameters): CommonResponse<*> {
-        val map = mutableMapOf<String, Any>()
-        addIfNotNull(map, "gndr", param.gndr)
-        addIfNotNull(map, "nati_cd", param.natiCd)
-        addIfNotNull(map, "dstr_1_cd", param.dstr1Cd)
-        addIfNotNull(map, "dstr_2_cd", param.dstr2Cd)
-        val res = mutableMapOf<String, Any>()
+        val url = URL("$serverdomain${baseAttc.uriPath}/${baseAttc.fileNm}")
 
-        if (map.isEmpty()) {
-            val infoPtList = infoPtRepository.findAll().list()
-            res["items"] = infoPtList
-            res["count"] = infoPtList.count()
-            return CommonResponse(res)
+        return try {
+            val inputStream = url.openStream()
+            inputStream.close()
+
+            val res = naverApiHandler.recognizeImage(baseAttc.uriPath!!, baseAttc.fileNm!!)
+            CommonResponse(res)
+        } catch (e: IOException) {
+            throw NotFoundException("역학조사서 파일이 존재하지 않습니다.")
         }
-
-        val query = map.entries.stream()
-            .map { entry -> "${entry.key}='${entry.value}'" }
-            .collect(Collectors.joining(" and "))
-
-//        log.debug("res========> $query")
-        val infoPtList = infoPtRepository.find(query).list()
-        res["items"] = infoPtList
-        res["count"] = infoPtList.count()
-
-        return CommonResponse(res)
     }
+
+//    @Transactional
+//    fun findInfoPt(param: SearchParameters): CommonResponse<*> {
+//        val map = mutableMapOf<String, Any>()
+//        addIfNotNull(map, "gndr", param.gndr)
+//        addIfNotNull(map, "nati_cd", param.natiCd)
+//        addIfNotNull(map, "dstr_1_cd", param.dstr1Cd)
+//        addIfNotNull(map, "dstr_2_cd", param.dstr2Cd)
+//        val res = mutableMapOf<String, Any>()
+//
+//        if (map.isEmpty()) {
+//            val infoPtList = infoPtRepository.findAll().list()
+//            res["items"] = infoPtList
+//            res["count"] = infoPtList.count()
+//            return CommonResponse(res)
+//        }
+//
+//        val query = map.entries.stream()
+//            .map { entry -> "${entry.key}='${entry.value}'" }
+//            .collect(Collectors.joining(" and "))
+//
+////        log.debug("res========> $query")
+//        val infoPtList = infoPtRepository.find(query).list()
+//        res["items"] = infoPtList
+//        res["count"] = infoPtList.count()
+//
+//        return CommonResponse(res)
+//    }
 
     @Transactional
     fun updateInfoPt(ptId: String, infoPtDto: InfoPtDto): CommonResponse<String> {
@@ -211,56 +226,20 @@ class PatientService {
     }
 
     @Transactional
-    fun findInfoPt2(param: SearchParameters): CommonResponse<*> {
-        val entityManager = infoPtRepository.getEntityManager()
-        val criteriaBuilder = entityManager.criteriaBuilder
-
-        val criteriaQuery: CriteriaQuery<InfoPt> = criteriaBuilder.createQuery(InfoPt::class.java)
-        val root: Root<InfoPt> = criteriaQuery.from(InfoPt::class.java)
-
-        val predicates: MutableList<Predicate> = mutableListOf()
-
-        if (param.gndr != null) {
-            predicates.add(criteriaBuilder.equal(root.get<String>("gndr"), param.gndr))
-        }
-
-        if (param.natiCd != null) {
-            predicates.add(criteriaBuilder.equal(root.get<String>("natiCd"), param.natiCd))
-        }
-
-        if (param.dstr1Cd != null) {
-            predicates.add(criteriaBuilder.equal(root.get<String>("dstr1Cd"), param.dstr1Cd))
-        }
-
-        if (param.dstr2Cd != null) {
-            predicates.add(criteriaBuilder.equal(root.get<String>("dstr2Cd"), param.dstr2Cd))
-        }
-
-        if (predicates.isNotEmpty()) {
-            criteriaQuery.where(*predicates.toTypedArray())
-        }
-
-        val query = entityManager.createQuery(criteriaQuery)
+    fun findInfoPt2(searchParam: SearchParameters): CommonResponse<*> {
+        val query = dynamicQuery.makeWith(InfoPt(), searchParam) ?: throw BadRequestException("")
 
         val infoPtList = query.resultList
         val res = mutableMapOf<String, Any>()
         res["items"] = infoPtList
-        res["count"] = infoPtList.count()
+        res["count"] = infoPtList.size
 
         return CommonResponse(res)
     }
 
-    private fun addIfNotNull(map: MutableMap<String, Any>, key: String, value: String?) {
-        if (!value.isNullOrBlank()) {
-            map[key] = value
-        }
-    }
-
-    private fun addIfNotNull(criteriaBuilder: CriteriaBuilder, criteriaQuery: CriteriaQuery<*>, value: String?) {
-        val root: Root<InfoPt> = criteriaQuery.from(InfoPt::class.java)
-        val predicates: MutableList<Predicate> = mutableListOf()
-        if (!value.isNullOrBlank()) {
-            predicates.add(criteriaBuilder.equal(root.get<String>(value), value))
-        }
-    }
+//    private fun addIfNotNull(map: MutableMap<String, Any>, key: String, value: String?) {
+//        if (!value.isNullOrBlank()) {
+//            map[key] = value
+//        }
+//    }
 }

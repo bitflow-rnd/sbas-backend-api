@@ -6,6 +6,7 @@ import org.sbas.constants.BedStat
 import org.sbas.dtos.InfoPtDto
 import org.sbas.entities.CommonEntity
 import org.sbas.entities.StringPrefixedSequenceIdGenerator
+import java.io.Serializable
 import javax.persistence.*
 
 /**
@@ -79,7 +80,7 @@ class InfoPt(
 
     @Column(name = "bed_stat_nm", length = 8)
     var bedStatNm: String = BedStat.BAST0001.cdNm,
-) : CommonEntity() {
+) : CommonEntity(), Serializable {
 
     fun updateEntity(infoPtDto: InfoPtDto) {
         this.ptNm = infoPtDto.ptNm

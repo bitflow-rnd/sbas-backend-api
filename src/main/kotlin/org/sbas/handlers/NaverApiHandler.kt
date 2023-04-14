@@ -8,6 +8,9 @@ import org.sbas.responses.patient.EpidResult
 import org.sbas.restclients.NaverOcrRestClient
 import org.sbas.restparameters.NaverOcrApiParams
 import org.sbas.restparameters.OcrApiImagesParam
+import java.io.File
+import java.io.FileInputStream
+import java.util.*
 import javax.enterprise.context.ApplicationScoped
 import javax.inject.Inject
 
@@ -35,9 +38,20 @@ class NaverApiHandler {
 
     fun recognizeImage(uri: String, filename: String): EpidResult {
         val dotIdx = filename.lastIndexOf(".")
+
+        // 로컬 이미지 파일 경로 설정
+        val file = File("c:/sbas/www/public/upload/202304/$filename")
+        // 이미지 파일 읽어들이기
+        val inputStream = FileInputStream(file)
+        val bytes = ByteArray(file.length().toInt())
+        inputStream.read(bytes)
+        // Base64 인코딩
+        val encoded: String = Base64.getEncoder().encodeToString(bytes)
+
         val image = OcrApiImagesParam(
             filename.substring(dotIdx + 1),
             "edpireportimg",
+//            encoded,
             null,
             "$serverdomain/$uri/$filename"
         )
@@ -54,13 +68,37 @@ class NaverApiHandler {
         val res = naverOcrClient.recognize(reqparam)
         val texts = res.images[0].fields
         val list = ArrayList<String>()
-        for (field in texts!!) {
+
+        for ( field in texts!! ) {
+            val verticesY = field.boundingPoly!!.vertices!![0].y!!
+            if (verticesY < 14.0) {
+                continue
+            }
             list.add(field.inferText!!)
         }
-        log.debug("list ========>>>>>>>>$list")
+
+//        val iterator = list.listIterator()
+//
+//        while (iterator.hasNext()) {
+//            val value = iterator.next()
+//            if (value == "보호자성명" && iterator.hasNext() && iterator.next() == "등록번호") {
+//                iterator.previous()
+//                iterator.add("")
+//            }
+//            if (value == "전화번호" && iterator.hasNext() && iterator.next() == "주소") {
+//                iterator.previous()
+//                iterator.add("")
+//            }
+//        }
+
+//        return list
+//        return texts
+        //TODO 값이 없는 항목 처리
         return EpidResult(
             rcptPhc = list[1],
             ptNm = list[4],
+//            rrno1 = list[5],
+//            rrno2 = list[5],
             rrno1 = list[5].split("-")[0],
             rrno2 = list[5].split("-")[1],
             gndr = list[9],

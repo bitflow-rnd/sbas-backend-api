@@ -15,7 +15,7 @@ data class FileDto(
 fun FileDto.toEntity(fileTypeCd: String, rmk: String?): BaseAttc {
     val now = LocalDateTime.now()
 
-    val entity = BaseAttc(
+    return BaseAttc(
         attcDt = now.format(DateTimeFormatter.ofPattern("yyyyMMdd")),
         attcTm = now.format(DateTimeFormatter.ofPattern("HHmmss")),
         fileTypeCd = fileTypeCd,
@@ -24,6 +24,4 @@ fun FileDto.toEntity(fileTypeCd: String, rmk: String?): BaseAttc {
         uriPath = uriPath,
         rmk = rmk,
     )
-
-    return entity
 }

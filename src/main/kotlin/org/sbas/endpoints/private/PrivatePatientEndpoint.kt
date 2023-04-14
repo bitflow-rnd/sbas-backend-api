@@ -6,15 +6,11 @@ import org.eclipse.microprofile.openapi.annotations.tags.Tag
 import org.jboss.logging.Logger
 import org.jboss.resteasy.reactive.RestForm
 import org.jboss.resteasy.reactive.RestPath
-import org.jboss.resteasy.reactive.RestResponse
-import org.jboss.resteasy.reactive.RestResponse.ResponseBuilder
 import org.jboss.resteasy.reactive.multipart.FileUpload
 import org.sbas.dtos.BdasEsvyDto
 import org.sbas.dtos.InfoPtDto
 import org.sbas.dtos.NewsScoreParam
 import org.sbas.parameters.SearchParameters
-import org.sbas.responses.CommonResponse
-import org.sbas.responses.patient.EpidResult
 import org.sbas.services.BedAssignService
 import org.sbas.services.CommonService
 import org.sbas.services.PatientService
@@ -23,7 +19,6 @@ import javax.ws.rs.BeanParam
 import javax.ws.rs.GET
 import javax.ws.rs.POST
 import javax.ws.rs.Path
-import javax.ws.rs.QueryParam
 import javax.ws.rs.core.Response
 
 @Tag(name = "환자 관리(사용자 권한용)", description = "로그인 된 사용자(세부권한별 분기) - 환자 등록 및 조회 등")
@@ -45,10 +40,9 @@ class PrivatePatientEndpoint {
     @Operation(summary = "", description = "")
     @POST
     @Path("upldepidreport")
-    fun upldepidreport(@RestForm param1: String, @RestForm param2: FileUpload):
-            RestResponse<CommonResponse<EpidResult>?> {
+    fun upldepidreport(@RestForm param1: String, @RestForm param2: FileUpload): Response {
         val res = patientService.uploadEpidReport(param2)
-        return ResponseBuilder.ok(res).build()
+        return Response.ok(res).build()
     }
 
     @Operation(summary = "", description = "")
@@ -58,6 +52,7 @@ class PrivatePatientEndpoint {
         return Response.ok().build()
     }
 
+    @Operation(summary = "역학조사서 읽어오기", description = "")
     @GET
     @Path("read-epidreport/{attcId}")
     fun readEpidReport(@RestPath attcId: String): Response {
@@ -117,7 +112,6 @@ class PrivatePatientEndpoint {
     @Operation(summary = "생체정보입력 분석", description = "생체정보 입력 시 경북대학교 로직(NEWS Score)에 따른 중증분류 값 리턴")
     @POST
     @Path("bioinfoanlys")
-    //TODO 테이블(svrt_anly)에 값들 저장
     fun bioinfoanlys(param: NewsScoreParam): Response {
         patientService.calculateNewsScore(param)
         return Response.ok(patientService.calculateNewsScore(param)).build()
@@ -156,7 +150,7 @@ class PrivatePatientEndpoint {
     @Path("search")
     fun search(@BeanParam searchParameters: SearchParameters): Response {
         log.debug("searchParam: $searchParameters")
-        return Response.ok(patientService.findInfoPt(searchParameters)).build()
+        return Response.ok(patientService.findInfoPt2(searchParameters)).build()
     }
 
     @Operation(summary = "내 기관 관련 환자목록", description = "")
