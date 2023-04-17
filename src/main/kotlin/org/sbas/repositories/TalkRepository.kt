@@ -23,7 +23,7 @@ class TalkUserRepository : PanacheRepositoryBase<TalkUser, TalkUserId>{
     @Transactional
     fun findUsersByTkrmId(tkrmId: String): List<TalkUser> {
         val result = runBlocking {
-            find("select tu tu where tu.id.tkrmId = '$tkrmId'").list()
+            find("select tu from TalkUser tu where tu.id.tkrmId = '$tkrmId'").list()
         }
         return result
     }
