@@ -1,6 +1,5 @@
 package org.sbas.utils
 
-import io.vertx.core.json.JsonArray
 import io.vertx.core.json.JsonObject
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.runBlocking
@@ -9,6 +8,7 @@ import org.sbas.entities.talk.TalkUser
 import org.sbas.repositories.TalkRoomRepository
 import org.sbas.repositories.TalkUserRepository
 import org.sbas.responses.messages.TalkRoomResponse
+import org.sbas.responses.messages.arrToJson
 import javax.inject.Inject
 import javax.websocket.OnClose
 import javax.websocket.OnMessage
@@ -44,7 +44,8 @@ class TalkRoomList {
 
         updateTalkRooms(userId)
 
-        val sendObject = JsonArray.of(talkRooms).toString()
+        val sendObject = arrToJson(talkRooms)
+
         session.asyncRemote.sendText(sendObject)
 
         chatRoomsSockets[userId] = this
@@ -54,6 +55,7 @@ class TalkRoomList {
     fun onMessage(session: Session, message: String, @PathParam("userId") userId: String) {
         val talkUsers: MutableList<TalkUser>
         val talkRoomResponse: TalkRoomResponse?
+
         runBlocking(Dispatchers.IO) {
             talkUsers = talkUserRepository.findUsersByTkrmId(message) as MutableList<TalkUser>
             talkRoomResponse = talkRoomRepository.findTalkRoomResponseByTkrmId(message)
