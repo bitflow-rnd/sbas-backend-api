@@ -51,9 +51,9 @@ class NaverApiHandler {
         val image = OcrApiImagesParam(
             filename.substring(dotIdx + 1),
             "edpireportimg",
-//            encoded,
+            encoded,
+//            "$serverdomain/$uri/$filename"
             null,
-            "$serverdomain/$uri/$filename"
         )
         val now = System.currentTimeMillis()
         val images = mutableListOf<OcrApiImagesParam>()
@@ -70,64 +70,67 @@ class NaverApiHandler {
         val list = ArrayList<String>()
 
         for ( field in texts!! ) {
-            val verticesY = field.boundingPoly!!.vertices!![0].y!!
-            if (verticesY < 14.0) {
-                continue
-            }
             list.add(field.inferText!!)
         }
 
-//        val iterator = list.listIterator()
-//
-//        while (iterator.hasNext()) {
-//            val value = iterator.next()
-//            if (value == "보호자성명" && iterator.hasNext() && iterator.next() == "등록번호") {
-//                iterator.previous()
-//                iterator.add("")
-//            }
-//            if (value == "전화번호" && iterator.hasNext() && iterator.next() == "주소") {
-//                iterator.previous()
-//                iterator.add("")
-//            }
-//        }
+        val address = list[6]
 
-//        return list
-//        return texts
-        //TODO 값이 없는 항목 처리
         return EpidResult(
-            rcptPhc = list[1],
-            ptNm = list[4],
-//            rrno1 = list[5],
-//            rrno2 = list[5],
-            rrno1 = list[5].split("-")[0],
-            rrno2 = list[5].split("-")[1],
-            gndr = list[9],
-            dstr1Cd = list[13],
-            dstr2Cd = list[14],
-            baseAddr = list[13] + " " + list[14] + " " + list[15] + " " + list[16],
-            dtlAddr = list[18],
-            fullAddr = list[13] + " " + list[14] + " " + list[15] + " " + list[16] + " " + list[17] + " " + list[18],
-            mpno = list[21].replace("-", ""),
-            diagNm = list[24],
-            diagGrde = list[26],
-            job = list[28],
-            cv19Symp = list[31],
-            occrDt = list[34],
-            diagDt = list[36],
-            rptDt = list[38],
-            dfdgExamRslt = list[40],
-            ptCatg = list[42],
-            admsYn = list[44],
-            dethYn = list[46],
-            rptType = list[48],
-            rmk = list[50] + " " + list[51],
-            instNm = list[53],
-            instId = list[55],
-            instTelno = list[57],
-            instAddr = list[59] + " " + list[60] + " " + list[61] + " " + list[62],
-            diagDrNm = list[65],
-            rptChfNm = list[67],
+            rcptPhc = list[0],
+            ptNm = list[1],
+            rrno1 = list[2].split("-")[0],
+            rrno2 = list[2].split("-")[1],
+            nokNm = list[3],
+            gndr = list[4],
+            telno = list[5].replace("-", ""),
+            dstr1Cd = splitAddress(address)[0],
+            dstr2Cd = splitAddress(address)[1],
+            baseAddr = splitAddress(address)[2],
+            dtlAddr = splitAddress(address)[3],
+            fullAddr = splitAddress(address)[4],
+            mpno = list[7].replace("-", ""),
+            diagNm = list[8],
+            diagGrde = list[9],
+            job = list[10],
+            cv19Symp = list[11],
+            occrDt = list[12],
+            diagDt = list[13],
+            rptDt = list[14],
+            dfdgExamRslt = list[15],
+            ptCatg = list[16],
+            admsYn = list[17],
+            dethYn = list[18],
+            rptType = list[19],
+            rmk = list[20],
+            instNm = list[21],
+            instId = list[22],
+            instTelno = list[23].replace("-", ""),
+            instAddr = list[24],
+            diagDrNm = list[25],
+            rptChfNm = list[26],
         )
     }
 
+    private fun splitAddress(address: String): List<String> {
+        val addr = address.replace("\n()", "") // \n() 삭제
+        val fullAddr = addr.replace(Regex("\\s*\\([^)]*\\)"), "") // (...) 부분 삭제
+
+        val list = mutableListOf<String>()
+        val splitedAddr = fullAddr.split(" ")
+
+        list.add(splitedAddr[0]) // dstr1Cd
+        list.add(splitedAddr[1]) // dstr2Cd
+        list.add(splitedAddr.subList(0, 3).joinToString(" ")) // baseAddr
+
+        // dtlAddr 상세주소가 있는 경우, 없으면 ""
+        if (splitedAddr.size > 4) {
+            list.add(splitedAddr[4])
+        } else {
+            list.add("")
+        }
+
+        list.add(fullAddr) // fullAddr
+
+        return list
+    }
 }
