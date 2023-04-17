@@ -51,7 +51,9 @@ class TalkRoomList {
 
     @OnMessage
     fun onMessage(session: Session, message: String, @PathParam("userId") userId: String) {
-        val talkRoomResponse = talkRoomRepository.findTalkRoomResponseByTkrmId(message)
+        val talkRoomResponse = runBlocking(Dispatchers.IO) {
+            talkRoomRepository.findTalkRoomResponseByTkrmId(message)
+        }
 
         session.asyncRemote.sendText(JsonObject.mapFrom(talkRoomResponse).toString())
     }
@@ -67,10 +69,6 @@ class TalkRoomList {
             talkRoomRepository.findTalkRoomResponse(userId)
         } as MutableList<TalkRoomResponse>
         talkRooms = resultList
-    }
-
-    fun getChatRoomsSockets(): MutableMap<String, TalkRoomList> {
-        return chatRoomsSockets
     }
 
 }

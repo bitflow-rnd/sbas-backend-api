@@ -95,6 +95,7 @@ class TalkRoomRepository : PanacheRepositoryBase<TalkRoom, TalkRoomId> {
         return find("select tr from TalkRoom tr where tr.id.tkrmId = '$tkrmId'").firstResult()
     }
 
+    @Transactional
     fun findTalkRoomResponseByTkrmId(tkrmId: String): TalkRoomResponse? {
         val talkRoom = findTalkRoomByTkrmId(tkrmId)
         return talkRoom?.let {
