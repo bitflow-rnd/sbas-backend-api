@@ -5,6 +5,7 @@ import io.vertx.core.json.JsonObject
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.runBlocking
 import org.jboss.logging.Logger
+import org.sbas.entities.talk.TalkUser
 import org.sbas.repositories.TalkRoomRepository
 import org.sbas.repositories.TalkUserRepository
 import org.sbas.responses.messages.TalkRoomResponse
@@ -51,11 +52,17 @@ class TalkRoomList {
 
     @OnMessage
     fun onMessage(session: Session, message: String, @PathParam("userId") userId: String) {
-        val talkRoomResponse = runBlocking(Dispatchers.IO) {
-            talkRoomRepository.findTalkRoomResponseByTkrmId(message)
+        val talkUsers: MutableList<TalkUser>
+        val talkRoomResponse: TalkRoomResponse?
+        runBlocking(Dispatchers.IO) {
+            talkUsers = talkUserRepository.findUsersByTkrmId(message) as MutableList<TalkUser>
+            talkRoomResponse = talkRoomRepository.findTalkRoomResponseByTkrmId(message)
         }
 
-        session.asyncRemote.sendText(JsonObject.mapFrom(talkRoomResponse).toString())
+        talkUsers.forEach{
+            chatRoomsSockets[it.id?.userId]?.session?.asyncRemote?.sendText(JsonObject.mapFrom(talkRoomResponse).toString())
+        }
+
     }
 
 
