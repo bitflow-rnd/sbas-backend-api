@@ -33,6 +33,9 @@ class ChatSocket {
     @Inject
     lateinit var talkMsgRepository: TalkMsgRepository
 
+    @Inject
+    lateinit var talkUserRepository: TalkUserRepository
+
     @OnOpen
     fun onOpen(session: Session, @PathParam("tkrmId") tkrmId: String, @PathParam("userId") userId: String) {
         this.session = session
@@ -57,6 +60,15 @@ class ChatSocket {
         chatSockets.values // 모든 WebSocket 연결에 메시지 전송
             .filter { it.userId != userId && it.tkrmId == tkrmId }
             .forEach { it.session.asyncRemote.sendText(JsonObject.mapFrom(addMsg).toString()) }
+
+        // 특정 채팅방에 참여한 사용자들을 조회
+        val talkUsers = talkUserRepository.findUsersByTkrmId(tkrmId)
+
+        // 현재 사용자를 제외한 다른 사용자의 ID를 선택
+        val otherUserId = talkUsers.find { it.id?.userId != userId }?.id?.userId
+        chatSockets[otherUserId]?.let {
+            it.session.asyncRemote.sendText(JsonObject.mapFrom(addMsg).toString())
+        }
     }
 
     @OnClose
@@ -64,7 +76,7 @@ class ChatSocket {
         chatSockets.remove(userId) // WebSocket 연결을 Map에서 제거
     }
 
-    fun updateTalkMsg(tkrmId: String) {
+    private fun updateTalkMsg(tkrmId: String) {
         val resultList = runBlocking {
             withContext(Dispatchers.IO) {
                 talkMsgRepository.findChatDetail(tkrmId)
@@ -96,6 +108,12 @@ class ChatRoomEndpoint {
         updateTalkRooms(userId)
         val sendObject = JsonArray.of(talkRooms).toString()
         session.asyncRemote.sendText(sendObject)
+
+//        val sendObject = JsonArray.of(
+//            talkRoomRepository.findTalkRoomResponse(userId)
+//                .map { it.copy(hasNewMessage = false) } // 새로운 메시지 여부 초기화
+//        ).toString()
+//        session.asyncRemote.sendText(sendObject)
     }
 
     @OnClose
