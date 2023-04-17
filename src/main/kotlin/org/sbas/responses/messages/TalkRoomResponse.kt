@@ -16,6 +16,9 @@ fun arrToJson(arrayData: MutableList<TalkRoomResponse>): String {
 
     for (item in arrayData) {
         result += "{\"tkrmId\":${item.tkrmId}, \"tkrmNm\":${item.tkrmNm}, \"msg\":${item.msg}, \"rgstDttm\":${item.rgstDttm}}"
+        if(item != arrayData.last()){
+            result += ","
+        }
     }
 
     result += "]"
