@@ -6,9 +6,7 @@ import kotlinx.coroutines.*
 import org.jboss.logging.Logger
 import org.sbas.entities.talk.TalkMsg
 import org.sbas.repositories.TalkMsgRepository
-import org.sbas.repositories.TalkRoomRepository
 import org.sbas.repositories.TalkUserRepository
-import org.sbas.responses.messages.TalkRoomResponse
 import javax.inject.Inject
 import javax.websocket.*
 import javax.websocket.server.PathParam
@@ -16,10 +14,10 @@ import javax.websocket.server.ServerEndpoint
 
 
 @ServerEndpoint("/chat-rooms/{tkrmId}/{userId}")
-class ChatSocket {
+class TalkRoom {
 
     companion object {
-        private val chatSockets = mutableMapOf<String, ChatSocket>() // WebSocket 연결을 관리할 Map
+        private val chatSockets = mutableMapOf<String, TalkRoom>() // WebSocket 연결을 관리할 Map
         private lateinit var talkMsg: MutableList<TalkMsg>
     }
 
@@ -61,14 +59,6 @@ class ChatSocket {
             .filter { it.userId != userId && it.tkrmId == tkrmId }
             .forEach { it.session.asyncRemote.sendText(JsonObject.mapFrom(addMsg).toString()) }
 
-        // 특정 채팅방에 참여한 사용자들을 조회
-        val talkUsers = talkUserRepository.findUsersByTkrmId(tkrmId)
-
-        // 현재 사용자를 제외한 다른 사용자의 ID를 선택
-        val otherUserId = talkUsers.find { it.id?.userId != userId }?.id?.userId
-        chatSockets[otherUserId]?.let {
-            it.session.asyncRemote.sendText(JsonObject.mapFrom(addMsg).toString())
-        }
     }
 
     @OnClose
@@ -84,48 +74,4 @@ class ChatSocket {
         } as MutableList<TalkMsg>
         talkMsg = resultList
     }
-}
-
-
-@ServerEndpoint(value = "/chat-rooms/{userId}")
-class ChatRoomEndpoint {
-
-    companion object {
-        lateinit var talkRooms: List<TalkRoomResponse>
-    }
-
-    @Inject
-    private lateinit var log: Logger
-
-    @Inject
-    private lateinit var talkRoomRepository: TalkRoomRepository
-
-    @Inject
-    private lateinit var talkUserRepository: TalkUserRepository
-
-    @OnOpen
-    fun onOpen(session: Session, @PathParam("userId") userId: String) {
-        updateTalkRooms(userId)
-        val sendObject = JsonArray.of(talkRooms).toString()
-        session.asyncRemote.sendText(sendObject)
-
-//        val sendObject = JsonArray.of(
-//            talkRoomRepository.findTalkRoomResponse(userId)
-//                .map { it.copy(hasNewMessage = false) } // 새로운 메시지 여부 초기화
-//        ).toString()
-//        session.asyncRemote.sendText(sendObject)
-    }
-
-    @OnClose
-    fun onClose(session: Session, @PathParam("userId") userId: String) {
-
-    }
-
-    private fun updateTalkRooms(userId: String){
-        val resultList = runBlocking(Dispatchers.IO) {
-            talkRoomRepository.findTalkRoomResponse(userId)
-        }
-        talkRooms = resultList
-    }
-
 }
