@@ -5,6 +5,7 @@ import io.vertx.core.json.JsonObject
 import kotlinx.coroutines.*
 import org.jboss.logging.Logger
 import org.sbas.entities.talk.TalkMsg
+import org.sbas.entities.talk.TalkUser
 import org.sbas.repositories.TalkMsgRepository
 import org.sbas.repositories.TalkUserRepository
 import javax.inject.Inject
@@ -50,9 +51,11 @@ class TalkRoom {
 
     @OnMessage
     fun onMessage(session: Session, message: String, @PathParam("tkrmId") tkrmId: String, @PathParam("userId") userId: String) {
-        var addMsg = TalkMsg()
+        var addMsg: TalkMsg
+        val otherUsers: MutableList<TalkUser>
         runBlocking(Dispatchers.IO) {
             addMsg = talkMsgRepository.insertMessage(message, tkrmId, userId)
+            otherUsers = talkUserRepository.findOtherUsersByTkrmId(tkrmId, userId) as MutableList<TalkUser>
         }
 
         chatSockets.values // 모든 WebSocket 연결에 메시지 전송
@@ -60,6 +63,12 @@ class TalkRoom {
             .forEach {
                 it.session.asyncRemote.sendText(JsonObject.mapFrom(addMsg).toString())
             }
+
+        log.warn(otherUsers.size)
+
+        otherUsers.forEach{
+            session.asyncRemote.sendText(it.id?.userId)
+        }
 
     }
 

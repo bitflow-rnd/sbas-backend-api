@@ -28,6 +28,14 @@ class TalkUserRepository : PanacheRepositoryBase<TalkUser, TalkUserId>{
         return result
     }
 
+    @Transactional
+    fun findOtherUsersByTkrmId(tkrmId: String, userId: String): List<TalkUser>{
+        val result = runBlocking {
+            find("select tu from TalkUser tu where tu.id.tkrmId = '$tkrmId' and tu.id.userId != '$userId'").list()
+        }
+        return result
+    }
+
 }
 
 @ApplicationScoped
