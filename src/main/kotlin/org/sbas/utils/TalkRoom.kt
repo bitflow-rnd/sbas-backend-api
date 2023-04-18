@@ -59,14 +59,13 @@ class TalkRoom {
             .filter { it.userId != userId && it.tkrmId == tkrmId }
             .forEach {
                 it.session.asyncRemote.sendText(JsonObject.mapFrom(addMsg).toString())
-                session.asyncRemote.sendText(it.userId)
             }
 
     }
 
     @OnClose
     fun onClose(session: Session, @PathParam("userId") userId: String) {
-//        chatSockets.remove(userId) // WebSocket 연결을 Map에서 제거
+        chatSockets.remove(userId) // WebSocket 연결을 Map에서 제거
     }
 
     private fun updateTalkMsg(tkrmId: String) {
