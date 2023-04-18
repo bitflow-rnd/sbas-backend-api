@@ -59,8 +59,7 @@ class TalkRoom {
             .filter { it.userId != userId && it.tkrmId == tkrmId }
             .forEach {
                 it.session.asyncRemote.sendText(JsonObject.mapFrom(addMsg).toString())
-                log.warn(it.userId)
-                session.asyncRemote.sendText("hi" + it.userId)
+                session.asyncRemote.sendText(it.userId)
             }
 
     }
