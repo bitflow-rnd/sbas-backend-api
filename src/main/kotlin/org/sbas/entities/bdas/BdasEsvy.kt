@@ -27,11 +27,11 @@ class BdasEsvy(
     @Column(name = "hist_cd", nullable = false, length = 8)
     var histCd: String? = null, // 이력 코드
 
-    @Column(name = "esvy_seq")
-    var esvySeq: Int? = null, // 역학조사서 순번
+    @Column(name = "attc_seq")
+    var attcSeq: Int? = null, // 첨부 순번
 
-    @Column(name = "esvy_imsg")
-    var esvyImsg: ByteArray? = null, // 역학조사서 이미지
+    @Column(name = "attc_id")
+    var attcId: String? = null, // 첨부 ID(진료 이미지)
 
     @Column(name = "rcpt_phc", length = 50)
     var rcptPhc: String? = null, // 수신 보건소
