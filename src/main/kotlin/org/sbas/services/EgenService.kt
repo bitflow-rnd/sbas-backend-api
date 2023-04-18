@@ -190,8 +190,32 @@ class EgenService {
         }
     }
 
+    /**
+     * return: 1: success, 0: fail
+     */
+    @Transactional
+    fun syncHospitalInfos(): Boolean {
+        var ret = false
+        try {
+            val jsonObject = JSONObject(
+//                egenRestClient.getHsptlMdcncListInfoInqire(
+//                    serviceKey = serviceKey,
+//                    q0 = param.q0, q1 = param.q1,
+//                    qz = param.qz, qd = param.qd,
+//                    qt = param.qt, qn = param.qn,
+//                    ord = param.ord, pageNo = param.pageNo, numOfRows = param.numOfRows
+//                )
+            )
+            ret = true
+        } catch (e: Exception) {
+            log.error("scheduler failed when running, e = ${e.message}")
+        }
+        return ret
+    }
+
     private fun extractBody(jsonObject: JSONObject): JSONObject {
         val header = jsonObject.getJSONObject("response").getJSONObject("header")
         return jsonObject.getJSONObject("response").getJSONObject("body").getJSONObject("items")
     }
+
 }
