@@ -39,6 +39,7 @@ class NaverApiHandler {
     fun recognizeImage(uri: String, filename: String): EpidResult {
         val dotIdx = filename.lastIndexOf(".")
 
+        /* 로컬 테스트용 코드
         // 로컬 이미지 파일 경로 설정
         val file = File("c:/sbas/www/public/upload/202304/$filename")
         // 이미지 파일 읽어들이기
@@ -47,13 +48,14 @@ class NaverApiHandler {
         inputStream.read(bytes)
         // Base64 인코딩
         val encoded: String = Base64.getEncoder().encodeToString(bytes)
+        */
 
         val image = OcrApiImagesParam(
             filename.substring(dotIdx + 1),
             "edpireportimg",
-            encoded,
-//            "$serverdomain/$uri/$filename"
+//            encoded,
             null,
+            "$serverdomain/$uri/$filename"
         )
         val now = System.currentTimeMillis()
         val images = mutableListOf<OcrApiImagesParam>()
