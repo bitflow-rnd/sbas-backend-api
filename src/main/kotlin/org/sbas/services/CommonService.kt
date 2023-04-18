@@ -4,13 +4,10 @@ import io.quarkus.cache.CacheKey
 import io.quarkus.cache.CacheResult
 import org.jboss.logging.Logger
 import org.jboss.resteasy.reactive.multipart.FileUpload
-import org.postgresql.util.PSQLException
-import org.postgresql.util.ServerErrorMessage
 import org.sbas.dtos.*
 import org.sbas.entities.base.BaseAttc
 import org.sbas.entities.base.BaseCode
 import org.sbas.entities.base.BaseCodeEgen
-import org.sbas.entities.base.BaseCodeId
 import org.sbas.handlers.FileHandler
 import org.sbas.repositories.BaseAttcRepository
 import org.sbas.repositories.BaseCodeEgenRepository
@@ -40,10 +37,10 @@ class CommonService {
     private lateinit var egenCodeRepository: BaseCodeEgenRepository
 
     @Inject
-    lateinit var repo1: BaseAttcRepository
+    private lateinit var baseAttcRepository: BaseAttcRepository
 
     @Inject
-    private lateinit var handler1: FileHandler
+    private lateinit var fileHandler: FileHandler
 
     /**
      * E-GEN 공통코드 목록 조회
@@ -51,8 +48,8 @@ class CommonService {
      */
     @Transactional
     @CacheResult(cacheName = "cmMid")
-    fun findEgenCodeList(cmMid: String): List<BaseCodeEgen> {
-        return egenCodeRepository.find("cm_mid = ?1", cmMid).list()
+    fun findCodeEgenList(cmMid: String): List<BaseCodeEgen> {
+        return egenCodeRepository.findCodeEgenByCmMid(cmMid = cmMid)
     }
 
     /**
@@ -70,8 +67,8 @@ class CommonService {
      */
     @Transactional
     @CacheResult(cacheName = "sido")
-    fun findSidos(): List<BaseCode> {
-        return baseCodeRepository.find("cd_grp_id = 'SIDO'").list()
+    fun findSidoList(): List<BaseCode> {
+        return baseCodeRepository.findBaseCodeByCdGrpId("SIDO")
     }
 
     /**
@@ -80,26 +77,11 @@ class CommonService {
      */
     @Transactional
     @CacheResult(cacheName = "cdGrpId")
-    fun findGuguns(@CacheKey cdGrpId: String): List<BaseCode> {
+    fun findGugunList(@CacheKey cdGrpId: String): List<BaseCode> {
         return when {
-            cdGrpId.matches(Regex("^(SIDO)\\d+")) -> baseCodeRepository.find("cd_grp_id", cdGrpId).list()
-            else -> throw NotFoundException("$cdGrpId not found")
+            cdGrpId.matches(Regex("^(SIDO)\\d+")) -> baseCodeRepository.findBaseCodeByCdGrpId(cdGrpId = cdGrpId)
+            else -> throw NotFoundException("${cdGrpId}는 시/도의 코드 그룹 ID가 아닙니다.")
         }
-    }
-
-    /**
-     * 공통코드 그룹 등록
-     * @param saveReq
-     */
-    @Transactional
-    fun saveBaseCodeGrp(saveReq: BaseCodeSaveReq): CommonResponse<BaseCode> {
-        val baseCode = saveReq.toCdGprIdEntity()
-        val findBaseCode = baseCodeRepository.findBaseCodeByCdGrpId(saveReq.cdGrpId)
-        when {
-            findBaseCode.isEmpty() -> baseCodeRepository.persist(baseCode)
-            baseCodeRepository.isPersistent(findBaseCode.first()) -> throw PSQLException(ServerErrorMessage(""))
-        }
-        return CommonResponse(baseCode)
     }
 
     /**
@@ -177,7 +159,7 @@ class CommonService {
      */
     @Transactional
     fun findFiles(attcGrpId: String): List<BaseAttc> {
-        return repo1.list("attc_grp_id", attcGrpId)
+        return baseAttcRepository.list("attc_grp_id", attcGrpId)
     }
 
     /**
@@ -187,7 +169,7 @@ class CommonService {
     fun publicFileUpload(param1: String, param2: FileUpload): CommonResponse<String?> {
         if(param2.fileName()=="") throw CustomizedException("파일을 등록하시오.", Response.Status.BAD_REQUEST)
 
-        val fileName = handler1.createPublicFile(param2)
+        val fileName = fileHandler.createPublicFile(param2)
 
         val dotPos = fileName!!.filename.lastIndexOf(".")
         val fileExt = fileName.filename.substring(dotPos + 1).lowercase()
@@ -201,14 +183,14 @@ class CommonService {
 
         val result = fileName.toEntity(fileTypeCd, null)
 
-        repo1.persist(result)
+        baseAttcRepository.persist(result)
 
         return CommonResponse(result.attcId)
     }
 
     @Transactional
     fun privateFileUpload(param1: String, param2: FileUpload): CommonResponse<String?> {
-        val fileName = handler1.createPrivateFile(param2)
+        val fileName = fileHandler.createPrivateFile(param2)
 
         return CommonResponse(fileName)
     }

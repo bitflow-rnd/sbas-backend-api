@@ -23,21 +23,21 @@ class AdminEgenEndpoint {
     @Inject
     lateinit var egenService: EgenService
 
-    @Operation(summary = "", description = "")
+    @Operation(summary = "E-GEN 의료기관 정보 동기화", description = "")
     @POST
     @Path("syncmedinsts")
     fun syncmedinsts(): Response {
         return Response.ok().build()
     }
 
-    @Operation(summary = "", description = "")
+    @Operation(summary = "E-GEN 실시간가용병상 정보 동기화", description = "")
     @POST
     @Path("syncrealtmavailbeds")
     fun syncrealtmavailbeds(): Response {
         return Response.ok().build()
     }
 
-    @Operation(summary = "", description = "")
+    @Operation(summary = "E-GEN 공통코드 동기화", description = "")
     @POST
     @Path("synccommcodes")
     fun synccommcodes(): Response {

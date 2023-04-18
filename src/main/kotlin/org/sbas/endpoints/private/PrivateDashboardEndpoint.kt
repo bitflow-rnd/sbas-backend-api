@@ -19,14 +19,14 @@ class PrivateDashboardEndpoint {
     @Inject
     lateinit var dashboardService: DashboardService
 
-    @Operation(summary = "", description = "")
+    @Operation(summary = "PC 대시보드", description = "")
     @GET
     @Path("pc")
     fun pc(): Response {
         return Response.ok().build()
     }
 
-    @Operation(summary = "", description = "")
+    @Operation(summary = "모바일 홈 대시보드", description = "")
     @GET
     @Path("mobile")
     fun mobile(): RestResponse<CommonResponse<MutableMap<String, Long>>>? {

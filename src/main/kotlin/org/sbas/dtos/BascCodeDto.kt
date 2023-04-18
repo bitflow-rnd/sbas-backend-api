@@ -18,16 +18,6 @@ data class BaseCodeSaveReq(
     var cdSeq: Long,
 )
 
-fun BaseCodeSaveReq.toCdGprIdEntity(): BaseCode {
-    val baseCodeId = BaseCodeId(cdGrpId = this.cdGrpId, cdId = this.cdGrpId + "01")
-    return BaseCode(
-        id = baseCodeId,
-        cdGrpNm = cdGrpNm,
-        cdNm = "-",
-        cdSeq = 1,
-    )
-}
-
 fun BaseCodeSaveReq.toCdIdEntity(): BaseCode {
     val baseCodeId = BaseCodeId(cdGrpId = this.cdGrpId, cdId = this.cdId)
     return BaseCode(

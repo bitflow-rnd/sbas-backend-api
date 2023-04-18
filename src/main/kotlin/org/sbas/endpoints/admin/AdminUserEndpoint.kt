@@ -1,16 +1,11 @@
 package org.sbas.endpoints.admin
 
-import org.eclipse.microprofile.jwt.JsonWebToken
 import org.eclipse.microprofile.openapi.annotations.Operation
 import org.eclipse.microprofile.openapi.annotations.tags.Tag
 import org.jboss.logging.Logger
-import org.sbas.entities.info.InfoUser
-import org.sbas.parameters.ModifyPwRequest
-import org.sbas.parameters.ModifyTelnoRequest
 import org.sbas.parameters.UserIdRequest
 import org.sbas.parameters.UserRequest
 import org.sbas.services.UserService
-import javax.annotation.security.PermitAll
 import javax.annotation.security.RolesAllowed
 import javax.inject.Inject
 import javax.validation.Valid
@@ -18,9 +13,7 @@ import javax.ws.rs.GET
 import javax.ws.rs.POST
 import javax.ws.rs.Path
 import javax.ws.rs.QueryParam
-import javax.ws.rs.core.Context
 import javax.ws.rs.core.Response
-import javax.ws.rs.core.SecurityContext
 
 @Tag(name = "사용자 관리(어드민 권한용)", description = "System Admin 사용자 - 사용자 등록, 수정, 삭제 등")
 @RolesAllowed("USER")
@@ -47,7 +40,7 @@ class AdminUserEndpoint {
         return Response.ok(userService.getUsers(requestData)).build()
     }
 
-    @Operation(summary = "", description = "")
+    @Operation(summary = "등록자 초대 (관리자 모드)", description = "")
     @POST
     @Path("invite")
     fun invite(): Response {
@@ -60,26 +53,4 @@ class AdminUserEndpoint {
     fun deleteUser(@Valid request: UserIdRequest): Response {
         return Response.ok(userService.deleteUser(request)).build()
     }
-
-    @Operation(summary = "비밀번호 변경", description = "유저정보에서 비밀번호 변경 API")
-    @POST
-    @Path("modify-pw")
-    fun modifyPw(@Valid modifyPwRequest: ModifyPwRequest): Response {
-        return Response.ok(userService.modifyPw(modifyPwRequest)).build()
-    }
-
-    @Operation(summary = "핸드폰번호 변경", description = "유저정보에서 핸드폰번호 변경 API")
-    @POST
-    @Path("modify-telno")
-    fun modifyTelNo(@Valid modifyTelnoRequest: ModifyTelnoRequest): Response{
-        return Response.ok(userService.modifyTelno(modifyTelnoRequest)).build()
-    }
-
-    @Operation(summary = "기본정보 수정", description = "유저정보에서 기본정보 수정 API")
-    @POST
-    @Path("modify-info")
-    fun modifyInfo(@Valid infoUser: InfoUser) : Response {
-        return Response.ok(userService.modifyInfo(infoUser)).build()
-    }
-
 }

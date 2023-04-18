@@ -17,21 +17,21 @@ class PrivateOrganiztnEndpoint {
     @Inject
     lateinit var log: Logger
 
-    @Operation(summary = "", description = "")
+    @Operation(summary = "구급대 상세", description = "")
     @GET
     @Path("firestatn/{param}")
     fun firestatn(@RestPath param: String): Response {
         return Response.ok().build()
     }
 
-    @Operation(summary = "", description = "")
+    @Operation(summary = "의료기관 프로필 이미지 업로드 (신규/업데이트)", description = "")
     @POST
     @Path("medinstimg/{param}")
     fun medinstimg(@RestPath param: String): Response {
         return Response.ok().build()
     }
 
-    @Operation(summary = "", description = "")
+    @Operation(summary = "사용자 기관(조직) 등록", description = "")
     @POST
     @Path("regorganiztn/{param}")
     fun regorganiztn(@RestPath param: String): Response {

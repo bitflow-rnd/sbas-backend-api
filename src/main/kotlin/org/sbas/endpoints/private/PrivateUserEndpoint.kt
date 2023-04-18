@@ -4,7 +4,12 @@ import org.eclipse.microprofile.openapi.annotations.Operation
 import org.eclipse.microprofile.openapi.annotations.tags.Tag
 import org.jboss.logging.Logger
 import org.jboss.resteasy.reactive.RestPath
+import org.sbas.entities.info.InfoUser
+import org.sbas.parameters.ModifyPwRequest
+import org.sbas.parameters.ModifyTelnoRequest
+import org.sbas.services.UserService
 import javax.inject.Inject
+import javax.validation.Valid
 import javax.ws.rs.GET
 import javax.ws.rs.POST
 import javax.ws.rs.Path
@@ -21,6 +26,9 @@ class PrivateUserEndpoint {
     @Inject
     lateinit var security: SecurityContext
 
+    @Inject
+    lateinit var userService: UserService
+
     @Operation(summary = "", description = "")
     @POST
     @Path("logout/{param}")
@@ -28,24 +36,31 @@ class PrivateUserEndpoint {
         return Response.ok().build()
     }
 
-    @Operation(summary = "", description = "")
+    @Operation(summary = "비밀번호 변경", description = "유저정보에서 비밀번호 변경 API")
     @POST
-    @Path("modbasic/{param}")
-    fun modbasic(@RestPath param: String): Response {
-        return Response.ok().build()
+    @Path("modify-pw")
+    fun modifyPw(@Valid modifyPwRequest: ModifyPwRequest): Response {
+        return Response.ok(userService.modifyPw(modifyPwRequest)).build()
     }
 
-    @Operation(summary = "", description = "")
+    @Operation(summary = "핸드폰번호 변경", description = "유저정보에서 핸드폰번호 변경 API")
+    @POST
+    @Path("modify-telno")
+    fun modifyTelno(@Valid modifyTelnoRequest: ModifyTelnoRequest): Response{
+        return Response.ok(userService.modifyTelno(modifyTelnoRequest)).build()
+    }
+
+    @Operation(summary = "기본정보 수정", description = "유저정보에서 기본정보 수정 API")
+    @POST
+    @Path("modify-info")
+    fun modifyInfo(@Valid infoUser: InfoUser) : Response {
+        return Response.ok(userService.modifyInfo(infoUser)).build()
+    }
+
+    @Operation(summary = "사용자 초대", description = "")
     @POST
     @Path("invit")
     fun invit(): Response {
-        return Response.ok().build()
-    }
-
-    @Operation(summary = "", description = "")
-    @POST
-    @Path("modpw")
-    fun modpw(): Response {
         return Response.ok().build()
     }
 
@@ -55,8 +70,6 @@ class PrivateUserEndpoint {
     fun invitredir(): Response {
         return Response.ok().build()
     }
-
-
 
     @Operation(summary = "", description = "")
     @POST
@@ -69,13 +82,6 @@ class PrivateUserEndpoint {
     @POST
     @Path("modprofimg/{param}")
     fun modprofimg(@RestPath param: String): Response {
-        return Response.ok().build()
-    }
-
-    @Operation(summary = "", description = "")
-    @POST
-    @Path("modcellpno")
-    fun modcellpno(): Response {
         return Response.ok().build()
     }
 

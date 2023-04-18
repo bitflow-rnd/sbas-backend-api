@@ -37,7 +37,7 @@ class PrivatePatientEndpoint {
     @Inject
     lateinit var bedAssignService: BedAssignService
 
-    @Operation(summary = "", description = "")
+    @Operation(summary = "역학조사서 업로드/업데이트", description = "")
     @POST
     @Path("upldepidreport")
     fun upldepidreport(@RestForm param1: String, @RestForm param2: FileUpload): Response {
@@ -45,7 +45,7 @@ class PrivatePatientEndpoint {
         return Response.ok(res).build()
     }
 
-    @Operation(summary = "", description = "")
+    @Operation(summary = "역학조사서 삭제", description = "")
     @POST
     @Path("delepidreport")
     fun delepidreport():  Response {
@@ -81,28 +81,28 @@ class PrivatePatientEndpoint {
         return Response.ok(patientService.updateInfoPt(ptId, infoPtDto)).build()
     }
 
-    @Operation(summary = "", description = "")
+    @Operation(summary = "환자 기본정보 등록", description = "")
     @GET
     @Path("basicinfo/{param}")
     fun basicinfo(@RestPath param: String): Response{
         return Response.ok().build()
     }
 
-    @Operation(summary = "", description = "")
+    @Operation(summary = "환자 병상배정 차수별 상세내용(타임라인) 조회", description = "")
     @GET
     @Path("timeline/{param1}/{param2}")
     fun timeline(@RestPath param1: String, @RestPath param2: String): Response? {
         return Response.ok().build()
     }
 
-    @Operation(summary = "", description = "")
+    @Operation(summary = "차수별 질병(감염병) 정보 조회", description = "")
     @GET
     @Path("disesinfo/{param1}/{param2}")
     fun disesinfo(@RestPath param1: String, @RestPath param2: String): Response? {
         return Response.ok().build()
     }
 
-    @Operation(summary = "", description = "")
+    @Operation(summary = "차수별 중증정보 조회", description = "")
     @GET
     @Path("sevrinfo/{param1}/{param2}")
     fun sevrinfo(@RestPath param1: String, @RestPath param2: String): Response? {
@@ -138,7 +138,7 @@ class PrivatePatientEndpoint {
         return Response.ok().build()
     }
 
-    @Operation(summary = "", description = "")
+    @Operation(summary = "현재 차수 병상배정 관련 타임라인 메시지 전송", description = "")
     @POST
     @Path("sendmsg/{param}")
     fun sendmsg(@RestPath param: String): Response? {

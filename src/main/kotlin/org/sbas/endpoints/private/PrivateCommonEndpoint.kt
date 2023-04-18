@@ -6,7 +6,6 @@ import org.jboss.logging.Logger
 import org.jboss.resteasy.reactive.RestForm
 import org.jboss.resteasy.reactive.RestPath
 import org.jboss.resteasy.reactive.multipart.FileUpload
-import org.sbas.repositories.BaseAttcRepository
 import org.sbas.services.CommonService
 import javax.inject.Inject
 import javax.ws.rs.GET
@@ -24,49 +23,49 @@ class PrivateCommonEndpoint {
     @Inject
     lateinit var service1: CommonService
 
-    @Operation(summary = "", description = "")
+    @Operation(summary = "파일목록 (권한별 공개 파일)", description = "")
     @GET
     @Path("files/{attcGrpId}")
     fun files(@RestPath attcGrpId: String): Response {
         return Response.ok(service1.findFiles(attcGrpId)).build()
     }
 
-    @Operation(summary = "", description = "")
+    @Operation(summary = "다운로드 (권한별 공개 파일)", description = "")
     @GET
     @Path("download/{param1}/{param2}")
     fun download(): Response {
         return Response.ok().build()
     }
 
-    @Operation(summary = "private 파일 업로드", description = "private 파일 업로드 API")
+    @Operation(summary = "업로드 (권한별 공개 파일)", description = "private 파일 업로드 API")
     @POST
     @Path("upload")
     fun upload(@RestForm param1: String, @RestForm param2: FileUpload): Response {
         return Response.ok(service1.privateFileUpload(param1, param2)).build()
     }
 
-    @Operation(summary = "", description = "")
+    @Operation(summary = "개인정보수집동의 동의", description = "")
     @POST
     @Path("prvinfocollctagree/{param}")
     fun prvinfocollctagree(@RestPath param: String): Response {
         return Response.ok().build()
     }
 
-    @Operation(summary = "", description = "")
+    @Operation(summary = "서비스이용약관 동의", description = "")
     @POST
     @Path("svcusgterm/{param}")
     fun svcusgterm(@RestPath param: String): Response {
         return Response.ok().build()
     }
 
-    @Operation(summary = "", description = "")
+    @Operation(summary = "모바일 설정 조회", description = "")
     @GET
     @Path("settings")
     fun settings(): Response {
         return Response.ok().build()
     }
 
-    @Operation(summary = "", description = "")
+    @Operation(summary = "모바일 설정 수정", description = "")
     @POST
     @Path("modsettings")
     fun modsettings(): Response {

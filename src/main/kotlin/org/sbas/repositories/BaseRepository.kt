@@ -8,7 +8,7 @@ import javax.enterprise.context.ApplicationScoped
 @ApplicationScoped
 class BaseCodeRepository : PanacheRepositoryBase<BaseCode, BaseCodeId> {
 
-    fun findBaseCodeByCdGrpId(cdGrpId: String): List<BaseCode> = find("cd_grp_id = ?1", cdGrpId).list()
+    fun findBaseCodeByCdGrpId(cdGrpId: String): List<BaseCode> = find("cd_grp_id = '$cdGrpId'").list()
 
     fun findBaseCdGrpList(): List<BaseCode> {
         return find("select a.id.cdGrpId, a.cdGrpNm from BaseCode a group by a.id.cdGrpId, a.cdGrpNm",
@@ -17,7 +17,12 @@ class BaseCodeRepository : PanacheRepositoryBase<BaseCode, BaseCodeId> {
 }
 
 @ApplicationScoped
-class BaseCodeEgenRepository : PanacheRepositoryBase<BaseCodeEgen, BaseCodeEgenId>
+class BaseCodeEgenRepository : PanacheRepositoryBase<BaseCodeEgen, BaseCodeEgenId> {
+
+    fun findCodeEgenByCmMid(cmMid: String): List<BaseCodeEgen> {
+        return find("cm_mid = '$cmMid'").list()
+    }
+}
 
 @ApplicationScoped
 class BaseAttcRepository : PanacheRepositoryBase<BaseAttc, String>
