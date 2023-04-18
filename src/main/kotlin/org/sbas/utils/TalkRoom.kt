@@ -57,13 +57,17 @@ class TalkRoom {
 
         chatSockets.values // 모든 WebSocket 연결에 메시지 전송
             .filter { it.userId != userId && it.tkrmId == tkrmId }
-            .forEach { it.session.asyncRemote.sendText(JsonObject.mapFrom(addMsg).toString()) }
+            .forEach {
+                it.session.asyncRemote.sendText(JsonObject.mapFrom(addMsg).toString())
+                log.warn(it.userId)
+                session.asyncRemote.sendText("hi" + it.userId)
+            }
 
     }
 
     @OnClose
     fun onClose(session: Session, @PathParam("userId") userId: String) {
-        chatSockets.remove(userId) // WebSocket 연결을 Map에서 제거
+//        chatSockets.remove(userId) // WebSocket 연결을 Map에서 제거
     }
 
     private fun updateTalkMsg(tkrmId: String) {
