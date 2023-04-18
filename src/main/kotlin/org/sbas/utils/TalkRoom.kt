@@ -64,8 +64,6 @@ class TalkRoom {
                 it.session.asyncRemote.sendText(JsonObject.mapFrom(addMsg).toString())
             }
 
-        log.warn(otherUsers.size)
-
         otherUsers.forEach{
             session.asyncRemote.sendText(it.id?.userId)
         }
