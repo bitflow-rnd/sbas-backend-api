@@ -53,13 +53,13 @@ class TalkRoomList {
     }
 
     @OnMessage
-    fun onMessage(session: Session, message: String, @PathParam("userId") userId: String) {
+    fun onMessage(session: Session, tkrmId: String, @PathParam("userId") userId: String) {
         val talkUsers: MutableList<TalkUser>
         val talkRoomResponse: TalkRoomResponse?
 
         runBlocking(Dispatchers.IO) {
-            talkUsers = talkUserRepository.findUsersByTkrmId(message) as MutableList<TalkUser>
-            talkRoomResponse = talkRoomRepository.findTalkRoomResponseByTkrmId(message)
+            talkUsers = talkUserRepository.findUsersByTkrmId(tkrmId) as MutableList<TalkUser>
+            talkRoomResponse = talkRoomRepository.findTalkRoomResponseByTkrmId(tkrmId)
         }
 
         talkUsers.forEach{
