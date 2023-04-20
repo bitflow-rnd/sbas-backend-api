@@ -41,6 +41,7 @@ class TalkRoomList {
     fun onOpen(session: Session, @PathParam("userId") userId: String) {
         this.session = session
         this.userId = userId
+        session.maxIdleTimeout = -1
 
         updateTalkRooms(userId)
 

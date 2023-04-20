@@ -1,6 +1,5 @@
 package org.sbas.utils
 
-import io.vertx.core.json.JsonArray
 import io.vertx.core.json.JsonObject
 import kotlinx.coroutines.*
 import org.jboss.logging.Logger
@@ -9,6 +8,7 @@ import org.sbas.entities.talk.TalkUser
 import org.sbas.entities.talk.arrToJson
 import org.sbas.repositories.TalkMsgRepository
 import org.sbas.repositories.TalkUserRepository
+import javax.enterprise.context.ApplicationScoped
 import javax.inject.Inject
 import javax.websocket.*
 import javax.websocket.server.PathParam
@@ -16,6 +16,7 @@ import javax.websocket.server.ServerEndpoint
 
 
 @ServerEndpoint("/chat-rooms/{tkrmId}/{userId}")
+@ApplicationScoped
 class TalkRoom {
 
     companion object {
@@ -41,6 +42,7 @@ class TalkRoom {
         this.session = session
         this.tkrmId = tkrmId
         this.userId = userId
+        session.maxIdleTimeout = -1
 
         updateTalkMsg(tkrmId)
 
