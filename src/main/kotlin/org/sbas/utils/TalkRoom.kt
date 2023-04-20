@@ -60,7 +60,7 @@ class TalkRoom {
         }
 
         chatSockets.values // 모든 WebSocket 연결에 메시지 전송
-            .filter { it.userId != userId && it.tkrmId == tkrmId }
+            .filter { it.tkrmId == tkrmId }
             .forEach {
                 it.session.asyncRemote.sendText(JsonObject.mapFrom(addMsg).toString())
             }
