@@ -1,7 +1,5 @@
 package org.sbas.responses.messages
 
-import com.fasterxml.jackson.annotation.JsonFormat
-import com.fasterxml.jackson.databind.ObjectMapper
 import java.time.Instant
 
 data class TalkRoomResponse(

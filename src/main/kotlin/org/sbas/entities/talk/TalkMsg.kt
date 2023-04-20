@@ -66,3 +66,20 @@ data class TalkMsgId(
         private const val serialVersionUID = -544776586376217282L
     }
 }
+
+fun arrToJson(arrayData: MutableList<TalkMsg>): String {
+    var result = "["
+
+    for (item in arrayData) {
+        result += "{\"id\":{\"tkrmId\":\"${item.id?.tkrmId}\", \"msgSeq\":\"${item.id?.msgSeq}\", \"histSeq\":\"${item.id?.histSeq}\"}, " +
+            "\"histCd\":\"${item.histCd}\", \"msg\":\"${item.msg}\", \"attcId\":${item.attcId ?: "${item.attcId}"}, \"rgstUserId\":\"${item.rgstUserId}\"," +
+            "\"rgstDttm\":\"${item.rgstDttm}\", \"updtUserId\":\"${item.updtUserId}\", \"updtDttm\":\"${item.updtDttm}\"}"
+        if(item != arrayData.last()){
+            result += ","
+        }
+    }
+
+    result += "]"
+
+    return result
+}

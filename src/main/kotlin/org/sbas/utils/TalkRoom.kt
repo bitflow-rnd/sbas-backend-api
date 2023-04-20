@@ -6,6 +6,7 @@ import kotlinx.coroutines.*
 import org.jboss.logging.Logger
 import org.sbas.entities.talk.TalkMsg
 import org.sbas.entities.talk.TalkUser
+import org.sbas.entities.talk.arrToJson
 import org.sbas.repositories.TalkMsgRepository
 import org.sbas.repositories.TalkUserRepository
 import javax.inject.Inject
@@ -43,7 +44,7 @@ class TalkRoom {
 
         updateTalkMsg(tkrmId)
 
-        val sendObject = JsonArray.of(talkMsg).toString()
+        val sendObject = arrToJson(talkMsg)
         session.asyncRemote.sendText(sendObject)
 
         chatSockets[userId] = this // WebSocket 연결을 Map에 추가
