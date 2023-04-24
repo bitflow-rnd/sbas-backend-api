@@ -20,7 +20,7 @@ import javax.websocket.server.ServerEndpoint
 class TalkRoom {
 
     companion object {
-        private val chatSockets = mutableMapOf<String, TalkRoom>() // WebSocket 연결을 관리할 Map
+        private val chatSockets = mutableMapOf<String, Session>() // WebSocket 연결을 관리할 Map
         private lateinit var talkMsg: MutableList<TalkMsg>
     }
 
@@ -39,9 +39,6 @@ class TalkRoom {
 
     @OnOpen
     fun onOpen(session: Session, @PathParam("tkrmId") tkrmId: String, @PathParam("userId") userId: String) {
-        this.session = session
-        this.tkrmId = tkrmId
-        this.userId = userId
         session.maxIdleTimeout = -1
 
         updateTalkMsg(tkrmId)
@@ -49,7 +46,8 @@ class TalkRoom {
         val sendObject = arrToJson(talkMsg)
         session.asyncRemote.sendText(sendObject)
 
-        chatSockets[userId] = this // WebSocket 연결을 Map에 추가
+        chatSockets[userId] = session // WebSocket 연결을 Map에 추가
+
     }
 
     @OnMessage
@@ -61,20 +59,17 @@ class TalkRoom {
             otherUsers = talkUserRepository.findOtherUsersByTkrmId(tkrmId, userId) as MutableList<TalkUser>
         }
 
-        chatSockets.values // 모든 WebSocket 연결에 메시지 전송
-            .filter { it.userId != userId && it.tkrmId == tkrmId }
-            .forEach {
-                it.session.asyncRemote.sendText(JsonObject.mapFrom(addMsg).toString())
+        chatSockets
+            .filter {
+                it.key != userId
+            }.forEach {
+                it.value.asyncRemote.sendText(JsonObject.mapFrom(addMsg).toString())
             }
-
-//        otherUsers.forEach{
-//            session.asyncRemote.sendText(it.id?.userId)
-//        }
 
     }
 
     @OnClose
-    fun onClose(session: Session, @PathParam("userId") userId: String) {
+    fun onClose(session: Session, @PathParam("userId") userId: String, @PathParam("tkrmId") tkrmId: String) {
         chatSockets.remove(userId) // WebSocket 연결을 Map에서 제거
     }
 
