@@ -1,6 +1,7 @@
 package org.sbas.repositories
 
 import io.quarkus.hibernate.orm.panache.kotlin.PanacheRepositoryBase
+import io.quarkus.panache.common.Sort
 import org.sbas.entities.bdas.*
 import javax.enterprise.context.ApplicationScoped
 
@@ -18,4 +19,13 @@ class BdasAprvRepository: PanacheRepositoryBase<BdasAprv, BdasAprvId>
 class BdasAdmRepository: PanacheRepositoryBase<BdasAdm, BdasAdmId>
 
 @ApplicationScoped
-class BdasEsvyRepository: PanacheRepositoryBase<BdasEsvy, String>
+class BdasEsvyRepository: PanacheRepositoryBase<BdasEsvy, String> {
+
+    fun findLatestRecordByPtId(ptId: String): BdasEsvy? {
+        return find("pt_id = '${ptId}'", Sort.by("hist_seq", Sort.Direction.Descending)).firstResult()
+    }
+
+    fun findLatestBdasSeq(): Int {
+        return getEntityManager().createQuery("select max(bdasSeq) from BdasEsvy").singleResult as Int
+    }
+}
