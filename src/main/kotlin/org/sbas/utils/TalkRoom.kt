@@ -84,6 +84,6 @@ class TalkRoom {
                 talkMsgRepository.findChatDetail(tkrmId)
             }
         } as MutableList<TalkMsg>
-        talkMsg.addAll(resultList)
+        talkMsg = resultList
     }
 }
