@@ -106,11 +106,11 @@ class PrivateUserEndpoint {
         return Response.ok().build()
     }
 
-    @Operation(summary = "", description = "")
+    @Operation(summary = "전국 사용자 검색 목록", description = "전국 사용자 검색 목록 API(filter X)")
     @GET
-    @Path("user/{param}")
-    fun user(@RestPath param: String): Response {
-        return Response.ok().build()
+    @Path("all-users")
+    fun getAllUsers(): Response {
+        return Response.ok(userService.getAllUsers()).build()
     }
 
     @Operation(summary = "", description = "")

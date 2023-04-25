@@ -39,8 +39,6 @@ class TalkRoom {
 
     @OnOpen
     fun onOpen(session: Session, @PathParam("tkrmId") tkrmId: String, @PathParam("userId") userId: String) {
-        session.maxIdleTimeout = -1
-
         updateTalkMsg(tkrmId)
 
         val sendObject = arrToJson(talkMsg)
@@ -65,10 +63,10 @@ class TalkRoom {
 
     }
 
-    @OnClose
-    fun onClose(session: Session, @PathParam("userId") userId: String, @PathParam("tkrmId") tkrmId: String) {
-        chatSockets.remove(userId) // WebSocket 연결을 Map에서 제거
-    }
+//    @OnClose
+//    fun onClose(session: Session, @PathParam("userId") userId: String, @PathParam("tkrmId") tkrmId: String) {
+//        chatSockets.remove(userId) // WebSocket 연결을 Map에서 제거
+//    }
 
     private fun updateTalkMsg(tkrmId: String) {
         val resultList = runBlocking {

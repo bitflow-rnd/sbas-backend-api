@@ -41,7 +41,6 @@ class TalkRoomList {
     fun onOpen(session: Session, @PathParam("userId") userId: String) {
         this.session = session
         this.userId = userId
-        session.maxIdleTimeout = -1
 
         updateTalkRooms(userId)
 
@@ -69,10 +68,10 @@ class TalkRoomList {
     }
 
 
-    @OnClose
-    fun onClose(session: Session, @PathParam("userId") userId: String) {
-
-    }
+//    @OnClose
+//    fun onClose(session: Session, @PathParam("userId") userId: String) {
+//
+//    }
 
     private fun updateTalkRooms(userId: String){
         val resultList = runBlocking(Dispatchers.IO) {

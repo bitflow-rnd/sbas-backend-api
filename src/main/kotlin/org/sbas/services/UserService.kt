@@ -256,4 +256,9 @@ class UserService {
 
     }
 
+    @Transactional
+    fun getAllUsers(): CommonResponse<List<InfoUser>> {
+        return CommonResponse(userRepository.findAll().list())
+    }
+
 }
