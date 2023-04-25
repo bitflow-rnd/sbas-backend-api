@@ -14,7 +14,7 @@ class BdasEsvy(
     @Column(name = "pt_id", nullable = false, length = 10)
     var ptId: String? = null, // 환자 ID
 
-    @GeneratedValue(strategy = GenerationType.AUTO)
+//    @GeneratedValue(strategy = GenerationType.AUTO)
     @Id
     @Column(name = "bdas_seq", nullable = false, precision = 10)
     var bdasSeq: Int? = null, // 병상 배정 순번
@@ -108,6 +108,10 @@ class BdasEsvy(
 
     companion object {
         private const val serialVersionUID = 2286635814191011763L
+    }
+
+    fun setHistCdAsC() {
+        this.histCd = "C"
     }
 }
 

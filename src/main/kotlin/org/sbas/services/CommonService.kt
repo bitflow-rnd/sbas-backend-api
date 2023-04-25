@@ -4,6 +4,7 @@ import io.quarkus.cache.CacheKey
 import io.quarkus.cache.CacheResult
 import org.jboss.logging.Logger
 import org.jboss.resteasy.reactive.multipart.FileUpload
+import org.sbas.constants.SbasConst
 import org.sbas.dtos.*
 import org.sbas.entities.base.BaseAttc
 import org.sbas.entities.base.BaseCode
@@ -176,9 +177,9 @@ class CommonService {
 
         val fileTypeCd = if(fileExt == "bmp" || fileExt == "jpeg" || fileExt == "jpg"
             || fileExt == "gif" || fileExt == "png" || fileExt == "pdf"){
-            "FLTP0001"
+            SbasConst.FileTypeCd.IMAGE
         }else {
-            "FLTP0002"
+            SbasConst.FileTypeCd.VIDEO
         }
 
         val result = fileName.toEntity(fileTypeCd, null)

@@ -37,11 +37,12 @@ data class BdasEsvyDto(
     var diagDrNm: String?,
     var rptChfNm: String?,
 ) {
-    fun toEntity(): BdasEsvy {
+    fun toEntity(bdasSeq: Int): BdasEsvy {
         return BdasEsvy(
             ptId = this.ptId,
+            bdasSeq = bdasSeq,
             attcId = this.attcId,
-            attcSeq = 1,
+            attcSeq = generateAttcSeq(this.attcId),
             histCd = "Y",
             rcptPhc = this.rcptPhc,
             telno = this.telno,
@@ -68,6 +69,49 @@ data class BdasEsvyDto(
             diagDrNm = this.diagDrNm,
             rptChfNm = this.rptChfNm,
         )
+    }
+
+    fun toUpdateEntity(bdasSeq: Int, histSeq: Int): BdasEsvy {
+        return BdasEsvy(
+            ptId = this.ptId,
+            bdasSeq = bdasSeq,
+            histCd = "Y",
+            histSeq = histSeq + 1,
+            attcId = this.attcId,
+            attcSeq = generateAttcSeq(this.attcId),
+            rcptPhc = this.rcptPhc,
+            telno = this.telno,
+            addr = this.addr,
+            mpno = this.mpno,
+            nokNm = this.nokNm,
+            diagNm = this.diagNm,
+            diagGrde = this.diagGrde,
+            job = this.job,
+            cv19Symp = this.cv19Symp,
+            occrDt = this.occrDt,
+            diagDt = this.diagDt,
+            rptDt = this.rptDt,
+            dfdgExamRslt = this.dfdgExamRslt,
+            ptCatg = this.ptCatg,
+            admsYn = this.admsYn,
+            dethYn = this.dethYn,
+            rptType = this.rptType,
+            rmk = this.rmk,
+            instNm = this.instNm,
+            instId = this.instId,
+            instTelno = this.instTelno,
+            instAddr = this.instAddr,
+            diagDrNm = this.diagDrNm,
+            rptChfNm = this.rptChfNm,
+        )
+    }
+
+    private fun generateAttcSeq(attcId: String?): Int? {
+        return if (!attcId.isNullOrBlank()) {
+            1
+        } else {
+            null
+        }
     }
 
     fun saveInfoPt(infoPt: InfoPt) {

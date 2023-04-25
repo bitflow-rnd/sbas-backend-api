@@ -8,9 +8,11 @@ import org.jboss.resteasy.reactive.RestPath
 import org.sbas.constants.SbasConst
 import org.sbas.entities.info.InfoHosp
 import org.sbas.parameters.InstCdParameters
+import org.sbas.parameters.SearchParameters
 import org.sbas.responses.CommonResponse
 import org.sbas.services.OrganiztnService
 import javax.inject.Inject
+import javax.ws.rs.BeanParam
 import javax.ws.rs.GET
 import javax.ws.rs.Path
 import javax.ws.rs.QueryParam
@@ -29,9 +31,10 @@ class PublicOrganiztnEndpoint {
     @Operation(summary = "의료기관 목록", description = "")
     @GET
     @Path("medinsts")
-    fun medinsts(): CommonResponse<List<InfoHosp>> {
+    fun medinsts(@BeanParam searchParam: SearchParameters): Response? {
         //TODO 검색조건 추가
-        return CommonResponse(organiztnService.findInfoHospList())
+
+        return Response.ok(organiztnService.findInfoHospList(searchParam)).build()
     }
 
     @Operation(summary = "의료기관 상세", description = "")

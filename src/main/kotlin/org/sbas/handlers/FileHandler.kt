@@ -50,7 +50,7 @@ class FileHandler {
         val fileNameWithExt = "${Instant.now().toEpochMilli()}.$fileExt"
         val file = File("$absolutLocalUplodPathStr/$fileNameWithExt")
         val created = file.createNewFile()
-        val ret = FileDto(fileNameWithExt, absolutLocalUplodPathStr, "/$UPLOAD_PATH_MIDDLE/$yyyyMm")
+        val ret = FileDto(filename = fileNameWithExt, localPath = absolutLocalUplodPathStr, uriPath = "/$UPLOAD_PATH_MIDDLE/$yyyyMm")
 
         return if (created) {
             file.writeBytes(param.uploadedFile().readBytes())
