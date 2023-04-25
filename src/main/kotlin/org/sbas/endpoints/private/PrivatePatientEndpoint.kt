@@ -47,9 +47,9 @@ class PrivatePatientEndpoint {
 
     @Operation(summary = "역학조사서 삭제", description = "")
     @POST
-    @Path("delepidreport")
-    fun delepidreport():  Response {
-        return Response.ok().build()
+    @Path("delepidreport/{attcId}")
+    fun delepidreport(@RestPath attcId: String):  Response {
+        return Response.ok(patientService.delEpidReport(attcId)).build()
     }
 
     @Operation(summary = "역학조사서 읽어오기", description = "")
@@ -76,7 +76,7 @@ class PrivatePatientEndpoint {
     @Operation(summary = "환자정보 수정", description = "")
     @POST
     @Path("modinfo/{ptId}")
-    fun modinfo(@RestPath ptId: String,@RequestBody infoPtDto: InfoPtDto): Response {
+    fun modinfo(@RestPath ptId: String, @RequestBody infoPtDto: InfoPtDto): Response {
         log.debug("res==============>>>>>>> $infoPtDto")
         return Response.ok(patientService.updateInfoPt(ptId, infoPtDto)).build()
     }
@@ -113,7 +113,6 @@ class PrivatePatientEndpoint {
     @POST
     @Path("bioinfoanlys")
     fun bioinfoanlys(param: NewsScoreParam): Response {
-        patientService.calculateNewsScore(param)
         return Response.ok(patientService.calculateNewsScore(param)).build()
     }
 
@@ -148,9 +147,9 @@ class PrivatePatientEndpoint {
     @Operation(summary = "전국 환자검색", description = "")
     @GET
     @Path("search")
-    fun search(@BeanParam searchParameters: SearchParameters): Response {
-        log.debug("searchParam: $searchParameters")
-        return Response.ok(patientService.findInfoPt2(searchParameters)).build()
+    fun search(@BeanParam searchParam: SearchParameters): Response {
+        log.debug("searchParam: $searchParam")
+        return Response.ok(patientService.findInfoPt2(searchParam)).build()
     }
 
     @Operation(summary = "내 기관 관련 환자목록", description = "")

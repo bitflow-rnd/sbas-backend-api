@@ -18,14 +18,15 @@ import org.sbas.repositories.InfoInstRepository
 import org.sbas.repositories.InfoPtRepository
 import org.sbas.repositories.InfoUserRepository
 import org.sbas.responses.CommonResponse
-import org.sbas.utils.DynamicQuery
+import org.sbas.utils.DynamicQueryBuilder
 import org.sbas.utils.StringUtils
+import java.io.File
 import java.io.IOException
+import java.net.URI
 import java.net.URL
 import javax.enterprise.context.ApplicationScoped
 import javax.inject.Inject
 import javax.transaction.Transactional
-import javax.ws.rs.BadRequestException
 import javax.ws.rs.NotFoundException
 
 
@@ -63,7 +64,7 @@ class PatientService {
     private lateinit var serverdomain: String
 
     @Inject
-    private lateinit var dynamicQuery: DynamicQuery
+    private lateinit var dynamicQueryBuilder: DynamicQueryBuilder
 
     @Transactional
     fun saveInfoPt(infoPtDto: InfoPtDto): CommonResponse<String?> {
@@ -86,7 +87,7 @@ class PatientService {
         return CommonResponse("등록된 환자가 존재하지 않습니다.")
     }
 
-    fun calculateNewsScore(param: NewsScoreParam): Int {
+    fun calculateNewsScore(param: NewsScoreParam): CommonResponse<Int> {
         val list = mutableListOf<Int>()
         when {
             param.breath <= 8 -> list.add(0, 3)
@@ -96,14 +97,14 @@ class PatientService {
             else -> list.add(0, 3)
         }
         when {
-            param.spo2 <= 91 -> list.add(1, 3)
-            param.spo2 in 92..93 -> list.add(1, 2)
-            param.spo2 in 94..95 -> list.add(1, 1)
+            param.spo2 <= 91.0 -> list.add(1, 3)
+            param.spo2 in 92.0..93.0 -> list.add(1, 2)
+            param.spo2 in 94.0..95.0 -> list.add(1, 1)
             else -> list.add(1, 0)
         }
         when (param.o2Apply) {
-            "Oxygen" -> list.add(2, 2)
-            "Air" -> list.add(2, 0)
+            "Y" -> list.add(2, 2)
+            "N" -> list.add(2, 0)
             else -> list.add(2, 0)
         }
         when {
@@ -122,8 +123,8 @@ class PatientService {
             else -> list.add(4, 3)
         }
         when (param.avpu) {
-            "Alert" -> list.add(5, 0)
-            "CVPU" -> list.add(5, 3)
+            "A" -> list.add(5, 0)
+            "V","P","U" -> list.add(5, 3)
             else -> list.add(5, 0)
         }
         when {
@@ -133,7 +134,7 @@ class PatientService {
             param.bdTemp in 38.1..39.0 -> list.add(6, 1)
             param.bdTemp >= 39.1 -> list.add(6, 2)
         }
-        return list.sum()
+        return CommonResponse(list.sum())
     }
 
     @Transactional
@@ -227,7 +228,7 @@ class PatientService {
 
     @Transactional
     fun findInfoPt2(searchParam: SearchParameters): CommonResponse<*> {
-        val query = dynamicQuery.makeWith(InfoPt(), searchParam) ?: throw BadRequestException("")
+        val query = dynamicQueryBuilder.createDynamicQuery(InfoPt(), searchParam)
 
         val infoPtList = query.resultList
         val res = mutableMapOf<String, Any>()
@@ -235,6 +236,30 @@ class PatientService {
         res["count"] = infoPtList.size
 
         return CommonResponse(res)
+    }
+
+    @Transactional
+    fun delEpidReport(attcId: String): CommonResponse<String> {
+        val baseAttc = baseAttcRepository.find("attc_id = '$attcId'").firstResult() ?: throw NotFoundException("$attcId not found")
+
+//        val uri = URI("$serverdomain${baseAttc.uriPath}/${baseAttc.fileNm}")
+//        log.warn("uri>>>>>>>>>$uri")
+//        val file = File(uri)
+        val file = File("$serverdomain${baseAttc.uriPath}/${baseAttc.fileNm}")
+        log.warn("file path >>>>>>>>> ${file.path}")
+
+        val deleteById = baseAttcRepository.deleteByAttcId(attcId)
+
+        if (deleteById == 1L) {
+            return if (file.delete()) {
+                CommonResponse("삭제 성공")
+            } else {
+                throw NotFoundException("삭제 실패")
+            }
+//            infoPtRepository.update("attc_id = null")
+        } else {
+            throw NotFoundException("$attcId delete fail")
+        }
     }
 
 //    private fun addIfNotNull(map: MutableMap<String, Any>, key: String, value: String?) {

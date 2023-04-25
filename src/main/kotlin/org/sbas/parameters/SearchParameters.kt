@@ -9,4 +9,6 @@ data class SearchParameters(
     @field: QueryParam("natiCd") var natiCd: String,
     @field: QueryParam("dstr1Cd") var dstr1Cd: String,
     @field: QueryParam("dstr2Cd") var dstr2Cd: String,
+    @field: QueryParam("hospIdEgen") var hospIdEgen: String,
+    @field: QueryParam("ptNm") var ptNm: String,
 )

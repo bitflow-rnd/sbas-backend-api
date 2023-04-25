@@ -8,11 +8,13 @@ import org.sbas.dtos.InfoCrewRegDto
 import org.sbas.dtos.InfoInstUpdateReq
 import org.sbas.entities.info.*
 import org.sbas.parameters.InstCdParameters
+import org.sbas.parameters.SearchParameters
 import org.sbas.repositories.InfoCrewRepository
 import org.sbas.repositories.InfoHospRepository
 import org.sbas.repositories.InfoInstRepository
 import org.sbas.responses.CommonResponse
 import org.sbas.utils.CustomizedException
+import org.sbas.utils.DynamicQueryBuilder
 import javax.enterprise.context.ApplicationScoped
 import javax.inject.Inject
 import javax.transaction.Transactional
@@ -41,12 +43,22 @@ class OrganiztnService {
     @Inject
     private lateinit var jwt: JsonWebToken
 
+    @Inject
+    private lateinit var dynamicQueryBuilder: DynamicQueryBuilder
+
     /**
      * 의료기관(병원) 목록 조회
      */
     @Transactional
-    fun findInfoHospList(): List<InfoHosp> {
-        return infoHospRepository.findAll().list()
+    fun findInfoHospList(searchParam: SearchParameters): CommonResponse<*> {
+        val query = dynamicQueryBuilder.createDynamicQuery(InfoHosp(), searchParam)
+
+        val infoHospList = query.resultList
+        val res = mutableMapOf<String, Any>()
+        res["items"] = infoHospList
+        res["count"] = infoHospList.size
+
+        return CommonResponse(res)
     }
 
     /**
