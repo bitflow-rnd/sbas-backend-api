@@ -22,7 +22,7 @@ import javax.websocket.server.ServerEndpoint
 class TalkRoomList {
 
     companion object {
-        private val chatRoomsSockets = mutableMapOf<String, TalkRoomList>()
+        private val chatRoomsSockets = mutableMapOf<String, Session>()
         lateinit var talkRooms: MutableList<TalkRoomResponse>
     }
 
@@ -39,17 +39,13 @@ class TalkRoomList {
     private lateinit var talkUserRepository: TalkUserRepository
 
     @OnOpen
-    fun onOpen(session: Session, @PathParam("userId") userId: String) {
-        this.session = session
-        this.userId = userId
-
-        updateTalkRooms(userId)
+    fun onOpen(session: Session, @PathParam("userId") userId: String) {updateTalkRooms(userId)
 
         val sendObject = arrToJson(talkRooms)
 
         session.asyncRemote.sendText(sendObject)
 
-        chatRoomsSockets[userId] = this
+        chatRoomsSockets[userId] = session
     }
 
     @OnMessage
@@ -63,7 +59,8 @@ class TalkRoomList {
         }
 
         talkUsers.forEach{
-            chatRoomsSockets[it.id?.userId]?.session?.asyncRemote?.sendText(JsonObject.mapFrom(talkRoomResponse).toString())
+            log.warn(it.id?.userId)
+            chatRoomsSockets[it.id?.userId]?.asyncRemote?.sendText(JsonObject.mapFrom(talkRoomResponse).toString())
         }
 
     }
