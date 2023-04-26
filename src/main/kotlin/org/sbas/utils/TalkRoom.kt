@@ -51,10 +51,8 @@ class TalkRoom {
     @OnMessage
     fun onMessage(session: Session, message: String, @PathParam("tkrmId") tkrmId: String, @PathParam("userId") userId: String) {
         var addMsg: TalkMsg
-        val otherUsers: MutableList<TalkUser>
         runBlocking(Dispatchers.IO) {
             addMsg = talkMsgRepository.insertMessage(message, tkrmId, userId)
-            otherUsers = talkUserRepository.findOtherUsersByTkrmId(tkrmId, userId) as MutableList<TalkUser>
         }
 
         chatSockets

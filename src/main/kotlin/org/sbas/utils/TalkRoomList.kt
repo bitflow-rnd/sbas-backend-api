@@ -50,7 +50,6 @@ class TalkRoomList {
 
     @OnMessage
     fun onMessage(session: Session, tkrmId: String, @PathParam("userId") userId: String) {
-        val talkUsers: MutableList<TalkUser>
         val talkRoomResponse: TalkRoomResponse?
 
         runBlocking(Dispatchers.IO) {
