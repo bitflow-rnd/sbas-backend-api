@@ -59,6 +59,7 @@ class TalkRoomList {
         }
 
         talkUsers.forEach{
+            log.warn(JsonObject.mapFrom(talkRoomResponse).toString())
             chatRoomsSockets[it.id?.userId]?.asyncRemote?.sendText(JsonObject.mapFrom(talkRoomResponse).toString())
         }
 

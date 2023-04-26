@@ -57,7 +57,8 @@ class TalkRoom {
             otherUsers = talkUserRepository.findOtherUsersByTkrmId(tkrmId, userId) as MutableList<TalkUser>
         }
 
-        chatSockets.forEach {
+        chatSockets
+            .forEach {
                 it.value.asyncRemote.sendText(JsonObject.mapFrom(addMsg).toString())
             }
 
