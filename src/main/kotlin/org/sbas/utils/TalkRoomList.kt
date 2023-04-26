@@ -59,17 +59,10 @@ class TalkRoomList {
         }
 
         talkUsers.forEach{
-            log.warn(it.id?.userId)
             chatRoomsSockets[it.id?.userId]?.asyncRemote?.sendText(JsonObject.mapFrom(talkRoomResponse).toString())
         }
 
     }
-
-
-//    @OnClose
-//    fun onClose(session: Session, @PathParam("userId") userId: String) {
-//
-//    }
 
     private fun updateTalkRooms(userId: String){
         val resultList = runBlocking(Dispatchers.IO) {
