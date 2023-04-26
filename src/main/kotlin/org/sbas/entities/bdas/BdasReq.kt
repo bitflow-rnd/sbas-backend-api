@@ -2,7 +2,6 @@ package org.sbas.entities.bdas
 
 import org.sbas.entities.CommonEntity
 import java.io.Serializable
-import java.math.BigDecimal
 import javax.persistence.*
 
 /**
@@ -14,92 +13,116 @@ class BdasReq(
     @EmbeddedId
     var id: BdasReqId? = null,
 
-    @Column(name = "req_dt", length = 8)
-    var reqDt: String? = null, // 요청 날짜
+    @Column(name = "hist_cd", nullable = false, length = 8)
+    var histCd: String? = null,
 
-    @Column(name = "req_tm", length = 6)
-    var reqTm: String? = null, // 요청 시간
+    @Column(name = "req_dt", nullable = false, length = 8)
+    var reqDt: String? = null,
 
-    @Column(name = "req_type_cd", length = 8)
-    var reqTypeCd: String? = null, // 요청 유형 코드
+    @Column(name = "req_tm", nullable = false, length = 6)
+    var reqTm: String? = null,
 
-    @Column(name = "req_hosp_id", length = 10)
-    var reqHospId: String? = null, // 요청 병원 ID
+    @Column(name = "pt_type_cd", nullable = false, length = 8)
+    var ptTypeCd: String? = null,
 
-    @Column(name = "req_user_id", length = 10)
-    var reqUserId: String? = null, // 요청 사용자 ID
+    @Column(name = "undr_dses_cd", nullable = true, length = 8)
+    var undrDsesCd: String? = null,
 
-    @Column(name = "pt_loc_addr", length = 100)
-    var ptLocAddr: String? = null, // 환자 위치 주소
+    @Column(name = "undr_dses_etc", nullable = true, length = 50)
+    var undrDsesEtc: String? = null,
 
-    @Column(name = "pt_loc_lat", length = 20)
-    var ptLocLat: String? = null, // 환자 위치 (위도)
+    @Column(name = "req_bed_type_cd", nullable = false, length = 8)
+    var reqBedTypeCd: String? = null,
 
-    @Column(name = "pt_loc_lon", length = 20)
-    var ptLocLon: String? = null, // 환자 위치 (경도)
+    @Column(name = "dnr_agre_yn", nullable = false, length = -1)
+    var dnrAgreYn: String? = null,
 
-    @Column(name = "adms_yn", length = 1)
-    var admsYn: String? = null, // 입원 여부
+    @Column(name = "svrt_ipt_type_cd", nullable = false, length = 8)
+    var svrtIptTypeCd: String? = null,
 
-    @Column(name = "clnc_yn", length = 1)
-    var clncYn: String? = null, // 임상 여부
+    @Column(name = "svrt_type_cd", nullable = false, length = 8)
+    var svrtTypeCd: String? = null,
 
-    @Column(name = "nok_nm", length = 10)
-    var nokNm: String? = null, // 보호자 이름
+    @Column(name = "avpu_cd", nullable = true, length = 8)
+    var avpuCd: String? = null,
 
-    @Column(name = "nok_telno", length = 11)
-    var nokTelno: String? = null, // 보호자 전화번호
+    @Column(name = "oxy_yn", nullable = true, length = 8)
+    var oxyYn: String? = null,
 
-    @Column(name = "adms_hosp_id", length = 10)
-    var admsHospId: String? = null, // 입원 병원 ID
+    @Column(name = "bdtp", nullable = true)
+    var bdtp: Int? = null,
 
-    @Column(name = "adms_dept_nm", length = 20)
-    var admsDeptNm: String? = null, // 입원 진료과 이름
+    @Column(name = "hr", nullable = true)
+    var hr: Int? = null,
 
-    @Column(name = "adms_spcl_nm", length = 10)
-    var admsSpclNm: String? = null, // 입원 담당의 이름
+    @Column(name = "resp", nullable = true)
+    var resp: Int? = null,
 
-    @Column(name = "adms_spcl_telno", length = 11)
-    var admsSpclTelno: String? = null, // 입원 담당의 전화번호
+    @Column(name = "spo2", nullable = true)
+    var spo2: Int? = null,
 
-    @Column(name = "pt_type_cd", length = 8)
-    var ptTypeCd: String? = null, // 환자 유형 코드
+    @Column(name = "sbp", nullable = true)
+    var sbp: Int? = null,
 
-    @Column(name = "ifds_cd", length = 8)
-    var ifdsCd: String? = null, // 감염병 코드
+    @Column(name = "svrt_teyp_cd_anly", nullable = true, length = 8)
+    var svrtTeypCdAnly: String? = null,
 
-    @Column(name = "ifds_nm_hng", length = 100)
-    var ifdsNmHng: String? = null, // 감염병 이름 (한글)
+    @Column(name = "news_score", nullable = true)
+    var newsScore: Int? = null,
 
-    @Column(name = "ifds_nm_eng", length = 100)
-    var ifdsNmEng: String? = null, // 감염병 이름 (영문)
+    @Column(name = "who_score", nullable = true)
+    var whoScore: Int? = null,
 
-    @Column(name = "svrt_type_cd", length = 8)
-    var svrtTypeCd: String? = null, // 중증 유형 코드
+    @Column(name = "req_type_cd", nullable = false, length = 8)
+    var reqTypeCd: String? = null,
 
-    @Column(name = "news_score_curr", precision = 1)
-    var newsScoreCurr: BigDecimal? = null, // NEWS 점수 (현재)
+    @Column(name = "req_dstr_1_cd", nullable = false, length = 8)
+    var reqDstr1Cd: String? = null,
 
-    @Column(name = "news_score_prdt", precision = 1)
-    var newsScorePrdt: BigDecimal? = null, // NEWS 점수 (예측)
+    @Column(name = "req_dstr_2_cd", nullable = true, length = 8)
+    var reqDstr2Cd: String? = null,
 
-    @Column(name = "who_score_curr", precision = 1)
-    var whoScoreCurr: BigDecimal? = null, // WHO 점수 (현재)
+    @Column(name = "dprt_dstr_type_cd", nullable = false, length = 8)
+    var dprtDstrTypeCd: String? = null,
 
-    @Column(name = "who_score_prdt", precision = 1)
-    var whoScorePrdt: BigDecimal? = null, // WHO 점수 (예측)
+    @Column(name = "dprt_dstr_basc_addr", nullable = true, length = 100)
+    var dprtDstrBascAddr: String? = null,
 
-    @Column(name = "sbed_cd_curr", length = 8)
-    var sbedCdCurr: String? = null, // 중증병상 코드 (현재)
+    @Column(name = "dprt_dstr_detl_addr", nullable = true, length = 100)
+    var dprtDstrDetlAddr: String? = null,
 
-    @Column(name = "sbed_cd_prdt", length = 8)
-    var sbedCdPrdt: String? = null, // 중증병상 코드 (예측)
+    @Column(name = "dprt_dstr_zip", nullable = true, length = 5)
+    var dprtDstrZip: String? = null,
 
-    @Column(name = "req_desc", length = 4000)
-    var regDesc: String? = null, // 요청 설명
+    @Column(name = "dprt_dstr_lat", nullable = true, length = 19)
+    var dprtDstrLat: String? = null,
 
-    @Column(name = "attc_id", length = 10)
-    var attcId: String? = null, // 첨부 ID
+    @Column(name = "dprt_dstr_lon", nullable = true, length = 19)
+    var dprtDstrLon: String? = null,
+
+    @Column(name = "nok_1_telno", nullable = true, length = 12)
+    var nok1Telno: String? = null,
+
+    @Column(name = "nok_2_telno", nullable = true, length = 12)
+    var nok2Telno: String? = null,
+
+    @Column(name = "dprt_hosp_id", nullable = true, length = 10)
+    var dprtHospId: String? = null,
+
+    @Column(name = "inhp_asgn_yn", nullable = false, length = 8)
+    var inhpAsgnYn: String? = null,
+
+    @Column(name = "dept_nm", nullable = true, length = 20)
+    var deptNm: String? = null,
+
+    @Column(name = "spcl_nm", nullable = true, length = 10)
+    var spclNm: String? = null,
+
+    @Column(name = "chrg_telno", nullable = true, length = 12)
+    var chrgTelno: String? = null,
+
+    @Column(name = "msg", nullable = true, length = 500)
+    var msg: String? = null,
 ) : CommonEntity()
 
 @Embeddable
@@ -107,8 +130,11 @@ data class BdasReqId(
     @Column(name = "pt_id", nullable = false, length = 10)
     var ptId: String? = null, // 환자 ID
 
-    @Column(name = "bdas_seq", nullable = false, precision = 10)
-    var bdasSeq: BigDecimal? = null, // 병상 배정 순번
+    @Column(name = "bdas_seq", nullable = false)
+    var bdasSeq: Int? = null, // 병상 배정 순번
+
+    @Column(name = "hist_seq", nullable = false)
+    var histSeq: Int? = null,
 ) : Serializable {
 
     companion object {

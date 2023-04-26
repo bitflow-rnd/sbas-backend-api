@@ -41,8 +41,8 @@ class BdasMedi(
     @Column(name = "neg_cd", length = 8)
     var negCd: String? = null, // 불가 코드
 
-    @Column(name = "neg_detl", length = 500)
-    var negDetl: String? = null, // 불가 상세
+    @Column(name = "msg", length = 500)
+    var msg: String? = null, // 메시지
 ) : CommonEntity()
 
 @Embeddable

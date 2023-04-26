@@ -245,8 +245,14 @@ class PatientService {
 //        val uri = URI("$serverdomain${baseAttc.uriPath}/${baseAttc.fileNm}")
 //        log.warn("uri>>>>>>>>>$uri")
 //        val file = File(uri)
-        val file = File("$serverdomain${baseAttc.uriPath}/${baseAttc.fileNm}")
-        log.warn("file path >>>>>>>>> ${file.path}")
+        val file = File("${baseAttc.uriPath}/${baseAttc.fileNm}")
+//        val file = File("${baseAttc.loclPath}/${baseAttc.fileNm}")
+
+        if (file.exists()) {
+            log.warn("file path1 >>>>>>>>> ${file.path}")
+        } else {
+            log.warn("file path2 >>>>>>>>> ${file.path}")
+        }
 
         val deleteById = baseAttcRepository.deleteByAttcId(attcId)
 
@@ -254,7 +260,7 @@ class PatientService {
             return if (file.delete()) {
                 CommonResponse("삭제 성공")
             } else {
-                throw NotFoundException("삭제 실패")
+                throw RuntimeException("")
             }
 //            infoPtRepository.update("attc_id = null")
         } else {

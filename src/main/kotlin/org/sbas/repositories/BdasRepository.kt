@@ -10,19 +10,19 @@ import javax.enterprise.context.ApplicationScoped
 class BdasReqRepository : PanacheRepositoryBase<BdasReq, BdasReqId>
 
 @ApplicationScoped
-class BdasTrnRepository: PanacheRepositoryBase<BdasTrn, BdasTrnId>
+class BdasTrnRepository: PanacheRepositoryBase<BdasTrns, BdasTrnsId>
 
 @ApplicationScoped
 class BdasAprvRepository: PanacheRepositoryBase<BdasAprv, BdasAprvId>
 
 @ApplicationScoped
-class BdasAdmRepository: PanacheRepositoryBase<BdasAdm, BdasAdmId>
+class BdasAdmRepository: PanacheRepositoryBase<BdasAdms, BdasAdmsId>
 
 @ApplicationScoped
 class BdasEsvyRepository: PanacheRepositoryBase<BdasEsvy, String> {
 
     fun findLatestRecordByPtId(ptId: String): BdasEsvy? {
-        return find("pt_id = '${ptId}'", Sort.by("hist_seq", Sort.Direction.Descending)).firstResult()
+        return find("pt_id = '${ptId}' and hist_cd = 'Y'", Sort.by("hist_seq", Sort.Direction.Descending)).firstResult()
     }
 
     fun findLatestBdasSeq(): Int {

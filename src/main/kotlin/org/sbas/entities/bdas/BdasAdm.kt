@@ -2,7 +2,6 @@ package org.sbas.entities.bdas
 
 import org.sbas.entities.CommonEntity
 import java.io.Serializable
-import java.math.BigDecimal
 import javax.persistence.*
 
 /**
@@ -10,9 +9,9 @@ import javax.persistence.*
  */
 @Entity
 @Table(name = "bdas_adms")
-class BdasAdm(
+class BdasAdms(
     @EmbeddedId
-    var id: BdasAdmId? = null,
+    var id: BdasAdmsId? = null,
 
     @Column(name = "hist_cd", nullable = false, length = 8)
     var histCd: String? = null, // 이력 코드
@@ -29,6 +28,15 @@ class BdasAdm(
     @Column(name = "room_nm", length = 20)
     var roomNm: String? = null, // 병실 이름
 
+    @Column(name = "spcl_id", length = 15)
+    var spclId: String? = null, // 담당의 ID
+
+    @Column(name = "spcl_nm", length = 10)
+    var spclNm: String? = null, // 담당의 이름
+
+    @Column(name = "chrg_telno", length = 12)
+    var chrgTelno: String? = null, // 담당 전화번호
+
     @Column(name = "adms_dt", nullable = false, length = 8)
     var admsDt: String? = null, // 입원 날짜
 
@@ -44,20 +52,20 @@ class BdasAdm(
     @Column(name = "dsch_rsn_cd", length = 8)
     var dschRsnCd: String? = null, // 퇴원 사유 코드
 
-    @Column(name = "dsch_rsn_detl", length = 500)
-    var dschRsnDetl: String? = null, // 퇴원 사유 상세
+    @Column(name = "msg", length = 500)
+    var msg: String? = null, // 퇴원 사유 상세
 ) : CommonEntity()
 
 @Embeddable
-data class BdasAdmId(
+data class BdasAdmsId(
     @Column(name = "pt_id", nullable = false, length = 10)
     var ptId: String? = null, // 환자 ID
 
-    @Column(name = "bdas_seq", nullable = false, precision = 10)
-    var bdasSeq: BigDecimal? = null, // 병상 배정 순번
+    @Column(name = "bdas_seq", nullable = false)
+    var bdasSeq: Int? = null, // 병상 배정 순번
 
-    @Column(name = "hist_seq", nullable = false, precision = 3)
-    var histSeq: BigDecimal? = null, // 이력 순번
+    @Column(name = "hist_seq", nullable = false)
+    var histSeq: Int? = null, // 이력 순번
 ) : Serializable {
 
     companion object {

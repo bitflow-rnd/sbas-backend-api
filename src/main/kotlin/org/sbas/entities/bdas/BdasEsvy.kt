@@ -27,11 +27,8 @@ class BdasEsvy(
     @Column(name = "hist_cd", nullable = false, length = 8)
     var histCd: String? = null, // 이력 코드
 
-    @Column(name = "attc_seq")
-    var attcSeq: Int? = null, // 첨부 순번
-
-    @Column(name = "attc_id")
-    var attcId: String? = null, // 첨부 ID(진료 이미지)
+    @Column(name = "esvy_attc_id")
+    var esvyAttcId: String? = null, // 역학조사서 첨부 ID
 
     @Column(name = "rcpt_phc", length = 50)
     var rcptPhc: String? = null, // 수신 보건소
@@ -104,6 +101,18 @@ class BdasEsvy(
 
     @Column(name = "rpt_chf_nm", length = 10)
     var rptChfNm: String? = null, // 신고 기관장 성명
+
+    @Column(name = "inst_basc_addr", length = 100)
+    var instBascAddr: String? = null, // 요양기관 기본 주소
+
+    @Column(name = "inst_detl_addr", length = 100)
+    var instDetlAddr: String? = null, // 요양기관 상세 주소
+
+    @Column(name = "inst_zip", length = 5)
+    var instZip: String? = null, // 요양기관 우편번호
+
+    @Column(name = "diag_attc_id", length = 12)
+    var diagAttcId: String? = null, // 진단 정보 첨부 ID
 ) : CommonEntity(), Serializable {
 
     companion object {

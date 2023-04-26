@@ -2,7 +2,6 @@ package org.sbas.entities.bdas
 
 import org.sbas.entities.CommonEntity
 import java.io.Serializable
-import java.math.BigDecimal
 import javax.persistence.*
 
 /**
@@ -10,9 +9,9 @@ import javax.persistence.*
  */
 @Entity
 @Table(name = "bdas_trns")
-class BdasTrn(
+class BdasTrns(
     @EmbeddedId
-    var id: BdasTrnId? = null,
+    var id: BdasTrnsId? = null,
 
     @Column(name = "hist_cd", nullable = false, length = 8)
     var histCd: String? = null, // 이력 코드
@@ -20,23 +19,59 @@ class BdasTrn(
     @Column(name = "inst_id", nullable = false, length = 10)
     var instId: String? = null, // 기관 ID
 
-    @Column(name = "crew_id_1", nullable = false, length = 10)
-    var crewId1: String? = null, // 구급대원 ID (교)
+    @Column(name = "ambs_nm", nullable = false, length = 100)
+    var ambsNm: String? = null,
 
-    @Column(name = "crew_id_2", length = 10)
-    var crewId2: String? = null, // 구급대원 ID (사)
+    @Column(name = "crew_1_id", length = 15)
+    var crew1Id : String? = null,
 
-    @Column(name = "dprt_hosp_id", length = 10)
-    var dprtHospId: String? = null, // 출발 병원 ID
+    @Column(name = "crew_1_pstn", nullable = false, length = 15)
+    var crew1Pstn : String? = null,
+
+    @Column(name = "crew_1_nm", nullable = false, length = 10)
+    var crew1Nm : String? = null,
+
+    @Column(name = "crew_1_telno", nullable = false, length = 12)
+    var crew1Telno : String? = null,
+
+    @Column(name = "crew_2_id", length = 15)
+    var crew2Id : String? = null,
+
+    @Column(name = "crew_2_pstn", length = 15)
+    var crew2Pstn : String? = null,
+
+    @Column(name = "crew_2_nm", length = 10)
+    var crew2Nm : String? = null,
+
+    @Column(name = "crew_2_telno", length = 12)
+    var crew2Telno : String? = null,
+
+    @Column(name = "crew_3_id", length = 15)
+    var crew3Id : String? = null,
+
+    @Column(name = "crew_3_pstn", length = 15)
+    var crew3Pstn : String? = null,
+
+    @Column(name = "crew_3_nm", length = 10)
+    var crew3Nm : String? = null,
+
+    @Column(name = "crew_3_telno", length = 12)
+    var crew3Telno : String? = null,
+
+    @Column(name = "chf_telno", nullable = false, length = 12)
+    var chfTelno : String? = null,
+
+    @Column(name = "vecno", nullable = false, length = 8)
+    var vecno : String? = null,
+
+    @Column(name = "msg", length = 500)
+    var msg : String? = null,
 
     @Column(name = "dprt_dt", nullable = false, length = 8)
     var dprtDt: String? = null, // 출발 날짜
 
     @Column(name = "dprt_tm", nullable = false, length = 6)
     var dprtTm: String? = null, // 출발 시간
-
-    @Column(name = "arvl_hosp_id", nullable = false, length = 10)
-    var arvlHospId: String? = null, // 도착 병원 ID
 
     @Column(name = "arvl_dt", nullable = false, length = 8)
     var arvlDt: String? = null, // 도착 날짜
@@ -49,15 +84,15 @@ class BdasTrn(
 ) : CommonEntity()
 
 @Embeddable
-data class BdasTrnId(
+data class BdasTrnsId(
     @Column(name = "pt_id", nullable = false, length = 10)
     var ptId: String? = null, // 환자 ID
 
-    @Column(name = "bdas_seq", nullable = false, precision = 10)
-    var bdasSeq: BigDecimal? = null, // 병상 배정 순번
+    @Column(name = "bdas_seq", nullable = false)
+    var bdasSeq: Int? = null, // 병상 배정 순번
 
-    @Column(name = "hist_seq", nullable = false, precision = 3)
-    var histSeq: BigDecimal? = null, // 이력 순번
+    @Column(name = "hist_seq", nullable = false)
+    var histSeq: Int? = null, // 이력 순번
 ) : Serializable {
 
     companion object {

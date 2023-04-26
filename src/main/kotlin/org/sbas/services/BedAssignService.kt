@@ -38,7 +38,10 @@ class BedAssignService {
             // 찾은 엔티티 histCd "C"로 update
             bdasEsvy.setHistCdAsC()
             // 수정 정보 다시 insert
-            val updateEntity = bdasEsvyDto.toUpdateEntity(bdasEsvy.bdasSeq!!, bdasEsvy.histSeq!!)
+            val updateEntity = bdasEsvyDto.toUpdateEntity(
+                bdasSeq = bdasEsvy.bdasSeq!!,
+                histSeq = bdasEsvy.histSeq!!,
+                )
             bdasEsvyRepository.persist(updateEntity)
         } else { // 처음 등록일 경우
             val maxBdasSeq = bdasEsvyRepository.findLatestBdasSeq()

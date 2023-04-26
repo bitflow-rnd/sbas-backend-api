@@ -7,7 +7,7 @@ import org.sbas.utils.NoArg
 @NoArg
 data class BdasEsvyDto(
     var ptId: String,
-    var attcId: String,
+    var esvyAttcId: String,
 
     // InfoPt 에서 가져오는 정보들 -> 역학조사서에도 있음
     var telno: String?,
@@ -36,13 +36,17 @@ data class BdasEsvyDto(
     var instAddr: String?,
     var diagDrNm: String?,
     var rptChfNm: String?,
+
+    var instBascAddr: String?,
+    var instDetlAddr: String?,
+    var instZip: String?,
+    var diagAttcId: String?,
 ) {
     fun toEntity(bdasSeq: Int): BdasEsvy {
         return BdasEsvy(
             ptId = this.ptId,
             bdasSeq = bdasSeq,
-            attcId = this.attcId,
-            attcSeq = generateAttcSeq(this.attcId),
+            esvyAttcId = this.esvyAttcId,
             histCd = "Y",
             rcptPhc = this.rcptPhc,
             telno = this.telno,
@@ -68,6 +72,10 @@ data class BdasEsvyDto(
             instAddr = this.instAddr,
             diagDrNm = this.diagDrNm,
             rptChfNm = this.rptChfNm,
+            instBascAddr = this.instBascAddr,
+            instDetlAddr = this.instDetlAddr,
+            instZip = this.instZip,
+            diagAttcId = this.diagAttcId,
         )
     }
 
@@ -77,8 +85,7 @@ data class BdasEsvyDto(
             bdasSeq = bdasSeq,
             histCd = "Y",
             histSeq = histSeq + 1,
-            attcId = this.attcId,
-            attcSeq = generateAttcSeq(this.attcId),
+            esvyAttcId = this.esvyAttcId,
             rcptPhc = this.rcptPhc,
             telno = this.telno,
             addr = this.addr,
@@ -103,15 +110,11 @@ data class BdasEsvyDto(
             instAddr = this.instAddr,
             diagDrNm = this.diagDrNm,
             rptChfNm = this.rptChfNm,
+            instBascAddr = this.instBascAddr,
+            instDetlAddr = this.instDetlAddr,
+            instZip = this.instZip,
+            diagAttcId = this.diagAttcId,
         )
-    }
-
-    private fun generateAttcSeq(attcId: String?): Int? {
-        return if (!attcId.isNullOrBlank()) {
-            1
-        } else {
-            null
-        }
     }
 
     fun saveInfoPt(infoPt: InfoPt) {
