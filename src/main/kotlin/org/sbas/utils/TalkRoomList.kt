@@ -54,13 +54,11 @@ class TalkRoomList {
         val talkRoomResponse: TalkRoomResponse?
 
         runBlocking(Dispatchers.IO) {
-            talkUsers = talkUserRepository.findUsersByTkrmId(tkrmId) as MutableList<TalkUser>
             talkRoomResponse = talkRoomRepository.findTalkRoomResponseByTkrmId(tkrmId)
         }
 
-        talkUsers.forEach{
-            log.warn(JsonObject.mapFrom(talkRoomResponse).toString())
-            chatRoomsSockets[it.id?.userId]?.asyncRemote?.sendText(JsonObject.mapFrom(talkRoomResponse).toString())
+        chatRoomsSockets.forEach{
+            it.value.asyncRemote.sendText(JsonObject.mapFrom(talkRoomResponse).toString())
         }
 
     }
