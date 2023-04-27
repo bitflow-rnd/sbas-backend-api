@@ -90,7 +90,7 @@ class InfoPt(
     @Column(name = "zip", length = 5)
     var zip: String? = null, // 우편번호
 
-    @Column(name = "natiNm", length = 20)
+    @Column(name = "nati_nm", length = 20)
     var natiNm: String? = null, // 국적 이름
 ) : CommonEntity(), Serializable {
 
