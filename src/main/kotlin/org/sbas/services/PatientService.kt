@@ -89,10 +89,10 @@ class PatientService {
     fun calculateNewsScore(param: NewsScoreParam): CommonResponse<Int> {
         val list = mutableListOf<Int>()
         when {
-            param.resp <= 8 -> list.add(0, 3)
-            param.resp in 9..11 -> list.add(0, 1)
-            param.resp in 12..20 -> list.add(0, 0)
-            param.resp in 21..24 -> list.add(0, 2)
+            param.breath <= 8 -> list.add(0, 3)
+            param.breath in 9..11 -> list.add(0, 1)
+            param.breath in 12..20 -> list.add(0, 0)
+            param.breath in 21..24 -> list.add(0, 2)
             else -> list.add(0, 3)
         }
         when {
@@ -101,7 +101,7 @@ class PatientService {
             param.spo2 in 94..95 -> list.add(1, 1)
             else -> list.add(1, 0)
         }
-        when (param.oxyYn) {
+        when (param.o2Apply) {
             "Y" -> list.add(2, 2)
             "N" -> list.add(2, 0)
             else -> list.add(2, 0)
@@ -114,24 +114,24 @@ class PatientService {
             else -> list.add(3,3)
         }
         when {
-            param.hr <= 40 -> list.add(4, 3)
-            param.hr in 41..50 -> list.add(4, 1)
-            param.hr in 51..90 -> list.add(4, 0)
-            param.hr in 91..110 -> list.add(4, 1)
-            param.hr in 111..130 -> list.add(4, 2)
+            param.pulse <= 40 -> list.add(4, 3)
+            param.pulse in 41..50 -> list.add(4, 1)
+            param.pulse in 51..90 -> list.add(4, 0)
+            param.pulse in 91..110 -> list.add(4, 1)
+            param.pulse in 111..130 -> list.add(4, 2)
             else -> list.add(4, 3)
         }
-        when (param.avpuCd) {
+        when (param.avpu) {
             "A" -> list.add(5, 0)
             "V","P","U" -> list.add(5, 3)
             else -> list.add(5, 0)
         }
         when {
-            param.bdtp <= 35.0 -> list.add(6, 3)
-            param.bdtp in 35.1..36.0 -> list.add(6, 1)
-            param.bdtp in 36.1..38.0 -> list.add(6, 0)
-            param.bdtp in 38.1..39.0 -> list.add(6, 1)
-            param.bdtp >= 39.1 -> list.add(6, 2)
+            param.bdTemp <= 35.0 -> list.add(6, 3)
+            param.bdTemp in 35.1..36.0 -> list.add(6, 1)
+            param.bdTemp in 36.1..38.0 -> list.add(6, 0)
+            param.bdTemp in 38.1..39.0 -> list.add(6, 1)
+            param.bdTemp >= 39.1 -> list.add(6, 2)
         }
         return CommonResponse(list.sum())
     }

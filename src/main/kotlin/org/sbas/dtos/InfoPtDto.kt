@@ -52,11 +52,11 @@ fun InfoPtDto.toEntity(): InfoPt {
 
 @NoArg
 data class NewsScoreParam(
-    var resp: Int,  // 분당호흡수
+    var breath: Int,  // 분당호흡수
     var spo2: Int,    // 산소포화도
-    var oxyYn: String, // 산소투여여부
+    var o2Apply: String, // 산소투여여부
     var sbp: Int,     // 수축기혈압
-    var hr: Int,   // 맥박
-    var avpuCd: String,    // 의식상태
-    var bdtp: Float,  // 체온
+    var pulse: Int,   // 맥박
+    var avpu: String,    // 의식상태
+    var bdTemp: Float,  // 체온
 )
