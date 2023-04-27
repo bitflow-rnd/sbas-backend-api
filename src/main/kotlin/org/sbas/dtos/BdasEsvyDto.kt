@@ -7,7 +7,7 @@ import org.sbas.utils.NoArg
 @NoArg
 data class BdasEsvyDto(
     var ptId: String,
-    var esvyAttcId: String,
+    var esvyAttcId: String? = null,
 
     // InfoPt 에서 가져오는 정보들 -> 역학조사서에도 있음
     var telno: String?,
@@ -124,5 +124,6 @@ data class BdasEsvyDto(
         this.nokNm = infoPt.nokNm
         this.job = infoPt.job
         this.dethYn = infoPt.dethYn
+        this.esvyAttcId = infoPt.attcId
     }
 }
