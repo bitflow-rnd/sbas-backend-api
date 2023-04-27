@@ -80,6 +80,18 @@ class InfoPt(
 
     @Column(name = "bed_stat_nm", length = 8)
     var bedStatNm: String = BedStat.BAST0001.cdNm,
+
+    @Column(name = "basc_addr", length = 100)
+    var bascAddr: String? = null, // 기본 주소
+
+    @Column(name = "detl_addr", length = 100)
+    var detlAddr: String? = null, // 상세 주소
+
+    @Column(name = "zip", length = 5)
+    var zip: String? = null, // 우편번호
+
+    @Column(name = "natiNm", length = 20)
+    var natiNm: String? = null, // 국적 이름
 ) : CommonEntity(), Serializable {
 
     fun updateEntity(infoPtDto: InfoPtDto) {

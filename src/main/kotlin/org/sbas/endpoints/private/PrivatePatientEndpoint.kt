@@ -8,6 +8,7 @@ import org.jboss.resteasy.reactive.RestForm
 import org.jboss.resteasy.reactive.RestPath
 import org.jboss.resteasy.reactive.multipart.FileUpload
 import org.sbas.dtos.BdasEsvyDto
+import org.sbas.dtos.BdasReqSvrInfo
 import org.sbas.dtos.InfoPtDto
 import org.sbas.dtos.NewsScoreParam
 import org.sbas.parameters.SearchParameters
@@ -109,13 +110,6 @@ class PrivatePatientEndpoint {
         return Response.ok().build()
     }
 
-    @Operation(summary = "생체정보입력 분석", description = "생체정보 입력 시 경북대학교 로직(NEWS Score)에 따른 중증분류 값 리턴")
-    @POST
-    @Path("bioinfoanlys")
-    fun bioinfoanlys(param: NewsScoreParam): Response {
-        return Response.ok(patientService.calculateNewsScore(param)).build()
-    }
-
     @Operation(summary = "질병(감염병) 정보 등록", description = "")
     @POST
     @Path("regdisesinfo")
@@ -123,11 +117,25 @@ class PrivatePatientEndpoint {
         return Response.ok(bedAssignService.regDisesInfo(bdasEsvyDto)).build()
     }
 
+    @Operation(summary = "생체정보입력 분석", description = "생체정보 입력 시 경북대학교 로직(NEWS Score)에 따른 중증분류 값 리턴")
+    @POST
+    @Path("bioinfoanlys")
+    fun bioinfoanlys(param: NewsScoreParam): Response {
+        return Response.ok(patientService.calculateNewsScore(param)).build()
+    }
+
+    @Operation(summary = "생체정보입력 분석 정보 등록", description = "")
+    @POST
+    @Path("regbioinfo")
+    fun regbioinfo(bdasReqSvrInfo: BdasReqSvrInfo): Response {
+        return Response.ok(bedAssignService.regBioInfo(bdasReqSvrInfo)).build()
+    }
+
     @Operation(summary = "중증정보 등록", description = "")
     @POST
     @Path("regsevrinfo")
-    fun regsevrinfo(): Response? {
-        return Response.ok().build()
+    fun regsevrinfo(bdasReqSvrInfo: BdasReqSvrInfo): Response? {
+        return Response.ok(bedAssignService.regServInfo(bdasReqSvrInfo)).build()
     }
 
     @Operation(summary = "출발지정보 등록 (병상 요청 완료)", description = "")

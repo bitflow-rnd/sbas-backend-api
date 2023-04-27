@@ -20,6 +20,10 @@ data class InfoPtDto(
     val mpno: String,
     val job: String,
     val attcId: String,
+    val bascAddr: String,
+    val detlAddr: String,
+    val zip: String,
+    val natiNm: String,
 )
 
 fun InfoPtDto.toEntity(): InfoPt {
@@ -39,16 +43,20 @@ fun InfoPtDto.toEntity(): InfoPt {
         mpno = this.mpno,
         job = this.job,
         attcId = this.attcId,
+        bascAddr = this.bascAddr,
+        detlAddr = this.detlAddr,
+        zip = this.zip,
+        natiNm = this.natiNm,
     )
 }
 
 @NoArg
 data class NewsScoreParam(
-    var breath: Int,  // 분당호흡수
-    var spo2: Double,    // 산소포화도
-    var o2Apply: String, // 산소투여여부
+    var resp: Int,  // 분당호흡수
+    var spo2: Int,    // 산소포화도
+    var oxyYn: String, // 산소투여여부
     var sbp: Int,     // 수축기혈압
-    var pulse: Int,   // 맥박
-    var avpu: String,    // 의식상태
-    var bdTemp: Double,  // 체온
+    var hr: Int,   // 맥박
+    var avpuCd: String,    // 의식상태
+    var bdtp: Float,  // 체온
 )

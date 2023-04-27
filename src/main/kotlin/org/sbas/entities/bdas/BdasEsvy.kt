@@ -1,5 +1,6 @@
 package org.sbas.entities.bdas
 
+import org.hibernate.annotations.DynamicUpdate
 import org.sbas.entities.CommonEntity
 import java.io.Serializable
 import javax.persistence.*
@@ -7,17 +8,18 @@ import javax.persistence.*
 /**
  * 역학조사서 정보
  */
+@DynamicUpdate
 @Entity
 @Table(name = "bdas_esvy")
 class BdasEsvy(
     @Id
     @Column(name = "pt_id", nullable = false, length = 10)
-    var ptId: String? = null, // 환자 ID
+    var ptId: String, // 환자 ID
 
 //    @GeneratedValue(strategy = GenerationType.AUTO)
     @Id
     @Column(name = "bdas_seq", nullable = false, precision = 10)
-    var bdasSeq: Int? = null, // 병상 배정 순번
+    var bdasSeq: Int, // 병상 배정 순번
 
     @GeneratedValue(strategy = GenerationType.AUTO)
     @Id
@@ -25,7 +27,7 @@ class BdasEsvy(
     var histSeq: Int? = null, // 이력 순번
 
     @Column(name = "hist_cd", nullable = false, length = 8)
-    var histCd: String? = null, // 이력 코드
+    var histCd: String, // 이력 코드
 
     @Column(name = "esvy_attc_id")
     var esvyAttcId: String? = null, // 역학조사서 첨부 ID
