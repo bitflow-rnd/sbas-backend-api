@@ -1,9 +1,8 @@
 package org.sbas.dtos
 
-import org.sbas.entities.bdas.BdasReq
-import org.sbas.entities.bdas.BdasReqId
 import org.sbas.utils.NoArg
 
+@NoArg
 data class BdasReqDto(
     var ptId: String,
     var bdasSeq: Int,
@@ -35,6 +34,7 @@ data class BdasReqDto(
 @NoArg
 data class BdasReqSvrInfo(
     var ptId: String,
+    var bdasSeq: Int,
 
     var ptTypeCd: String?,
     var undrDsesCd: String?,
@@ -53,50 +53,4 @@ data class BdasReqSvrInfo(
     var whoScore: Int?,
     var svrtTypeCd: String?,
     var svrtTypeCdAnly: String?,
-) {
-
-    fun toSvrtInfoEntity(bdasReqId: BdasReqId): BdasReq {
-        return BdasReq(
-            id = bdasReqId,
-            histCd = "Y",
-            reqDt = "",
-            reqTm = "",
-            ptTypeCd = this.ptTypeCd,
-            undrDsesCd = this.undrDsesCd,
-            undrDsesEtc = this.undrDsesEtc,
-            reqBedTypeCd = this.reqBedTypeCd,
-            dnrAgreYn = this.dnrAgreYn,
-            svrtIptTypeCd = this.svrtIptTypeCd,
-            svrtTypeCd = this.svrtTypeCd,
-            avpuCd = this.avpuCd,
-            oxyYn = this.oxyYn,
-            bdtp = this.bdtp,
-            hr = this.hr,
-            resp = this.resp,
-            spo2 = this.spo2,
-            sbp = this.sbp,
-            newsScore = this.newsScore,
-            reqTypeCd = "",
-            reqDstr1Cd = "",
-            dprtDstrTypeCd = "",
-            inhpAsgnYn = "",
-        )
-    }
-
-}
-
-@NoArg
-data class BdasReqBioInfo(
-    var svrtIptTypeCd: String?,
-    var avpuCd: String?,
-    var oxyYn: String?,
-    var bdtp: Float?,
-    var hr: Int?,
-    var resp: Int?,
-    var spo2: Int?,
-    var sbp: Int?,
-    var newsScore: Int?,
-    var whoScore: Int?,
-    var svrtTypeCd: String?,
-) {
-}
+)

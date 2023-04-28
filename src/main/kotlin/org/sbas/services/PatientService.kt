@@ -89,16 +89,16 @@ class PatientService {
     fun calculateNewsScore(param: NewsScoreParam): CommonResponse<Int> {
         val list = mutableListOf<Int>()
         when {
-            param.breath <= 8 -> list.add(0, 3)
-            param.breath in 9..11 -> list.add(0, 1)
-            param.breath in 12..20 -> list.add(0, 0)
-            param.breath in 21..24 -> list.add(0, 2)
+            param.breath < 9 -> list.add(0, 3)
+            param.breath in 9 until 12 -> list.add(0, 1)
+            param.breath in 12 until 21 -> list.add(0, 0)
+            param.breath in 21 until 25 -> list.add(0, 2)
             else -> list.add(0, 3)
         }
         when {
-            param.spo2 <= 91 -> list.add(1, 3)
-            param.spo2 in 92..93 -> list.add(1, 2)
-            param.spo2 in 94..95 -> list.add(1, 1)
+            param.spo2 < 92.0 -> list.add(1, 3)
+            param.spo2 >= 92.0 && param.spo2 < 94.0 -> list.add(1, 2)
+            param.spo2 >= 94.0 && param.spo2 < 96.0 -> list.add(1, 1)
             else -> list.add(1, 0)
         }
         when (param.o2Apply) {
@@ -127,10 +127,10 @@ class PatientService {
             else -> list.add(5, 0)
         }
         when {
-            param.bdTemp <= 35.0 -> list.add(6, 3)
-            param.bdTemp in 35.1..36.0 -> list.add(6, 1)
-            param.bdTemp in 36.1..38.0 -> list.add(6, 0)
-            param.bdTemp in 38.1..39.0 -> list.add(6, 1)
+            param.bdTemp < 35.1 -> list.add(6, 3)
+            param.bdTemp >= 35.1 && param.bdTemp < 36.1 -> list.add(6, 1)
+            param.bdTemp >= 36.1 && param.bdTemp < 38.1 -> list.add(6, 0)
+            param.bdTemp >= 38.1 && param.bdTemp < 39.1 -> list.add(6, 1)
             param.bdTemp >= 39.1 -> list.add(6, 2)
         }
         return CommonResponse(list.sum())

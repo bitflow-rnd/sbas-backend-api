@@ -17,8 +17,11 @@ class BdasReq(
     @EmbeddedId
     var id: BdasReqId,
 
-    @Column(name = "hist_cd", nullable = false, length = 8)
+    @Column(name = "hist_cd", length = 8)
     var histCd: String? = null, // 이력 코드
+
+    @Column(name = "hist_seq")
+    var histSeq: Int? = null,
 
     @Column(name = "req_dt", nullable = false, length = 8)
     var reqDt: String? = null, // 요청 날짜
@@ -130,9 +133,8 @@ class BdasReq(
 ) : CommonEntity() {
 
     fun updateBasicInfo(bdasReqDto: BdasReqDto, histSeq: Int) {
-        this.id!!.ptId = bdasReqDto.ptId
-        this.id!!.bdasSeq = bdasReqDto.bdasSeq
-        this.id!!.histSeq = histSeq
+        this.id.ptId = bdasReqDto.ptId
+        this.id.bdasSeq = bdasReqDto.bdasSeq
     }
 
     fun updateDprtInfo(bdasReqDto: BdasReqDto) {
@@ -173,9 +175,6 @@ data class BdasReqId(
 
     @Column(name = "bdas_seq", nullable = false)
     var bdasSeq: Int? = null, // 병상 배정 순번
-
-    @Column(name = "hist_seq", nullable = false)
-    var histSeq: Int? = null,
 ) : Serializable {
 
     companion object {

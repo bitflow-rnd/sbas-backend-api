@@ -13,8 +13,11 @@ class BdasTrns(
     @EmbeddedId
     var id: BdasTrnsId? = null,
 
-    @Column(name = "hist_cd", nullable = false, length = 8)
+    @Column(name = "hist_cd", length = 8)
     var histCd: String? = null, // 이력 코드
+
+    @Column(name = "hist_seq")
+    var histSeq: Int? = null, // 이력 순번
 
     @Column(name = "inst_id", nullable = false, length = 10)
     var instId: String? = null, // 기관 ID
@@ -90,9 +93,6 @@ data class BdasTrnsId(
 
     @Column(name = "bdas_seq", nullable = false)
     var bdasSeq: Int? = null, // 병상 배정 순번
-
-    @Column(name = "hist_seq", nullable = false)
-    var histSeq: Int? = null, // 이력 순번
 ) : Serializable {
 
     companion object {

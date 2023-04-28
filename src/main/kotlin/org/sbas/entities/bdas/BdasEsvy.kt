@@ -16,18 +16,16 @@ class BdasEsvy(
     @Column(name = "pt_id", nullable = false, length = 10)
     var ptId: String, // 환자 ID
 
-//    @GeneratedValue(strategy = GenerationType.AUTO)
-    @Id
-    @Column(name = "bdas_seq", nullable = false, precision = 10)
-    var bdasSeq: Int, // 병상 배정 순번
-
     @GeneratedValue(strategy = GenerationType.AUTO)
     @Id
-    @Column(name = "hist_seq", nullable = false, precision = 3)
+    @Column(name = "bdas_seq", nullable = false)
+    var bdasSeq: Int, // 병상 배정 순번
+
+    @Column(name = "hist_seq")
     var histSeq: Int? = null, // 이력 순번
 
-    @Column(name = "hist_cd", nullable = false, length = 8)
-    var histCd: String, // 이력 코드
+    @Column(name = "hist_cd", length = 8)
+    var histCd: String? = null, // 이력 코드
 
     @Column(name = "esvy_attc_id")
     var esvyAttcId: String? = null, // 역학조사서 첨부 ID
@@ -131,11 +129,9 @@ class BdasEsvy(
 //    @Column(name = "pt_id", nullable = false, length = 10)
 //    var ptId: String? = null, // 환자 ID
 //
-//    @GeneratedValue(strategy = GenerationType.AUTO)
 //    @Column(name = "bdas_seq", nullable = false, precision = 10)
 //    var bdasSeq: Int? = null, // 병상 배정 순번
 //
-//    @GeneratedValue(strategy = GenerationType.AUTO)
 //    @Column(name = "hist_seq", nullable = false, precision = 3)
 //    var histSeq: Int? = null, // 이력 순번
 //) : Serializable {
