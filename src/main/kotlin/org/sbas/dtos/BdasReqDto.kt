@@ -34,7 +34,6 @@ data class BdasReqDto(
 @NoArg
 data class BdasReqSvrInfo(
     var ptId: String,
-    var bdasSeq: Int,
 
     var ptTypeCd: String?,
     var undrDsesCd: String?,
