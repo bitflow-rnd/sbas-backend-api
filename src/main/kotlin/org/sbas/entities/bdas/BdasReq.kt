@@ -41,7 +41,7 @@ class BdasReq(
     @Column(name = "req_bed_type_cd", nullable = false, length = 8)
     var reqBedTypeCd: String? = null, // 요청 병상 유형 코드
 
-    @Column(name = "dnr_agre_yn", nullable = false, length = -1)
+    @Column(name = "dnr_agre_yn", nullable = false, length = 8)
     var dnrAgreYn: String? = null, // DNR 동의 여부
 
     @Column(name = "svrt_ipt_type_cd", nullable = false, length = 8)
