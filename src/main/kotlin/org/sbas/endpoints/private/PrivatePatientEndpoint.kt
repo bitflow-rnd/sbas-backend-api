@@ -7,10 +7,7 @@ import org.jboss.logging.Logger
 import org.jboss.resteasy.reactive.RestForm
 import org.jboss.resteasy.reactive.RestPath
 import org.jboss.resteasy.reactive.multipart.FileUpload
-import org.sbas.dtos.BdasEsvyDto
-import org.sbas.dtos.BdasReqSvrInfo
-import org.sbas.dtos.InfoPtDto
-import org.sbas.dtos.NewsScoreParam
+import org.sbas.dtos.*
 import org.sbas.parameters.SearchParameters
 import org.sbas.services.BedAssignService
 import org.sbas.services.CommonService
@@ -141,8 +138,8 @@ class PrivatePatientEndpoint {
     @Operation(summary = "출발지정보 등록 (병상 요청 완료)", description = "")
     @POST
     @Path("regstrtpoint")
-    fun regstrtpoint(): Response? {
-        return Response.ok().build()
+    fun regstrtpoint(bdasReqDprtInfo: BdasReqDprtInfo): Response? {
+        return Response.ok(bedAssignService.regstrtpoint(bdasReqDprtInfo)).build()
     }
 
     @Operation(summary = "현재 차수 병상배정 관련 타임라인 메시지 전송", description = "")
