@@ -10,18 +10,18 @@ data class NaverGeocodingApiParams (
     var query: String,
 
     @JsonProperty("coordinate")
-    var coordinate: String?,
+    var coordinate: String? = null,
 
     @JsonProperty("filter")
-    var filter: String?,
+    var filter: String? = null,
 
     @JsonProperty("language")
-    var language: String?,
+    var language: String? = null,
 
     @JsonProperty("page")
-    var page: Int?,
+    var page: Int? = null,
 
     @JsonProperty("count")
-    var count: Int?
+    var count: Int? = null,
 
 )

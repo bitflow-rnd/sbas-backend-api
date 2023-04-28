@@ -8,6 +8,7 @@ import org.postgresql.util.PSQLException
 import org.sbas.constants.SbasConst
 import org.sbas.responses.CommonResponse
 import org.sbas.utils.CustomizedException
+import java.sql.SQLException
 import javax.persistence.PersistenceException
 import javax.ws.rs.BadRequestException
 import javax.ws.rs.InternalServerErrorException
@@ -87,17 +88,7 @@ class PSQLExceptionMapper: ExceptionMapper<PSQLException> {
     override fun toResponse(exception: PSQLException): Response {
         return Response.status(Response.Status.CONFLICT)
             .type(MediaType.APPLICATION_JSON)
-            .entity(CommonResponse(SbasConst.ResCode.FAIL, "PSQLException", null))
-            .build()
-    }
-}
-
-@Provider
-class NullPointerExceptionMapper: ExceptionMapper<NullPointerException> {
-    override fun toResponse(exception: NullPointerException): Response {
-        return Response.status(Response.Status.BAD_REQUEST)
-            .type(MediaType.APPLICATION_JSON)
-            .entity(CommonResponse(SbasConst.ResCode.FAIL, "NullPointerException", null))
+            .entity(CommonResponse(SbasConst.ResCode.FAIL, exception.message, null))
             .build()
     }
 }
@@ -146,9 +137,16 @@ class ForbiddenExceptionMapper : ExceptionMapper<ForbiddenException> {
 @Provider
 class PersistenceExceptionMapper: ExceptionMapper<PersistenceException> {
     override fun toResponse(exception: PersistenceException): Response {
+        val message = if (exception.cause!!.cause != null) {
+            exception.cause!!.cause!!.message
+        } else if (exception.cause != null) {
+            exception.cause!!.message
+        } else {
+            exception.message
+        }
         return Response.status(Response.Status.CONFLICT)
             .type(MediaType.APPLICATION_JSON)
-            .entity(CommonResponse(SbasConst.ResCode.FAIL, "PK 중복입니다.", null))
+            .entity(CommonResponse(SbasConst.ResCode.FAIL, message,null))
             .build()
     }
 }

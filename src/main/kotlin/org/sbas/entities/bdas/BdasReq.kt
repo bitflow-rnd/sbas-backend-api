@@ -1,7 +1,7 @@
 package org.sbas.entities.bdas
 
 import org.hibernate.annotations.DynamicUpdate
-import org.sbas.dtos.BdasReqDto
+import org.sbas.dtos.BdasReqDprtInfo
 import org.sbas.dtos.BdasReqSvrInfo
 import org.sbas.entities.CommonEntity
 import java.io.Serializable
@@ -132,14 +132,6 @@ class BdasReq(
     var msg: String? = null, // 메시지
 ) : CommonEntity() {
 
-    fun updateBasicInfo(bdasReqDto: BdasReqDto, histSeq: Int) {
-        this.id.ptId = bdasReqDto.ptId
-        this.id.bdasSeq = bdasReqDto.bdasSeq
-    }
-
-    fun updateDprtInfo(bdasReqDto: BdasReqDto) {
-    }
-
     fun saveSvrInfoFrom(bdasReqSvrInfo: BdasReqSvrInfo) {
         this.ptTypeCd = bdasReqSvrInfo.ptTypeCd
         this.undrDsesCd = bdasReqSvrInfo.undrDsesCd
@@ -161,6 +153,26 @@ class BdasReq(
         this.sbp = bdasReqSvrInfo.sbp
         this.newsScore = bdasReqSvrInfo.newsScore
         this.svrtTypeCd = bdasReqSvrInfo.svrtTypeCd
+    }
+
+    fun saveDprtInfoFrom(bdasReqDprtInfo: BdasReqDprtInfo) {
+        this.reqTypeCd = bdasReqDprtInfo.reqTypeCd
+        this.reqDstr1Cd = bdasReqDprtInfo.reqDstr1Cd
+        this.reqDstr2Cd = bdasReqDprtInfo.reqDstr2Cd
+        this.dprtDstrTypeCd = bdasReqDprtInfo.dprtDstrTypeCd
+        this.dprtDstrBascAddr = bdasReqDprtInfo.dprtDstrBascAddr
+        this.dprtDstrDetlAddr = bdasReqDprtInfo.dprtDstrDetlAddr
+        this.dprtDstrZip = bdasReqDprtInfo.dprtDstrZip
+        this.dprtDstrLat = bdasReqDprtInfo.dprtDstrLat
+        this.dprtDstrLon = bdasReqDprtInfo.dprtDstrLon
+        this.nok1Telno = bdasReqDprtInfo.nok1Telno
+        this.nok2Telno = bdasReqDprtInfo.nok2Telno
+        this.dprtHospId = bdasReqDprtInfo.dprtHospId
+        this.inhpAsgnYn = bdasReqDprtInfo.inhpAsgnYn
+        this.deptNm = bdasReqDprtInfo.deptNm
+        this.spclNm = bdasReqDprtInfo.spclNm
+        this.chrgTelno = bdasReqDprtInfo.chrgTelno
+        this.msg = bdasReqDprtInfo.msg
     }
 }
 
