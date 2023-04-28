@@ -42,49 +42,9 @@ data class BdasEsvyDto(
     var instZip: String?,
     var diagAttcId: String?,
 ) {
-    fun toEntity(bdasSeq: Int): BdasEsvy {
+    fun toEntity(): BdasEsvy {
         return BdasEsvy(
             ptId = this.ptId,
-            bdasSeq = bdasSeq,
-            esvyAttcId = this.esvyAttcId,
-            histCd = "Y",
-            rcptPhc = this.rcptPhc,
-            telno = this.telno,
-            addr = this.addr,
-            mpno = this.mpno,
-            nokNm = this.nokNm,
-            diagNm = this.diagNm,
-            diagGrde = this.diagGrde,
-            job = this.job,
-            cv19Symp = this.cv19Symp,
-            occrDt = this.occrDt,
-            diagDt = this.diagDt,
-            rptDt = this.rptDt,
-            dfdgExamRslt = this.dfdgExamRslt,
-            ptCatg = this.ptCatg,
-            admsYn = this.admsYn,
-            dethYn = this.dethYn,
-            rptType = this.rptType,
-            rmk = this.rmk,
-            instNm = this.instNm,
-            instId = this.instId,
-            instTelno = this.instTelno,
-            instAddr = this.instAddr,
-            diagDrNm = this.diagDrNm,
-            rptChfNm = this.rptChfNm,
-            instBascAddr = this.instBascAddr,
-            instDetlAddr = this.instDetlAddr,
-            instZip = this.instZip,
-            diagAttcId = this.diagAttcId,
-        )
-    }
-
-    fun toUpdateEntity(bdasSeq: Int, histSeq: Int): BdasEsvy {
-        return BdasEsvy(
-            ptId = this.ptId,
-            bdasSeq = bdasSeq,
-            histCd = "Y",
-            histSeq = histSeq + 1,
             esvyAttcId = this.esvyAttcId,
             rcptPhc = this.rcptPhc,
             telno = this.telno,

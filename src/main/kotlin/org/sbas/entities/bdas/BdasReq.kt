@@ -29,7 +29,7 @@ class BdasReq(
     @Column(name = "req_tm", nullable = false, length = 6)
     var reqTm: String? = null, // 요청 시간
 
-    @Column(name = "pt_type_cd", nullable = false, length = 8)
+    @Column(name = "pt_type_cd", nullable = false, length = 50)
     var ptTypeCd: String? = null, // 환자 유형 코드
 
     @Column(name = "undr_dses_cd", nullable = true, length = 50)
@@ -144,10 +144,10 @@ class BdasReq(
         this.ptTypeCd = bdasReqSvrInfo.ptTypeCd
         this.undrDsesCd = bdasReqSvrInfo.undrDsesCd
         this.undrDsesEtc = bdasReqSvrInfo.undrDsesEtc
-        this.reqBedTypeCd = bdasReqSvrInfo.reqBedTypeCd
-        this.dnrAgreYn = bdasReqSvrInfo.dnrAgreYn
         this.svrtIptTypeCd = bdasReqSvrInfo.svrtIptTypeCd
         this.svrtTypeCd = bdasReqSvrInfo.svrtTypeCd
+        this.reqBedTypeCd = bdasReqSvrInfo.reqBedTypeCd
+        this.dnrAgreYn = bdasReqSvrInfo.dnrAgreYn
     }
 
     fun saveBioInfoFrom(bdasReqSvrInfo: BdasReqSvrInfo) {
@@ -161,10 +161,6 @@ class BdasReq(
         this.sbp = bdasReqSvrInfo.sbp
         this.newsScore = bdasReqSvrInfo.newsScore
         this.svrtTypeCd = bdasReqSvrInfo.svrtTypeCd
-    }
-
-    fun setHistCdAsC() {
-        this.histCd = "C"
     }
 }
 
