@@ -48,6 +48,20 @@ class TalkRoomList {
         chatRoomsSockets[userId] = session
     }
 
+    @OnMessage
+    fun onMessage(session: Session, tkrmId: String, @PathParam("userId") userId: String) {
+        val talkRoomResponse: TalkRoomResponse?
+
+        runBlocking(Dispatchers.IO) {
+            talkRoomResponse = talkRoomRepository.findTalkRoomResponseByTkrmId(tkrmId)
+        }
+
+        chatRoomsSockets.forEach{
+            it.value.asyncRemote.sendText(JsonObject.mapFrom(talkRoomResponse).toString())
+        }
+
+    }
+
     private fun updateTalkRooms(userId: String){
         val resultList = runBlocking(Dispatchers.IO) {
             talkRoomRepository.findTalkRoomResponse(userId)

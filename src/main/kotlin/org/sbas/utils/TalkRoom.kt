@@ -61,15 +61,22 @@ class TalkRoom {
         }
 
         val talkRoomResponse: TalkRoomResponse?
+        val talkUsers: List<TalkUser>
 
         runBlocking(Dispatchers.IO) {
             talkRoomResponse = talkRoomRepository.findTalkRoomResponseByTkrmId(tkrmId)
+            talkUsers = talkUserRepository.findUsersByTkrmId(tkrmId)
         }
 
         chatSockets
             .forEach {
                 it.value.asyncRemote.sendText(JsonObject.mapFrom(addMsg).toString())
-                TalkRoomList.chatRoomsSockets[it.key]?.asyncRemote?.sendText(JsonObject.mapFrom(talkRoomResponse).toString())
+//                TalkRoomList.chatRoomsSockets[it.key]?.asyncRemote?.sendText(JsonObject.mapFrom(talkRoomResponse).toString())
+            }
+
+        talkUsers
+            .forEach{
+                TalkRoomList.chatRoomsSockets[it.id?.userId]?.asyncRemote?.sendText(JsonObject.mapFrom(talkRoomResponse).toString())
             }
 
     }
