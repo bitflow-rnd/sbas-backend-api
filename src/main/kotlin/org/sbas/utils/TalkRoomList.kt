@@ -22,7 +22,7 @@ import javax.websocket.server.ServerEndpoint
 class TalkRoomList {
 
     companion object {
-        private val chatRoomsSockets = mutableMapOf<String, Session>()
+        val chatRoomsSockets = mutableMapOf<String, Session>()
         lateinit var talkRooms: MutableList<TalkRoomResponse>
     }
 

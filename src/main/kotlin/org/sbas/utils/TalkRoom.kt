@@ -58,6 +58,7 @@ class TalkRoom {
         chatSockets
             .forEach {
                 it.value.asyncRemote.sendText(JsonObject.mapFrom(addMsg).toString())
+                TalkRoomList.chatRoomsSockets[it.key]?.asyncRemote?.sendText(tkrmId)
             }
 
     }
