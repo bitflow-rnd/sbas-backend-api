@@ -156,6 +156,8 @@ class BdasReq(
     }
 
     fun saveDprtInfoFrom(bdasReqDprtInfo: BdasReqDprtInfo) {
+        this.reqDt = bdasReqDprtInfo.reqDt
+        this.reqTm = bdasReqDprtInfo.reqTm
         this.reqTypeCd = bdasReqDprtInfo.reqTypeCd
         this.reqDstr1Cd = bdasReqDprtInfo.reqDstr1Cd
         this.reqDstr2Cd = bdasReqDprtInfo.reqDstr2Cd
