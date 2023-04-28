@@ -7,7 +7,9 @@ import org.sbas.entities.talk.TalkMsg
 import org.sbas.entities.talk.TalkUser
 import org.sbas.entities.talk.arrToJson
 import org.sbas.repositories.TalkMsgRepository
+import org.sbas.repositories.TalkRoomRepository
 import org.sbas.repositories.TalkUserRepository
+import org.sbas.responses.messages.TalkRoomResponse
 import javax.enterprise.context.ApplicationScoped
 import javax.inject.Inject
 import javax.websocket.*
@@ -37,6 +39,9 @@ class TalkRoom {
     @Inject
     lateinit var talkUserRepository: TalkUserRepository
 
+    @Inject
+    private lateinit var talkRoomRepository: TalkRoomRepository
+
     @OnOpen
     fun onOpen(session: Session, @PathParam("tkrmId") tkrmId: String, @PathParam("userId") userId: String) {
         updateTalkMsg(tkrmId)
@@ -55,10 +60,16 @@ class TalkRoom {
             addMsg = talkMsgRepository.insertMessage(message, tkrmId, userId)
         }
 
+        val talkRoomResponse: TalkRoomResponse?
+
+        runBlocking(Dispatchers.IO) {
+            talkRoomResponse = talkRoomRepository.findTalkRoomResponseByTkrmId(tkrmId)
+        }
+
         chatSockets
             .forEach {
                 it.value.asyncRemote.sendText(JsonObject.mapFrom(addMsg).toString())
-                TalkRoomList.chatRoomsSockets[it.key]?.asyncRemote?.sendText(tkrmId)
+                TalkRoomList.chatRoomsSockets[it.key]?.asyncRemote?.sendText(JsonObject.mapFrom(talkRoomResponse).toString())
             }
 
     }
