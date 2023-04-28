@@ -29,10 +29,10 @@ class BdasReq(
     @Column(name = "req_tm", nullable = false, length = 6)
     var reqTm: String? = null, // 요청 시간
 
-    @Column(name = "pt_type_cd", nullable = false, length = 50)
+    @Column(name = "pt_type_cd", nullable = false, length = 256)
     var ptTypeCd: String? = null, // 환자 유형 코드
 
-    @Column(name = "undr_dses_cd", nullable = true, length = 50)
+    @Column(name = "undr_dses_cd", nullable = true, length = 512)
     var undrDsesCd: String? = null, // 기저 질환 코드
 
     @Column(name = "undr_dses_etc", nullable = true, length = 50)
