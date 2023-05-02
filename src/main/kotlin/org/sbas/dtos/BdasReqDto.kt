@@ -24,6 +24,7 @@ data class BdasReqDprtInfo (
     var nok1Telno: String? = null,
     var nok2Telno: String? = null,
     
+    // 담당 병원 정보
     var dprtHospId: String? = null,
     var inhpAsgnYn: String? = null,
     var deptNm: String? = null,

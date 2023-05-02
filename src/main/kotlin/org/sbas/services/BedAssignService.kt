@@ -12,8 +12,8 @@ import org.sbas.repositories.BdasReqRepository
 import org.sbas.repositories.InfoPtRepository
 import org.sbas.responses.CommonResponse
 import org.sbas.restparameters.NaverGeocodingApiParams
-import java.time.Instant
-import java.time.ZoneId
+import java.time.LocalDateTime
+import java.time.format.DateTimeFormatter
 import javax.enterprise.context.ApplicationScoped
 import javax.inject.Inject
 import javax.transaction.Transactional
@@ -75,20 +75,8 @@ class BedAssignService {
 
         // 엔티티 새로 생성 후 persist
         val bdasReqId = BdasReqId(bdasEsvy.ptId, bdasEsvy.bdasSeq)
-        val bdasReq = BdasReq(
-            id = bdasReqId,
-            reqDt = "",
-            reqTm = "",
-            ptTypeCd = "",
-            reqBedTypeCd = "",
-            dnrAgreYn = "",
-            svrtIptTypeCd = "",
-            svrtTypeCd = "",
-            reqTypeCd = "",
-            reqDstr1Cd = "",
-            dprtDstrTypeCd = "",
-            inhpAsgnYn = "",
-        )
+        val bdasReq = BdasReq.createDefault(bdasReqId)
+
         bdasReqRepository.persist(bdasReq)
         
         // 중증도 분류 정보 저장
@@ -107,22 +95,10 @@ class BedAssignService {
             // 기존 bdasReq 엔티티에 SvrInfo 저장
             findBdasReq.saveSvrInfoFrom(bdasReqSvrInfo)
         } else { // 새로 저장
-            val bdasReqId = BdasReqId(bdasReqSvrInfo.ptId, bdasEsvy.bdasSeq!!)
             // 엔티티 새로 생성 후 persist
-            val bdasReq = BdasReq(
-                id = bdasReqId,
-                reqDt = "",
-                reqTm = "",
-                ptTypeCd = "",
-                reqBedTypeCd = "",
-                dnrAgreYn = "",
-                svrtIptTypeCd = "",
-                svrtTypeCd = "",
-                reqTypeCd = "",
-                reqDstr1Cd = "",
-                dprtDstrTypeCd = "",
-                inhpAsgnYn = "",
-            )
+            val bdasReqId = BdasReqId(bdasReqSvrInfo.ptId, bdasEsvy.bdasSeq!!)
+            val bdasReq = BdasReq.createDefault(bdasReqId)
+
             bdasReqRepository.persist(bdasReq)
             
             // 중증 정보 저장
@@ -144,7 +120,7 @@ class BedAssignService {
         setDepartureCoordinates(bdasReqDprtInfo)
 
         // 요청 시간 설정
-        updateBdasReqWithCurrentDateTime(bdasReqDprtInfo)
+        setBdasReqWithCurrentDateTime(bdasReqDprtInfo)
         
         // 출발지 정보 저장
         findBdasReq.saveDprtInfoFrom(bdasReqDprtInfo)
@@ -158,10 +134,8 @@ class BedAssignService {
         bdasReqDprtInfo.dprtDstrLon = geocoding.addresses!![0].x // 경도
     }
 
-    private fun updateBdasReqWithCurrentDateTime(bdasReqDprtInfo: BdasReqDprtInfo) {
-        val atZone = Instant.now().atZone(ZoneId.systemDefault())
-        val time = atZone.toLocalTime()
-        bdasReqDprtInfo.reqDt = "${atZone.year}${atZone.month}${atZone.dayOfMonth}"
-        bdasReqDprtInfo.reqTm = "${time.hour}${time.minute}${time.second}"
+    private fun setBdasReqWithCurrentDateTime(bdasReqDprtInfo: BdasReqDprtInfo) {
+        bdasReqDprtInfo.reqDt = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyyMMdd"))
+        bdasReqDprtInfo.reqTm = LocalDateTime.now().format(DateTimeFormatter.ofPattern("HHmmss"))
     }
 }
