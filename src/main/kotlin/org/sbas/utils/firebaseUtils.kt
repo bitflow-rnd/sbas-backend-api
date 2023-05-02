@@ -18,7 +18,7 @@ class FirebaseService {
     lateinit var firebaseMessaging: FirebaseMessaging
 
     fun onStart(@Observes event: StartupEvent) {
-        val serviceAccount = FileInputStream("C:/Users/plela/Downloads/sbas-4c928-firebase-adminsdk-1rbzo-51e04a6c61.json")
+        val serviceAccount = FileInputStream("C://sbas/www/public/firebase/sbas-4c928-firebase-adminsdk-1rbzo-51e04a6c61.json")
 
         val options = FirebaseOptions.Builder()
             .setCredentials(GoogleCredentials.fromStream(serviceAccount))
