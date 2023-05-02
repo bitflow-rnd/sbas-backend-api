@@ -6,6 +6,8 @@ import org.jboss.logging.Logger
 import org.sbas.entities.talk.TalkMsg
 import org.sbas.entities.talk.TalkUser
 import org.sbas.entities.talk.arrToJson
+import org.sbas.handlers.FileHandler
+import org.sbas.repositories.BaseAttcRepository
 import org.sbas.repositories.TalkMsgRepository
 import org.sbas.repositories.TalkRoomRepository
 import org.sbas.repositories.TalkUserRepository
@@ -42,6 +44,12 @@ class TalkRoom {
     @Inject
     private lateinit var talkRoomRepository: TalkRoomRepository
 
+    @Inject
+    private lateinit var baseAttcRepository: BaseAttcRepository
+
+    @Inject
+    private lateinit var fileHandler: FileHandler
+
     @OnOpen
     fun onOpen(session: Session, @PathParam("tkrmId") tkrmId: String, @PathParam("userId") userId: String) {
         updateTalkMsg(tkrmId)
@@ -60,26 +68,23 @@ class TalkRoom {
             addMsg = talkMsgRepository.insertMessage(message, tkrmId, userId)
         }
 
-        val talkRoomResponse: TalkRoomResponse?
-        val talkUsers: List<TalkUser>
-
-        runBlocking(Dispatchers.IO) {
-            talkRoomResponse = talkRoomRepository.findTalkRoomResponseByTkrmId(tkrmId)
-            talkUsers = talkUserRepository.findUsersByTkrmId(tkrmId)
-        }
-
-        chatSockets
-            .forEach {
-                it.value.asyncRemote.sendText(JsonObject.mapFrom(addMsg).toString())
-//                TalkRoomList.chatRoomsSockets[it.key]?.asyncRemote?.sendText(JsonObject.mapFrom(talkRoomResponse).toString())
-            }
-
-        talkUsers
-            .forEach{
-                TalkRoomList.chatRoomsSockets[it.id?.userId]?.asyncRemote?.sendText(JsonObject.mapFrom(talkRoomResponse).toString())
-            }
+        sendMsg(addMsg)
 
     }
+
+//    @OnMessage
+//    fun onMessage(session: Session, message: ByteBuffer, @PathParam("tkrmId") tkrmId: String, @PathParam("userId") userId: String){
+//        val file = FileUpload(message)
+//        var addMsg: TalkMsg
+//        val attcId = fileUpload(file)
+//
+//        runBlocking(Dispatchers.IO) {
+//            addMsg = talkMsgRepository.insertFile(attcId, tkrmId, userId)
+//        }
+//
+//        sendMsg(addMsg)
+//
+//    }
 
     @OnClose
     fun onClose(session: Session, @PathParam("userId") userId: String, @PathParam("tkrmId") tkrmId: String) {
@@ -94,4 +99,33 @@ class TalkRoom {
         } as MutableList<TalkMsg>
         talkMsg = resultList
     }
+
+    private fun sendMsg(msg: TalkMsg){
+        val talkRoomResponse: TalkRoomResponse?
+        val talkUsers: List<TalkUser>
+
+        runBlocking(Dispatchers.IO) {
+            talkRoomResponse = talkRoomRepository.findTalkRoomResponseByTkrmId(tkrmId)
+            talkUsers = talkUserRepository.findUsersByTkrmId(tkrmId)
+        }
+
+        chatSockets
+            .forEach {
+                it.value.asyncRemote.sendText(JsonObject.mapFrom(msg).toString())
+            }
+
+        talkUsers
+            .forEach{
+                TalkRoomList.chatRoomsSockets[it.id?.userId]?.asyncRemote?.sendText(JsonObject.mapFrom(talkRoomResponse).toString())
+            }
+    }
+
+//    fun createMessageFile(param: FileUpload): FileDto? {
+//        val format = DateTimeFormatter.ofPattern("yyyyMM")
+//    }
+
 }
+
+
+
+

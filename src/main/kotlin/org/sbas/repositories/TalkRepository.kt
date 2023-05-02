@@ -64,6 +64,25 @@ class TalkMsgRepository : PanacheRepositoryBase<TalkMsg, TalkMsgId> {
     }
 
     @Transactional
+    fun insertFile(file: String?, tkrmId: String, userId: String): TalkMsg{
+        val recentMsgSeq = findRecentlyMsg(tkrmId)
+        val insertFile = TalkMsg(
+            id = TalkMsgId(tkrmId, (recentMsgSeq?.id?.msgSeq ?: 0) + 1, 1),
+            histCd = "1",
+            msg = "",
+            attcId = file,
+            rgstUserId = userId,
+            rgstDttm = Instant.now(),
+            updtUserId = userId,
+            updtDttm = Instant.now()
+        )
+        runBlocking {
+            persist(insertFile)
+        }
+        return insertFile
+    }
+
+    @Transactional
     fun findRecentlyMsg(tkrmId: String) = find("select tm from TalkMsg tm where tm.id.tkrmId = '$tkrmId' order by tm.id.msgSeq desc").firstResult()
 
     fun findRecentSeq(tkrmId: String?) = find("select tm from TalkMsg tm where tm.id.tkrmId = '$tkrmId' order by tm.id.msgSeq desc limit 1").firstResult()

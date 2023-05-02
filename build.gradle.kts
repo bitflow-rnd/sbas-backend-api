@@ -40,6 +40,7 @@ dependencies {
     implementation("io.quarkus:quarkus-smallrye-openapi")
     implementation("io.quarkus:quarkus-smallrye-reactive-messaging")
     implementation("io.quarkus:quarkus-scheduler")
+    implementation("com.google.firebase:firebase-admin:9.1.1")
     testImplementation("io.quarkus:quarkus-junit5")
     testImplementation("io.rest-assured:rest-assured")
 }
