@@ -48,7 +48,7 @@ class FirebaseService {
 @NoArg
 data class MessageRequest(val title: String, val body: String, val token: String)
 
-@Path("/send")
+@Path("/firebase/send")
 class SendMessageResource {
     @Inject
     lateinit var firebaseService: FirebaseService
