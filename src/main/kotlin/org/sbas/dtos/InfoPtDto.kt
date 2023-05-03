@@ -77,3 +77,114 @@ class InfoPtSearchDto(
 //    var list: MutableList<String> = mutableListOf("")
     var list: String?,
 )
+
+
+class InfoPtSearchDto2 {
+    var ptId: String?
+    var bdasSeq: Int?
+    var ptNm: String?
+    var gndr: String?
+    var rrno1: String?
+    var rrno2: String?
+    var dstr1Cd: String?
+    var dstr2Cd: String?
+    var telno: String?
+    var natiCd: String?
+    var bedStatCd: BedStat?
+    var bedStatNm: String?
+    var updtDttm: Instant?
+    var ptTypeCd: String?
+    var svrtTypeCd: String?
+    var undrDsesCd: String?
+    var admsStatCd: String?
+    var admsStatNm: String?
+    var age: Int?
+    var list2: MutableList<String>? = mutableListOf()
+
+    constructor(
+        ptId: String?,
+        bdasSeq: Int?,
+        ptNm: String?,
+        gndr: String?,
+        rrno1: String?,
+        rrno2: String?,
+        dstr1Cd: String?,
+        dstr2Cd: String?,
+        telno: String?,
+        natiCd: String?,
+        bedStatCd: BedStat?,
+        bedStatNm: String?,
+        updtDttm: Instant?,
+        ptTypeCd: String?,
+        svrtTypeCd: String?,
+        undrDsesCd: String?,
+        admsStatCd: String?,
+        admsStatNm: String?,
+        age: Int?,
+        list2: MutableList<String>?
+    ) {
+        this.ptId = ptId
+        this.bdasSeq = bdasSeq
+        this.ptNm = ptNm
+        this.gndr = gndr
+        this.rrno1 = rrno1
+        this.rrno2 = rrno2
+        this.dstr1Cd = dstr1Cd
+        this.dstr2Cd = dstr2Cd
+        this.telno = telno
+        this.natiCd = natiCd
+        this.bedStatCd = bedStatCd
+        this.bedStatNm = bedStatNm
+        this.updtDttm = updtDttm
+        this.ptTypeCd = ptTypeCd
+        this.svrtTypeCd = svrtTypeCd
+        this.undrDsesCd = undrDsesCd
+        this.admsStatCd = admsStatCd
+        this.admsStatNm = admsStatNm
+        this.age = age
+        this.list2 = mutableListOf()
+    }
+
+    constructor(
+        ptId: String?,
+        bdasSeq: Int?,
+        ptNm: String?,
+        gndr: String?,
+        rrno1: String?,
+        rrno2: String?,
+        dstr1Cd: String?,
+        dstr2Cd: String?,
+        telno: String?,
+        natiCd: String?,
+        bedStatCd: BedStat?,
+        bedStatNm: String?,
+        updtDttm: Instant?,
+        ptTypeCd: String?,
+        svrtTypeCd: String?,
+        undrDsesCd: String?,
+        admsStatCd: String?,
+        admsStatNm: String?,
+        age: Int?,
+    ) {
+        this.ptId = ptId
+        this.bdasSeq = bdasSeq
+        this.ptNm = ptNm
+        this.gndr = gndr
+        this.rrno1 = rrno1
+        this.rrno2 = rrno2
+        this.dstr1Cd = dstr1Cd
+        this.dstr2Cd = dstr2Cd
+        this.telno = telno
+        this.natiCd = natiCd
+        this.bedStatCd = bedStatCd
+        this.bedStatNm = bedStatNm
+        this.updtDttm = updtDttm
+        this.ptTypeCd = ptTypeCd
+        this.svrtTypeCd = svrtTypeCd
+        this.undrDsesCd = undrDsesCd
+        this.admsStatCd = admsStatCd
+        this.admsStatNm = admsStatNm
+        this.age = age
+    }
+}
+

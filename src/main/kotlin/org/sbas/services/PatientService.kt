@@ -247,21 +247,19 @@ class PatientService {
         val query = infoPtRepository.findInfoPtSearch()
         query.forEach {
             if (it.ptTypeCd != null) {
-                list.addAll(it.ptTypeCd.split(";"))
+                it.list2!!.addAll(it.ptTypeCd!!.split(";"))
             }
             if (it.svrtTypeCd != null) {
-                list.addAll(it.svrtTypeCd.split(";"))
+                it.list2!!.addAll(it.svrtTypeCd!!.split(";"))
             }
             if (it.undrDsesCd != null) {
-                list.addAll(it.undrDsesCd.split(";"))
+                it.list2!!.addAll(it.undrDsesCd!!.split(";"))
             }
-            it.list = list.toString()
-            if (it.rrno2 == "3" || it.rrno2 == "4") {
-                it.age = calculateAge("20"+it.rrno1)
-            } else {
-                it.age = calculateAge("19"+it.rrno1)
-            }
-            list.clear()
+//            if (it.rrno2 == "3" || it.rrno2 == "4") {
+//                it.age = calculateAge("20"+it.rrno1)
+//            } else {
+//                it.age = calculateAge("19"+it.rrno1)
+//            }
         }
 
         val res = mutableMapOf<String, Any>()
