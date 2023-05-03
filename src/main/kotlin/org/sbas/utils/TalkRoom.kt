@@ -28,10 +28,6 @@ class TalkRoom {
         private lateinit var talkMsg: MutableList<TalkMsg>
     }
 
-    private lateinit var session: Session // WebSocket 세션
-    private lateinit var tkrmId: String // 채팅방 ID
-    private lateinit var userId: String // 사용자 ID
-
     @Inject
     lateinit var log: Logger
 
@@ -43,6 +39,9 @@ class TalkRoom {
 
     @Inject
     private lateinit var talkRoomRepository: TalkRoomRepository
+
+    @Inject
+    private lateinit var firebaseService: FirebaseService
 
     @Inject
     private lateinit var baseAttcRepository: BaseAttcRepository
@@ -68,7 +67,7 @@ class TalkRoom {
             addMsg = talkMsgRepository.insertMessage(message, tkrmId, userId)
         }
 
-        sendMsg(addMsg)
+        sendMsg(addMsg, tkrmId, userId)
 
     }
 
@@ -100,7 +99,7 @@ class TalkRoom {
         talkMsg = resultList
     }
 
-    private fun sendMsg(msg: TalkMsg){
+    private fun sendMsg(msg: TalkMsg, tkrmId: String, userId: String){
         val talkRoomResponse: TalkRoomResponse?
         val talkUsers: List<TalkUser>
 
@@ -116,7 +115,11 @@ class TalkRoom {
 
         talkUsers
             .forEach{
-                TalkRoomList.chatRoomsSockets[it.id?.userId]?.asyncRemote?.sendText(JsonObject.mapFrom(talkRoomResponse).toString())
+                if(chatSockets[it.id?.userId] == null) {
+                    TalkRoomList.chatRoomsSockets[it.id?.userId]?.asyncRemote?.sendText(JsonObject.mapFrom(talkRoomResponse).toString())
+                }else {
+                    firebaseService.sendMessage(userId, msg.msg, it.id?.userId!!)
+                }
             }
     }
 

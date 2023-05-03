@@ -44,7 +44,7 @@ data class UpdatePushKeyRequest(
     var pushKey: String,
 )
 
-data class sendPushRequest(
+data class SendPushRequest(
     @JsonProperty("to")
     var to: String,
     @JsonProperty("msg")

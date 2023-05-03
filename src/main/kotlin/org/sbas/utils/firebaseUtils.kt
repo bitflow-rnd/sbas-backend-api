@@ -6,9 +6,13 @@ import com.google.firebase.FirebaseOptions
 import com.google.firebase.messaging.FirebaseMessaging
 import com.google.firebase.messaging.Message
 import io.quarkus.runtime.StartupEvent
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.runBlocking
 import org.jboss.logging.Logger
-import org.sbas.parameters.sendPushRequest
+import org.sbas.entities.info.InfoUser
+import org.sbas.parameters.SendPushRequest
 import org.sbas.repositories.InfoUserRepository
+import org.sbas.responses.CommonResponse
 import java.io.FileInputStream
 import javax.enterprise.context.ApplicationScoped
 import javax.enterprise.event.Observes
@@ -22,6 +26,9 @@ import javax.ws.rs.core.MediaType
 
 @ApplicationScoped
 class FirebaseService {
+
+    @Inject
+    private lateinit var userRepository: InfoUserRepository
     fun onStart(@Observes ev: StartupEvent) {
         if (FirebaseApp.getApps().isEmpty()) {
             val serviceAccount =
@@ -36,7 +43,14 @@ class FirebaseService {
         }
     }
 
-    fun sendMessage(title: String, body: String, token: String) {
+    fun sendMessage(title: String, body: String?, to: String) {
+        val findUser: InfoUser?
+        runBlocking(Dispatchers.IO) {
+            findUser = userRepository.findByUserId(to) ?: throw NotFoundException("ID를 찾을 수 없습니다.")
+        }
+
+        val token = findUser!!.pushKey
+
         val message = Message.builder()
             .putData("title", title)
             .putData("body", body)
@@ -63,9 +77,9 @@ class SendMessageResource {
     @POST
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.TEXT_PLAIN)
-    fun send(sendPushRequest: sendPushRequest): String {
+    fun send(sendPushRequest: SendPushRequest): CommonResponse<String> {
         val findUser = userRepository.findByUserId(sendPushRequest.to) ?: throw NotFoundException("ID를 찾을 수 없습니다.")
         firebaseService.sendMessage(sendPushRequest.from, sendPushRequest.msg, findUser.pushKey!!)
-        return "Message sent"
+        return CommonResponse("Message sent")
     }
 }
