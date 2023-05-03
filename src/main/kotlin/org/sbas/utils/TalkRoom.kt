@@ -115,7 +115,7 @@ class TalkRoom {
 
         talkUsers
             .forEach{
-                if(chatSockets[it.id?.userId] == null) {
+                if(chatSockets[it.id?.userId] != null) {
                     TalkRoomList.chatRoomsSockets[it.id?.userId]?.asyncRemote?.sendText(JsonObject.mapFrom(talkRoomResponse).toString())
                 }else {
                     firebaseService.sendMessage(userId, msg.msg, it.id?.userId!!)

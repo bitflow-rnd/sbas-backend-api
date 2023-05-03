@@ -5,6 +5,7 @@ import com.google.firebase.FirebaseApp
 import com.google.firebase.FirebaseOptions
 import com.google.firebase.messaging.FirebaseMessaging
 import com.google.firebase.messaging.Message
+import com.google.firebase.messaging.Notification
 import io.quarkus.runtime.StartupEvent
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.runBlocking
@@ -26,6 +27,9 @@ import javax.ws.rs.core.MediaType
 
 @ApplicationScoped
 class FirebaseService {
+
+    @Inject
+    lateinit var log: Logger
 
     @Inject
     private lateinit var userRepository: InfoUserRepository
@@ -51,9 +55,14 @@ class FirebaseService {
 
         val token = findUser!!.pushKey
 
+        val notification = Notification
+            .builder()
+            .setTitle(title)
+            .setBody(body)
+            .build()
+
         val message = Message.builder()
-            .putData("title", title)
-            .putData("body", body)
+            .setNotification(notification)
             .setToken(token)
             .build()
 
