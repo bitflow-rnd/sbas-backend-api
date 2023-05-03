@@ -1,7 +1,9 @@
 package org.sbas.dtos
 
+import org.sbas.constants.BedStat
 import org.sbas.entities.info.InfoPt
 import org.sbas.utils.NoArg
+import java.time.Instant
 
 @NoArg
 data class InfoPtDto(
@@ -50,13 +52,28 @@ fun InfoPtDto.toEntity(): InfoPt {
     )
 }
 
-@NoArg
-data class NewsScoreParam(
-    var breath: Int,  // 분당호흡수
-    var spo2: Double,    // 산소포화도
-    var o2Apply: String, // 산소투여여부
-    var sbp: Int,     // 수축기혈압
-    var pulse: Int,   // 맥박
-    var avpu: String,    // 의식상태
-    var bdTemp: Double,  // 체온
+class InfoPtSearchDto(
+    val ptId: String?,
+    val bdasSeq: Int?,
+    val ptNm: String?,
+    val gndr: String?,
+    val rrno1: String?,
+    val rrno2: String?,
+    val dstr1Cd: String?,
+    val dstr2Cd: String?,
+    val telno: String?,
+    val natiCd: String?,
+    val bedStatCd: BedStat?,
+    val bedStatNm: String?,
+    val updtDttm: Instant?,
+//    val statCd: String,
+//    val statNm: String,
+    val ptTypeCd: String?,
+    val svrtTypeCd: String?,
+    val undrDsesCd: String?,
+    val admsStatCd: String?,
+    val admsStatNm: String?,
+    var age: Int,
+//    var list: MutableList<String> = mutableListOf("")
+    var list: String?,
 )

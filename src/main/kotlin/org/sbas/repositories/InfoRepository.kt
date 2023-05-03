@@ -1,6 +1,7 @@
 package org.sbas.repositories
 
 import io.quarkus.hibernate.orm.panache.kotlin.PanacheRepositoryBase
+import org.sbas.dtos.InfoPtSearchDto
 import org.sbas.entities.info.*
 import org.sbas.parameters.InstCdParameters
 import javax.enterprise.context.ApplicationScoped
@@ -13,6 +14,21 @@ class InfoPtRepository : PanacheRepositoryBase<InfoPt, String> {
 
     fun findByDstrCd(dstr1Cd: String, dstr2Cd: String): List<InfoPt> {
         return find("dstr_1_cd = '$dstr1Cd' and dstr_2_cd = '$dstr2Cd'").list()
+    }
+
+    @Suppress("UNCHECKED_CAST")
+    fun findInfoPtSearch(): MutableList<InfoPtSearchDto> {
+        val query = "select new org.sbas.dtos.InfoPtSearchDto(a.ptId, b.id.bdasSeq, a.ptNm, a.gndr, a.rrno1, a.rrno2, " +
+                "a.dstr1Cd, a.dstr2Cd, a.telno, a.natiCd, a.bedStatCd, a.bedStatNm, b.updtDttm, " +
+                "b.ptTypeCd, b.svrtTypeCd, b.undrDsesCd, ba.admsStatCd, ba.admsStatNm, 0, a.ptId) " +
+                "FROM InfoPt a " +
+                "inner join BdasReq b on a.ptId = b.id.ptId " +
+                "left outer join BdasAdms ba on b.id.bdasSeq = ba.id.bdasSeq " +
+                "where b.id.bdasSeq in (select max(id.bdasSeq) as bdasSeq from BdasReq group by id.ptId) " +
+                "order by b.updtDttm desc"
+//        return find(query).project(InfoPtSearchDto::class.java).list()
+
+        return getEntityManager().createQuery(query).resultList as MutableList<InfoPtSearchDto>
     }
 }
 

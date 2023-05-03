@@ -6,12 +6,11 @@ import org.jboss.logging.Logger
 import org.jboss.resteasy.reactive.multipart.FileUpload
 import org.sbas.constants.SbasConst
 import org.sbas.dtos.InfoPtDto
-import org.sbas.dtos.NewsScoreParam
 import org.sbas.dtos.toEntity
 import org.sbas.entities.base.BaseAttc
-import org.sbas.entities.info.InfoPt
 import org.sbas.handlers.FileHandler
 import org.sbas.handlers.NaverApiHandler
+import org.sbas.parameters.NewsScoreParameters
 import org.sbas.parameters.SearchParameters
 import org.sbas.repositories.BaseAttcRepository
 import org.sbas.repositories.InfoInstRepository
@@ -23,6 +22,8 @@ import org.sbas.utils.StringUtils
 import java.io.File
 import java.io.IOException
 import java.net.URL
+import java.time.LocalDate
+import java.time.format.DateTimeFormatter
 import javax.enterprise.context.ApplicationScoped
 import javax.inject.Inject
 import javax.transaction.Transactional
@@ -69,7 +70,7 @@ class PatientService {
     fun saveInfoPt(infoPtDto: InfoPtDto): CommonResponse<String?> {
         val infoPt = infoPtDto.toEntity()
         infoPtRepository.persist(infoPt)
-        return CommonResponse(infoPt.id)
+        return CommonResponse(infoPt.ptId)
     }
 
     @Transactional
@@ -86,7 +87,7 @@ class PatientService {
         return CommonResponse("등록된 환자가 존재하지 않습니다.")
     }
 
-    fun calculateNewsScore(param: NewsScoreParam): CommonResponse<Int> {
+    fun calculateNewsScore(param: NewsScoreParameters): CommonResponse<Int> {
         val list = mutableListOf<Int>()
         when {
             param.breath < 9 -> list.add(0, 3)
@@ -227,14 +228,58 @@ class PatientService {
 
     @Transactional
     fun findInfoPt2(searchParam: SearchParameters): CommonResponse<*> {
-        val query = dynamicQueryBuilder.createDynamicQuery(InfoPt(), searchParam)
+//        val query = dynamicQueryBuilder.createDynamicQuery(InfoPtSearchDto(), searchParam)
+//        val criteria = infoPtRepository.getEntityManager().unwrap(Session::class.java).createCriteria(InfoPt::class.java)
+//        val infoPtList = query.resultList
+//        val builder: CriteriaBuilder = infoPtRepository.getEntityManager().criteriaBuilder
+//        val query = builder.createQuery(String::class.java)
+//        val root = query.from(InfoPtSearchDto::class.java)
+//
+//        query.select(root.get("ptId"))
+//        query.where(root.get<String>("ptId").`in`<String>(criteria))
+//
+//        return infoPtRepository.getEntityManager().createQuery(query).resultList as List<String>
+//        val entityManager = infoPtRepository.getEntityManager()
+//        val query =
+//            entityManager.createNativeQuery("select * from info_pt where pt_nm = :ptNm", InfoPtSearchDto::class.java)
+//        query.setParameter("ptNm", searchParam.ptNm)
+        val list = mutableListOf<String>()
+        val query = infoPtRepository.findInfoPtSearch()
+        query.forEach {
+            if (it.ptTypeCd != null) {
+                list.addAll(it.ptTypeCd.split(";"))
+            }
+            if (it.svrtTypeCd != null) {
+                list.addAll(it.svrtTypeCd.split(";"))
+            }
+            if (it.undrDsesCd != null) {
+                list.addAll(it.undrDsesCd.split(";"))
+            }
+            it.list = list.toString()
+            if (it.rrno2 == "3" || it.rrno2 == "4") {
+                it.age = calculateAge("20"+it.rrno1)
+            } else {
+                it.age = calculateAge("19"+it.rrno1)
+            }
+            list.clear()
+        }
 
-        val infoPtList = query.resultList
         val res = mutableMapOf<String, Any>()
-        res["items"] = infoPtList
-        res["count"] = infoPtList.size
+        res["count"] = query.size
+        res["items"] = query
 
-        return CommonResponse(res)
+        return CommonResponse(query)
+    }
+
+    private fun calculateAge(birth: String): Int {
+        val now: LocalDate = LocalDate.now()
+        val parsedBirthDate: LocalDate = LocalDate.parse(birth, DateTimeFormatter.ofPattern("yyyyMMdd"))
+        var age = now.minusYears(parsedBirthDate.year.toLong()).year
+
+        if (parsedBirthDate.plusYears(age.toLong()).isAfter(now)) {
+            age -= 1
+        }
+        return age
     }
 
     @Transactional

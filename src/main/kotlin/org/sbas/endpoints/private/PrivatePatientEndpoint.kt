@@ -8,6 +8,7 @@ import org.jboss.resteasy.reactive.RestForm
 import org.jboss.resteasy.reactive.RestPath
 import org.jboss.resteasy.reactive.multipart.FileUpload
 import org.sbas.dtos.*
+import org.sbas.parameters.NewsScoreParameters
 import org.sbas.parameters.SearchParameters
 import org.sbas.services.BedAssignService
 import org.sbas.services.CommonService
@@ -117,7 +118,7 @@ class PrivatePatientEndpoint {
     @Operation(summary = "생체정보입력 분석", description = "생체정보 입력 시 경북대학교 로직(NEWS Score)에 따른 중증분류 값 리턴")
     @POST
     @Path("bioinfoanlys")
-    fun bioinfoanlys(param: NewsScoreParam): Response {
+    fun bioinfoanlys(param: NewsScoreParameters): Response {
         return Response.ok(patientService.calculateNewsScore(param)).build()
     }
 
