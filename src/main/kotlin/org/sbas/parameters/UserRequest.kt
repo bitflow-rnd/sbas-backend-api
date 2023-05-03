@@ -43,3 +43,12 @@ data class UpdatePushKeyRequest(
     @JsonProperty("pushKey")
     var pushKey: String,
 )
+
+data class sendPushRequest(
+    @JsonProperty("to")
+    var to: String,
+    @JsonProperty("msg")
+    var msg: String,
+    @JsonProperty("from")
+    var from: String,
+)

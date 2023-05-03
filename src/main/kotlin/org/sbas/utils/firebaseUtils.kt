@@ -7,11 +7,14 @@ import com.google.firebase.messaging.FirebaseMessaging
 import com.google.firebase.messaging.Message
 import io.quarkus.runtime.StartupEvent
 import org.jboss.logging.Logger
+import org.sbas.parameters.sendPushRequest
+import org.sbas.repositories.InfoUserRepository
 import java.io.FileInputStream
 import javax.enterprise.context.ApplicationScoped
 import javax.enterprise.event.Observes
 import javax.inject.Inject
 import javax.ws.rs.Consumes
+import javax.ws.rs.NotFoundException
 import javax.ws.rs.POST
 import javax.ws.rs.Path
 import javax.ws.rs.Produces
@@ -45,21 +48,24 @@ class FirebaseService {
     }
 }
 
-@NoArg
-data class MessageRequest(val title: String, val body: String, val token: String)
-
 @Path("/firebase/send")
 class SendMessageResource {
+
     @Inject
     lateinit var firebaseService: FirebaseService
+
     @Inject
     lateinit var log: Logger
+
+    @Inject
+    lateinit var userRepository: InfoUserRepository
 
     @POST
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.TEXT_PLAIN)
-    fun send(messageRequest: MessageRequest): String {
-        firebaseService.sendMessage(messageRequest.title, messageRequest.body, messageRequest.token)
+    fun send(sendPushRequest: sendPushRequest): String {
+        val findUser = userRepository.findByUserId(sendPushRequest.to) ?: throw NotFoundException("ID를 찾을 수 없습니다.")
+        firebaseService.sendMessage(sendPushRequest.from, sendPushRequest.msg, findUser.pushKey!!)
         return "Message sent"
     }
 }
