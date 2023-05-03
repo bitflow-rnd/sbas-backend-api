@@ -261,4 +261,16 @@ class UserService {
         return CommonResponse(userRepository.findAll().list())
     }
 
+    /**
+     * firebase push key 등록
+     */
+    @Transactional
+    fun updatePushKey(request: UpdatePushKeyRequest): CommonResponse<String> {
+        val findUser = userRepository.findByUserId(request.id) ?: throw CustomizedException("Not Found User", Response.Status.NOT_FOUND)
+
+        findUser.pushKey = request.pushKey
+
+        return CommonResponse("push key 등록")
+    }
+
 }

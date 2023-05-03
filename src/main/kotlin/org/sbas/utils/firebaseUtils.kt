@@ -6,42 +6,60 @@ import com.google.firebase.FirebaseOptions
 import com.google.firebase.messaging.FirebaseMessaging
 import com.google.firebase.messaging.Message
 import io.quarkus.runtime.StartupEvent
+import org.jboss.logging.Logger
 import java.io.FileInputStream
 import javax.enterprise.context.ApplicationScoped
 import javax.enterprise.event.Observes
 import javax.inject.Inject
+import javax.ws.rs.Consumes
 import javax.ws.rs.POST
 import javax.ws.rs.Path
+import javax.ws.rs.Produces
+import javax.ws.rs.core.MediaType
 
 @ApplicationScoped
 class FirebaseService {
-    lateinit var firebaseMessaging: FirebaseMessaging
+    fun onStart(@Observes ev: StartupEvent) {
+        if (FirebaseApp.getApps().isEmpty()) {
+            val serviceAccount =
+                FileInputStream("C:\\sbas\\www\\public\\firebase\\serviceAccountKey.json")
 
-    fun onStart(@Observes event: StartupEvent) {
-        val serviceAccount = FileInputStream("C://sbas/www/public/firebase/sbas-4c928-firebase-adminsdk-1rbzo-51e04a6c61.json")
+            val options = FirebaseOptions.builder()
+                .setCredentials(GoogleCredentials.fromStream(serviceAccount))
+                .setStorageBucket("sbas-4c928.appspot.com")
+                .build()
 
-        val options = FirebaseOptions.Builder()
-            .setCredentials(GoogleCredentials.fromStream(serviceAccount))
+            FirebaseApp.initializeApp(options)
+        }
+    }
+
+    fun sendMessage(title: String, body: String, token: String) {
+        val message = Message.builder()
+            .putData("title", title)
+            .putData("body", body)
+            .setToken(token)
             .build()
 
-        FirebaseApp.initializeApp(options)
-        firebaseMessaging = FirebaseMessaging.getInstance()
+        val messageId = FirebaseMessaging.getInstance().send(message)
+        println("Sent message with ID: $messageId")
     }
 }
 
-@Path("/firebase")
-class FirebaseResource @Inject constructor(private val firebaseService: FirebaseService) {
+@NoArg
+data class MessageRequest(val title: String, val body: String, val token: String)
+
+@Path("/send")
+class SendMessageResource {
+    @Inject
+    lateinit var firebaseService: FirebaseService
+    @Inject
+    lateinit var log: Logger
 
     @POST
-    @Path("/send-message")
-    fun sendMessage(): String {
-        val message = Message.builder()
-            .putData("title", "Hello from Kotlin Quarkus!")
-            .putData("body", "Firebase Cloud Messaging is working.")
-            .setTopic("your_topic")
-            .build()
-
-        val response = firebaseService.firebaseMessaging.send(message)
-        return "Sent message: $response"
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Produces(MediaType.TEXT_PLAIN)
+    fun send(messageRequest: MessageRequest): String {
+        firebaseService.sendMessage(messageRequest.title, messageRequest.body, messageRequest.token)
+        return "Message sent"
     }
 }

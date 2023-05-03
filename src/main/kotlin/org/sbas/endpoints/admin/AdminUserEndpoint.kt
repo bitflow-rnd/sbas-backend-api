@@ -3,6 +3,7 @@ package org.sbas.endpoints.admin
 import org.eclipse.microprofile.openapi.annotations.Operation
 import org.eclipse.microprofile.openapi.annotations.tags.Tag
 import org.jboss.logging.Logger
+import org.sbas.parameters.UpdatePushKeyRequest
 import org.sbas.parameters.UserIdRequest
 import org.sbas.parameters.UserRequest
 import org.sbas.services.UserService
@@ -53,4 +54,12 @@ class AdminUserEndpoint {
     fun deleteUser(@Valid request: UserIdRequest): Response {
         return Response.ok(userService.deleteUser(request)).build()
     }
+
+    @Operation(summary = "push key 등록", description = "firebase push key 등록 API")
+    @POST
+    @Path("push-key")
+    fun updatePushKey(request: UpdatePushKeyRequest): Response {
+        return Response.ok(userService.updatePushKey(request)).build()
+    }
+
 }

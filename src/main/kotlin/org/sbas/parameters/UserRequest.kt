@@ -36,3 +36,10 @@ data class LoginRequest (
     @JsonProperty("pw")
     var pw: String,
 )
+
+data class UpdatePushKeyRequest(
+    @JsonProperty("id")
+    var id: String,
+    @JsonProperty("pushKey")
+    var pushKey: String,
+)
