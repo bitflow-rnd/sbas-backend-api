@@ -26,77 +26,77 @@ class AdminCommonEndpoint {
     @Operation(summary = "공통코드 그룹 목록", description = "공통코드 그룹 목록")
     @GET
     @Path("codegrps")
-    fun codegrps(): Response {
+    fun getCodeGroups(): Response {
         return Response.ok(commonService.findBaseCdGrpList()).build()
     }
 
     @Operation(summary = "공통코드 그룹 수정", description = "공통코드 그룹 수정")
     @POST
     @Path("modcodegrps")
-    fun modcodegrps(baseCodeUpdateReq: BaseCodeUpdateReq): Response {
+    fun modifyCodeGroups(baseCodeUpdateReq: BaseCodeUpdateReq): Response {
         return Response.ok(commonService.updateBaseCdGrp(baseCodeUpdateReq)).build()
     }
 
     @Operation(summary = "공통코드 그룹 삭제", description = "공통코드 그룹 삭제")
     @POST
     @Path("delcodegrps/{cdGrpId}")
-    fun delcodegrps(@RestPath cdGrpId: String): Response {
+    fun deleteCodeGroups(@RestPath cdGrpId: String): Response {
         return Response.ok(commonService.deleteBaseCdGrp(cdGrpId)).build()
     }
 
     @Operation(summary = "공통코드 등록", description = "공통코드 등록")
     @POST
     @Path("regcode")
-    fun regcode(baseCodeSaveReq: BaseCodeSaveReq): Response {
+    fun regCode(baseCodeSaveReq: BaseCodeSaveReq): Response {
         return Response.ok(commonService.saveBaseCode(baseCodeSaveReq)).build()
     }
 
     @Operation(summary = "곻통코드 수정", description = "")
     @POST
     @Path("modcode")
-    fun modcode(baseCodeUpdateReq: BaseCodeUpdateReq): Response {
+    fun modifyCode(baseCodeUpdateReq: BaseCodeUpdateReq): Response {
         return Response.ok(commonService.updateBaseCode(baseCodeUpdateReq)).build()
     }
 
     @Operation(summary = "공통코드 삭제", description = "")
     @POST
     @Path("delcode")
-    fun delcode(baseCodeUpdateReq: BaseCodeUpdateReq): Response {
+    fun deleteCode(baseCodeUpdateReq: BaseCodeUpdateReq): Response {
         return Response.ok(commonService.deleteBaseCode(baseCodeUpdateReq)).build()
     }
 
     @Operation(summary = "", description = "")
     @GET
     @Path("egencodegrps")
-    fun egencodegrps(): Response {
+    fun getEGenCodeGroups(): Response {
         return Response.ok().build()
     }
 
     @Operation(summary = "", description = "")
     @POST
     @Path("modegencodegrps/{param}")
-    fun modegencodegrps(@RestPath param: String): Response {
+    fun modifyEGenCodeGroups(@RestPath param: String): Response {
         return Response.ok().build()
     }
 
     @Operation(summary = "", description = "")
     @POST
     @Path("delegencodegrps/{param}")
-    fun delegencodegrps(@RestPath param: String): Response {
+    fun deleteEGenCodeGroups(@RestPath param: String): Response {
         return Response.ok().build()
     }
 
     @Operation(summary = "", description = "")
     @POST
     @Path("modegencode/{param}")
-    fun modegencode(@RestPath param: String): Response {
+    fun modifyEGenCode(@RestPath param: String): Response {
         return Response.ok().build()
     }
 
     @Operation(summary = "", description = "")
     @POST
     @Path("delegencode/{param}")
-    fun delegencode(@RestPath param: String): Response {
+    fun deleteEGenCode(@RestPath param: String): Response {
         return Response.ok().build()
     }
 }

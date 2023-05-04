@@ -3,6 +3,7 @@ package org.sbas.utils
 import io.vertx.core.json.JsonObject
 import kotlinx.coroutines.*
 import org.jboss.logging.Logger
+import org.jboss.resteasy.reactive.multipart.FileUpload
 import org.sbas.entities.talk.TalkMsg
 import org.sbas.entities.talk.TalkUser
 import org.sbas.entities.talk.arrToJson
@@ -13,6 +14,8 @@ import org.sbas.repositories.TalkRoomRepository
 import org.sbas.repositories.TalkUserRepository
 import org.sbas.responses.messages.TalkRoomResponse
 import org.sbas.restclients.FirebaseService
+import java.io.ByteArrayOutputStream
+import java.nio.ByteBuffer
 import javax.enterprise.context.ApplicationScoped
 import javax.inject.Inject
 import javax.websocket.*
@@ -50,6 +53,8 @@ class TalkRoom {
     @Inject
     private lateinit var fileHandler: FileHandler
 
+    private val fileData = ByteArrayOutputStream()
+
     @OnOpen
     fun onOpen(session: Session, @PathParam("tkrmId") tkrmId: String, @PathParam("userId") userId: String) {
         updateTalkMsg(tkrmId)
@@ -72,19 +77,19 @@ class TalkRoom {
 
     }
 
-//    @OnMessage
-//    fun onMessage(session: Session, message: ByteBuffer, @PathParam("tkrmId") tkrmId: String, @PathParam("userId") userId: String){
-//        val file = FileUpload(message)
-//        var addMsg: TalkMsg
-//        val attcId = fileUpload(file)
-//
+    @OnMessage
+    fun onMessage(session: Session, message: ByteBuffer, @PathParam("tkrmId") tkrmId: String, @PathParam("userId") userId: String){
+        val file = fileData.write(message.array())
+        var addMsg: TalkMsg
+        log.warn(file.toString())
+
 //        runBlocking(Dispatchers.IO) {
 //            addMsg = talkMsgRepository.insertFile(attcId, tkrmId, userId)
 //        }
-//
+
 //        sendMsg(addMsg)
-//
-//    }
+
+    }
 
     @OnClose
     fun onClose(session: Session, @PathParam("userId") userId: String, @PathParam("tkrmId") tkrmId: String) {
@@ -124,8 +129,8 @@ class TalkRoom {
             }
     }
 
-//    fun createMessageFile(param: FileUpload): FileDto? {
-//        val format = DateTimeFormatter.ofPattern("yyyyMM")
+//    private fun fileUpload(file: FileUpload): String {
+//        val result = fileHandler.createPublicFile(file)
 //    }
 
 }

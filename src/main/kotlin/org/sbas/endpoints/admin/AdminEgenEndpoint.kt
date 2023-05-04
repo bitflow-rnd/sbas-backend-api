@@ -26,28 +26,28 @@ class AdminEgenEndpoint {
     @Operation(summary = "E-GEN 의료기관 정보 동기화", description = "")
     @POST
     @Path("syncmedinsts")
-    fun syncmedinsts(): Response {
+    fun syncMedInsts(): Response {
         return Response.ok().build()
     }
 
     @Operation(summary = "E-GEN 실시간가용병상 정보 동기화", description = "")
     @POST
     @Path("syncrealtmavailbeds")
-    fun syncrealtmavailbeds(): Response {
+    fun syncRealTmAvailBeds(): Response {
         return Response.ok().build()
     }
 
     @Operation(summary = "E-GEN 공통코드 동기화", description = "")
     @POST
     @Path("synccommcodes")
-    fun synccommcodes(): Response {
+    fun syncCommCodes(): Response {
         return Response.ok().build()
     }
 
     @Operation(summary = "E-GEN 코드마스터 정보 조회", description = "E-GEN 코드마스터 정보 조회")
     @GET
     @Path("getCodeMastInfo/{cmMid}")
-    fun codeMastInfo(cmMid: EgenCmMid): Response {
+    fun getCodeMastInfo(cmMid: EgenCmMid): Response {
         val res = egenService.getCodeMastInfo(cmMid).toString()
         return makeToSuccessResponseWith(res)
     }
@@ -55,7 +55,7 @@ class AdminEgenEndpoint {
     @Operation(summary = "병‧의원 목록정보 조회", description = "병‧의원 목록정보 조회")
     @GET
     @Path("hsptlMdcncList")
-    fun hsptlMdcncList(param: EgenApiListInfoParams): Response {
+    fun getHsptlMdcncList(param: EgenApiListInfoParams): Response {
         val res = egenService.getHsptlMdcncListInfoInqire(param).toString()
         return makeToSuccessResponseWith(res)
     }
@@ -63,7 +63,7 @@ class AdminEgenEndpoint {
     @Operation(summary = "병‧의원 위치정보 조회", description = "")
     @GET
     @Path("hsptlMdcncLcInfo")
-    fun hsptlMdcncLcInfo(param: EgenApiLcInfoParams): Response {
+    fun getHsptlMdcncLcInfo(param: EgenApiLcInfoParams): Response {
         val res = egenService.getHsptlMdcncLcinfoInqire(param).toString()
         return makeToSuccessResponseWith(res)
     }
@@ -71,7 +71,7 @@ class AdminEgenEndpoint {
     @Operation(summary = "병의원 기본정보 조회", description = "")
     @GET
     @Path("hsptlBassInfo")
-    fun hsptlBassInfo(param: EgenApiBassInfoParams): Response {
+    fun getHsptlBassInfo(param: EgenApiBassInfoParams): Response {
         val res = egenService.getHsptlBassInfoInqire(param).toString()
         return makeToSuccessResponseWith(res)
     }
@@ -79,7 +79,7 @@ class AdminEgenEndpoint {
     @Operation(summary = "응급의료기관 목록정보 조회", description = "")
     @GET
     @Path("egytList")
-    fun egytList(param: EgenApiListInfoParams): Response {
+    fun getEgytList(param: EgenApiListInfoParams): Response {
         val res = egenService.getEgytListInfoInqire(param).toString()
         return makeToSuccessResponseWith(res)
     }
@@ -87,7 +87,7 @@ class AdminEgenEndpoint {
     @Operation(summary = "응급의료기관 위치정보 조회", description = "")
     @GET
     @Path("egytLcInfo")
-    fun egytLcInfo(param: EgenApiLcInfoParams): Response {
+    fun getEgytLcInfo(param: EgenApiLcInfoParams): Response {
         val res = egenService.getEgytLcinfoInqire(param).toString()
         return makeToSuccessResponseWith(res)
     }
@@ -95,7 +95,7 @@ class AdminEgenEndpoint {
     @Operation(summary = "응급의료기관 기본정보 조회", description = "")
     @GET
     @Path("egytBassInfo")
-    fun egytBassInfo(param: EgenApiBassInfoParams): Response {
+    fun getEgytBassInfo(param: EgenApiBassInfoParams): Response {
         val res = egenService.getEgytBassInfoInqire(param).toString()
         return makeToSuccessResponseWith(res)
     }
