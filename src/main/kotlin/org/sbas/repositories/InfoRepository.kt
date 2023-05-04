@@ -1,9 +1,7 @@
 package org.sbas.repositories
 
 import io.quarkus.hibernate.orm.panache.kotlin.PanacheRepositoryBase
-import org.sbas.dtos.InfoPtSearchDto
 import org.sbas.dtos.InfoPtSearchDto2
-import org.sbas.dtos.InfoPtSearchDtoJava
 import org.sbas.entities.info.*
 import org.sbas.parameters.InstCdParameters
 import javax.enterprise.context.ApplicationScoped

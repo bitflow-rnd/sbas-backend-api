@@ -243,17 +243,16 @@ class PatientService {
 //        val query =
 //            entityManager.createNativeQuery("select * from info_pt where pt_nm = :ptNm", InfoPtSearchDto::class.java)
 //        query.setParameter("ptNm", searchParam.ptNm)
-        val list = mutableListOf<String>()
         val query = infoPtRepository.findInfoPtSearch()
         query.forEach {
             if (it.ptTypeCd != null) {
-                it.list2!!.addAll(it.ptTypeCd!!.split(";"))
+                it.tagList!!.addAll(it.ptTypeCd!!.split(";"))
             }
             if (it.svrtTypeCd != null) {
-                it.list2!!.addAll(it.svrtTypeCd!!.split(";"))
+                it.tagList!!.addAll(it.svrtTypeCd!!.split(";"))
             }
             if (it.undrDsesCd != null) {
-                it.list2!!.addAll(it.undrDsesCd!!.split(";"))
+                it.tagList!!.addAll(it.undrDsesCd!!.split(";"))
             }
 //            if (it.rrno2 == "3" || it.rrno2 == "4") {
 //                it.age = calculateAge("20"+it.rrno1)

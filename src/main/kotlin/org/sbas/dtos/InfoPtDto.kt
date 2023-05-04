@@ -5,6 +5,7 @@ import org.sbas.entities.info.InfoPt
 import org.sbas.utils.NoArg
 import java.time.Instant
 
+
 @NoArg
 data class InfoPtDto(
     val ptNm: String,
@@ -99,7 +100,7 @@ class InfoPtSearchDto2 {
     var admsStatCd: String?
     var admsStatNm: String?
     var age: Int?
-    var list2: MutableList<String>? = mutableListOf()
+    var tagList: MutableList<String>? = mutableListOf()
 
     constructor(
         ptId: String?,
@@ -121,7 +122,7 @@ class InfoPtSearchDto2 {
         admsStatCd: String?,
         admsStatNm: String?,
         age: Int?,
-        list2: MutableList<String>?
+        tagList: MutableList<String>?
     ) {
         this.ptId = ptId
         this.bdasSeq = bdasSeq
@@ -142,7 +143,7 @@ class InfoPtSearchDto2 {
         this.admsStatCd = admsStatCd
         this.admsStatNm = admsStatNm
         this.age = age
-        this.list2 = mutableListOf()
+        this.tagList = mutableListOf()
     }
 
     constructor(
