@@ -1,7 +1,7 @@
 package org.sbas.repositories
 
 import io.quarkus.hibernate.orm.panache.kotlin.PanacheRepositoryBase
-import org.sbas.dtos.InfoPtSearchDto2
+import org.sbas.dtos.InfoPtSearchDto
 import org.sbas.entities.info.*
 import org.sbas.parameters.InstCdParameters
 import javax.enterprise.context.ApplicationScoped
@@ -17,8 +17,8 @@ class InfoPtRepository : PanacheRepositoryBase<InfoPt, String> {
     }
 
     @Suppress("UNCHECKED_CAST")
-    fun findInfoPtSearch(): List<InfoPtSearchDto2> {
-        val query = "select new org.sbas.dtos.InfoPtSearchDto2(a.ptId, b.id.bdasSeq, a.ptNm, a.gndr, a.rrno1, a.rrno2, " +
+    fun findInfoPtSearch(): List<InfoPtSearchDto> {
+        val query = "select new org.sbas.dtos.InfoPtSearchDto(a.ptId, b.id.bdasSeq, a.ptNm, a.gndr, " +
                 "a.dstr1Cd, a.dstr2Cd, a.telno, a.natiCd, a.bedStatCd, a.bedStatNm, b.updtDttm, " +
                 "b.ptTypeCd, b.svrtTypeCd, b.undrDsesCd, ba.admsStatCd, ba.admsStatNm, " +
                 "EXTRACT(year FROM age(CURRENT_DATE, to_date(case a.rrno2 when '3' then concat('20',a.rrno1) when '4' then concat('20',a.rrno1) else concat('19',a.rrno1) end, 'yyyyMMdd')))) " +
@@ -29,7 +29,7 @@ class InfoPtRepository : PanacheRepositoryBase<InfoPt, String> {
                 "order by b.updtDttm desc"
 //        return find(query).project(InfoPtSearchDto::class.java).list()
 
-        return getEntityManager().createQuery(query).resultList as List<InfoPtSearchDto2>
+        return getEntityManager().createQuery(query).resultList as List<InfoPtSearchDto>
     }
 }
 

@@ -265,7 +265,7 @@ class PatientService {
         res["count"] = query.size
         res["items"] = query
 
-        return CommonResponse(query)
+        return CommonResponse(res)
     }
 
     private fun calculateAge(birth: String): Int {
