@@ -12,6 +12,7 @@ import org.sbas.repositories.TalkMsgRepository
 import org.sbas.repositories.TalkRoomRepository
 import org.sbas.repositories.TalkUserRepository
 import org.sbas.responses.messages.TalkRoomResponse
+import org.sbas.restclients.FirebaseService
 import javax.enterprise.context.ApplicationScoped
 import javax.inject.Inject
 import javax.websocket.*

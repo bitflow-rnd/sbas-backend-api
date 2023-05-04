@@ -270,7 +270,7 @@ class UserService {
 
         findUser.pushKey = request.pushKey
 
-        return CommonResponse("push key 등록")
+        return CommonResponse("push key가 등록되었습니다.")
     }
 
 }
