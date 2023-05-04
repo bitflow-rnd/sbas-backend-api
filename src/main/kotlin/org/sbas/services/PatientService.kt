@@ -177,34 +177,6 @@ class PatientService {
         }
     }
 
-//    @Transactional
-//    fun findInfoPt(param: SearchParameters): CommonResponse<*> {
-//        val map = mutableMapOf<String, Any>()
-//        addIfNotNull(map, "gndr", param.gndr)
-//        addIfNotNull(map, "nati_cd", param.natiCd)
-//        addIfNotNull(map, "dstr_1_cd", param.dstr1Cd)
-//        addIfNotNull(map, "dstr_2_cd", param.dstr2Cd)
-//        val res = mutableMapOf<String, Any>()
-//
-//        if (map.isEmpty()) {
-//            val infoPtList = infoPtRepository.findAll().list()
-//            res["items"] = infoPtList
-//            res["count"] = infoPtList.count()
-//            return CommonResponse(res)
-//        }
-//
-//        val query = map.entries.stream()
-//            .map { entry -> "${entry.key}='${entry.value}'" }
-//            .collect(Collectors.joining(" and "))
-//
-////        log.debug("res========> $query")
-//        val infoPtList = infoPtRepository.find(query).list()
-//        res["items"] = infoPtList
-//        res["count"] = infoPtList.count()
-//
-//        return CommonResponse(res)
-//    }
-
     @Transactional
     fun updateInfoPt(ptId: String, infoPtDto: InfoPtDto): CommonResponse<String> {
         val findInfoPt = infoPtRepository.findById(ptId) ?: throw NotFoundException("$ptId not found")
@@ -227,22 +199,7 @@ class PatientService {
     }
 
     @Transactional
-    fun findInfoPt2(searchParam: SearchParameters): CommonResponse<*> {
-//        val query = dynamicQueryBuilder.createDynamicQuery(InfoPtSearchDto(), searchParam)
-//        val criteria = infoPtRepository.getEntityManager().unwrap(Session::class.java).createCriteria(InfoPt::class.java)
-//        val infoPtList = query.resultList
-//        val builder: CriteriaBuilder = infoPtRepository.getEntityManager().criteriaBuilder
-//        val query = builder.createQuery(String::class.java)
-//        val root = query.from(InfoPtSearchDto::class.java)
-//
-//        query.select(root.get("ptId"))
-//        query.where(root.get<String>("ptId").`in`<String>(criteria))
-//
-//        return infoPtRepository.getEntityManager().createQuery(query).resultList as List<String>
-//        val entityManager = infoPtRepository.getEntityManager()
-//        val query =
-//            entityManager.createNativeQuery("select * from info_pt where pt_nm = :ptNm", InfoPtSearchDto::class.java)
-//        query.setParameter("ptNm", searchParam.ptNm)
+    fun findInfoPt(searchParam: SearchParameters): CommonResponse<*> {
         val query = infoPtRepository.findInfoPtSearch()
         query.forEach {
             if (it.ptTypeCd != null) {
@@ -254,11 +211,6 @@ class PatientService {
             if (it.undrDsesCd != null) {
                 it.tagList!!.addAll(it.undrDsesCd!!.split(";"))
             }
-//            if (it.rrno2 == "3" || it.rrno2 == "4") {
-//                it.age = calculateAge("20"+it.rrno1)
-//            } else {
-//                it.age = calculateAge("19"+it.rrno1)
-//            }
         }
 
         val res = mutableMapOf<String, Any>()
@@ -308,10 +260,4 @@ class PatientService {
             throw NotFoundException("$attcId delete fail")
         }
     }
-
-//    private fun addIfNotNull(map: MutableMap<String, Any>, key: String, value: String?) {
-//        if (!value.isNullOrBlank()) {
-//            map[key] = value
-//        }
-//    }
 }

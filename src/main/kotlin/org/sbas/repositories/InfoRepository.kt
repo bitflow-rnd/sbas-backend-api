@@ -16,7 +16,6 @@ class InfoPtRepository : PanacheRepositoryBase<InfoPt, String> {
         return find("dstr_1_cd = '$dstr1Cd' and dstr_2_cd = '$dstr2Cd'").list()
     }
 
-    @Suppress("UNCHECKED_CAST")
     fun findInfoPtSearch(): List<InfoPtSearchDto> {
         val query = "select new org.sbas.dtos.InfoPtSearchDto(a.ptId, b.id.bdasSeq, a.ptNm, a.gndr, " +
                 "a.dstr1Cd, a.dstr2Cd, a.telno, a.natiCd, a.bedStatCd, a.bedStatNm, b.updtDttm, " +
@@ -29,7 +28,8 @@ class InfoPtRepository : PanacheRepositoryBase<InfoPt, String> {
                 "order by b.updtDttm desc"
 //        return find(query).project(InfoPtSearchDto::class.java).list()
 
-        return getEntityManager().createQuery(query).resultList as List<InfoPtSearchDto>
+
+        return getEntityManager().createQuery(query, InfoPtSearchDto::class.java).resultList
     }
 }
 
