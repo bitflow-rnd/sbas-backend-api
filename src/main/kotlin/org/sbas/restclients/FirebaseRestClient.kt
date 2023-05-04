@@ -84,8 +84,6 @@ class SendMessageResource {
     lateinit var userRepository: InfoUserRepository
 
     @POST
-    @Consumes(MediaType.APPLICATION_JSON)
-    @Produces(MediaType.TEXT_PLAIN)
     fun send(sendPushRequest: SendPushRequest): CommonResponse<String> {
         val findUser = userRepository.findByUserId(sendPushRequest.to) ?: throw NotFoundException("ID를 찾을 수 없습니다.")
 
