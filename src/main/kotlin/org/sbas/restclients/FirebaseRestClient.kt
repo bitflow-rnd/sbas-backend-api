@@ -1,4 +1,4 @@
-package org.sbas.utils
+package org.sbas.restclients
 
 import com.google.auth.oauth2.GoogleCredentials
 import com.google.firebase.FirebaseApp
@@ -88,7 +88,19 @@ class SendMessageResource {
     @Produces(MediaType.TEXT_PLAIN)
     fun send(sendPushRequest: SendPushRequest): CommonResponse<String> {
         val findUser = userRepository.findByUserId(sendPushRequest.to) ?: throw NotFoundException("ID를 찾을 수 없습니다.")
-        firebaseService.sendMessage(sendPushRequest.from, sendPushRequest.msg, findUser.pushKey!!)
-        return CommonResponse("Message sent")
+
+        val notification = Notification.builder()
+            .setTitle(sendPushRequest.from)
+            .setBody(sendPushRequest.msg)
+            .build()
+
+        val message = Message.builder()
+            .setNotification(notification)
+            .setToken(findUser.pushKey)
+            .build()
+
+        val messageId = FirebaseMessaging.getInstance().send(message)
+
+        return CommonResponse(messageId)
     }
 }
