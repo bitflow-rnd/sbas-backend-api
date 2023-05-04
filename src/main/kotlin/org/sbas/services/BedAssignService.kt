@@ -112,9 +112,10 @@ class BedAssignService {
     fun regstrtpoint(bdasReqDprtInfo: BdasReqDprtInfo): CommonResponse<String> {
         // bdasEsvy 에서 bdasSeq 가져오기
         val bdasEsvy = bdasEsvyRepository.findByPtIdWithLatestBdasSeq(bdasReqDprtInfo.ptId) ?: throw NotFoundException("${bdasReqDprtInfo.ptId} not found")
+        log.debug(">>>>>>>>>>>>${bdasEsvy.bdasSeq}")
 
         // 저장되어 있는 bdasReq
-        val findBdasReq = bdasReqRepository.findByPtIdAndBdasSeq(bdasReqDprtInfo.ptId, bdasEsvy.bdasSeq!!) ?: throw NotFoundException("bdasReq not found")
+        val findBdasReq = bdasReqRepository.findByPtIdAndBdasSeq(bdasReqDprtInfo.ptId, bdasEsvy.bdasSeq!!) ?: throw NotFoundException("병상 배정 요청 정보가 없습니다.")
 
         // 출발지 위도, 경도 설정
         setDepartureCoordinates(bdasReqDprtInfo)

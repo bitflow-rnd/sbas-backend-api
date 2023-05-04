@@ -6,6 +6,7 @@ import org.sbas.constants.BedStat
 import org.sbas.dtos.InfoPtDto
 import org.sbas.entities.CommonEntity
 import org.sbas.entities.StringPrefixedSequenceIdGenerator
+import java.io.Serial
 import java.io.Serializable
 import javax.persistence.*
 
@@ -27,7 +28,7 @@ class InfoPt(
             Parameter(name = StringPrefixedSequenceIdGenerator.incrementSize, value = "1")
         ]) // PT00000000
     @Column(name = "pt_id", nullable = false, length = 10)
-    var id: String? = null, // 환자 ID
+    var ptId: String? = null, // 환자 ID
 
     @Column(name = "pt_nm", nullable = false, length = 10)
     var ptNm: String? = null, // 이름
@@ -110,5 +111,10 @@ class InfoPt(
         this.mpno = infoPtDto.mpno
         this.job = infoPtDto.job
         this.attcId = infoPtDto.attcId
+    }
+
+    companion object {
+        @Serial
+        private const val serialVersionUID: Long = -3263990101530553632L
     }
 }
