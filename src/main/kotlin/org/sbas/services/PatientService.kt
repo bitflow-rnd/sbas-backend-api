@@ -4,7 +4,10 @@ import org.eclipse.microprofile.config.inject.ConfigProperty
 import org.eclipse.microprofile.jwt.JsonWebToken
 import org.jboss.logging.Logger
 import org.jboss.resteasy.reactive.multipart.FileUpload
+import org.sbas.constants.PtTypeCd
 import org.sbas.constants.SbasConst
+import org.sbas.constants.SvrtTypeCd
+import org.sbas.constants.UndrDsesCd
 import org.sbas.dtos.InfoPtDto
 import org.sbas.dtos.toEntity
 import org.sbas.entities.base.BaseAttc
@@ -201,15 +204,18 @@ class PatientService {
     @Transactional
     fun findInfoPt(searchParam: SearchParameters): CommonResponse<*> {
         val query = infoPtRepository.findInfoPtSearch()
-        query.forEach {
-            if (it.ptTypeCd != null) {
-                it.tagList!!.addAll(it.ptTypeCd!!.split(";"))
+        query.forEach { dto ->
+            if (dto.ptTypeCd != null) {
+                val split = dto.ptTypeCd!!.split(";")
+                dto.tagList!!.addAll(split.map { PtTypeCd.valueOf(it).cdNm })
             }
-            if (it.svrtTypeCd != null) {
-                it.tagList!!.addAll(it.svrtTypeCd!!.split(";"))
+            if (dto.svrtTypeCd != null) {
+                val split = dto.svrtTypeCd!!.split(";")
+                dto.tagList!!.addAll(split.map { SvrtTypeCd.valueOf(it).cdNm })
             }
-            if (it.undrDsesCd != null) {
-                it.tagList!!.addAll(it.undrDsesCd!!.split(";"))
+            if (dto.undrDsesCd != null) {
+                val split = dto.undrDsesCd!!.split(";")
+                dto.tagList!!.addAll(split.map { UndrDsesCd.valueOf(it).cdNm })
             }
         }
 
