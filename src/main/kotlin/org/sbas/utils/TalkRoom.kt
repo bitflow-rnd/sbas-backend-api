@@ -52,11 +52,6 @@ class TalkRoom {
     @Inject
     private lateinit var fileHandler: FileHandler
 
-    @ConfigProperty(name = "sbas.websocket.max-frame-size")
-    private lateinit var maxFrameSize: Integer
-
-    private val fileData = ByteArrayOutputStream()
-
     @OnOpen
     fun onOpen(session: Session, @PathParam("tkrmId") tkrmId: String, @PathParam("userId") userId: String) {
         updateTalkMsg(tkrmId)
