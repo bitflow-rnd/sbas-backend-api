@@ -201,8 +201,8 @@ class PatientService {
     }
 
     @Transactional
-    fun findInfoPt(ptId: String): InfoPt {
-        return infoPtRepository.findById(ptId) ?: throw NotFoundException("$ptId not found")
+    fun findInfoPt(ptId: String): CommonResponse<InfoPt> {
+        return CommonResponse(infoPtRepository.findById(ptId) ?: throw NotFoundException("$ptId not found"))
     }
 
     @Transactional

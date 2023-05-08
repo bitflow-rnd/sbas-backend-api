@@ -57,12 +57,6 @@ class BdasAdms(
 
     @Column(name = "msg", length = 500)
     var msg: String? = null, // 퇴원 사유 상세
-
-    @Column(name = "adms_stat_cd")
-    var admsStatCd: String? = null,
-
-    @Column(name = "adms_stat_nm")
-    var admsStatNm: String? = null,
 ) : CommonEntity()
 
 @Embeddable

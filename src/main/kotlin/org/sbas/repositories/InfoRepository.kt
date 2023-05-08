@@ -20,7 +20,7 @@ class InfoPtRepository : PanacheRepositoryBase<InfoPt, String> {
         val query = "select new org.sbas.dtos.InfoPtSearchDto(a.ptId, b.id.bdasSeq, a.ptNm, a.gndr, " +
                 "a.dstr1Cd, (select cdNm from BaseCode where id.cdId = a.dstr1Cd), a.dstr2Cd, (select cdNm from BaseCode where id.cdId = a.dstr2Cd), " +
                 "ba.hospId, '', a.mpno, a.natiCd, a.bedStatCd, a.bedStatNm, b.updtDttm, " +
-                "b.ptTypeCd, b.svrtTypeCd, b.undrDsesCd, ba.admsStatCd, ba.admsStatNm, " +
+                "b.ptTypeCd, b.svrtTypeCd, b.undrDsesCd, " +
                 "EXTRACT(year FROM age(CURRENT_DATE, to_date(case a.rrno2 when '3' then concat('20',a.rrno1) when '4' then concat('20',a.rrno1) else concat('19',a.rrno1) end, 'yyyyMMdd')))) " +
                 "FROM InfoPt a " +
                 "inner join BdasReq b on a.ptId = b.id.ptId " +
