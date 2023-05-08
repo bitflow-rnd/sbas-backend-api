@@ -21,7 +21,7 @@ import javax.websocket.server.PathParam
 import javax.websocket.server.ServerEndpoint
 
 
-@ServerEndpoint("/chat-rooms/{tkrmId}/{userId}", configurator = CustomWebsocketConfigurator::class)
+@ServerEndpoint("/chat-rooms/{tkrmId}/{userId}")
 @ApplicationScoped
 class TalkRoom {
 
@@ -74,17 +74,12 @@ class TalkRoom {
     }
 
     @OnMessage
-    fun onMessage(session: Session, message: ByteArray, @PathParam("tkrmId") tkrmId: String, @PathParam("userId") userId: String){
-//        val file = fileData.write(message.array())
-//        var addMsg: TalkMsg
-        log.warn(message.toString())
-
-//        runBlocking(Dispatchers.IO) {
-//            addMsg = talkMsgRepository.insertFile(attcId, tkrmId, userId)
-//        }
-
-//        sendMsg(addMsg)
-
+    fun onMessage(session: Session, message: String, attcId: String, @PathParam("tkrmId") tkrmId: String, @PathParam("userId") userId: String) {
+        var addMsg: TalkMsg
+        runBlocking(Dispatchers.IO) {
+            addMsg = talkMsgRepository.insertFile(attcId, tkrmId, userId)
+        }
+        sendMsg(addMsg, tkrmId, userId)
     }
 
     @OnClose

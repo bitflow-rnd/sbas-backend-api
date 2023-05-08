@@ -69,7 +69,7 @@ class TalkMsgRepository : PanacheRepositoryBase<TalkMsg, TalkMsgId> {
         val insertFile = TalkMsg(
             id = TalkMsgId(tkrmId, (recentMsgSeq?.id?.msgSeq ?: 0) + 1, 1),
             histCd = "1",
-            msg = "",
+            msg = "사진",
             attcId = file,
             rgstUserId = userId,
             rgstDttm = Instant.now(),
