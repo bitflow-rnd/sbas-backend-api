@@ -66,20 +66,15 @@ class TalkRoom {
     fun onMessage(session: Session, message: String, @PathParam("tkrmId") tkrmId: String, @PathParam("userId") userId: String) {
         var addMsg: TalkMsg
         runBlocking(Dispatchers.IO) {
-            addMsg = talkMsgRepository.insertMessage(message, tkrmId, userId)
+            addMsg = if(message.startsWith("attcId")){
+                talkMsgRepository.insertFile(message.substring(7), tkrmId, userId)
+            }else {
+                talkMsgRepository.insertMessage(message, tkrmId, userId)
+            }
         }
 
         sendMsg(addMsg, tkrmId, userId)
 
-    }
-
-    @OnMessage
-    fun onMessage(session: Session, message: String, attcId: String, @PathParam("tkrmId") tkrmId: String, @PathParam("userId") userId: String) {
-        var addMsg: TalkMsg
-        runBlocking(Dispatchers.IO) {
-            addMsg = talkMsgRepository.insertFile(attcId, tkrmId, userId)
-        }
-        sendMsg(addMsg, tkrmId, userId)
     }
 
     @OnClose
