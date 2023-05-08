@@ -184,6 +184,8 @@ class CommonService {
 
         val result = fileName.toEntity(fileTypeCd, null)
 
+        log.warn(result)
+
         baseAttcRepository.persist(result)
 
         return CommonResponse(result.attcId)
