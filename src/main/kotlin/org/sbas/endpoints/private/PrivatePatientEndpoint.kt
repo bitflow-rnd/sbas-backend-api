@@ -18,6 +18,7 @@ import javax.ws.rs.BeanParam
 import javax.ws.rs.GET
 import javax.ws.rs.POST
 import javax.ws.rs.Path
+import javax.ws.rs.QueryParam
 import javax.ws.rs.core.Response
 
 @Tag(name = "환자 관리(사용자 권한용)", description = "로그인 된 사용자(세부권한별 분기) - 환자 등록 및 조회 등")
@@ -58,7 +59,7 @@ class PrivatePatientEndpoint {
         return Response.ok(patientService.findEpidReportByAttcId(attcId)).build()
     }
 
-    @Operation(summary = "환자기본정보 등록", description = "")
+    @Operation(summary = "환자 기본정보 등록", description = "")
     @POST
     @Path("regbasicinfo")
     fun regbasicinfo(infoPtDto: InfoPtDto): Response {
@@ -80,11 +81,11 @@ class PrivatePatientEndpoint {
         return Response.ok(patientService.updateInfoPt(ptId, infoPtDto)).build()
     }
 
-    @Operation(summary = "환자 기본정보 등록", description = "")
+    @Operation(summary = "환자 기본정보 조회", description = "")
     @GET
-    @Path("basicinfo/{param}")
-    fun basicinfo(@RestPath param: String): Response{
-        return Response.ok().build()
+    @Path("basicinfo")
+    fun basicinfo(@QueryParam("ptId") ptId: String): Response {
+        return Response.ok(patientService.findInfoPt(ptId)).build()
     }
 
     @Operation(summary = "환자 병상배정 차수별 상세내용(타임라인) 조회", description = "")
@@ -155,7 +156,7 @@ class PrivatePatientEndpoint {
     @Path("search")
     fun search(@BeanParam searchParam: SearchParameters): Response {
         log.debug("searchParam: $searchParam")
-        return Response.ok(patientService.findInfoPt(searchParam)).build()
+        return Response.ok(patientService.findInfoPtList(searchParam)).build()
     }
 
     @Operation(summary = "내 기관 관련 환자목록", description = "")

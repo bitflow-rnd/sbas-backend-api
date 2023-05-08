@@ -76,10 +76,6 @@ class InfoPtSearchDto {
     var svrtTypeCd: String?
     @JsonIgnore
     var undrDsesCd: String?
-    @JsonIgnore
-    var admsStatCd: String?
-    @JsonIgnore
-    var admsStatNm: String?
     var age: Int?
     var tagList: MutableList<String>? = mutableListOf()
 
@@ -102,8 +98,6 @@ class InfoPtSearchDto {
         ptTypeCd: String?,
         svrtTypeCd: String?,
         undrDsesCd: String?,
-        admsStatCd: String?,
-        admsStatNm: String?,
         age: Int?,
         tagList: MutableList<String>?
     ) {
@@ -125,8 +119,6 @@ class InfoPtSearchDto {
         this.ptTypeCd = ptTypeCd
         this.svrtTypeCd = svrtTypeCd
         this.undrDsesCd = undrDsesCd
-        this.admsStatCd = admsStatCd
-        this.admsStatNm = admsStatNm
         this.age = age
         this.tagList = mutableListOf()
     }
@@ -150,8 +142,6 @@ class InfoPtSearchDto {
         ptTypeCd: String?,
         svrtTypeCd: String?,
         undrDsesCd: String?,
-        admsStatCd: String?,
-        admsStatNm: String?,
         age: Int?,
     ) {
         this.ptId = ptId
@@ -172,8 +162,6 @@ class InfoPtSearchDto {
         this.ptTypeCd = ptTypeCd
         this.svrtTypeCd = svrtTypeCd
         this.undrDsesCd = undrDsesCd
-        this.admsStatCd = admsStatCd
-        this.admsStatNm = admsStatNm
         this.age = age
     }
 }
