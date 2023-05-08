@@ -16,7 +16,7 @@ class InfoPtRepository : PanacheRepositoryBase<InfoPt, String> {
         return find("dstr_1_cd = '$dstr1Cd' and dstr_2_cd = '$dstr2Cd'").list()
     }
 
-    fun findInfoPtSearch(): List<InfoPtSearchDto> {
+    fun findInfoPtList(): List<InfoPtSearchDto> {
         val query = "select new org.sbas.dtos.InfoPtSearchDto(a.ptId, b.id.bdasSeq, a.ptNm, a.gndr, " +
                 "a.dstr1Cd, (select cdNm from BaseCode where id.cdId = a.dstr1Cd), a.dstr2Cd, (select cdNm from BaseCode where id.cdId = a.dstr2Cd), " +
                 "ba.hospId, '', a.mpno, a.natiCd, a.bedStatCd, a.bedStatNm, b.updtDttm, " +

@@ -11,6 +11,7 @@ import org.sbas.constants.UndrDsesCd
 import org.sbas.dtos.InfoPtDto
 import org.sbas.dtos.toEntity
 import org.sbas.entities.base.BaseAttc
+import org.sbas.entities.info.InfoPt
 import org.sbas.handlers.FileHandler
 import org.sbas.handlers.NaverApiHandler
 import org.sbas.parameters.NewsScoreParameters
@@ -25,8 +26,6 @@ import org.sbas.utils.StringUtils
 import java.io.File
 import java.io.IOException
 import java.net.URL
-import java.time.LocalDate
-import java.time.format.DateTimeFormatter
 import javax.enterprise.context.ApplicationScoped
 import javax.inject.Inject
 import javax.transaction.Transactional
@@ -202,8 +201,13 @@ class PatientService {
     }
 
     @Transactional
-    fun findInfoPt(searchParam: SearchParameters): CommonResponse<*> {
-        val query = infoPtRepository.findInfoPtSearch()
+    fun findInfoPt(ptId: String): InfoPt {
+        return infoPtRepository.findById(ptId) ?: throw NotFoundException("$ptId not found")
+    }
+
+    @Transactional
+    fun findInfoPtList(searchParam: SearchParameters): CommonResponse<*> {
+        val query = infoPtRepository.findInfoPtList()
         query.forEach { dto ->
             if (dto.ptTypeCd != null) {
                 val split = dto.ptTypeCd!!.split(";")
@@ -224,17 +228,6 @@ class PatientService {
         res["items"] = query
 
         return CommonResponse(res)
-    }
-
-    private fun calculateAge(birth: String): Int {
-        val now: LocalDate = LocalDate.now()
-        val parsedBirthDate: LocalDate = LocalDate.parse(birth, DateTimeFormatter.ofPattern("yyyyMMdd"))
-        var age = now.minusYears(parsedBirthDate.year.toLong()).year
-
-        if (parsedBirthDate.plusYears(age.toLong()).isAfter(now)) {
-            age -= 1
-        }
-        return age
     }
 
     @Transactional
