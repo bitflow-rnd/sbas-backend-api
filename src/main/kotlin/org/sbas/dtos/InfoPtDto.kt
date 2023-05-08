@@ -60,8 +60,12 @@ class InfoPtSearchDto {
     var ptNm: String?
     var gndr: String?
     var dstr1Cd: String?
+    var dstr1CdNm: String?
     var dstr2Cd: String?
-    var telno: String?
+    var dstr2CdNm: String?
+    var hospId: String?
+    var hospNm: String?
+    var mpno: String?
     var natiCd: String?
     var statCd: BedStat?
     var statCdNm: String?
@@ -85,8 +89,12 @@ class InfoPtSearchDto {
         ptNm: String?,
         gndr: String?,
         dstr1Cd: String?,
+        dstr1CdNm: String?,
         dstr2Cd: String?,
-        telno: String?,
+        dstr2CdNm: String?,
+        hospId: String?,
+        hospNm: String?,
+        mpno: String?,
         natiCd: String?,
         statCd: BedStat?,
         statCdNm: String?,
@@ -104,8 +112,12 @@ class InfoPtSearchDto {
         this.ptNm = ptNm
         this.gndr = gndr
         this.dstr1Cd = dstr1Cd
+        this.dstr1CdNm = dstr1CdNm
         this.dstr2Cd = dstr2Cd
-        this.telno = telno
+        this.dstr2CdNm = dstr2CdNm
+        this.hospId = hospId
+        this.hospNm = hospNm
+        this.mpno = mpno
         this.natiCd = natiCd
         this.statCd = statCd
         this.statCdNm = statCdNm
@@ -125,8 +137,12 @@ class InfoPtSearchDto {
         ptNm: String?,
         gndr: String?,
         dstr1Cd: String?,
+        dstr1CdNm: String?,
         dstr2Cd: String?,
-        telno: String?,
+        dstr2CdNm: String?,
+        hospId: String?,
+        hospNm: String?,
+        mpno: String?,
         natiCd: String?,
         statCd: BedStat?,
         statCdNm: String?,
@@ -143,8 +159,12 @@ class InfoPtSearchDto {
         this.ptNm = ptNm
         this.gndr = gndr
         this.dstr1Cd = dstr1Cd
+        this.dstr1CdNm = dstr1CdNm
         this.dstr2Cd = dstr2Cd
-        this.telno = telno
+        this.dstr2CdNm = dstr2CdNm
+        this.hospId = hospId
+        this.hospNm = hospNm
+        this.mpno = mpno
         this.natiCd = natiCd
         this.statCd = statCd
         this.statCdNm = statCdNm
