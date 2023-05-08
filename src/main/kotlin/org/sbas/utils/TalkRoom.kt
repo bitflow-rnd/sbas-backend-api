@@ -52,8 +52,12 @@ class TalkRoom {
     @Inject
     private lateinit var fileHandler: FileHandler
 
+    @ConfigProperty(name = "quarkus.http.websocket.max-frame-size")
+    private lateinit var maxFrameSize: Integer
+
     @OnOpen
     fun onOpen(session: Session, @PathParam("tkrmId") tkrmId: String, @PathParam("userId") userId: String) {
+        log.warn(maxFrameSize)
         updateTalkMsg(tkrmId)
 
         val sendObject = arrToJson(talkMsg)
@@ -74,7 +78,7 @@ class TalkRoom {
 
     }
 
-    @OnMessage(maxMessageSize = 1048576)
+    @OnMessage
     fun onMessage(session: Session, message: ByteArray, @PathParam("tkrmId") tkrmId: String, @PathParam("userId") userId: String){
 //        val file = fileData.write(message.array())
 //        var addMsg: TalkMsg
