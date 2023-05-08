@@ -74,7 +74,7 @@ class TalkRoom {
 
     }
 
-    @OnMessage
+    @OnMessage(maxMessageSize = 1048576)
     fun onMessage(session: Session, message: ByteArray, @PathParam("tkrmId") tkrmId: String, @PathParam("userId") userId: String){
 //        val file = fileData.write(message.array())
 //        var addMsg: TalkMsg
