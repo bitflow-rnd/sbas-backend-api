@@ -2,8 +2,8 @@ package org.sbas.utils
 
 import io.vertx.core.json.JsonObject
 import kotlinx.coroutines.*
+import org.eclipse.microprofile.config.inject.ConfigProperty
 import org.jboss.logging.Logger
-import org.jboss.resteasy.reactive.multipart.FileUpload
 import org.sbas.entities.talk.TalkMsg
 import org.sbas.entities.talk.TalkUser
 import org.sbas.entities.talk.arrToJson
@@ -15,7 +15,6 @@ import org.sbas.repositories.TalkUserRepository
 import org.sbas.responses.messages.TalkRoomResponse
 import org.sbas.restclients.FirebaseService
 import java.io.ByteArrayOutputStream
-import java.nio.ByteBuffer
 import javax.enterprise.context.ApplicationScoped
 import javax.inject.Inject
 import javax.websocket.*
@@ -52,6 +51,9 @@ class TalkRoom {
 
     @Inject
     private lateinit var fileHandler: FileHandler
+
+    @ConfigProperty(name = "sbas.websocket.max-frame-size")
+    private lateinit var maxFrameSize: Integer
 
     private val fileData = ByteArrayOutputStream()
 
