@@ -78,10 +78,10 @@ class TalkRoom {
     }
 
     @OnMessage
-    fun onMessage(session: Session, message: ByteBuffer, @PathParam("tkrmId") tkrmId: String, @PathParam("userId") userId: String){
+    fun onMessage(session: Session, message: ByteArray, @PathParam("tkrmId") tkrmId: String, @PathParam("userId") userId: String){
 //        val file = fileData.write(message.array())
 //        var addMsg: TalkMsg
-        log.warn(message.get().toString())
+        log.warn(message.toString())
 
 //        runBlocking(Dispatchers.IO) {
 //            addMsg = talkMsgRepository.insertFile(attcId, tkrmId, userId)
