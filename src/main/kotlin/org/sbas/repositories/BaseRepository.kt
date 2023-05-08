@@ -29,4 +29,6 @@ class BaseAttcRepository : PanacheRepositoryBase<BaseAttc, String> {
     fun deleteByAttcId(attcId: String): Long {
         return delete("attc_id = '$attcId'")
     }
+
+    fun findByAttcId(attcId: String) = find("select ba from BaseAttc ba where ba.attcId = '$attcId'").firstResult()
 }
