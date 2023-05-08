@@ -67,6 +67,7 @@ class TalkRoom {
         var addMsg: TalkMsg
         runBlocking(Dispatchers.IO) {
             addMsg = if(message.startsWith("attcId")){
+                log.warn(message)
                 talkMsgRepository.insertFile(message.substring(7), tkrmId, userId)
             }else {
                 talkMsgRepository.insertMessage(message, tkrmId, userId)
