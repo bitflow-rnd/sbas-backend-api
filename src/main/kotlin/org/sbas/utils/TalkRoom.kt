@@ -14,7 +14,6 @@ import org.sbas.repositories.TalkRoomRepository
 import org.sbas.repositories.TalkUserRepository
 import org.sbas.responses.messages.TalkRoomResponse
 import org.sbas.restclients.FirebaseService
-import java.io.ByteArrayOutputStream
 import javax.enterprise.context.ApplicationScoped
 import javax.inject.Inject
 import javax.websocket.*
@@ -22,7 +21,7 @@ import javax.websocket.server.PathParam
 import javax.websocket.server.ServerEndpoint
 
 
-@ServerEndpoint("/chat-rooms/{tkrmId}/{userId}")
+@ServerEndpoint("/chat-rooms/{tkrmId}/{userId}", configurator = CustomWebsocketConfigurator::class)
 @ApplicationScoped
 class TalkRoom {
 
@@ -52,12 +51,8 @@ class TalkRoom {
     @Inject
     private lateinit var fileHandler: FileHandler
 
-    @ConfigProperty(name = "quarkus.http.websocket.max-frame-size")
-    private lateinit var maxFrameSize: Integer
-
     @OnOpen
     fun onOpen(session: Session, @PathParam("tkrmId") tkrmId: String, @PathParam("userId") userId: String) {
-        log.warn(maxFrameSize)
         updateTalkMsg(tkrmId)
 
         val sendObject = arrToJson(talkMsg)
