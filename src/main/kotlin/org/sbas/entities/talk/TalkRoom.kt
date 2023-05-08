@@ -1,9 +1,10 @@
 package org.sbas.entities.talk
 
 import org.sbas.entities.CommonEntity
-import java.io.Serializable
-import java.math.BigDecimal
-import javax.persistence.*
+import javax.persistence.Column
+import javax.persistence.Entity
+import javax.persistence.Id
+import javax.persistence.Table
 import javax.validation.constraints.NotNull
 import javax.validation.constraints.Size
 
@@ -13,18 +14,14 @@ import javax.validation.constraints.Size
 @Entity
 @Table(name = "talk_room")
 class TalkRoom(
-    @EmbeddedId
-    var id: TalkRoomId? = null,
+    @Id
+    @Column(name = "tkrm_id", nullable = false, length = 10)
+    var tkrmId: String? = null, // 대화방 ID
 
     @Size(max = 200)
     @NotNull
     @Column(name = "tkrm_nm", nullable = false, length = 200)
     var tkrmNm: String? = null, // 대화방 이름
-
-    @Size(max = 8)
-    @NotNull
-    @Column(name = "hist_cd", nullable = false, length = 8)
-    var histCd: String? = null, // 이력 코드
 
     @Size(max = 8)
     @NotNull
@@ -41,20 +38,3 @@ class TalkRoom(
     @Column(name = "cret_user_id", nullable = false, length = 10)
     var cretUserId: String? = null,
 ) : CommonEntity()
-
-@Embeddable
-data class TalkRoomId(
-    @Size(max = 10)
-    @NotNull
-    @Column(name = "tkrm_id", nullable = false, length = 10)
-    var tkrmId: String? = null, // 대화방 ID
-
-    @NotNull
-    @Column(name = "hist_seq", nullable = false, precision = 3)
-    var histSeq: BigDecimal? = null, // 이력 순번
-) : Serializable {
-
-    companion object {
-        private const val serialVersionUID = -7947377909525848027L
-    }
-}

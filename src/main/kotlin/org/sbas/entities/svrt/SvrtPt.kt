@@ -2,7 +2,6 @@ package org.sbas.entities.svrt
 
 import org.sbas.entities.CommonEntity
 import java.io.Serializable
-import java.math.BigDecimal
 import javax.persistence.*
 
 /**
@@ -14,20 +13,20 @@ class SvrtPt(
     @EmbeddedId
     var id: SvrtPtId? = null,
 
-    @Column(name = "hosp_pid", nullable = false, length = 10)
-    var hospPid: String? = null, // 병원 ID
+    @Column(name = "pid", nullable = false, length = 10)
+    var pid: String? = null, // 병원 PID
 
-    @Column(name = "mon_strt_dt", nullable = false, length = 8)
-    var monStrtDt: String? = null, // 관찰 시작 날짜
+    @Column(name = "rec_strt_dt", nullable = false, length = 8)
+    var recStrtDt: String? = null, // 관찰 시작 날짜
 
-    @Column(name = "mon_end_dt", nullable = false, length = 8)
-    var monEndDt: String? = null, // 관찰 종료 날짜
+    @Column(name = "rec_strt_tm", nullable = false, length = 6)
+    var recStrtTm: String? = null, // 관찰 시작 시간
 
-    @Column(name = "pt_type_cd", nullable = false, length = 10)
-    var ptTypeCd: String? = null, // 환자 유형 코드
+    @Column(name = "rec_end_dt", nullable = false, length = 8)
+    var recEndDt: String? = null, // 관찰 종료 날짜
 
-    @Column(name = "svrt_type_cd", length = 10)
-    var svrtTypeCd: String? = null, // 중증 유형 코드
+    @Column(name = "rec_end_tm", nullable = false, length = 6)
+    var recEndTm: String? = null, // 관찰 종료 시간
 
     @Column(name = "dept_nm", length = 20)
     var deptNm: String? = null, // 진료과 이름
@@ -38,11 +37,11 @@ class SvrtPt(
     @Column(name = "room_nm", length = 20)
     var roomNm: String? = null, // 병실 이름
 
+    @Column(name = "spcl_id", length = 15)
+    var spclId: String? = null, // 담당의 ID
+
     @Column(name = "spcl_nm", nullable = false, length = 10)
     var spclNm: String? = null, // 담당의 이름
-
-    @Column(name = "spcl_telno", length = 11)
-    var spclTelno: String? = null, // 담당의 전화번호
 
 ) : CommonEntity()
 
@@ -54,8 +53,8 @@ data class SvrtPtId(
     @Column(name = "hosp_id", nullable = false, length = 10)
     var hospId: String? = null, // 병원 ID
 
-    @Column(name = "rgst_seq", nullable = false, precision = 10)
-    var rgstSeq: BigDecimal? = null, // 등록 순번
+    @Column(name = "rgst_seq", nullable = false)
+    var rgstSeq: Int? = null, // 등록 순번
 
 ) : Serializable {
 

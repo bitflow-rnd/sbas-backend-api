@@ -90,13 +90,13 @@ class TalkMsgRepository : PanacheRepositoryBase<TalkMsg, TalkMsgId> {
 }
 
 @ApplicationScoped
-class TalkRoomRepository : PanacheRepositoryBase<TalkRoom, TalkRoomId> {
+class TalkRoomRepository : PanacheRepositoryBase<TalkRoom, String> {
 
     @Inject
     private lateinit var talkMsgRepository: TalkMsgRepository
 
     fun findMyRooms(userId: String): List<TalkRoom> {
-        return find("select tr from TalkRoom tr join TalkUser tu on tr.id.tkrmId = tu.id.tkrmId and tu.id.userId = '$userId'").list()
+        return find("select tr from TalkRoom tr join TalkUser tu on tr.tkrmId = tu.id.tkrmId and tu.id.userId = '$userId'").list()
     }
 
     @Transactional
@@ -106,11 +106,11 @@ class TalkRoomRepository : PanacheRepositoryBase<TalkRoom, TalkRoomId> {
 
         runBlocking {
             talkRooms.forEach {
-                val talkMsg = talkMsgRepository.findRecentlyMsg(it.id?.tkrmId!!)
+                val talkMsg = talkMsgRepository.findRecentlyMsg(it.tkrmId!!)
                 if (talkMsg != null) {
-                    resultList.add(TalkRoomResponse(it.id?.tkrmId, it.tkrmNm, talkMsg.msg, talkMsg.rgstDttm))
+                    resultList.add(TalkRoomResponse(it.tkrmId, it.tkrmNm, talkMsg.msg, talkMsg.rgstDttm))
                 } else {
-                    resultList.add(TalkRoomResponse(it.id?.tkrmId, it.tkrmNm, null, it.rgstDttm))
+                    resultList.add(TalkRoomResponse(it.tkrmId, it.tkrmNm, null, it.rgstDttm))
                 }
             }
         }
@@ -118,7 +118,7 @@ class TalkRoomRepository : PanacheRepositoryBase<TalkRoom, TalkRoomId> {
         return resultList
     }
     fun findTalkRoomByTkrmId(tkrmId: String): TalkRoom? {
-        return find("select tr from TalkRoom tr where tr.id.tkrmId = '$tkrmId'").firstResult()
+        return find("select tr from TalkRoom tr where tr.tkrmId = '$tkrmId'").firstResult()
     }
 
     @Transactional
