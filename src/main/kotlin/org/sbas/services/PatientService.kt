@@ -206,6 +206,11 @@ class PatientService {
     }
 
     @Transactional
+    fun findBdasHistInfo(ptId: String) {
+        
+    }
+
+    @Transactional
     fun findInfoPtList(searchParam: SearchParameters): CommonResponse<*> {
         val query = infoPtRepository.findInfoPtList()
         query.forEach { dto ->

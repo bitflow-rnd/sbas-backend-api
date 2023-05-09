@@ -113,22 +113,22 @@ class NaverApiHandler {
         )
     }
 
-    private fun splitAddress(address: String): List<String> {
+    private fun splitAddress(address: String): List<String?> {
         val addr = address.replace("\n()", "") // \n() 삭제
         val fullAddr = addr.replace(Regex("\\s*\\([^)]*\\)"), "") // (...) 부분 삭제
 
-        val list = mutableListOf<String>()
+        val list = mutableListOf<String?>()
         val splitedAddr = fullAddr.split(" ")
 
         list.add(splitedAddr[0]) // dstr1Cd
         list.add(splitedAddr[1]) // dstr2Cd
         list.add(splitedAddr.subList(0, 3).joinToString(" ")) // baseAddr
 
-        // dtlAddr 상세주소가 있는 경우, 없으면 ""
+        // dtlAddr 상세주소가 있는 경우, 없으면 null
         if (splitedAddr.size > 4) {
             list.add(splitedAddr[4])
         } else {
-            list.add("")
+            list.add(null)
         }
 
         list.add(fullAddr) // fullAddr

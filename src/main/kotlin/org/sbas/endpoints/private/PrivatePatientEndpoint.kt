@@ -88,6 +88,13 @@ class PrivatePatientEndpoint {
         return Response.ok(patientService.findInfoPt(ptId)).build()
     }
 
+    @Operation(summary = "병상배정 이력 목록 조회", description = "")
+    @GET
+    @Path("bdasHisinfos")
+    fun bdasHisinfos(@QueryParam("ptId") ptId: String): Response {
+        return Response.ok(patientService.findBdasHistInfo(ptId)).build()
+    }
+
     @Operation(summary = "환자 병상배정 차수별 상세내용(타임라인) 조회", description = "")
     @GET
     @Path("timeline/{param1}/{param2}")

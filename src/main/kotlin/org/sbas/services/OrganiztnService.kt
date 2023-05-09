@@ -51,7 +51,7 @@ class OrganiztnService {
      */
     @Transactional
     fun findInfoHospList(searchParam: SearchParameters): CommonResponse<*> {
-        val query = dynamicQueryBuilder.createDynamicQuery(InfoHosp(), searchParam)
+        val query = dynamicQueryBuilder.createDynamicQuery(InfoHosp("",""), searchParam)
 
         val infoHospList = query.resultList
         val res = mutableMapOf<String, Any>()
@@ -64,8 +64,8 @@ class OrganiztnService {
     /**
      * 의료기관 상세 조회
      */
-    fun findInfoHospById(hospId: String): InfoHosp {
-        return infoHospRepository.findById(hospId) ?: throw NotFoundException("$hospId Not found")
+    fun findInfoHospById(hospId: String) {
+//        return infoHospRepository.findById(hospId) ?: throw NotFoundException("$hospId Not found")
     }
 
     /**

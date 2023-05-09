@@ -49,15 +49,16 @@ class AdminEgenEndpoint {
     @Path("getCodeMastInfo/{cmMid}")
     fun getCodeMastInfo(cmMid: EgenCmMid): Response {
         val res = egenService.getCodeMastInfo(cmMid).toString()
-        return makeToSuccessResponseWith(res)
+        return makeToSuccessResponse(res)
     }
 
     @Operation(summary = "병‧의원 목록정보 조회", description = "병‧의원 목록정보 조회")
     @GET
     @Path("hsptlMdcncList")
     fun getHsptlMdcncList(param: EgenApiListInfoParams): Response {
-        val res = egenService.getHsptlMdcncListInfoInqire(param).toString()
-        return makeToSuccessResponseWith(res)
+        val res = egenService.getHsptlMdcncListInfoInqire(param)
+        egenService.saveHsptlMdcncList(param)
+        return Response.ok(res).build()
     }
 
     @Operation(summary = "병‧의원 위치정보 조회", description = "")
@@ -65,7 +66,7 @@ class AdminEgenEndpoint {
     @Path("hsptlMdcncLcInfo")
     fun getHsptlMdcncLcInfo(param: EgenApiLcInfoParams): Response {
         val res = egenService.getHsptlMdcncLcinfoInqire(param).toString()
-        return makeToSuccessResponseWith(res)
+        return makeToSuccessResponse(res)
     }
 
     @Operation(summary = "병의원 기본정보 조회", description = "")
@@ -73,7 +74,7 @@ class AdminEgenEndpoint {
     @Path("hsptlBassInfo")
     fun getHsptlBassInfo(param: EgenApiBassInfoParams): Response {
         val res = egenService.getHsptlBassInfoInqire(param).toString()
-        return makeToSuccessResponseWith(res)
+        return makeToSuccessResponse(res)
     }
 
     @Operation(summary = "응급의료기관 목록정보 조회", description = "")
@@ -81,7 +82,7 @@ class AdminEgenEndpoint {
     @Path("egytList")
     fun getEgytList(param: EgenApiListInfoParams): Response {
         val res = egenService.getEgytListInfoInqire(param).toString()
-        return makeToSuccessResponseWith(res)
+        return makeToSuccessResponse(res)
     }
 
     @Operation(summary = "응급의료기관 위치정보 조회", description = "")
@@ -89,7 +90,7 @@ class AdminEgenEndpoint {
     @Path("egytLcInfo")
     fun getEgytLcInfo(param: EgenApiLcInfoParams): Response {
         val res = egenService.getEgytLcinfoInqire(param).toString()
-        return makeToSuccessResponseWith(res)
+        return makeToSuccessResponse(res)
     }
 
     @Operation(summary = "응급의료기관 기본정보 조회", description = "")
@@ -97,7 +98,7 @@ class AdminEgenEndpoint {
     @Path("egytBassInfo")
     fun getEgytBassInfo(param: EgenApiBassInfoParams): Response {
         val res = egenService.getEgytBassInfoInqire(param).toString()
-        return makeToSuccessResponseWith(res)
+        return makeToSuccessResponse(res)
     }
 
     @Operation(summary = "E-GEN 코드 목록 DB에 저장", description = "")
@@ -110,7 +111,7 @@ class AdminEgenEndpoint {
     /**
      * 조회 결과를 Response 객체로 만들어주는 function
      */
-    private fun makeToSuccessResponseWith(res: String): Response =
+    private fun makeToSuccessResponse(res: String): Response =
         Response.ok(Response.Status.OK)
             .entity(res)
             .type(MediaType.APPLICATION_JSON_TYPE)

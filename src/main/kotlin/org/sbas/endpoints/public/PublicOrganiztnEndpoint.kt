@@ -40,8 +40,9 @@ class PublicOrganiztnEndpoint {
     @Operation(summary = "의료기관 상세", description = "")
     @GET
     @Path("medinst/{hospId}")
-    fun medinst(@RestPath hospId: String): CommonResponse<InfoHosp> {
-        return CommonResponse(organiztnService.findInfoHospById(hospId))
+    fun medinst(@RestPath hospId: String): CommonResponse<*> {
+        organiztnService.findInfoHospById(hospId)
+        return CommonResponse("")
     }
 
     @Operation(summary = "기관코드 목록", description = "기관코드 목록")

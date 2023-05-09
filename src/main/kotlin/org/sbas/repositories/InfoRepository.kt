@@ -50,7 +50,11 @@ class InfoCrewRepository : PanacheRepositoryBase<InfoCrew, InfoCrewId> {
 }
 
 @ApplicationScoped
-class InfoHospRepository : PanacheRepositoryBase<InfoHosp, String>
+class InfoHospRepository : PanacheRepositoryBase<InfoHosp, String> {
+    fun findInfoHospByHpId(hpIdList: MutableList<String>): InfoHosp? {
+        return find("").firstResult()
+    }
+}
 
 @ApplicationScoped
 class InfoInstRepository : PanacheRepositoryBase<InfoInst, String> {

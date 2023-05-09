@@ -7,8 +7,10 @@ import org.jboss.logging.Logger
 import org.json.JSONObject
 import org.sbas.constants.EgenCmMid
 import org.sbas.dtos.BaseCodeEgenSaveReq
+import org.sbas.dtos.InfoHospSaveReq
 import org.sbas.dtos.toEntity
 import org.sbas.repositories.BaseCodeEgenRepository
+import org.sbas.repositories.InfoHospRepository
 import org.sbas.restclients.EgenRestClient
 import org.sbas.restparameters.EgenApiBassInfoParams
 import org.sbas.restparameters.EgenApiLcInfoParams
@@ -29,6 +31,9 @@ class EgenService {
 
     @Inject
     private lateinit var baseCodeEgenRepository: BaseCodeEgenRepository
+
+    @Inject
+    private lateinit var infoHospRepository: InfoHospRepository
 
     @RestClient
     private lateinit var egenRestClient: EgenRestClient
@@ -64,7 +69,7 @@ class EgenService {
                 ord = param.ord, pageNo = param.pageNo, numOfRows = param.numOfRows
             )
         )
-        return jsonObject
+        return extractBody(jsonObject)
     }
 
     /**
@@ -187,6 +192,22 @@ class EgenService {
                 res = ObjectMapper().readValue(it.toString(), BaseCodeEgenSaveReq::class.java)
                 baseCodeEgenRepository.getEntityManager().merge(res.toEntity())
             }
+        }
+    }
+
+    /**
+     * E-GEN 병의원 목록정보를 DB에 저장
+     */
+    @Transactional
+    fun saveHsptlMdcncList(param: EgenApiListInfoParams) {
+        var res: InfoHospSaveReq
+        val hpIdList = mutableListOf<String>()
+        val jsonArray = getHsptlMdcncListInfoInqire(param).getJSONArray("item")
+        jsonArray.forEach {
+            res = ObjectMapper().readValue(it.toString(), InfoHospSaveReq::class.java)
+            log.debug(">>>>>>$res")
+            //TODO 반복했을 때 update 되게
+            infoHospRepository.persist(res.toEntity())
         }
     }
 

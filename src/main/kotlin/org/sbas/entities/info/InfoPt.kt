@@ -42,10 +42,10 @@ class InfoPt(
     @Column(name = "rrno_2", nullable = false, length = 7)
     var rrno2: String? = null, // 주민번호2
 
-    @Column(name = "dstr_1_cd", nullable = false, length = 8)
+    @Column(name = "dstr_1_cd", length = 8)
     var dstr1Cd: String? = null, // 지역 코드 (시도)
 
-    @Column(name = "dstr_2_cd", nullable = false, length = 8)
+    @Column(name = "dstr_2_cd", length = 8)
     var dstr2Cd: String? = null, // 지역 코드 (시군구)
 
     @Column(name = "addr", nullable = false, length = 100)
