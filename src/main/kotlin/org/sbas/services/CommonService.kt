@@ -2,6 +2,7 @@ package org.sbas.services
 
 import io.quarkus.cache.CacheKey
 import io.quarkus.cache.CacheResult
+import org.eclipse.microprofile.config.inject.ConfigProperty
 import org.jboss.logging.Logger
 import org.jboss.resteasy.reactive.multipart.FileUpload
 import org.sbas.constants.SbasConst
@@ -14,6 +15,7 @@ import org.sbas.repositories.BaseAttcRepository
 import org.sbas.repositories.BaseCodeEgenRepository
 import org.sbas.repositories.BaseCodeRepository
 import org.sbas.responses.CommonResponse
+import org.sbas.responses.messages.FileResponse
 import org.sbas.utils.CustomizedException
 import javax.enterprise.context.ApplicationScoped
 import javax.inject.Inject
@@ -42,6 +44,9 @@ class CommonService {
 
     @Inject
     private lateinit var fileHandler: FileHandler
+
+    @ConfigProperty(name = "domain.this")
+    private lateinit var serverdomain: String
 
     /**
      * E-GEN 공통코드 목록 조회
@@ -189,6 +194,15 @@ class CommonService {
         baseAttcRepository.persist(result)
 
         return CommonResponse(result.attcId)
+    }
+
+    @Transactional
+    fun getImage(attcId: String): CommonResponse<FileResponse> {
+        val findFile = baseAttcRepository.findByAttcId(attcId) ?: throw NotFoundException("not found")
+
+        val response: FileResponse = FileResponse(findFile.fileTypeCd, "$serverdomain${findFile.uriPath}/${findFile.fileNm}")
+
+        return CommonResponse(response)
     }
 
     @Transactional

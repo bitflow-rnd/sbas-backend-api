@@ -88,6 +88,13 @@ class PublicCommonEndpoint {
         return Response.ok(service1.publicFileUpload(param1, param2)).build()
     }
 
+    @Operation(summary = "파일 읽기 (전체 공개 파일)", description = "attcId로 파일 읽기 API")
+    @GET
+    @Path("image/{attcId}")
+    fun getImage(@RestPath attcId: String): Response {
+        return Response.ok(service1.getImage(attcId)).build()
+    }
+
     @Operation(summary = "개인정보수집동의 목록", description = "")
     @GET
     @Path("prvinfocollctagrees")

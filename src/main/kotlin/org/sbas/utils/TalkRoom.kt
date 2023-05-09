@@ -72,10 +72,8 @@ class TalkRoom {
                 talkMsgRepository.insertMessage(message, tkrmId, userId)
             }
         }
-        log.warn(addMsg)
 
         sendMsg(addMsg, tkrmId, userId)
-
     }
 
     @OnClose

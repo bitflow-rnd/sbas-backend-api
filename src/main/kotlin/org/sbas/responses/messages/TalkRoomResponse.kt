@@ -25,3 +25,8 @@ fun arrToJson(arrayData: MutableList<TalkRoomResponse>): String {
 
     return result
 }
+
+data class FileResponse(
+    var fileTypeCd: String? = null,
+    var file: String? = null,
+)
