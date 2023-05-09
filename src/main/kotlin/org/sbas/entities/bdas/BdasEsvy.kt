@@ -21,12 +21,6 @@ class BdasEsvy(
     @Column(name = "bdas_seq", nullable = false)
     var bdasSeq: Int? = null, // 병상 배정 순번
 
-    @Column(name = "hist_seq")
-    var histSeq: Int? = null, // 이력 순번
-
-    @Column(name = "hist_cd", length = 8)
-    var histCd: String? = null, // 이력 코드
-
     @Column(name = "esvy_attc_id")
     var esvyAttcId: String? = null, // 역학조사서 첨부 ID
 

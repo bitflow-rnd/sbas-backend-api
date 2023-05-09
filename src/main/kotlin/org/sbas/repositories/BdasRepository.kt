@@ -15,7 +15,7 @@ class BdasEsvyRepository: PanacheRepositoryBase<BdasEsvy, String> {
 @ApplicationScoped
 class BdasReqRepository : PanacheRepositoryBase<BdasReq, BdasReqId> {
     fun findByPtIdAndBdasSeq(ptId: String, bdasSeq: Int): BdasReq? {
-        return find("pt_id = '${ptId}' and bdas_seq = $bdasSeq", Sort.by("hist_seq", Sort.Direction.Descending)).firstResult()
+        return find("pt_id = '${ptId}' and bdas_seq = $bdasSeq", Sort.by("bdas_seq", Sort.Direction.Descending)).firstResult()
     }
 }
 

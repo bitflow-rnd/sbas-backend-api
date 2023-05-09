@@ -13,12 +13,6 @@ class BdasAprv(
     @EmbeddedId
     var id: BdasAprvId? = null,
 
-    @Column(name = "hist_cd", length = 8)
-    var histCd: String? = null, // 이력 코드
-
-    @Column(name = "hist_seq")
-    var histSeq: Int? = null, // 이력 순번
-
     @Column(name = "hosp_id", nullable = false, length = 10)
     var hospId: String? = null, // 병원 ID
 

@@ -17,12 +17,6 @@ class BdasReq(
     @EmbeddedId
     var id: BdasReqId,
 
-    @Column(name = "hist_cd", length = 8)
-    var histCd: String? = null, // 이력 코드
-
-    @Column(name = "hist_seq")
-    var histSeq: Int? = null,
-
     @Column(name = "req_dt", nullable = false, length = 8)
     var reqDt: String? = null, // 요청 날짜
 
