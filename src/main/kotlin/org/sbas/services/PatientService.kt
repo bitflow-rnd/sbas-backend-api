@@ -199,7 +199,7 @@ class PatientService {
 
     @Transactional
     fun findInfoPt(ptId: String): CommonResponse<InfoPt> {
-        log.warn(infoPtRepository.findInfoPt())
+//        log.warn(infoPtRepository.findInfoPt())
         return CommonResponse(infoPtRepository.findById(ptId) ?: throw NotFoundException("$ptId not found"))
     }
 
