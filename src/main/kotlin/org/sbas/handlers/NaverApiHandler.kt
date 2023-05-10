@@ -122,7 +122,7 @@ class NaverApiHandler {
 
         list.add(splitedAddr[0]) // dstr1Cd
         list.add(splitedAddr[1]) // dstr2Cd
-        list.add(splitedAddr.subList(0, 3).joinToString(" ")) // baseAddr
+        list.add(splitedAddr.subList(0, 4).joinToString(" ")) // baseAddr
 
         // dtlAddr 상세주소가 있는 경우, 없으면 null
         if (splitedAddr.size > 4) {
