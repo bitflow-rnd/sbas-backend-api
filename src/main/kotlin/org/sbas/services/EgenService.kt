@@ -13,10 +13,13 @@ import org.sbas.dtos.InfoHospSaveReq
 import org.sbas.dtos.toEntity
 import org.sbas.repositories.BaseCodeEgenRepository
 import org.sbas.repositories.InfoHospRepository
+import org.sbas.responses.CommonResponse
 import org.sbas.restclients.EgenRestClient
 import org.sbas.restparameters.EgenApiBassInfoParams
 import org.sbas.restparameters.EgenApiLcInfoParams
 import org.sbas.restparameters.EgenApiListInfoParams
+import org.sbas.utils.CustomizedException
+import java.lang.NullPointerException
 import javax.enterprise.context.ApplicationScoped
 import javax.inject.Inject
 import javax.transaction.Transactional
@@ -61,7 +64,7 @@ class EgenService {
     /**
      * 병‧의원 목록정보 조회 및 저장
      */
-    fun getHsptlMdcncListInfoInqire(param: EgenApiListInfoParams): JSONArray {
+    fun getHsptlMdcncListInfoInqire(param: EgenApiListInfoParams): JSONObject {
         val jsonObject = JSONObject(
             egenRestClient.getHsptlMdcncListInfoInqire(
                 serviceKey = serviceKey,
@@ -71,7 +74,7 @@ class EgenService {
                 ord = param.ord, pageNo = param.pageNo, numOfRows = param.numOfRows
             )
         )
-        return extractBody(jsonObject).getJSONArray("item")
+        return extractBody(jsonObject)
     }
 
     /**
@@ -201,14 +204,18 @@ class EgenService {
      * E-GEN 병의원 목록정보를 DB에 저장
      */
     @Transactional
-    fun saveHsptlMdcncList(param: EgenApiListInfoParams): String {
+    fun saveHsptlMdcncList(param: EgenApiListInfoParams): CommonResponse<*> {
         var res: InfoHospSaveReq
-        val jsonArray = getHsptlMdcncListInfoInqire(param)
-        jsonArray.forEach {
+        val jsonArray = try {
+            getHsptlMdcncListInfoInqire(param)
+        }catch (e: Exception){
+            return CommonResponse(false)
+        }
+        jsonArray.getJSONArray("item").forEach {
             res = ObjectMapper().readValue(it.toString(), InfoHospSaveReq::class.java)
             infoHospRepository.getEntityManager().merge(res.toEntity())
         }
-        return jsonArray.toString()
+        return CommonResponse(jsonArray)
     }
 
     /**
