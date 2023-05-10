@@ -4,6 +4,7 @@ import org.eclipse.microprofile.openapi.annotations.Operation
 import org.eclipse.microprofile.openapi.annotations.tags.Tag
 import org.jboss.logging.Logger
 import org.jboss.resteasy.reactive.RestPath
+import org.sbas.dtos.InfoCntcDto
 import org.sbas.entities.info.InfoUser
 import org.sbas.parameters.ModifyPwRequest
 import org.sbas.parameters.ModifyTelnoRequest
@@ -100,11 +101,18 @@ class PrivateUserEndpoint {
         return Response.ok().build()
     }
 
-    @Operation(summary = "", description = "")
+    @Operation(summary = "사용자 목록", description = "나와 관련된(연락처) - 즐겨찾기, 내조직, 알수도 있는사람 목록")
     @GET
     @Path("myusers")
-    fun myusers(): Response {
-        return Response.ok().build()
+    fun getMyUsers(): Response {
+        return Response.ok(userService.getMyUsers()).build()
+    }
+
+    @Operation(summary = "사용자 상세")
+    @GET
+    @Path("user/{mbrId}")
+    fun getMyUserDetail(@RestPath mbrId: String): Response{
+        return Response.ok(userService.getMyUserDetail(mbrId)).build()
     }
 
     @Operation(summary = "전국 사용자 검색 목록", description = "전국 사용자 검색 목록 API(filter X)")
@@ -121,10 +129,10 @@ class PrivateUserEndpoint {
         return Response.ok().build()
     }
 
-    @Operation(summary = "", description = "")
-    @GET
-    @Path("regfavort/{param}")
-    fun regfavort(@RestPath param: String): Response {
-        return Response.ok().build()
+    @Operation(summary = "즐겨찾기 등록", description = "내 연락처에 즐겨찾기로 등록 API")
+    @POST
+    @Path("reg-favorite")
+    fun regFavorite(@Valid request: InfoCntcDto): Response {
+        return Response.ok(userService.regFavorite(request)).build()
     }
 }

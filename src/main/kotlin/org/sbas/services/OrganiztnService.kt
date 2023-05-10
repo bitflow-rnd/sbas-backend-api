@@ -6,9 +6,13 @@ import org.jboss.resteasy.reactive.RestResponse
 import org.sbas.dtos.FireStatnSaveReq
 import org.sbas.dtos.InfoCrewRegDto
 import org.sbas.dtos.InfoInstUpdateReq
-import org.sbas.entities.info.*
+import org.sbas.dtos.PagingListDto
+import org.sbas.entities.info.InfoCrew
+import org.sbas.entities.info.InfoCrewId
+import org.sbas.entities.info.InfoInst
+import org.sbas.entities.info.update
 import org.sbas.parameters.InstCdParameters
-import org.sbas.parameters.SearchParameters
+import org.sbas.parameters.SearchHospRequest
 import org.sbas.repositories.InfoCrewRepository
 import org.sbas.repositories.InfoHospRepository
 import org.sbas.repositories.InfoInstRepository
@@ -50,15 +54,14 @@ class OrganiztnService {
      * 의료기관(병원) 목록 조회
      */
     @Transactional
-    fun findInfoHospList(searchParam: SearchParameters): CommonResponse<*> {
-        val query = dynamicQueryBuilder.createDynamicQuery(InfoHosp("",""), searchParam)
+    fun findInfoHospList(searchParam: SearchHospRequest): CommonResponse<PagingListDto> {
+        val findHosp = infoHospRepository.findAll()
+        val resultList = findHosp.page(1, 10).list() as MutableList
+        val count = findHosp.count()
 
-        val infoHospList = query.resultList
-        val res = mutableMapOf<String, Any>()
-        res["items"] = infoHospList
-        res["count"] = infoHospList.size
+        val result = PagingListDto(count, resultList)
 
-        return CommonResponse(res)
+        return CommonResponse(result)
     }
 
     /**

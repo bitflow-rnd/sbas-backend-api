@@ -6,13 +6,12 @@ import org.hibernate.validator.constraints.Length
 import org.jboss.logging.Logger
 import org.jboss.resteasy.reactive.RestPath
 import org.sbas.constants.SbasConst
-import org.sbas.entities.info.InfoHosp
 import org.sbas.parameters.InstCdParameters
-import org.sbas.parameters.SearchParameters
+import org.sbas.parameters.SearchHospRequest
 import org.sbas.responses.CommonResponse
 import org.sbas.services.OrganiztnService
 import javax.inject.Inject
-import javax.ws.rs.BeanParam
+import javax.validation.Valid
 import javax.ws.rs.GET
 import javax.ws.rs.Path
 import javax.ws.rs.QueryParam
@@ -28,13 +27,11 @@ class PublicOrganiztnEndpoint {
     @Inject
     lateinit var organiztnService: OrganiztnService
 
-    @Operation(summary = "의료기관 목록", description = "")
+    @Operation(summary = "의료기관 목록", description = "의료기관 목록 검색 API")
     @GET
     @Path("medinsts")
-    fun medinsts(@BeanParam searchParam: SearchParameters): Response? {
-        //TODO 검색조건 추가
-
-        return Response.ok(organiztnService.findInfoHospList(searchParam)).build()
+    fun getMedInsts(@Valid request: SearchHospRequest): Response? {
+        return Response.ok(organiztnService.findInfoHospList(request)).build()
     }
 
     @Operation(summary = "의료기관 상세", description = "")

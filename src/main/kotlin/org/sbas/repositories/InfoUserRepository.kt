@@ -13,6 +13,8 @@ class InfoUserRepository : PanacheRepositoryBase<InfoUser, String> {
     @Transactional
     fun findByUserId(userId: String) = runBlocking { find("id", userId).firstResult() }
 
+//    fun getMyUserDetail(userId: String) = find("from InfoUser where id = $userId").firstResult()
+
     fun findLike(searchData: String): List<InfoUser> = find("select u from InfoUser u where u.id like '%$searchData%' or u.userNm like '%$searchData%' or u.btDt like '%$searchData%'").list()
 
     fun findId(infoUser: InfoUser): InfoUser? = find("select u from InfoUser u where u.userNm = '${infoUser.userNm}' and u.telno = '${infoUser.telno}'").firstResult()

@@ -6,12 +6,16 @@ import org.eclipse.microprofile.rest.client.inject.RestClient
 import org.jboss.logging.Logger
 import org.sbas.constants.SbasConst
 import org.sbas.constants.StatClas
+import org.sbas.dtos.InfoCntcDto
 import org.sbas.dtos.PagingListDto
+import org.sbas.dtos.toEntity
 import org.sbas.entities.info.InfoCert
+import org.sbas.entities.info.InfoCntc
 import org.sbas.entities.info.InfoUser
 import org.sbas.utils.CustomizedException
 import org.sbas.parameters.*
 import org.sbas.repositories.InfoCertRepository
+import org.sbas.repositories.InfoCntcRepository
 import org.sbas.repositories.InfoUserRepository
 import org.sbas.responses.CommonResponse
 import org.sbas.restclients.NaverSensRestClient
@@ -36,6 +40,9 @@ class UserService {
 
     @Inject
     private lateinit var certRepository : InfoCertRepository
+
+    @Inject
+    private lateinit var cntcRepository : InfoCntcRepository
 
     @RestClient
     private lateinit var naverSensClient : NaverSensRestClient
@@ -257,6 +264,9 @@ class UserService {
 
     }
 
+    /**
+     * 사용자 목록 전체 조회(paging, total count 반영, filter X)
+     */
     @Transactional
     fun getAllUsers(pageRequest: PageRequest): CommonResponse<PagingListDto> {
         val findUsers = userRepository.findAllUsers(pageRequest)
@@ -275,6 +285,39 @@ class UserService {
         findUser.pushKey = request.pushKey
 
         return CommonResponse("push key가 등록되었습니다.")
+    }
+
+    /**
+     * 나와 관련된 사용자 조회
+     */
+    @Transactional
+    fun getMyUsers() : CommonResponse<List<InfoCntc>>{
+        val result = cntcRepository.getMyUsers(jwt.name)
+        return CommonResponse(result)
+    }
+
+    /**
+     * 사용자 상세
+     */
+    @Transactional
+    fun getMyUserDetail(mbrId: String) : CommonResponse<InfoUser> {
+        val result = userRepository.findByUserId(mbrId) ?: throw NotFoundException("Not found this id")
+        return CommonResponse(result)
+    }
+
+    /**
+     * 즐겨찾기 등록
+     */
+    @Transactional
+    fun regFavorite(request: InfoCntcDto) : CommonResponse<InfoCntc> {
+        val findHistSeq = cntcRepository.getHistSeq(request.id) ?: 0
+        val histCd = if(findHistSeq<1) 1 else findHistSeq + 1
+
+        val infoCntc = request.toEntity(histCd)
+
+        cntcRepository.persist(infoCntc)
+
+        return CommonResponse(infoCntc)
     }
 
 }
