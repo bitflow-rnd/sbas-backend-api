@@ -4,10 +4,7 @@ import org.eclipse.microprofile.config.inject.ConfigProperty
 import org.eclipse.microprofile.jwt.JsonWebToken
 import org.jboss.logging.Logger
 import org.jboss.resteasy.reactive.multipart.FileUpload
-import org.sbas.constants.PtTypeCd
-import org.sbas.constants.SbasConst
-import org.sbas.constants.SvrtTypeCd
-import org.sbas.constants.UndrDsesCd
+import org.sbas.constants.*
 import org.sbas.dtos.InfoPtDto
 import org.sbas.dtos.toEntity
 import org.sbas.entities.base.BaseAttc
@@ -188,7 +185,7 @@ class PatientService {
 
     @Transactional
     fun findInfoPtWithMyOrgan(): CommonResponse<*> {
-        // infoUser 에 있는 dstrCd를 사용해도 되나?
+        //TODO
         val infoUser = infoUserRepository.findById(jwt.name) ?: throw NotFoundException()
         val infoInst = infoInstRepository.findById(infoUser.instId!!) ?: throw NotFoundException()
         val infoPtList = infoPtRepository.findByDstrCd(infoInst.dstrCd1!!, infoInst.dstrCd2!!)
@@ -202,6 +199,7 @@ class PatientService {
 
     @Transactional
     fun findInfoPt(ptId: String): CommonResponse<InfoPt> {
+//        log.warn(infoPtRepository.findInfoPt())
         return CommonResponse(infoPtRepository.findById(ptId) ?: throw NotFoundException("$ptId not found"))
     }
 
@@ -214,6 +212,7 @@ class PatientService {
     fun findInfoPtList(searchParam: SearchParameters): CommonResponse<*> {
         val query = infoPtRepository.findInfoPtList()
         query.forEach { dto ->
+            dto.statCdNm = BedStat.valueOf(dto.statCd!!).cdNm
             if (dto.ptTypeCd != null) {
                 val split = dto.ptTypeCd!!.split(";")
                 dto.tagList!!.addAll(split.map { PtTypeCd.valueOf(it).cdNm })

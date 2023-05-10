@@ -12,6 +12,7 @@ class InfoPtRepository : PanacheRepositoryBase<InfoPt, String> {
     fun findByPtNmAndRrno(ptNm: String, rrno1: String, rrno2: String): InfoPt? =
         find("pt_nm = ?1 AND rrno_1 = ?2 AND rrno_2 = ?3", ptNm, rrno1, rrno2).firstResult()
 
+    //TODO 삭제 예정
     fun findByDstrCd(dstr1Cd: String, dstr2Cd: String): List<InfoPt> {
         return find("dstr_1_cd = '$dstr1Cd' and dstr_2_cd = '$dstr2Cd'").list()
     }
@@ -23,9 +24,9 @@ class InfoPtRepository : PanacheRepositoryBase<InfoPt, String> {
                 "b.ptTypeCd, b.svrtTypeCd, b.undrDsesCd, " +
                 "EXTRACT(year FROM age(CURRENT_DATE, to_date(case a.rrno2 when '3' then concat('20',a.rrno1) when '4' then concat('20',a.rrno1) else concat('19',a.rrno1) end, 'yyyyMMdd')))) " +
                 "FROM InfoPt a " +
-                "inner join BdasReq b on a.ptId = b.id.ptId " +
+                "right outer join BdasReq b on a.ptId = b.id.ptId " +
                 "left outer join BdasAdms ba on b.id.bdasSeq = ba.id.bdasSeq " +
-                "where b.id.bdasSeq in (select max(id.bdasSeq) as bdasSeq from BdasReq group by id.ptId) " +
+//                "where b.id.bdasSeq in (select max(id.bdasSeq) as bdasSeq from BdasReq group by id.ptId) " +
                 "order by b.updtDttm desc"
 //        val query = "select a.pt_id, b.bdas_seq, a.pt_nm, a.gndr, " +
 //                "a.dstr_1_cd, a.dstr_2_cd, ba.hosp_id, '', a.mpno, a.nati_cd, a.bed_stat_cd, a.bed_stat_nm, b.updt_dttm, " +
@@ -41,6 +42,11 @@ class InfoPtRepository : PanacheRepositoryBase<InfoPt, String> {
 //        val criteriaBuilder = getEntityManager().criteriaBuilder
 //        criteriaBuilder.createQuery()
         return getEntityManager().createQuery(query, InfoPtSearchDto::class.java).resultList
+    }
+
+    fun findInfoPt(): MutableList<Any?>? {
+        val query = "select fn_get_bed_asgn_stat('PT00000068', 185) from InfoPt "
+        return getEntityManager().createQuery(query).resultList
     }
 }
 
