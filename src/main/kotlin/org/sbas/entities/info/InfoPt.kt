@@ -77,7 +77,7 @@ class InfoPt(
 
     @Column(name = "bed_stat_cd", length = 8)
     @Enumerated(value = EnumType.STRING)
-    var bedStatCd: BedStat = BedStat.BAST0001,
+    var bedStatCd: String = BedStat.BAST0001.name,
 
     @Column(name = "bed_stat_nm", length = 8)
     var bedStatNm: String = BedStat.BAST0001.cdNm,
