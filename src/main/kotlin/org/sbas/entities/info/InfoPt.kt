@@ -100,9 +100,6 @@ class InfoPt(
         this.gndr = infoPtDto.gndr
         this.rrno1 = infoPtDto.rrno1
         this.rrno2 = infoPtDto.rrno2
-        this.dstr1Cd = infoPtDto.dstr1Cd
-        this.dstr2Cd = infoPtDto.dstr2Cd
-        this.addr = infoPtDto.addr
         this.telno = infoPtDto.telno
         this.natiCd = infoPtDto.natiCd
         this.picaVer = infoPtDto.picaVer
@@ -111,6 +108,10 @@ class InfoPt(
         this.mpno = infoPtDto.mpno
         this.job = infoPtDto.job
         this.attcId = infoPtDto.attcId
+        this.bascAddr = infoPtDto.bascAddr
+        this.detlAddr = infoPtDto.detlAddr
+        this.zip = infoPtDto.zip
+        this.natiNm = infoPtDto.natiNm
     }
 
     companion object {

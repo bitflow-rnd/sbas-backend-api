@@ -1,7 +1,6 @@
 package org.sbas.dtos
 
 import com.fasterxml.jackson.annotation.JsonIgnore
-import org.sbas.constants.BedStat
 import org.sbas.entities.info.InfoPt
 import org.sbas.utils.NoArg
 import java.time.Instant
@@ -13,9 +12,6 @@ data class InfoPtDto(
     val gndr: String,
     val rrno1: String,
     val rrno2: String,
-    val dstr1Cd: String,
-    val dstr2Cd: String,
-    val addr: String,
     val telno: String,
     val natiCd: String,
     val picaVer: String,
@@ -36,9 +32,6 @@ fun InfoPtDto.toEntity(): InfoPt {
         gndr = this.gndr,
         rrno1 = this.rrno1,
         rrno2 = this.rrno2,
-        dstr1Cd = this.dstr1Cd,
-        dstr2Cd = this.dstr2Cd,
-        addr = this.addr,
         telno = this.telno,
         natiCd = this.natiCd,
         picaVer = this.picaVer,
@@ -67,7 +60,7 @@ class InfoPtSearchDto {
     var hospNm: String?
     var mpno: String?
     var natiCd: String?
-    var statCd: BedStat?
+    var statCd: String?
     var statCdNm: String?
     var updtDttm: Instant?
     @JsonIgnore
@@ -92,7 +85,7 @@ class InfoPtSearchDto {
         hospNm: String?,
         mpno: String?,
         natiCd: String?,
-        statCd: BedStat?,
+        statCd: String?,
         statCdNm: String?,
         updtDttm: Instant?,
         ptTypeCd: String?,
@@ -136,7 +129,7 @@ class InfoPtSearchDto {
         hospNm: String?,
         mpno: String?,
         natiCd: String?,
-        statCd: BedStat?,
+        statCd: String?,
         statCdNm: String?,
         updtDttm: Instant?,
         ptTypeCd: String?,
