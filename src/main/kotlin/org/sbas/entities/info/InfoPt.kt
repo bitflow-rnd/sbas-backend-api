@@ -76,7 +76,6 @@ class InfoPt(
     var attcId: String? = null, // 첨부 ID
 
     @Column(name = "bed_stat_cd", length = 8)
-    @Enumerated(value = EnumType.STRING)
     var bedStatCd: String = BedStat.BAST0001.name,
 
     @Column(name = "bed_stat_nm", length = 8)

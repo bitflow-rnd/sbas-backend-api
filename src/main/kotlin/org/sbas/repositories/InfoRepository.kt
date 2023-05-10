@@ -24,9 +24,9 @@ class InfoPtRepository : PanacheRepositoryBase<InfoPt, String> {
                 "b.ptTypeCd, b.svrtTypeCd, b.undrDsesCd, " +
                 "EXTRACT(year FROM age(CURRENT_DATE, to_date(case a.rrno2 when '3' then concat('20',a.rrno1) when '4' then concat('20',a.rrno1) else concat('19',a.rrno1) end, 'yyyyMMdd')))) " +
                 "FROM InfoPt a " +
-                "left outer join BdasReq b on a.ptId = b.id.ptId " +
+                "right outer join BdasReq b on a.ptId = b.id.ptId " +
                 "left outer join BdasAdms ba on b.id.bdasSeq = ba.id.bdasSeq " +
-                "where b.id.bdasSeq in (select max(id.bdasSeq) as bdasSeq from BdasReq group by id.ptId) " +
+//                "where b.id.bdasSeq in (select max(id.bdasSeq) as bdasSeq from BdasReq group by id.ptId) " +
                 "order by b.updtDttm desc"
 //        val query = "select a.pt_id, b.bdas_seq, a.pt_nm, a.gndr, " +
 //                "a.dstr_1_cd, a.dstr_2_cd, ba.hosp_id, '', a.mpno, a.nati_cd, a.bed_stat_cd, a.bed_stat_nm, b.updt_dttm, " +
