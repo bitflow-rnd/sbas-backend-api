@@ -1,10 +1,13 @@
 package org.sbas.dtos
 
+import org.json.JSONArray
+import org.json.JSONObject
 import org.sbas.entities.info.InfoHosp
 import org.sbas.utils.NoArg
 
 @NoArg
 data class InfoHospSaveReq(
+    var hospId: String?,
     var hpid: String, // 기관 ID
     var dutyName: String?, // 기관명
     var dutyDivNam: String?, // 병원분류명
@@ -17,7 +20,7 @@ data class InfoHospSaveReq(
     var dutyInf: String?, // 기관설명상세
     var dutyEtc: String?, // 비고
 
-    var rnum: String?,
+    var rnum: Int,
     var dutyDiv: String?,
     var dutyEmcls: String?,
     var dutyEmclsName: String?,
@@ -43,6 +46,7 @@ data class InfoHospSaveReq(
 ) {
     fun toEntity(): InfoHosp {
         return InfoHosp(
+            hospId = hospIdFormatter(this.rnum),
             hpId = this.hpid,
             dutyName = this.dutyName,
             dutyDivNam = this.dutyDivNam,
@@ -55,5 +59,9 @@ data class InfoHospSaveReq(
             dutyInf = this.dutyInf,
             dutyEtc = this.dutyEtc,
         )
+    }
+
+    fun hospIdFormatter(number: Int): String {
+        return "HP" + String.format("%08d", number)
     }
 }

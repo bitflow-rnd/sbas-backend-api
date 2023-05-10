@@ -1,9 +1,11 @@
 package org.sbas.services
 
 import com.fasterxml.jackson.databind.ObjectMapper
+import io.vertx.core.json.JsonArray
 import org.eclipse.microprofile.config.inject.ConfigProperty
 import org.eclipse.microprofile.rest.client.inject.RestClient
 import org.jboss.logging.Logger
+import org.json.JSONArray
 import org.json.JSONObject
 import org.sbas.constants.EgenCmMid
 import org.sbas.dtos.BaseCodeEgenSaveReq
@@ -57,9 +59,9 @@ class EgenService {
     }
 
     /**
-     * 병‧의원 목록정보 조회
+     * 병‧의원 목록정보 조회 및 저장
      */
-    fun getHsptlMdcncListInfoInqire(param: EgenApiListInfoParams): JSONObject {
+    fun getHsptlMdcncListInfoInqire(param: EgenApiListInfoParams): JSONArray {
         val jsonObject = JSONObject(
             egenRestClient.getHsptlMdcncListInfoInqire(
                 serviceKey = serviceKey,
@@ -69,7 +71,7 @@ class EgenService {
                 ord = param.ord, pageNo = param.pageNo, numOfRows = param.numOfRows
             )
         )
-        return extractBody(jsonObject)
+        return extractBody(jsonObject).getJSONArray("item")
     }
 
     /**
@@ -199,16 +201,14 @@ class EgenService {
      * E-GEN 병의원 목록정보를 DB에 저장
      */
     @Transactional
-    fun saveHsptlMdcncList(param: EgenApiListInfoParams) {
+    fun saveHsptlMdcncList(param: EgenApiListInfoParams): String {
         var res: InfoHospSaveReq
-        val hpIdList = mutableListOf<String>()
-        val jsonArray = getHsptlMdcncListInfoInqire(param).getJSONArray("item")
+        val jsonArray = getHsptlMdcncListInfoInqire(param)
         jsonArray.forEach {
             res = ObjectMapper().readValue(it.toString(), InfoHospSaveReq::class.java)
-            log.debug(">>>>>>$res")
-            //TODO 반복했을 때 update 되게
-            infoHospRepository.persist(res.toEntity())
+            infoHospRepository.getEntityManager().merge(res.toEntity())
         }
+        return jsonArray.toString()
     }
 
     /**

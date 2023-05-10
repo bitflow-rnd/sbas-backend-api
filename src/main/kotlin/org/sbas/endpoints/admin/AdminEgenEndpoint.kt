@@ -52,13 +52,12 @@ class AdminEgenEndpoint {
         return makeToSuccessResponse(res)
     }
 
-    @Operation(summary = "병‧의원 목록정보 조회", description = "병‧의원 목록정보 조회")
+    @Operation(summary = "병‧의원 목록정보 조회 및 저장", description = "병‧의원 목록정보 조회 및 저장")
     @GET
     @Path("hsptlMdcncList")
     fun getHsptlMdcncList(param: EgenApiListInfoParams): Response {
-        val res = egenService.getHsptlMdcncListInfoInqire(param)
-        egenService.saveHsptlMdcncList(param)
-        return Response.ok(res).build()
+        val res = egenService.saveHsptlMdcncList(param)
+        return Response.ok(res).type(MediaType.APPLICATION_JSON_TYPE).build()
     }
 
     @Operation(summary = "병‧의원 위치정보 조회", description = "")
