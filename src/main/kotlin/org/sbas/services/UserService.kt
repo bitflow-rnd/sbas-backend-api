@@ -6,6 +6,7 @@ import org.eclipse.microprofile.rest.client.inject.RestClient
 import org.jboss.logging.Logger
 import org.sbas.constants.SbasConst
 import org.sbas.constants.StatClas
+import org.sbas.dtos.PagingListDto
 import org.sbas.entities.info.InfoCert
 import org.sbas.entities.info.InfoUser
 import org.sbas.utils.CustomizedException
@@ -257,8 +258,11 @@ class UserService {
     }
 
     @Transactional
-    fun getAllUsers(): CommonResponse<List<InfoUser>> {
-        return CommonResponse(userRepository.findAll().list())
+    fun getAllUsers(pageRequest: PageRequest): CommonResponse<PagingListDto> {
+        val findUsers = userRepository.findAllUsers(pageRequest)
+        val totalCnt = userRepository.count()
+        val response = PagingListDto(totalCnt, findUsers as MutableList<InfoUser>)
+        return CommonResponse(response)
     }
 
     /**

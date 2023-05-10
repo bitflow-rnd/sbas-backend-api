@@ -7,6 +7,7 @@ import org.jboss.resteasy.reactive.RestPath
 import org.sbas.entities.info.InfoUser
 import org.sbas.parameters.ModifyPwRequest
 import org.sbas.parameters.ModifyTelnoRequest
+import org.sbas.parameters.PageRequest
 import org.sbas.services.UserService
 import javax.inject.Inject
 import javax.validation.Valid
@@ -109,8 +110,8 @@ class PrivateUserEndpoint {
     @Operation(summary = "전국 사용자 검색 목록", description = "전국 사용자 검색 목록 API(filter X)")
     @GET
     @Path("all-users")
-    fun getAllUsers(): Response {
-        return Response.ok(userService.getAllUsers()).build()
+    fun getAllUsers(@Valid pageRequest: PageRequest): Response {
+        return Response.ok(userService.getAllUsers(pageRequest)).build()
     }
 
     @Operation(summary = "", description = "")
