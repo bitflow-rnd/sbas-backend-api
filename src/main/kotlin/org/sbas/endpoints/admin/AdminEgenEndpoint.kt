@@ -8,6 +8,7 @@ import org.sbas.restparameters.EgenApiBassInfoParams
 import org.sbas.restparameters.EgenApiLcInfoParams
 import org.sbas.restparameters.EgenApiListInfoParams
 import org.sbas.services.EgenService
+import org.sbas.utils.StringUtils
 import javax.inject.Inject
 import javax.ws.rs.*
 import javax.ws.rs.core.MediaType
@@ -53,7 +54,7 @@ class AdminEgenEndpoint {
     }
 
     @Operation(summary = "병‧의원 목록정보 조회 및 저장", description = "병‧의원 목록정보 조회 및 저장")
-    @GET
+    @POST
     @Path("hsptlMdcncList")
     fun getHsptlMdcncList(param: EgenApiListInfoParams): Response {
         val res = egenService.saveHsptlMdcncList(param)

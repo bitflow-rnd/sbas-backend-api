@@ -54,10 +54,15 @@ class OrganiztnService {
      * 의료기관(병원) 목록 조회
      */
     @Transactional
-    fun findInfoHospList(searchParam: SearchHospRequest): CommonResponse<PagingListDto> {
-        val findHosp = infoHospRepository.findAll()
-        val resultList = findHosp.page(1, 10).list() as MutableList
+    fun findInfoHospList(searchParam: SearchHospRequest?): CommonResponse<PagingListDto> {
+        val findHosp = infoHospRepository.findInfoHopByCondition(searchParam)
+
         val count = findHosp.count()
+        val resultList = if(searchParam?.pageRequest == null){
+            findHosp.page(0, 10).list() as MutableList
+        }else {
+            findHosp.page(searchParam.pageRequest?.page!! -1, searchParam.pageRequest?.size!!).list() as MutableList
+        }
 
         val result = PagingListDto(count, resultList)
 

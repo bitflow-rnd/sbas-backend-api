@@ -12,6 +12,7 @@ import org.sbas.dtos.BaseCodeEgenSaveReq
 import org.sbas.dtos.InfoHospSaveReq
 import org.sbas.dtos.toEntity
 import org.sbas.repositories.BaseCodeEgenRepository
+import org.sbas.repositories.BaseCodeRepository
 import org.sbas.repositories.InfoHospRepository
 import org.sbas.responses.CommonResponse
 import org.sbas.restclients.EgenRestClient
@@ -39,6 +40,9 @@ class EgenService {
 
     @Inject
     private lateinit var infoHospRepository: InfoHospRepository
+
+    @Inject
+    private lateinit var baseCodeRepository: BaseCodeRepository
 
     @RestClient
     private lateinit var egenRestClient: EgenRestClient
@@ -213,7 +217,8 @@ class EgenService {
         }
         jsonArray.getJSONArray("item").forEach {
             res = ObjectMapper().readValue(it.toString(), InfoHospSaveReq::class.java)
-            infoHospRepository.getEntityManager().merge(res.toEntity())
+            val addr = baseCodeRepository.findCdIdByAddrNm(res.dutyAddr!!)
+            infoHospRepository.getEntityManager().merge(res.toEntity(addr.siDoCd!!, addr.siGunGuCd!!))
         }
         return CommonResponse(jsonArray)
     }

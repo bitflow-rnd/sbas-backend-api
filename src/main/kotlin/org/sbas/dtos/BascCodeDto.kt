@@ -45,3 +45,9 @@ data class BaseCodeUpdateReq(
 fun BaseCodeUpdateReq.getId(): BaseCodeId {
     return BaseCodeId(cdGrpId = this.cdGrpId, cdId = this.cdId)
 }
+
+@NoArg
+data class SidoSiGunGuDto(
+    var siDoCd: String? = null,
+    var siGunGuCd: String? = null,
+)

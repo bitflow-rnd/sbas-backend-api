@@ -7,6 +7,6 @@ import org.hibernate.type.StandardBasicTypes
 class CustomMysqlDialect : PostgreSQL10Dialect() {
     init {
         registerFunction("fn_get_bed_asgn_stat", StandardSQLFunction("fn_get_bed_asgn_stat", StandardBasicTypes.STRING))
-        registerFunction("split_part", StandardSQLFunction("split_part", StandardBasicTypes.STRING))
+        registerFunction("fn_get_cd_nm", StandardSQLFunction("fn_get_cd_nm", StandardBasicTypes.STRING))
     }
 }

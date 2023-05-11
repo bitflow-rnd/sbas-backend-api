@@ -1,10 +1,15 @@
 package org.sbas.repositories
 
+import io.quarkus.hibernate.orm.panache.kotlin.PanacheQuery
 import io.quarkus.hibernate.orm.panache.kotlin.PanacheRepositoryBase
+import org.jboss.logging.Logger
 import org.sbas.dtos.InfoPtSearchDto
+import org.sbas.dtos.PagingListDto
 import org.sbas.entities.info.*
 import org.sbas.parameters.InstCdParameters
+import org.sbas.parameters.SearchHospRequest
 import javax.enterprise.context.ApplicationScoped
+import javax.inject.Inject
 
 @ApplicationScoped
 class InfoPtRepository : PanacheRepositoryBase<InfoPt, String> {
@@ -40,9 +45,42 @@ class InfoCrewRepository : PanacheRepositoryBase<InfoCrew, InfoCrewId> {
 
 @ApplicationScoped
 class InfoHospRepository : PanacheRepositoryBase<InfoHosp, String> {
+
+    @Inject
+    lateinit var log: Logger
+
     fun findInfoHospByHpId(hpIdList: MutableList<String>): InfoHosp? {
         return find("").firstResult()
     }
+
+    fun findInfoHopByCondition(searchParam: SearchHospRequest?): PanacheQuery<InfoHosp> {
+        val queryBuilder = StringBuilder("from InfoHosp where 1 = 1")
+
+            searchParam?.dutyDivNam?.forEachIndexed { index, dutyDivName ->
+                if (index == 0) {
+                    queryBuilder.append(" and (")
+                }else{
+                    queryBuilder.append(" or ")
+                }
+                queryBuilder.append("dutyDivNam = '$dutyDivName'")
+
+                if(index == searchParam.dutyDivNam.size -1){
+                    queryBuilder.append(")")
+                }
+            }
+
+        searchParam?.dstrCd1?.let { dstrCd1 ->
+            queryBuilder.append(" and dutyAddr like fn_get_cd_nm('SIDO','$dstrCd1')||'%'")
+        }
+        searchParam?.dstrCd2?.let { dstrCd2 -> queryBuilder.append(" and dstr2Cd = '$dstrCd2'") }
+        searchParam?.hospId?.let { hospId -> queryBuilder.append(" and (hospId = '$hospId' or dutyName like '%$hospId%')") }
+
+        val query = queryBuilder.toString()
+
+        return find(query)
+
+    }
+
 }
 
 @ApplicationScoped

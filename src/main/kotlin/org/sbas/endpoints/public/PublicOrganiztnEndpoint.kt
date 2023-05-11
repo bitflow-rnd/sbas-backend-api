@@ -30,7 +30,7 @@ class PublicOrganiztnEndpoint {
     @Operation(summary = "의료기관 목록", description = "의료기관 목록 검색 API")
     @GET
     @Path("medinsts")
-    fun getMedInsts(@Valid request: SearchHospRequest): Response? {
+    fun getMedInsts(@Valid request: SearchHospRequest?): Response? {
         return Response.ok(organiztnService.findInfoHospList(request)).build()
     }
 

@@ -62,6 +62,14 @@ class InfoHosp(
     
     @Column(name = "dutyetc", length = 200)
     var dutyEtc: String? = null, // 비고
+
+    @Column(name = "dstr_cd1", length = 8)
+    var dstrCd1: String? = null, // 시도
+
+    @Column(name="dstr_cd2", length = 8)
+    var dstrCd2: String? = null,
+
+
 ) : CommonEntity(), Serializable {
     companion object {
         private const val serialVersionUID: Long = -1587076961195755891L

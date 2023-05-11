@@ -44,7 +44,7 @@ data class InfoHospSaveReq(
     var dutyTime7s: String?,
     var dutyTime8s: String?,
 ) {
-    fun toEntity(): InfoHosp {
+    fun toEntity(siDo: String, siGunGu: String): InfoHosp {
         return InfoHosp(
             hospId = hospIdFormatter(this.rnum),
             hpId = this.hpid,
@@ -58,6 +58,8 @@ data class InfoHospSaveReq(
             wgs84Lat = this.wgs84Lat,
             dutyInf = this.dutyInf,
             dutyEtc = this.dutyEtc,
+            dstrCd1 = siDo,
+            dstrCd2 = siGunGu
         )
     }
 
