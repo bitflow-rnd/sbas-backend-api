@@ -13,10 +13,7 @@ import org.sbas.handlers.FileHandler
 import org.sbas.handlers.NaverApiHandler
 import org.sbas.parameters.NewsScoreParameters
 import org.sbas.parameters.SearchParameters
-import org.sbas.repositories.BaseAttcRepository
-import org.sbas.repositories.InfoInstRepository
-import org.sbas.repositories.InfoPtRepository
-import org.sbas.repositories.InfoUserRepository
+import org.sbas.repositories.*
 import org.sbas.responses.CommonResponse
 import org.sbas.utils.DynamicQueryBuilder
 import org.sbas.utils.StringUtils
@@ -46,6 +43,9 @@ class PatientService {
 
     @Inject
     private lateinit var infoInstRepository: InfoInstRepository
+
+    @Inject
+    private lateinit var baseCodeRepository: BaseCodeRepository
 
     @Inject
     private lateinit var fileHandler: FileHandler
@@ -199,7 +199,6 @@ class PatientService {
 
     @Transactional
     fun findInfoPt(ptId: String): CommonResponse<InfoPt> {
-//        log.warn(infoPtRepository.findInfoPt())
         return CommonResponse(infoPtRepository.findById(ptId) ?: throw NotFoundException("$ptId not found"))
     }
 

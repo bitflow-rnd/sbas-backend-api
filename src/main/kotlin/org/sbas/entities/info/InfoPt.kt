@@ -99,6 +99,9 @@ class InfoPt(
         this.gndr = infoPtDto.gndr
         this.rrno1 = infoPtDto.rrno1
         this.rrno2 = infoPtDto.rrno2
+        this.dstr1Cd = infoPtDto.dstr1Cd
+        this.dstr2Cd = infoPtDto.dstr2Cd
+        this.addr = infoPtDto.addr
         this.telno = infoPtDto.telno
         this.natiCd = infoPtDto.natiCd
         this.picaVer = infoPtDto.picaVer

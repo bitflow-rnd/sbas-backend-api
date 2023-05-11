@@ -20,21 +20,16 @@ class InfoPtRepository : PanacheRepositoryBase<InfoPt, String> {
     fun findInfoPtList(): List<InfoPtSearchDto> {
         //TODO
         val query = "select new org.sbas.dtos.InfoPtSearchDto(a.ptId, max(b.id.bdasSeq), a.ptNm, a.gndr, " +
-                "a.dstr1Cd, (select cdNm from BaseCode where id.cdId = a.dstr1Cd), a.dstr2Cd, (select cdNm from BaseCode where id.cdId = a.dstr2Cd), " +
-                "max(ba.hospId), '', a.mpno, a.natiCd, fn_get_bed_asgn_stat(a.ptId, max(b.id.bdasSeq)), '', max(b.updtDttm), " +
+                "a.dstr1Cd, split_part(a.bascAddr, ' ', 1), a.dstr2Cd, split_part(a.bascAddr, ' ', 2), " +
+                "max(ba.hospId), '', a.mpno, a.natiCd, fn_get_bed_asgn_stat(a.ptId, max(b.id.bdasSeq)), '', a.updtDttm, " +
                 "max(b.ptTypeCd), max(b.svrtTypeCd), max(b.undrDsesCd), " +
                 "EXTRACT(year FROM age(CURRENT_DATE, to_date(case a.rrno2 when '3' then concat('20',a.rrno1) when '4' then concat('20',a.rrno1) else concat('19',a.rrno1) end, 'yyyyMMdd')))) " +
                 "FROM InfoPt a " +
                 "left join BdasReq b on a.ptId = b.id.ptId " +
                 "left join BdasAdms ba on b.id.bdasSeq = ba.id.bdasSeq " +
                 "group by a.ptId " +
-                "order by max(b.updtDttm) desc"
+                "order by a.updtDttm desc"
         return getEntityManager().createQuery(query, InfoPtSearchDto::class.java).resultList
-    }
-
-    fun findInfoPt(): MutableList<Any?>? {
-        val query = "select fn_get_bed_asgn_stat('PT00000068', 185) from InfoPt "
-        return getEntityManager().createQuery(query).resultList
     }
 }
 
