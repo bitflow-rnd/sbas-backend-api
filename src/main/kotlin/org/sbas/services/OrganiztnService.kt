@@ -3,10 +3,7 @@ package org.sbas.services
 import org.eclipse.microprofile.jwt.JsonWebToken
 import org.jboss.logging.Logger
 import org.jboss.resteasy.reactive.RestResponse
-import org.sbas.dtos.FireStatnSaveReq
-import org.sbas.dtos.InfoCrewRegDto
-import org.sbas.dtos.InfoInstUpdateReq
-import org.sbas.dtos.PagingListDto
+import org.sbas.dtos.*
 import org.sbas.entities.info.InfoCrew
 import org.sbas.entities.info.InfoCrewId
 import org.sbas.entities.info.InfoInst
@@ -72,8 +69,10 @@ class OrganiztnService {
     /**
      * 의료기관 상세 조회
      */
-    fun findInfoHospById(hospId: String) {
-//        return infoHospRepository.findById(hospId) ?: throw NotFoundException("$hospId Not found")
+    fun findInfoHospById(hpId: String) : CommonResponse<InfoHospDetailDto> {
+        val findResult = infoHospRepository.findInfoHospDetail(hpId)
+
+        return CommonResponse(findResult)
     }
 
     /**

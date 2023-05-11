@@ -3,6 +3,7 @@ package org.sbas.repositories
 import io.quarkus.hibernate.orm.panache.kotlin.PanacheQuery
 import io.quarkus.hibernate.orm.panache.kotlin.PanacheRepositoryBase
 import org.jboss.logging.Logger
+import org.sbas.dtos.InfoHospDetailDto
 import org.sbas.dtos.InfoPtSearchDto
 import org.sbas.dtos.PagingListDto
 import org.sbas.entities.info.*
@@ -10,6 +11,7 @@ import org.sbas.parameters.InstCdParameters
 import org.sbas.parameters.SearchHospRequest
 import javax.enterprise.context.ApplicationScoped
 import javax.inject.Inject
+import javax.ws.rs.NotFoundException
 
 @ApplicationScoped
 class InfoPtRepository : PanacheRepositoryBase<InfoPt, String> {
@@ -49,6 +51,9 @@ class InfoHospRepository : PanacheRepositoryBase<InfoHosp, String> {
     @Inject
     lateinit var log: Logger
 
+    @Inject
+    lateinit var userRepository: InfoUserRepository
+
     fun findInfoHospByHpId(hpIdList: MutableList<String>): InfoHosp? {
         return find("").firstResult()
     }
@@ -79,6 +84,13 @@ class InfoHospRepository : PanacheRepositoryBase<InfoHosp, String> {
 
         return find(query)
 
+    }
+
+    fun findInfoHospDetail(hpId: String) : InfoHospDetailDto {
+        val findHosp = find("from InfoHosp where hpId = '$hpId'").firstResult() ?: throw NotFoundException("Please check hpId")
+        val count = userRepository.find("from InfoUser where instId = '$hpId'").count()
+
+        return InfoHospDetailDto(findHosp, count)
     }
 
 }

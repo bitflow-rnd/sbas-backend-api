@@ -27,19 +27,18 @@ class PublicOrganiztnEndpoint {
     @Inject
     lateinit var organiztnService: OrganiztnService
 
-    @Operation(summary = "의료기관 목록", description = "의료기관 목록 검색 API")
+    @Operation(summary = "의료기관 목록", description = "검색조건 및 거리 별 의료기관 조회. 페이징 및 총 검색 카운트도 반환")
     @GET
     @Path("medinsts")
     fun getMedInsts(@Valid request: SearchHospRequest?): Response? {
         return Response.ok(organiztnService.findInfoHospList(request)).build()
     }
 
-    @Operation(summary = "의료기관 상세", description = "")
+    @Operation(summary = "의료기관 상세", description = "상세정보 및 해당 기관 등록 의료진 수 카운트 리턴")
     @GET
-    @Path("medinst/{hospId}")
-    fun medinst(@RestPath hospId: String): CommonResponse<*> {
-        organiztnService.findInfoHospById(hospId)
-        return CommonResponse("")
+    @Path("medinst/{hpId}")
+    fun getMedInst(@RestPath hpId: String): Response {
+        return Response.ok(organiztnService.findInfoHospById(hpId)).build()
     }
 
     @Operation(summary = "기관코드 목록", description = "기관코드 목록")

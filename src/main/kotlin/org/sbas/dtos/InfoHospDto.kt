@@ -67,3 +67,8 @@ data class InfoHospSaveReq(
         return "HP" + String.format("%08d", number)
     }
 }
+
+data class InfoHospDetailDto(
+    var infoHosp: InfoHosp,
+    var medicCnt: Long,
+)
