@@ -40,6 +40,9 @@ class BedAssignService {
     @Inject
     private lateinit var geoHandler: GeocodingHandler
 
+    /**
+     * 질병 정보 등록
+     */
     @Transactional
     fun regDisesInfo(bdasEsvyDto: BdasEsvyDto): CommonResponse<String> {
         // 환자 정보 저장
@@ -63,6 +66,9 @@ class BedAssignService {
         return CommonResponse("등록 성공")
     }
 
+    /**
+     * 중증도 분류 정보 등록
+     */
     @Transactional
     fun regBioInfo(bdasReqSvrInfo: BdasReqSvrInfo): CommonResponse<String> {
         // bdasEsvy 에서 bdasSeq 가져오기
@@ -85,6 +91,9 @@ class BedAssignService {
         return CommonResponse("등록 성공")
     }
 
+    /**
+     * 중증 정보 등록
+     */
     @Transactional
     fun regServInfo(bdasReqSvrInfo: BdasReqSvrInfo): CommonResponse<String> {
         // bdasEsvy 에서 bdasSeq 가져오기
@@ -108,6 +117,9 @@ class BedAssignService {
         return CommonResponse("등록 성공")
     }
 
+    /**
+     * 출발지 정보 등록
+     */
     @Transactional
     fun regstrtpoint(bdasReqDprtInfo: BdasReqDprtInfo): CommonResponse<String> {
         // bdasEsvy 에서 bdasSeq 가져오기
@@ -118,25 +130,22 @@ class BedAssignService {
         val findBdasReq = bdasReqRepository.findByPtIdAndBdasSeq(bdasReqDprtInfo.ptId, bdasEsvy.bdasSeq!!) ?: throw NotFoundException("병상 배정 요청 정보가 없습니다.")
 
         // 출발지 위도, 경도 설정
-        setDepartureCoordinates(bdasReqDprtInfo)
+        val geocoding = geoHandler.getGeocoding(NaverGeocodingApiParams(query = bdasReqDprtInfo.dprtDstrBascAddr!!))
+        bdasReqDprtInfo.dprtDstrLat = geocoding.addresses!![0].y // 위도
+        bdasReqDprtInfo.dprtDstrLon = geocoding.addresses!![0].x // 경도
 
         // 요청 시간 설정
-        setBdasReqWithCurrentDateTime(bdasReqDprtInfo)
+        bdasReqDprtInfo.reqDt = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyyMMdd"))
+        bdasReqDprtInfo.reqTm = LocalDateTime.now().format(DateTimeFormatter.ofPattern("HHmmss"))
         
         // 출발지 정보 저장
         findBdasReq.saveDprtInfoFrom(bdasReqDprtInfo)
 
         return CommonResponse("등록 성공")
     }
-
-    private fun setDepartureCoordinates(bdasReqDprtInfo: BdasReqDprtInfo) {
-        val geocoding = geoHandler.getGeocoding(NaverGeocodingApiParams(query = bdasReqDprtInfo.dprtDstrBascAddr!!))
-        bdasReqDprtInfo.dprtDstrLat = geocoding.addresses!![0].y // 위도
-        bdasReqDprtInfo.dprtDstrLon = geocoding.addresses!![0].x // 경도
-    }
-
-    private fun setBdasReqWithCurrentDateTime(bdasReqDprtInfo: BdasReqDprtInfo) {
-        bdasReqDprtInfo.reqDt = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyyMMdd"))
-        bdasReqDprtInfo.reqTm = LocalDateTime.now().format(DateTimeFormatter.ofPattern("HHmmss"))
+    
+    @Transactional
+    fun reqConfirm() {
+        TODO("Not yet implemented")
     }
 }

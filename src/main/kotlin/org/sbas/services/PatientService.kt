@@ -65,15 +65,27 @@ class PatientService {
     @Inject
     private lateinit var dynamicQueryBuilder: DynamicQueryBuilder
 
+    /**
+     * 환자 기본정보 등록
+     */
     @Transactional
     fun saveInfoPt(infoPtDto: InfoPtDto): CommonResponse<String?> {
-        val infoPt = infoPtDto.toEntity()
+        //환자 주소(bascAddr)로 dstr1Cd, dstr2Cd 구하기
+        val split = infoPtDto.bascAddr.split(" ")
+        val dstrCd1 = StringUtils.getDstrCd1(split[0])
+        val findBaseCode = baseCodeRepository.findByDstr1CdAndCdNm(dstrCd1, split[1]) ?: throw NotFoundException("baseCode not found")
+        val infoPt = infoPtDto.toEntity(dstrCd1, findBaseCode.id.cdId)
+
         infoPtRepository.persist(infoPt)
+
         return CommonResponse(infoPt.ptId)
     }
 
+    /**
+     * 환자 중복 유효성 검사
+     */
     @Transactional
-    fun check(infoPtDto: InfoPtDto): CommonResponse<String> {
+    fun checkInfoPt(infoPtDto: InfoPtDto): CommonResponse<String> {
         val findInfoPt = infoPtRepository.findByPtNmAndRrno(
             ptNm = infoPtDto.ptNm,
             rrno1 = infoPtDto.rrno1,
@@ -84,6 +96,72 @@ class PatientService {
             return CommonResponse("등록된 환자가 존재합니다.")
         }
         return CommonResponse("등록된 환자가 존재하지 않습니다.")
+    }
+
+    @Transactional
+    fun updateInfoPt(ptId: String, infoPtDto: InfoPtDto): CommonResponse<String> {
+        val findInfoPt = infoPtRepository.findById(ptId) ?: throw NotFoundException("$ptId not found")
+
+        //환자 주소(bascAddr)로 dstr1Cd, dstr2Cd 구하기
+        val split = infoPtDto.bascAddr.split(" ")
+        val dstrCd1 = StringUtils.getDstrCd1(split[0])
+        val findBaseCode = baseCodeRepository.findByDstr1CdAndCdNm(dstrCd1, split[1]) ?: throw NotFoundException("baseCode not found")
+        infoPtDto.dstr1Cd = dstrCd1
+        infoPtDto.dstr2Cd = findBaseCode.id.cdId
+
+        findInfoPt.updateEntity(infoPtDto)
+
+        return CommonResponse("$ptId 수정 성공")
+    }
+
+    @Transactional
+    fun findInfoPtWithMyOrgan(): CommonResponse<*> {
+        //TODO
+        val infoUser = infoUserRepository.findById(jwt.name) ?: throw NotFoundException()
+        val infoInst = infoInstRepository.findById(infoUser.instId!!) ?: throw NotFoundException()
+        val infoPtList = infoPtRepository.findByDstrCd(infoInst.dstrCd1!!, infoInst.dstrCd2!!)
+
+        val res = mutableMapOf<String, Any>()
+        res["items"] = infoPtList
+        res["count"] = infoPtList.count()
+
+        return CommonResponse(res)
+    }
+
+    @Transactional
+    fun findInfoPt(ptId: String): CommonResponse<InfoPt> {
+        return CommonResponse(infoPtRepository.findById(ptId) ?: throw NotFoundException("$ptId not found"))
+    }
+
+    @Transactional
+    fun findBdasHistInfo(ptId: String) {
+        
+    }
+
+    @Transactional
+    fun findInfoPtList(searchParam: SearchParameters): CommonResponse<*> {
+        val query = infoPtRepository.findInfoPtList()
+        query.forEach { dto ->
+            dto.statCdNm = BedStat.valueOf(dto.statCd!!).cdNm
+            if (dto.ptTypeCd != null) {
+                val split = dto.ptTypeCd!!.split(";")
+                dto.tagList!!.addAll(split.map { PtTypeCd.valueOf(it).cdNm })
+            }
+            if (dto.svrtTypeCd != null) {
+                val split = dto.svrtTypeCd!!.split(";")
+                dto.tagList!!.addAll(split.map { SvrtTypeCd.valueOf(it).cdNm })
+            }
+            if (dto.undrDsesCd != null) {
+                val split = dto.undrDsesCd!!.split(";")
+                dto.tagList!!.addAll(split.map { UndrDsesCd.valueOf(it).cdNm })
+            }
+        }
+
+        val res = mutableMapOf<String, Any>()
+        res["count"] = query.size
+        res["items"] = query
+
+        return CommonResponse(res)
     }
 
     fun calculateNewsScore(param: NewsScoreParameters): CommonResponse<Int> {
@@ -174,63 +252,6 @@ class PatientService {
         } catch (e: IOException) {
             throw NotFoundException("역학조사서 파일이 존재하지 않습니다.")
         }
-    }
-
-    @Transactional
-    fun updateInfoPt(ptId: String, infoPtDto: InfoPtDto): CommonResponse<String> {
-        val findInfoPt = infoPtRepository.findById(ptId) ?: throw NotFoundException("$ptId not found")
-        findInfoPt.updateEntity(infoPtDto)
-        return CommonResponse("$ptId 수정 성공")
-    }
-
-    @Transactional
-    fun findInfoPtWithMyOrgan(): CommonResponse<*> {
-        //TODO
-        val infoUser = infoUserRepository.findById(jwt.name) ?: throw NotFoundException()
-        val infoInst = infoInstRepository.findById(infoUser.instId!!) ?: throw NotFoundException()
-        val infoPtList = infoPtRepository.findByDstrCd(infoInst.dstrCd1!!, infoInst.dstrCd2!!)
-
-        val res = mutableMapOf<String, Any>()
-        res["items"] = infoPtList
-        res["count"] = infoPtList.count()
-
-        return CommonResponse(res)
-    }
-
-    @Transactional
-    fun findInfoPt(ptId: String): CommonResponse<InfoPt> {
-        return CommonResponse(infoPtRepository.findById(ptId) ?: throw NotFoundException("$ptId not found"))
-    }
-
-    @Transactional
-    fun findBdasHistInfo(ptId: String) {
-        
-    }
-
-    @Transactional
-    fun findInfoPtList(searchParam: SearchParameters): CommonResponse<*> {
-        val query = infoPtRepository.findInfoPtList()
-        query.forEach { dto ->
-            dto.statCdNm = BedStat.valueOf(dto.statCd!!).cdNm
-            if (dto.ptTypeCd != null) {
-                val split = dto.ptTypeCd!!.split(";")
-                dto.tagList!!.addAll(split.map { PtTypeCd.valueOf(it).cdNm })
-            }
-            if (dto.svrtTypeCd != null) {
-                val split = dto.svrtTypeCd!!.split(";")
-                dto.tagList!!.addAll(split.map { SvrtTypeCd.valueOf(it).cdNm })
-            }
-            if (dto.undrDsesCd != null) {
-                val split = dto.undrDsesCd!!.split(";")
-                dto.tagList!!.addAll(split.map { UndrDsesCd.valueOf(it).cdNm })
-            }
-        }
-
-        val res = mutableMapOf<String, Any>()
-        res["count"] = query.size
-        res["items"] = query
-
-        return CommonResponse(res)
     }
 
     @Transactional

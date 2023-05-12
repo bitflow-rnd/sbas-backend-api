@@ -32,7 +32,6 @@ dependencies {
     implementation("io.quarkus:quarkus-logging-json")
     implementation("io.quarkus:quarkus-smallrye-jwt-build")
     implementation("io.quarkus:quarkus-jdbc-postgresql")
-    implementation("io.quarkus:quarkus-jdbc-h2")
     implementation("org.json:json:20230227")
     implementation("io.quarkus:quarkus-websockets")
     implementation("io.quarkus:quarkus-arc")

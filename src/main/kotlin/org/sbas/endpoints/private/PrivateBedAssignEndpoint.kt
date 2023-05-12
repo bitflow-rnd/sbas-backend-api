@@ -3,6 +3,7 @@ package org.sbas.endpoints.private
 import org.eclipse.microprofile.openapi.annotations.Operation
 import org.eclipse.microprofile.openapi.annotations.tags.Tag
 import org.jboss.logging.Logger
+import org.sbas.services.BedAssignService
 import javax.inject.Inject
 import javax.ws.rs.GET
 import javax.ws.rs.POST
@@ -16,10 +17,14 @@ class PrivateBedAssignEndpoint {
     @Inject
     lateinit var log: Logger
 
+    @Inject
+    lateinit var bedAssignService: BedAssignService
+
     @Operation(summary = "병상승인/불가 (병상배정반)", description = "")
     @POST
     @Path("reqconfirm")
     fun reqconfirm(): Response {
+        bedAssignService.reqConfirm()
         return Response.ok().build()
     }
 

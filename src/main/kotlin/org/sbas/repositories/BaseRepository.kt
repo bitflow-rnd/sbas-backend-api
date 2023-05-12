@@ -21,7 +21,7 @@ class BaseCodeRepository : PanacheRepositoryBase<BaseCode, BaseCodeId> {
             Sort.by("a.id.cdGrpId")).list()
     }
 
-    fun findCdIdByAddrNm(addrNm: String) : SidoSiGunGuDto {
+    fun findCdIdByAddrNm(addrNm: String): SidoSiGunGuDto {
         val arrAddr = addrNm.split(" ")
 
         val siDo = find("from BaseCode where id.cdGrpId = 'SIDO' and cdNm = '${arrAddr[0]}'").firstResult()
@@ -32,6 +32,9 @@ class BaseCodeRepository : PanacheRepositoryBase<BaseCode, BaseCodeId> {
         return SidoSiGunGuDto(siDoCd, siGunGu?.id?.cdId)
     }
 
+    fun findByDstr1CdAndCdNm(dstr1Cd: String, cdNm: String): BaseCode? {
+        return find("cd_grp_id = 'SIDO$dstr1Cd' and cd_nm = '$cdNm'").firstResult()
+    }
 }
 
 @ApplicationScoped

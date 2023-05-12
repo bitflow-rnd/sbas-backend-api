@@ -70,7 +70,7 @@ class PrivatePatientEndpoint {
     @POST
     @Path("exist")
     fun exist(infoPtDto: InfoPtDto): Response {
-        return Response.ok(patientService.check(infoPtDto)).build()
+        return Response.ok(patientService.checkInfoPt(infoPtDto)).build()
     }
 
     @Operation(summary = "환자정보 수정", description = "")
@@ -148,7 +148,8 @@ class PrivatePatientEndpoint {
     @POST
     @Path("regstrtpoint")
     fun regstrtpoint(bdasReqDprtInfo: BdasReqDprtInfo): Response? {
-        return Response.ok(bedAssignService.regstrtpoint(bdasReqDprtInfo)).build()
+        val res = bedAssignService.regstrtpoint(bdasReqDprtInfo)
+        return Response.ok(res).build()
     }
 
     @Operation(summary = "현재 차수 병상배정 관련 타임라인 메시지 전송", description = "")

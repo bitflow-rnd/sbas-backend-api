@@ -2,6 +2,9 @@ package org.sbas.dtos
 
 import org.sbas.utils.NoArg
 
+/**
+ * 출발지 정보
+ */
 @NoArg
 data class BdasReqDprtInfo (
     var ptId: String,
@@ -33,6 +36,9 @@ data class BdasReqDprtInfo (
     var msg: String? = null,
 )
 
+/**
+ * 중증 정보
+ */
 @NoArg
 data class BdasReqSvrInfo(
     var ptId: String,

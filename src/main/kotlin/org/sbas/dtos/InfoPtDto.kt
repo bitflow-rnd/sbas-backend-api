@@ -12,8 +12,8 @@ data class InfoPtDto(
     val gndr: String,
     val rrno1: String,
     val rrno2: String,
-    val dstr1Cd: String,
-    val dstr2Cd: String,
+    var dstr1Cd: String,
+    var dstr2Cd: String,
     val addr: String,
     val telno: String,
     val natiCd: String,
@@ -29,14 +29,14 @@ data class InfoPtDto(
     val natiNm: String,
 )
 
-fun InfoPtDto.toEntity(): InfoPt {
+fun InfoPtDto.toEntity(dstr1Cd: String, dstr2Cd: String): InfoPt {
     return InfoPt(
         ptNm = this.ptNm,
         gndr = this.gndr,
         rrno1 = this.rrno1,
         rrno2 = this.rrno2,
-        dstr1Cd = this.dstr1Cd,
-        dstr2Cd = this.dstr2Cd,
+        dstr1Cd = dstr1Cd,
+        dstr2Cd = dstr2Cd,
         addr = this.addr,
         telno = this.telno,
         natiCd = this.natiCd,
@@ -53,6 +53,9 @@ fun InfoPtDto.toEntity(): InfoPt {
     )
 }
 
+/**
+ * 환자 목록 조회용 DTO
+ */
 class InfoPtSearchDto {
     var ptId: String?
     var bdasSeq: Int?

@@ -5,7 +5,6 @@ import io.quarkus.hibernate.orm.panache.kotlin.PanacheRepositoryBase
 import org.jboss.logging.Logger
 import org.sbas.dtos.InfoHospDetailDto
 import org.sbas.dtos.InfoPtSearchDto
-import org.sbas.dtos.PagingListDto
 import org.sbas.entities.info.*
 import org.sbas.parameters.InstCdParameters
 import org.sbas.parameters.SearchHospRequest
@@ -17,24 +16,23 @@ import javax.ws.rs.NotFoundException
 class InfoPtRepository : PanacheRepositoryBase<InfoPt, String> {
 
     fun findByPtNmAndRrno(ptNm: String, rrno1: String, rrno2: String): InfoPt? =
-        find("pt_nm = ?1 AND rrno_1 = ?2 AND rrno_2 = ?3", ptNm, rrno1, rrno2).firstResult()
+        find("pt_nm = '$ptNm' AND rrno_1 = '$rrno1' AND rrno_2 = '$rrno2'").firstResult()
 
-    //TODO 삭제 예정
     fun findByDstrCd(dstr1Cd: String, dstr2Cd: String): List<InfoPt> {
         return find("dstr_1_cd = '$dstr1Cd' and dstr_2_cd = '$dstr2Cd'").list()
     }
 
     fun findInfoPtList(): List<InfoPtSearchDto> {
         //TODO
-        val query = "select new org.sbas.dtos.InfoPtSearchDto(a.ptId, max(b.id.bdasSeq), a.ptNm, a.gndr, " +
-                "a.dstr1Cd, split_part(a.bascAddr, ' ', 1), a.dstr2Cd, split_part(a.bascAddr, ' ', 2), " +
-                "max(ba.hospId), '', a.mpno, a.natiCd, fn_get_bed_asgn_stat(a.ptId, max(b.id.bdasSeq)), '', a.updtDttm, " +
-                "max(b.ptTypeCd), max(b.svrtTypeCd), max(b.undrDsesCd), " +
+        val query = "select new org.sbas.dtos.InfoPtSearchDto(a.ptId, b.id.bdasSeq, a.ptNm, a.gndr, " +
+                "a.dstr1Cd, fn_get_cd_nm('SIDO', a.dstr1Cd), a.dstr2Cd, fn_get_cd_nm('SIDO'||a.dstr1Cd, a.dstr2Cd), " +
+                "ba.hospId, '', a.mpno, a.natiCd, fn_get_bed_asgn_stat(a.ptId, b.id.bdasSeq), '', a.updtDttm, " +
+                "b.ptTypeCd, b.svrtTypeCd, b.undrDsesCd, " +
                 "EXTRACT(year FROM age(CURRENT_DATE, to_date(case a.rrno2 when '3' then concat('20',a.rrno1) when '4' then concat('20',a.rrno1) else concat('19',a.rrno1) end, 'yyyyMMdd')))) " +
                 "FROM InfoPt a " +
                 "left join BdasReq b on a.ptId = b.id.ptId " +
                 "left join BdasAdms ba on b.id.bdasSeq = ba.id.bdasSeq " +
-                "group by a.ptId " +
+                "where b.id.bdasSeq in ((select max(id.bdasSeq) as bdasSeq from BdasReq group by id.ptId)) or b.id.bdasSeq is null " +
                 "order by a.updtDttm desc"
         return getEntityManager().createQuery(query, InfoPtSearchDto::class.java).resultList
     }
@@ -53,10 +51,6 @@ class InfoHospRepository : PanacheRepositoryBase<InfoHosp, String> {
 
     @Inject
     lateinit var userRepository: InfoUserRepository
-
-    fun findInfoHospByHpId(hpIdList: MutableList<String>): InfoHosp? {
-        return find("").firstResult()
-    }
 
     fun findInfoHopByCondition(searchParam: SearchHospRequest?): PanacheQuery<InfoHosp> {
         val queryBuilder = StringBuilder("from InfoHosp where 1 = 1")
