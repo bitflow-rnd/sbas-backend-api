@@ -4,10 +4,14 @@ import org.hibernate.dialect.PostgreSQL10Dialect
 import org.hibernate.dialect.function.StandardSQLFunction
 import org.hibernate.type.StandardBasicTypes
 
+/**
+ * 새로 만든 DB 함수를 JPQL 에서 사용하려면 아래의 클래스에 등록해줘야 합니다.
+ */
 class CustomMysqlDialect : PostgreSQL10Dialect() {
     init {
         registerFunction("fn_get_bed_asgn_stat", StandardSQLFunction("fn_get_bed_asgn_stat", StandardBasicTypes.STRING))
         registerFunction("fn_get_cd_nm", StandardSQLFunction("fn_get_cd_nm", StandardBasicTypes.STRING))
+        registerFunction("fn_get_age", StandardSQLFunction("fn_get_age", StandardBasicTypes.INTEGER))
         registerFunction("split_part", StandardSQLFunction("split_part", StandardBasicTypes.STRING))
     }
 }

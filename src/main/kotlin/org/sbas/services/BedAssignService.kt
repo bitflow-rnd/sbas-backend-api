@@ -1,7 +1,12 @@
 package org.sbas.services
 
 import org.jboss.logging.Logger
+import org.sbas.constants.BedStat
+import org.sbas.constants.PtTypeCd
+import org.sbas.constants.SvrtTypeCd
+import org.sbas.constants.UndrDsesCd
 import org.sbas.dtos.BdasEsvyDto
+import org.sbas.dtos.BdasListDto
 import org.sbas.dtos.BdasReqDprtInfo
 import org.sbas.dtos.BdasReqSvrInfo
 import org.sbas.entities.bdas.BdasReq
@@ -14,6 +19,7 @@ import org.sbas.responses.CommonResponse
 import org.sbas.restparameters.NaverGeocodingApiParams
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
+import java.util.*
 import javax.enterprise.context.ApplicationScoped
 import javax.inject.Inject
 import javax.transaction.Transactional
@@ -147,5 +153,46 @@ class BedAssignService {
     @Transactional
     fun reqConfirm() {
         TODO("Not yet implemented")
+    }
+
+    @Transactional
+    fun getBedAsgnList(bedStatCd: String): CommonResponse<*> {
+        val res = mutableMapOf<String, Any>()
+        when (bedStatCd) {
+            "BAST0003" -> {
+                val list = bdasReqRepository.findBdasReqList().filter { it.bedStatCd!! == "BAST0003" }.map { getTagList(it) }
+                res["count"] = list.size
+                res["items"] = list
+                return CommonResponse(res)
+            }
+            "BAST0005" -> {
+                return CommonResponse(null)
+            }
+            "BAST0006" -> {
+                return CommonResponse(null)
+            }
+            "BAST0007" -> {
+                return CommonResponse(null)
+            }
+        }
+
+        return CommonResponse(Collections.EMPTY_LIST)
+    }
+
+    private fun getTagList(dto: BdasListDto): BdasListDto {
+        dto.bedStatCdNm = BedStat.valueOf(dto.bedStatCd!!).cdNm
+        if (dto.ptTypeCd != null) {
+            val split = dto.ptTypeCd!!.split(";")
+            dto.tagList!!.addAll(split.map { PtTypeCd.valueOf(it).cdNm })
+        }
+        if (dto.svrtTypeCd != null) {
+            val split = dto.svrtTypeCd!!.split(";")
+            dto.tagList!!.addAll(split.map { SvrtTypeCd.valueOf(it).cdNm })
+        }
+        if (dto.undrDsesCd != null) {
+            val split = dto.undrDsesCd!!.split(";")
+            dto.tagList!!.addAll(split.map { UndrDsesCd.valueOf(it).cdNm })
+        }
+        return dto
     }
 }
