@@ -14,6 +14,7 @@ data class BdasListDto(
     var diagNm: String?,
     var bedStatCd: String?,
     var bedStatCdNm: String?,
+    var chrgInstNm: String?,
     @JsonIgnore var ptTypeCd: String?,
     @JsonIgnore var svrtTypeCd: String?,
     @JsonIgnore var undrDsesCd: String?

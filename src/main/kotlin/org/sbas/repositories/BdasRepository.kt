@@ -21,7 +21,7 @@ class BdasReqRepository : PanacheRepositoryBase<BdasReq, BdasReqId> {
 
     fun findBdasReqList(): List<BdasListDto> {
         val query = "select new org.sbas.dtos.BdasListDto(br.id.ptId, br.id.bdasSeq, pt.ptNm, pt.gndr, fn_get_age(pt.rrno1, pt.rrno2), " +
-                "pt.bascAddr, br.updtDttm, be.diagNm, fn_get_bed_asgn_stat(br.id.ptId, br.id.bdasSeq), '', br.ptTypeCd, br.svrtTypeCd, br.undrDsesCd) " +
+                "pt.bascAddr, br.updtDttm, be.diagNm, fn_get_bed_asgn_stat(br.id.ptId, br.id.bdasSeq), '', be.rcptPhc, br.ptTypeCd, br.svrtTypeCd, br.undrDsesCd) " +
                 "from BdasReq br " +
                 "join InfoPt pt on br.id.ptId = pt.ptId " +
                 "join BdasEsvy be on br.id.bdasSeq = be.bdasSeq " +

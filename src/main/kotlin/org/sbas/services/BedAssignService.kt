@@ -166,16 +166,24 @@ class BedAssignService {
                 return CommonResponse(res)
             }
             "BAST0005" -> {
-                return CommonResponse(null)
+                val list = bdasReqRepository.findBdasReqList().filter { it.bedStatCd!! == "BAST0005" }.map { getTagList(it) }
+                res["count"] = list.size
+                res["items"] = list
+                return CommonResponse(res)
             }
             "BAST0006" -> {
-                return CommonResponse(null)
+                val list = bdasReqRepository.findBdasReqList().filter { it.bedStatCd!! == "BAST0006" }.map { getTagList(it) }
+                res["count"] = list.size
+                res["items"] = list
+                return CommonResponse(res)
             }
             "BAST0007" -> {
-                return CommonResponse(null)
+                val list = bdasReqRepository.findBdasReqList().filter { it.bedStatCd!! == "BAST0007" }.map { getTagList(it) }
+                res["count"] = list.size
+                res["items"] = list
+                return CommonResponse(res)
             }
         }
-
         return CommonResponse(Collections.EMPTY_LIST)
     }
 
