@@ -1,26 +1,24 @@
 package org.sbas.services
 
 import com.fasterxml.jackson.databind.ObjectMapper
-import io.vertx.core.json.JsonArray
 import org.eclipse.microprofile.config.inject.ConfigProperty
 import org.eclipse.microprofile.rest.client.inject.RestClient
 import org.jboss.logging.Logger
-import org.json.JSONArray
 import org.json.JSONObject
 import org.sbas.constants.EgenCmMid
 import org.sbas.dtos.BaseCodeEgenSaveReq
 import org.sbas.dtos.InfoHospSaveReq
 import org.sbas.dtos.toEntity
+import org.sbas.entities.info.InfoHosp
 import org.sbas.repositories.BaseCodeEgenRepository
 import org.sbas.repositories.BaseCodeRepository
 import org.sbas.repositories.InfoHospRepository
+import org.sbas.repositories.PageRepository
 import org.sbas.responses.CommonResponse
 import org.sbas.restclients.EgenRestClient
 import org.sbas.restparameters.EgenApiBassInfoParams
 import org.sbas.restparameters.EgenApiLcInfoParams
 import org.sbas.restparameters.EgenApiListInfoParams
-import org.sbas.utils.CustomizedException
-import java.lang.NullPointerException
 import javax.enterprise.context.ApplicationScoped
 import javax.inject.Inject
 import javax.transaction.Transactional
@@ -43,6 +41,9 @@ class EgenService {
 
     @Inject
     private lateinit var baseCodeRepository: BaseCodeRepository
+
+    @Inject
+    private lateinit var pageRepository: PageRepository
 
     @RestClient
     private lateinit var egenRestClient: EgenRestClient
@@ -79,6 +80,22 @@ class EgenService {
             )
         )
         return extractBody(jsonObject)
+    }
+
+    /**
+     * 병‧의원 목록정보 조회 및 저장
+     */
+    fun getHospitalsTotalCount(): Int {
+        val jsonObject = JSONObject(
+            egenRestClient.getHsptlMdcncListInfoInqire(
+                serviceKey = serviceKey,
+                q0 = null, q1 = null,
+                qz = null, qd = null,
+                qt = null, qn = null,
+                ord = null, pageNo = "0", numOfRows = "0"
+            )
+        )
+        return extractTotalCount(jsonObject)
     }
 
     /**
@@ -195,8 +212,8 @@ class EgenService {
     @Transactional
     fun saveEgenCode() {
         var res: BaseCodeEgenSaveReq
-        EgenCmMid.values().forEach {
-            egenCmMid -> val jsonObject = getCodeMastInfo(egenCmMid)
+        EgenCmMid.values().forEach { egenCmMid ->
+            val jsonObject = getCodeMastInfo(egenCmMid)
             jsonObject.getJSONArray("item").forEach {
                 res = ObjectMapper().readValue(it.toString(), BaseCodeEgenSaveReq::class.java)
                 baseCodeEgenRepository.getEntityManager().merge(res.toEntity())
@@ -212,13 +229,13 @@ class EgenService {
         var res: InfoHospSaveReq
         val jsonArray = try {
             getHsptlMdcncListInfoInqire(param)
-        }catch (e: Exception){
-            return CommonResponse(false)
+        } catch (e: Exception) {
+            return CommonResponse(e.message)
         }
         jsonArray.getJSONArray("item").forEach {
             res = ObjectMapper().readValue(it.toString(), InfoHospSaveReq::class.java)
             val addr = baseCodeRepository.findCdIdByAddrNm(res.dutyAddr!!)
-            infoHospRepository.getEntityManager().merge(res.toEntity(addr.siDoCd!!, addr.siGunGuCd!!))
+            infoHospRepository.getEntityManager().merge(res.toEntity(addr.siDoCd, addr.siGunGuCd))
         }
         return CommonResponse(jsonArray)
     }
@@ -246,9 +263,69 @@ class EgenService {
         return ret
     }
 
+//    fun doBlockingDatabaseOperation() {
+//        Vertx.vertx().executeBlocking(
+//            Promise { promise: Promise<String> ->
+//                try {
+//                    // 여기서 차단 작업을 수행합니다.
+//                    promise.complete("Success")
+//                } catch (e: Exception) {
+//                    promise.fail(e)
+//                }
+//            },
+//            Handler { asyncResult: AsyncResult<String> ->
+//                if (asyncResult.succeeded()) {
+//                    // 성공 처리
+//                } else {
+//                    // 실패 처리
+//                }
+//            },
+//        )
+//    }
+
+    /**
+     * Scheduler에서 E-GEN 병의원 목록정보를 DB에 저장
+     */
+    fun saveHospitalByScheduler(): CommonResponse<*> {
+        val currentPage = pageRepository.findById("hosp")?.page ?: 0
+        val totalCount = getHospitalsTotalCount()
+        val searchNum = if (totalCount % 1000 > 0) totalCount / 1000 + 1 else totalCount / 1000
+
+        try {
+            for (i in (currentPage + 1)..searchNum) {
+                var res: InfoHospSaveReq
+
+                val jsonArray = getHsptlMdcncListInfoInqire(EgenApiListInfoParams(pageNo = i.toString(), numOfRows = "1000"))
+                jsonArray.getJSONArray("item").forEach {
+                    res = ObjectMapper().readValue(it.toString(), InfoHospSaveReq::class.java)
+                    val addr = baseCodeRepository.findCdIdByAddrNm(res.dutyAddr!!)
+                    val resByScheduler = res.toEntityFromScheduler(addr.siDoCd, addr.siGunGuCd)
+                    hospMerge(resByScheduler)
+                }
+
+                pageRepository.saveCurrentPage("hosp", i)
+            }
+        }catch(e: Exception) {
+            saveHospitalByScheduler()
+        }
+
+        pageRepository.saveCurrentPage("hosp", 0)
+        return CommonResponse("${totalCount}개 병원 등록 완료.")
+    }
+
+    @Transactional
+    fun hospMerge(input: InfoHosp) {
+        infoHospRepository.getEntityManager().merge(input)
+    }
+
     private fun extractBody(jsonObject: JSONObject): JSONObject {
         val header = jsonObject.getJSONObject("response").getJSONObject("header")
         return jsonObject.getJSONObject("response").getJSONObject("body").getJSONObject("items")
+    }
+
+    private fun extractTotalCount(jsonObject: JSONObject): Int {
+        val header = jsonObject.getJSONObject("response").getJSONObject("header")
+        return jsonObject.getJSONObject("response").getJSONObject("body").getInt("totalCount")
     }
 
 }

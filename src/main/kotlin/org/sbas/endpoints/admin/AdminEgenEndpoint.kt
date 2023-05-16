@@ -53,7 +53,7 @@ class AdminEgenEndpoint {
         return makeToSuccessResponse(res)
     }
 
-    @Operation(summary = "병‧의원 목록정보 조회 및 저장", description = "병‧의원 목록정보 조회 및 저장")
+    @Operation(summary = "E-GEN 의료기관 정보 동기화(수동)", description = "관리자 버튼 클릭으로 동기화 시작")
     @POST
     @Path("hsptlMdcncList")
     fun getHsptlMdcncList(param: EgenApiListInfoParams): Response {

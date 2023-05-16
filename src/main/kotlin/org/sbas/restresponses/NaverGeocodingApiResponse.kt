@@ -48,3 +48,87 @@ data class AddressElements(
     @JsonProperty("code")
     var code: String?,
 )
+
+data class NaverReverseGeocodingApiResponse (
+    @JsonProperty("name")
+    var name: String?,
+    @JsonProperty("code")
+    var code: Code?,
+    @JsonProperty("region")
+    var region: RegionElement?,
+    @JsonProperty("land")
+    var land: Land?,
+    @JsonProperty("addition0")
+    var addition0: Addition?,
+    @JsonProperty("addition1")
+    var addition1: Addition?,
+    @JsonProperty("addition2")
+    var addition2: Addition?,
+    @JsonProperty("addition3")
+    var addition3: Addition?,
+    @JsonProperty("addition4")
+    var addition4: Addition?,
+)
+
+data class Code(
+    @JsonProperty("id")
+    var id: String?,
+    @JsonProperty("type")
+    var type: String?,
+    @JsonProperty("mappingId")
+    var mappingId: String?,
+)
+
+data class RegionElement(
+    @JsonProperty("area0")
+    var area0: Area?,
+    @JsonProperty("area1")
+    var area1: Area?,
+    @JsonProperty("area2")
+    var area2: Area?,
+    @JsonProperty("area3")
+    var area3: Area?,
+    @JsonProperty("area4")
+    var area4: Area?
+)
+
+data class Area(
+    @JsonProperty("name")
+    var name: String,
+    @JsonProperty("coords")
+    var cords: Coords?,
+)
+
+data class Coords(
+    @JsonProperty("center")
+    var center: Center?
+)
+
+data class Center(
+    @JsonProperty("crs")
+    var crs: String?,
+    @JsonProperty("x")
+    var x: Float?,
+    @JsonProperty("y")
+    var y: Float?,
+)
+
+data class Land(
+    @JsonProperty("type")
+    var type: String?,
+    @JsonProperty("name")
+    var name: String?,
+    @JsonProperty("number1")
+    var number1: String?,
+    @JsonProperty("number2")
+    var number2: String?,
+    @JsonProperty("coords")
+    var coords: Coords
+)
+
+data class Addition(
+    @JsonProperty("type")
+    var type: String?,
+    @JsonProperty("value")
+    var value: String?,
+)

@@ -2,17 +2,13 @@ package org.sbas.repositories
 
 import io.quarkus.hibernate.orm.panache.kotlin.PanacheRepositoryBase
 import io.quarkus.panache.common.Sort
-import org.jboss.logging.Logger
 import org.sbas.dtos.SidoSiGunGuDto
 import org.sbas.entities.base.*
 import javax.enterprise.context.ApplicationScoped
-import javax.inject.Inject
+import javax.transaction.Transactional
 
 @ApplicationScoped
 class BaseCodeRepository : PanacheRepositoryBase<BaseCode, BaseCodeId> {
-
-    @Inject
-    lateinit var log: Logger
 
     fun findBaseCodeByCdGrpId(cdGrpId: String): List<BaseCode> = find("cd_grp_id = '$cdGrpId'").list()
 
@@ -21,6 +17,7 @@ class BaseCodeRepository : PanacheRepositoryBase<BaseCode, BaseCodeId> {
             Sort.by("a.id.cdGrpId")).list()
     }
 
+    @Transactional
     fun findCdIdByAddrNm(addrNm: String): SidoSiGunGuDto {
         val arrAddr = addrNm.split(" ")
 

@@ -1,7 +1,5 @@
 package org.sbas.dtos
 
-import org.json.JSONArray
-import org.json.JSONObject
 import org.sbas.entities.info.InfoHosp
 import org.sbas.utils.NoArg
 
@@ -44,7 +42,7 @@ data class InfoHospSaveReq(
     var dutyTime7s: String?,
     var dutyTime8s: String?,
 ) {
-    fun toEntity(siDo: String, siGunGu: String): InfoHosp {
+    fun toEntity(siDo: String?, siGunGu: String?): InfoHosp {
         return InfoHosp(
             hospId = hospIdFormatter(this.rnum),
             hpId = this.hpid,
@@ -61,6 +59,29 @@ data class InfoHospSaveReq(
             dstrCd1 = siDo,
             dstrCd2 = siGunGu
         )
+    }
+
+    fun toEntityFromScheduler(siDo: String?, siGunGu: String?): InfoHosp {
+        val result = InfoHosp(
+            hospId = hospIdFormatter(this.rnum),
+            hpId = this.hpid,
+            dutyName = this.dutyName,
+            dutyDivNam = this.dutyDivNam,
+            dutyTel1 = this.dutyTel1,
+            dutyAddr = this.dutyAddr,
+            postCdn1 = this.postCdn1,
+            postCdn2 = this.postCdn2,
+            wgs84Lon = this.wgs84Lon,
+            wgs84Lat = this.wgs84Lat,
+            dutyInf = this.dutyInf,
+            dutyEtc = this.dutyEtc,
+            dstrCd1 = siDo,
+            dstrCd2 = siGunGu,
+        )
+        result.rgstUserId = "admin"
+        result.updtUserId = "admin"
+
+        return result
     }
 
     fun hospIdFormatter(number: Int): String {

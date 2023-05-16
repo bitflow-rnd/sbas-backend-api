@@ -2,9 +2,9 @@ package org.sbas.handlers
 
 import org.eclipse.microprofile.rest.client.inject.RestClient
 import org.sbas.restclients.NaverGeocodingRestClient
-import org.sbas.restclients.NaverSensRestClient
 import org.sbas.restparameters.NaverGeocodingApiParams
 import org.sbas.restresponses.NaverGeocodingApiResponse
+import org.sbas.restresponses.NaverReverseGeocodingApiResponse
 import javax.enterprise.context.ApplicationScoped
 
 @ApplicationScoped
@@ -23,5 +23,12 @@ class GeocodingHandler {
             naverGeocodingApiParams.count,
         )
     }
+
+//    fun getReverseGeocoding(): NaverReverseGeocodingApiResponse{
+//        return naverGeocodingRestClient.getLatLonInfo(
+//            request = "coordsToaddr",
+////            coords =
+//        )
+//    }
 
 }

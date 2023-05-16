@@ -4,13 +4,13 @@ import org.sbas.utils.NoArg
 
 @NoArg
 data class EgenApiListInfoParams(
-    val q0: String, // 주소(시도)
-    val q1: String, // 주소(시군구)
-    val qz: String, // 기관구분
-    val qd: String, // 진료과목
-    val qt: String, // 진료요일
-    val qn: String, // 기관명
-    val ord: String, // 순서
+    val q0: String? = null, // 주소(시도)
+    val q1: String? = null, // 주소(시군구)
+    val qz: String? = null, // 기관구분
+    val qd: String? = null, // 진료과목
+    val qt: String? = null, // 진료요일
+    val qn: String? = null, // 기관명
+    val ord: String? = null, // 순서
     val pageNo: String = "1",
     val numOfRows: String = "10",
 )

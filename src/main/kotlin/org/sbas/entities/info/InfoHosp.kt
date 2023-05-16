@@ -39,7 +39,7 @@ class InfoHosp(
     @Column(name = "dutydivnam", nullable = false, length = 50)
     var dutyDivNam: String? = null, // 병원분류명
 
-    @Column(name = "dutytel1", nullable = false, length = 14)
+    @Column(name = "dutytel1", nullable = false, length = 19)
     var dutyTel1: String? = null, // 대표전화1
 
     @Column(name = "dutyaddr", nullable = false, length = 200)
@@ -60,7 +60,7 @@ class InfoHosp(
     @Column(name = "dutyinf", length = 300)
     var dutyInf: String? = null, // 기관설명상세
     
-    @Column(name = "dutyetc", length = 200)
+    @Column(name = "dutyetc")
     var dutyEtc: String? = null, // 비고
 
     @Column(name = "dstr_cd1", length = 8)
