@@ -27,9 +27,8 @@ class InfoPtRepository : PanacheRepositoryBase<InfoPt, String> {
         val query = "select new org.sbas.dtos.InfoPtSearchDto(a.ptId, b.id.bdasSeq, a.ptNm, a.gndr, " +
                 "a.dstr1Cd, fn_get_cd_nm('SIDO', a.dstr1Cd), a.dstr2Cd, fn_get_cd_nm('SIDO'||a.dstr1Cd, a.dstr2Cd), " +
                 "ba.hospId, '', a.mpno, a.natiCd, fn_get_bed_asgn_stat(a.ptId, b.id.bdasSeq), '', a.updtDttm, " +
-                "b.ptTypeCd, b.svrtTypeCd, b.undrDsesCd, " +
-                "EXTRACT(year FROM age(CURRENT_DATE, to_date(case a.rrno2 when '3' then concat('20',a.rrno1) when '4' then concat('20',a.rrno1) else concat('19',a.rrno1) end, 'yyyyMMdd')))) " +
-                "FROM InfoPt a " +
+                "b.ptTypeCd, b.svrtTypeCd, b.undrDsesCd, fn_get_age(a.rrno1, a.rrno2)) " +
+                "from InfoPt a " +
                 "left join BdasReq b on a.ptId = b.id.ptId " +
                 "left join BdasAdms ba on b.id.bdasSeq = ba.id.bdasSeq " +
                 "where b.id.bdasSeq in ((select max(id.bdasSeq) as bdasSeq from BdasReq group by id.ptId)) or b.id.bdasSeq is null " +

@@ -97,9 +97,9 @@ class PrivatePatientEndpoint {
 
     @Operation(summary = "환자 병상배정 차수별 상세내용(타임라인) 조회", description = "")
     @GET
-    @Path("timeline/{param1}/{param2}")
-    fun timeline(@RestPath param1: String, @RestPath param2: String): Response? {
-        return Response.ok().build()
+    @Path("timeline/{ptId}/{bdasSeq}")
+    fun timeline(@RestPath ptId: String, @RestPath bdasSeq: Int): Response {
+        return Response.ok(bedAssignService.getTimeLine(ptId, bdasSeq)).build()
     }
 
     @Operation(summary = "차수별 질병(감염병) 정보 조회", description = "")

@@ -140,8 +140,8 @@ class PatientService {
 
     @Transactional
     fun findInfoPtList(searchParam: SearchParameters): CommonResponse<*> {
-        val query = infoPtRepository.findInfoPtList()
-        query.forEach { dto ->
+        val list = infoPtRepository.findInfoPtList()
+        list.forEach { dto ->
             dto.statCdNm = BedStat.valueOf(dto.statCd!!).cdNm
             if (dto.ptTypeCd != null) {
                 val split = dto.ptTypeCd!!.split(";")
@@ -158,8 +158,8 @@ class PatientService {
         }
 
         val res = mutableMapOf<String, Any>()
-        res["count"] = query.size
-        res["items"] = query
+        res["count"] = list.size
+        res["items"] = list
 
         return CommonResponse(res)
     }

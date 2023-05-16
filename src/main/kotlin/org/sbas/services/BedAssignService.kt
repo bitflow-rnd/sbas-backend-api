@@ -1,7 +1,12 @@
 package org.sbas.services
 
 import org.jboss.logging.Logger
+import org.sbas.constants.BedStat
+import org.sbas.constants.PtTypeCd
+import org.sbas.constants.SvrtTypeCd
+import org.sbas.constants.UndrDsesCd
 import org.sbas.dtos.BdasEsvyDto
+import org.sbas.dtos.BdasListDto
 import org.sbas.dtos.BdasReqDprtInfo
 import org.sbas.dtos.BdasReqSvrInfo
 import org.sbas.entities.bdas.BdasReq
@@ -14,6 +19,7 @@ import org.sbas.responses.CommonResponse
 import org.sbas.restparameters.NaverGeocodingApiParams
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
+import java.util.*
 import javax.enterprise.context.ApplicationScoped
 import javax.inject.Inject
 import javax.transaction.Transactional
@@ -147,5 +153,71 @@ class BedAssignService {
     @Transactional
     fun reqConfirm() {
         TODO("Not yet implemented")
+    }
+
+    @Transactional
+    fun getBedAsgnList(): CommonResponse<*> {
+        val bedRequestList = mutableListOf<BdasListDto>()
+        val bedAssignList = mutableListOf<BdasListDto>()
+        val transferList = mutableListOf<BdasListDto>()
+        val hospitalList = mutableListOf<BdasListDto>()
+
+        val bedRequest = mutableMapOf("count" to 0, "items" to Collections.EMPTY_LIST)
+        val bedAssign = mutableMapOf("count" to 0, "items" to Collections.EMPTY_LIST)
+        val transfer = mutableMapOf("count" to 0, "items" to Collections.EMPTY_LIST)
+        val hospital = mutableMapOf("count" to 0, "items" to Collections.EMPTY_LIST)
+        val complete = mutableMapOf("count" to 0, "items" to Collections.EMPTY_LIST)
+
+        bdasReqRepository.findBdasReqList().forEach {
+            dto -> when (dto.bedStatCd) {
+                BedStat.BAST0003.name -> {
+                    bedRequestList.add(dto)
+                    makeToResultMap(bedRequestList, bedRequest)
+                }
+                BedStat.BAST0005.name -> {
+                    bedAssignList.add(dto)
+                    makeToResultMap(bedAssignList, bedAssign)
+                }
+                BedStat.BAST0006.name -> {
+                    transferList.add(dto)
+                    makeToResultMap(transferList, transfer)
+                }
+                BedStat.BAST0007.name -> {
+                    hospitalList.add(dto)
+                    makeToResultMap(hospitalList, hospital)
+                }
+            }
+        }
+        val res = listOf(bedRequest, bedAssign, transfer, hospital, complete)
+
+        return CommonResponse(res)
+    }
+
+    @Transactional
+    fun getTimeLine(ptId: String, bdasSeq: Int): CommonResponse<*> {
+        return CommonResponse(bdasReqRepository.findTimeLineInfo(ptId, bdasSeq))
+    }
+
+    private fun makeToResultMap(list: MutableList<BdasListDto>, map: MutableMap<String, Any>) {
+        list.map { getTagList(it) }
+        map["count"] = list.size
+        map["items"] = list
+    }
+
+    private fun getTagList(dto: BdasListDto): BdasListDto {
+        dto.bedStatCdNm = BedStat.valueOf(dto.bedStatCd!!).cdNm
+        if (dto.ptTypeCd != null) {
+            val split = dto.ptTypeCd!!.split(";")
+            dto.tagList!!.addAll(split.map { PtTypeCd.valueOf(it).cdNm })
+        }
+        if (dto.svrtTypeCd != null) {
+            val split = dto.svrtTypeCd!!.split(";")
+            dto.tagList!!.addAll(split.map { SvrtTypeCd.valueOf(it).cdNm })
+        }
+        if (dto.undrDsesCd != null) {
+            val split = dto.undrDsesCd!!.split(";")
+            dto.tagList!!.addAll(split.map { UndrDsesCd.valueOf(it).cdNm })
+        }
+        return dto
     }
 }
