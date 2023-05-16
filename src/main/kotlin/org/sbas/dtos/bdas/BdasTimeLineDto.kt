@@ -1,4 +1,4 @@
-package org.sbas.dtos
+package org.sbas.dtos.bdas
 
 import com.fasterxml.jackson.annotation.JsonIgnore
 import java.time.Instant

@@ -5,10 +5,7 @@ import org.sbas.constants.BedStat
 import org.sbas.constants.PtTypeCd
 import org.sbas.constants.SvrtTypeCd
 import org.sbas.constants.UndrDsesCd
-import org.sbas.dtos.BdasEsvyDto
-import org.sbas.dtos.BdasListDto
-import org.sbas.dtos.BdasReqDprtInfo
-import org.sbas.dtos.BdasReqSvrInfo
+import org.sbas.dtos.bdas.*
 import org.sbas.entities.bdas.BdasReq
 import org.sbas.entities.bdas.BdasReqId
 import org.sbas.handlers.GeocodingHandler
@@ -146,13 +143,39 @@ class BedAssignService {
         
         // 출발지 정보 저장
         findBdasReq.saveDprtInfoFrom(bdasReqDprtInfo)
+        
+        // infoPt 상태 변경
+        val infoPt = infoPtRepository.findById(bdasReqDprtInfo.ptId)
+        infoPt!!.changeBedStatAfterBdasReq()
 
         return CommonResponse("등록 성공")
     }
     
     @Transactional
-    fun reqConfirm() {
-        TODO("Not yet implemented")
+    fun reqConfirm(bdasAprvDto: BdasAprvDto) {
+        val findBdasReq = bdasReqRepository.findByPtIdAndBdasSeq(bdasAprvDto.ptId, bdasAprvDto.bdasSeq) ?: throw NotFoundException("bdasReq not found")
+        // 배정반 승인/거절
+        if (bdasAprvDto.aprvYn == "N") {
+
+        } else if (bdasAprvDto.aprvYn == "Y") {
+
+        }
+
+
+        if (findBdasReq.inhpAsgnYn == "N") {
+
+        } else if (findBdasReq.inhpAsgnYn == "Y") {
+
+        }
+
+        // 거절할 경우 거절 사유 및 메시지 작성
+
+        // 승인할 경우 원내 배정 여부 체크
+
+        // 원내 배정이면 승인
+
+        // 원내 배정 아니면 병원 선택
+
     }
 
     @Transactional
@@ -195,7 +218,14 @@ class BedAssignService {
 
     @Transactional
     fun getTimeLine(ptId: String, bdasSeq: Int): CommonResponse<*> {
+
+
+
+
         return CommonResponse(bdasReqRepository.findTimeLineInfo(ptId, bdasSeq))
+
+
+
     }
 
     private fun makeToResultMap(list: MutableList<BdasListDto>, map: MutableMap<String, Any>) {

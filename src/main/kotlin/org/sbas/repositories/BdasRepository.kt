@@ -2,7 +2,7 @@ package org.sbas.repositories
 
 import io.quarkus.hibernate.orm.panache.kotlin.PanacheRepositoryBase
 import io.quarkus.panache.common.Sort
-import org.sbas.dtos.BdasListDto
+import org.sbas.dtos.bdas.BdasListDto
 import org.sbas.entities.bdas.*
 import javax.enterprise.context.ApplicationScoped
 
@@ -20,7 +20,7 @@ class BdasReqRepository : PanacheRepositoryBase<BdasReq, BdasReqId> {
     }
 
     fun findBdasReqList(): List<BdasListDto> {
-        val query = "select new org.sbas.dtos.BdasListDto(br.id.ptId, br.id.bdasSeq, pt.ptNm, pt.gndr, fn_get_age(pt.rrno1, pt.rrno2), " +
+        val query = "select new org.sbas.dtos.bdas.BdasListDto(br.id.ptId, br.id.bdasSeq, pt.ptNm, pt.gndr, fn_get_age(pt.rrno1, pt.rrno2), " +
                 "pt.bascAddr, br.updtDttm, be.diagNm, fn_get_bed_asgn_stat(br.id.ptId, br.id.bdasSeq), '', be.rcptPhc, br.ptTypeCd, br.svrtTypeCd, br.undrDsesCd) " +
                 "from BdasReq br " +
                 "join InfoPt pt on br.id.ptId = pt.ptId " +
@@ -31,20 +31,24 @@ class BdasReqRepository : PanacheRepositoryBase<BdasReq, BdasReqId> {
     }
 
     fun findTimeLineInfo(ptId: String, bdasSeq: Int): MutableList<Any?>? {
-        val query = "select new org.sbas.dtos.BdasTimeLineDto(iu.userNm, iu.jobCd, iu.ocpCd, iu.instNm, br.updtDttm, " +
+        val query = "select new org.sbas.dtos.bdas.BdasTimeLineDto(iu.userNm, iu.jobCd, iu.ocpCd, iu.instNm, br.updtDttm, " +
                 "br.inhpAsgnYn, (case br.inhpAsgnYn when 'Y' then '원내배정' when 'N' then '전원요청' end), br.msg) " +
                 "from BdasReq br " +
                 "join InfoUser iu on iu.id = br.rgstUserId " +
                 "where br.id.ptId = '$ptId' and br.id.bdasSeq = $bdasSeq"
         return getEntityManager().createQuery(query).resultList
     }
+
+
 }
 
 @ApplicationScoped
-class BdasTrnRepository: PanacheRepositoryBase<BdasTrns, BdasTrnsId>
+class BdasAprvRepository: PanacheRepositoryBase<BdasAprv, BdasAprvId> {
+
+}
 
 @ApplicationScoped
-class BdasAprvRepository: PanacheRepositoryBase<BdasAprv, BdasAprvId>
+class BdasTrnsRepository: PanacheRepositoryBase<BdasTrns, BdasTrnsId>
 
 @ApplicationScoped
-class BdasAdmRepository: PanacheRepositoryBase<BdasAdms, BdasAdmsId>
+class BdasAdmsRepository: PanacheRepositoryBase<BdasAdms, BdasAdmsId>

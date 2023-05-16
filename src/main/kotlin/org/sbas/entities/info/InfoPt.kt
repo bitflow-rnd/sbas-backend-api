@@ -116,6 +116,11 @@ class InfoPt(
         this.natiNm = infoPtDto.natiNm
     }
 
+    fun changeBedStatAfterBdasReq() {
+        this.bedStatCd = BedStat.BAST0003.name
+        this.bedStatNm = BedStat.BAST0003.cdNm
+    }
+
     companion object {
         @Serial
         private const val serialVersionUID: Long = -3263990101530553632L

@@ -4,6 +4,7 @@ import org.eclipse.microprofile.openapi.annotations.Operation
 import org.eclipse.microprofile.openapi.annotations.tags.Tag
 import org.jboss.logging.Logger
 import org.jboss.resteasy.reactive.RestPath
+import org.sbas.dtos.bdas.BdasAprvDto
 import org.sbas.services.BedAssignService
 import javax.inject.Inject
 import javax.ws.rs.GET
@@ -25,9 +26,8 @@ class PrivateBedAssignEndpoint {
     @Operation(summary = "병상승인/불가 (병상배정반)", description = "")
     @POST
     @Path("reqconfirm")
-    fun reqconfirm(): Response {
-        bedAssignService.reqConfirm()
-        return Response.ok().build()
+    fun reqconfirm(bdasAprvDto: BdasAprvDto): Response {
+        return Response.ok(bedAssignService.reqConfirm(bdasAprvDto)).build()
     }
 
     @Operation(summary = "배정승인/불가 (의료진)", description = "")

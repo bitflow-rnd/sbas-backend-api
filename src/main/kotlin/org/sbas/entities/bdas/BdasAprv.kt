@@ -13,10 +13,10 @@ class BdasAprv(
     @EmbeddedId
     var id: BdasAprvId? = null,
 
-    @Column(name = "hosp_id", nullable = false, length = 10)
+    @Column(name = "hosp_id", length = 10)
     var hospId: String? = null, // 병원 ID
 
-    @Column(name = "room_nm", nullable = false, length = 20)
+    @Column(name = "room_nm", length = 20)
     var roomNm: String? = null, // 병실 이름
 
     @Column(name = "dept_nm", length = 20)
@@ -31,10 +31,10 @@ class BdasAprv(
     @Column(name = "chrg_telno", length = 12)
     var chrgTelno: String? = null, // 담당 전화번호
     
-    @Column(name = "aprv_dt", nullable = false, length = 8)
+    @Column(name = "aprv_dt", length = 8)
     var aprvDt: String? = null, // 승인 날짜
 
-    @Column(name = "aprv_tm", nullable = false, length = 6)
+    @Column(name = "aprv_tm", length = 6)
     var aprvTm: String? = null, // 승인 시간
 
     @Column(name = "aprv_yn", nullable = false, length = 1)

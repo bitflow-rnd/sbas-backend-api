@@ -130,7 +130,8 @@ class PatientService {
 
     @Transactional
     fun findInfoPt(ptId: String): CommonResponse<InfoPt> {
-        return CommonResponse(infoPtRepository.findById(ptId) ?: throw NotFoundException("$ptId not found"))
+        val infoPt = infoPtRepository.findById(ptId) ?: throw NotFoundException("$ptId not found")
+        return CommonResponse(infoPt)
     }
 
     @Transactional

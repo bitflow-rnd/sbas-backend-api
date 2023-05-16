@@ -1,8 +1,8 @@
 package org.sbas.entities.bdas
 
 import org.hibernate.annotations.DynamicUpdate
-import org.sbas.dtos.BdasReqDprtInfo
-import org.sbas.dtos.BdasReqSvrInfo
+import org.sbas.dtos.bdas.BdasReqDprtInfo
+import org.sbas.dtos.bdas.BdasReqSvrInfo
 import org.sbas.entities.CommonEntity
 import java.io.Serializable
 import javax.persistence.*
@@ -105,7 +105,7 @@ class BdasReq(
     var nok1Telno: String? = null, // 보호자1 전화번호
 
     @Column(name = "nok_2_telno", nullable = true, length = 12)
-    var nok2Telno: String? = null, // 보호자1 전화번호
+    var nok2Telno: String? = null, // 보호자2 전화번호
 
     @Column(name = "dprt_hosp_id", nullable = true, length = 10)
     var dprtHospId: String? = null, // 출발 병원 ID

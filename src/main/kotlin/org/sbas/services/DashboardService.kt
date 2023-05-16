@@ -21,20 +21,20 @@ class DashboardService {
     private lateinit var bdasReqRepository: BdasReqRepository
 
     @Inject
-    private lateinit var bdasTrnRepository: BdasTrnRepository
+    private lateinit var bdasTrnsRepository: BdasTrnsRepository
 
     @Inject
     private lateinit var bdasAprvRepository: BdasAprvRepository
 
     @Inject
-    private lateinit var bdasAdmRepository: BdasAdmRepository
+    private lateinit var bdasAdmsRepository: BdasAdmsRepository
 
     @Transactional
     fun count(): MutableMap<String, Long> {
         val bdasReqCount = bdasReqRepository.count("rgst_dttm between ?1 and ?2", Instant.now().minusSeconds(60 * 60 * 24 * 30), Instant.now())
-        val bdasTrnCount = bdasTrnRepository.count("rgst_dttm between ?1 and ?2", Instant.now().minusSeconds(60 * 60 * 24 * 30), Instant.now())
+        val bdasTrnCount = bdasTrnsRepository.count("rgst_dttm between ?1 and ?2", Instant.now().minusSeconds(60 * 60 * 24 * 30), Instant.now())
         val bdasAprvCount = bdasAprvRepository.count("rgst_dttm between ?1 and ?2", Instant.now().minusSeconds(60 * 60 * 24 * 30), Instant.now())
-        val bdasAdmCount = bdasAdmRepository.count("rgst_dttm between ?1 and ?2", Instant.now().minusSeconds(60 * 60 * 24 * 30), Instant.now())
+        val bdasAdmCount = bdasAdmsRepository.count("rgst_dttm between ?1 and ?2", Instant.now().minusSeconds(60 * 60 * 24 * 30), Instant.now())
 
         val res: MutableMap<String, Long> = mutableMapOf()
         res["bdasReqCount"] = bdasReqCount

@@ -1,4 +1,4 @@
-package org.sbas.dtos
+package org.sbas.dtos.bdas
 
 import org.sbas.entities.bdas.BdasEsvy
 import org.sbas.entities.info.InfoPt

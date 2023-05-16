@@ -8,6 +8,9 @@ import org.jboss.resteasy.reactive.RestForm
 import org.jboss.resteasy.reactive.RestPath
 import org.jboss.resteasy.reactive.multipart.FileUpload
 import org.sbas.dtos.*
+import org.sbas.dtos.bdas.BdasEsvyDto
+import org.sbas.dtos.bdas.BdasReqDprtInfo
+import org.sbas.dtos.bdas.BdasReqSvrInfo
 import org.sbas.parameters.NewsScoreParameters
 import org.sbas.parameters.SearchParameters
 import org.sbas.services.BedAssignService
