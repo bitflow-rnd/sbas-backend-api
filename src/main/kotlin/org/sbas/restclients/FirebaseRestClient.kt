@@ -67,7 +67,7 @@ class FirebaseService {
             .build()
 
         val messageId = FirebaseMessaging.getInstance().send(message)
-        println("Sent message with ID: $messageId")
+        log.debug("Sent message with ID: $messageId")
     }
 }
 
