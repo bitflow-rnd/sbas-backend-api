@@ -156,7 +156,7 @@ class BedAssignService {
     }
 
     @Transactional
-    fun getBedAsgnList(bedStatCd: String): CommonResponse<*> {
+    fun getBedAsgnList(): CommonResponse<*> {
         val bedRequestList = mutableListOf<BdasListDto>()
         val bedAssignList = mutableListOf<BdasListDto>()
         val transferList = mutableListOf<BdasListDto>()

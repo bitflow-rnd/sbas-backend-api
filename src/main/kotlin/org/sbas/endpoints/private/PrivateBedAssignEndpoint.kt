@@ -54,7 +54,7 @@ class PrivateBedAssignEndpoint {
     @Operation(summary = "병상배정 목록 (상태별)", description = "")
     @GET
     @Path("list")
-    fun list(@QueryParam(value = "q") bedStatCd: String): Response {
-        return Response.ok(bedAssignService.getBedAsgnList(bedStatCd)).build()
+    fun list(): Response {
+        return Response.ok(bedAssignService.getBedAsgnList()).build()
     }
 }
