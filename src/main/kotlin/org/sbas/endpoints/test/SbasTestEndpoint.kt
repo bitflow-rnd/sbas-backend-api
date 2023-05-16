@@ -6,6 +6,7 @@ import org.jboss.logging.Logger
 import org.sbas.handlers.GeocodingHandler
 import org.sbas.restparameters.NaverGeocodingApiParams
 import org.sbas.restresponses.NaverGeocodingApiResponse
+import org.sbas.restresponses.NaverReverseGeocodingApiResponse
 import org.sbas.services.TestUserService
 import javax.annotation.security.PermitAll
 import javax.annotation.security.RolesAllowed
@@ -14,6 +15,7 @@ import javax.validation.Valid
 import javax.ws.rs.GET
 import javax.ws.rs.POST
 import javax.ws.rs.Path
+import javax.ws.rs.QueryParam
 import javax.ws.rs.core.*
 
 
@@ -48,4 +50,12 @@ class SbasTestEndpoint {
     fun geocodingTest(@Valid params: NaverGeocodingApiParams): NaverGeocodingApiResponse{
         return geoHandler.getGeocoding(params)
     }
+
+    @GET
+    @Path("reverse-geocoding-test")
+    @PermitAll
+    fun reverseGeocodingTest(@QueryParam("latitude")latitude: Float, @QueryParam("longitude")longitude: Float): NaverReverseGeocodingApiResponse {
+        return geoHandler.getReverseGeocoding(latitude, longitude)
+    }
+
 }

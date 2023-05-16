@@ -24,11 +24,14 @@ class GeocodingHandler {
         )
     }
 
-//    fun getReverseGeocoding(): NaverReverseGeocodingApiResponse{
-//        return naverGeocodingRestClient.getLatLonInfo(
-//            request = "coordsToaddr",
-////            coords =
-//        )
-//    }
+    fun getReverseGeocoding(latitude: Float, longitude: Float): NaverReverseGeocodingApiResponse{
+        return naverGeocodingRestClient.getLatLonInfo(
+            request = "coordsToaddr",
+            coords = "$longitude,$latitude",
+            sourcecrs = "epsg:4326",
+            output = "json",
+            orders = "addr,admcode,roadaddr",
+        )
+    }
 
 }

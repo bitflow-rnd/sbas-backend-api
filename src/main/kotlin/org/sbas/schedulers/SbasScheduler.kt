@@ -33,11 +33,9 @@ class SbasScheduler {
         log.info("scheduler has finished job, success = $res")
     }
 
-    @Scheduled(every = "24h")
-    fun saveHsptlInfos() {
-        log.info("scheduler has started job(save hospital info)")
-        val res = egenService.saveHospitalByScheduler()
-        log.warn("finished job : $res")
-    }
+//    @Scheduled(every = "24h")
+//    fun saveHsptlInfos() {
+//        val res = egenService.saveHospitalByScheduler()
+//    }
 
 }

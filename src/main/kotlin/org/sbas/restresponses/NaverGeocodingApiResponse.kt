@@ -49,7 +49,23 @@ data class AddressElements(
     var code: String?,
 )
 
-data class NaverReverseGeocodingApiResponse (
+data class NaverReverseGeocodingApiResponse(
+    @JsonProperty("status")
+    var status: Status?,
+    @JsonProperty("results")
+    var results: List<Results>?,
+)
+
+data class Status (
+    @JsonProperty("code")
+    var code: Int?,
+    @JsonProperty("name")
+    var name: String?,
+    @JsonProperty("message")
+    var message: String?,
+)
+
+data class Results (
     @JsonProperty("name")
     var name: String?,
     @JsonProperty("code")

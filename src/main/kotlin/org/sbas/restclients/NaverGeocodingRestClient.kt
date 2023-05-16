@@ -31,10 +31,11 @@ interface NaverGeocodingRestClient {
 
     @GET
     @Path("map-reversegeocode/v2/gc")
-    fun getLatLonInfo(@QueryParam("request")request: String,
-                      @QueryParam("coords")coords: String,
-                      @QueryParam("sourcecrs")sourcecrs: String,
-                      @QueryParam("output")output: String,
-                      @QueryParam("orders")orders: String): NaverReverseGeocodingApiResponse
+    fun getLatLonInfo(@QueryParam("request")request: String?,
+                      @QueryParam("coords")coords: String?,
+                      @QueryParam("sourcecrs")sourcecrs: String?,
+                      @QueryParam("output")output: String?,
+                      @QueryParam("orders")orders: String?
+    ): NaverReverseGeocodingApiResponse
 
 }
