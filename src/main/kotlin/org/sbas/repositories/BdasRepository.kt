@@ -26,8 +26,17 @@ class BdasReqRepository : PanacheRepositoryBase<BdasReq, BdasReqId> {
                 "join InfoPt pt on br.id.ptId = pt.ptId " +
                 "join BdasEsvy be on br.id.bdasSeq = be.bdasSeq " +
                 "where br.id.bdasSeq in (select max(id.bdasSeq) as bdasSeq from BdasReq group by id.ptId) " +
-                "order by br.updtDttm"
+                "order by br.updtDttm desc"
         return getEntityManager().createQuery(query, BdasListDto::class.java).resultList
+    }
+
+    fun findTimeLineInfo(ptId: String, bdasSeq: Int): MutableList<Any?>? {
+        val query = "select new org.sbas.dtos.BdasTimeLineDto(iu.userNm, iu.jobCd, iu.ocpCd, iu.instNm, br.updtDttm, " +
+                "br.inhpAsgnYn, (case br.inhpAsgnYn when 'Y' then '원내배정' when 'N' then '전원요청' end), br.msg) " +
+                "from BdasReq br " +
+                "join InfoUser iu on iu.id = br.rgstUserId " +
+                "where br.id.ptId = '$ptId' and br.id.bdasSeq = $bdasSeq"
+        return getEntityManager().createQuery(query).resultList
     }
 }
 

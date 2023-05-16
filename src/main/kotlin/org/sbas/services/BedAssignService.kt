@@ -157,34 +157,51 @@ class BedAssignService {
 
     @Transactional
     fun getBedAsgnList(bedStatCd: String): CommonResponse<*> {
-        val res = mutableMapOf<String, Any>()
-        when (bedStatCd) {
-            "BAST0003" -> {
-                val list = bdasReqRepository.findBdasReqList().filter { it.bedStatCd!! == "BAST0003" }.map { getTagList(it) }
-                res["count"] = list.size
-                res["items"] = list
-                return CommonResponse(res)
-            }
-            "BAST0005" -> {
-                val list = bdasReqRepository.findBdasReqList().filter { it.bedStatCd!! == "BAST0005" }.map { getTagList(it) }
-                res["count"] = list.size
-                res["items"] = list
-                return CommonResponse(res)
-            }
-            "BAST0006" -> {
-                val list = bdasReqRepository.findBdasReqList().filter { it.bedStatCd!! == "BAST0006" }.map { getTagList(it) }
-                res["count"] = list.size
-                res["items"] = list
-                return CommonResponse(res)
-            }
-            "BAST0007" -> {
-                val list = bdasReqRepository.findBdasReqList().filter { it.bedStatCd!! == "BAST0007" }.map { getTagList(it) }
-                res["count"] = list.size
-                res["items"] = list
-                return CommonResponse(res)
+        val bedRequestList = mutableListOf<BdasListDto>()
+        val bedAssignList = mutableListOf<BdasListDto>()
+        val transferList = mutableListOf<BdasListDto>()
+        val hospitalList = mutableListOf<BdasListDto>()
+
+        val bedRequest = mutableMapOf("count" to 0, "items" to Collections.EMPTY_LIST)
+        val bedAssign = mutableMapOf("count" to 0, "items" to Collections.EMPTY_LIST)
+        val transfer = mutableMapOf("count" to 0, "items" to Collections.EMPTY_LIST)
+        val hospital = mutableMapOf("count" to 0, "items" to Collections.EMPTY_LIST)
+        val complete = mutableMapOf("count" to 0, "items" to Collections.EMPTY_LIST)
+
+        bdasReqRepository.findBdasReqList().forEach {
+            dto -> when (dto.bedStatCd) {
+                BedStat.BAST0003.name -> {
+                    bedRequestList.add(dto)
+                    makeToResultMap(bedRequestList, bedRequest)
+                }
+                BedStat.BAST0005.name -> {
+                    bedAssignList.add(dto)
+                    makeToResultMap(bedAssignList, bedAssign)
+                }
+                BedStat.BAST0006.name -> {
+                    transferList.add(dto)
+                    makeToResultMap(transferList, transfer)
+                }
+                BedStat.BAST0007.name -> {
+                    hospitalList.add(dto)
+                    makeToResultMap(hospitalList, hospital)
+                }
             }
         }
-        return CommonResponse(Collections.EMPTY_LIST)
+        val res = listOf(bedRequest, bedAssign, transfer, hospital, complete)
+
+        return CommonResponse(res)
+    }
+
+    @Transactional
+    fun getTimeLine(ptId: String, bdasSeq: Int): CommonResponse<*> {
+        return CommonResponse(bdasReqRepository.findTimeLineInfo(ptId, bdasSeq))
+    }
+
+    private fun makeToResultMap(list: MutableList<BdasListDto>, map: MutableMap<String, Any>) {
+        list.map { getTagList(it) }
+        map["count"] = list.size
+        map["items"] = list
     }
 
     private fun getTagList(dto: BdasListDto): BdasListDto {
