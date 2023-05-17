@@ -32,13 +32,18 @@ class BdasReqRepository : PanacheRepositoryBase<BdasReq, BdasReqId> {
 
     fun findTimeLineInfo(ptId: String, bdasSeq: Int): MutableList<Any?>? {
         val query = "select new org.sbas.dtos.bdas.BdasTimeLineDto(iu.userNm, iu.jobCd, iu.ocpCd, iu.instNm, br.updtDttm, " +
-                "br.inhpAsgnYn, (case br.inhpAsgnYn when 'Y' then '원내배정' when 'N' then '전원요청' end), br.msg) " +
+                "br.inhpAsgnYn, (case br.inhpAsgnYn when 'Y' then '원내배정' when 'N' then '전원요청' end), br.msg, " +
+                "(select instNm from InfoInst where id = 'LG00000001')) " +
                 "from BdasReq br " +
                 "join InfoUser iu on iu.id = br.rgstUserId " +
                 "where br.id.ptId = '$ptId' and br.id.bdasSeq = $bdasSeq"
         return getEntityManager().createQuery(query).resultList
     }
 
+    fun findBedStat(ptId: String, bdasSeq: Int): Any? {
+        val query = "select fn_get_bed_asgn_stat('${ptId}', ${bdasSeq}) as test"
+        return getEntityManager().createNativeQuery(query).singleResult
+    }
     fun findByPtId(ptId: String) = find("from BdasReq where id.ptId='$ptId' order by id.bdasSeq desc").firstResult()
 
 }

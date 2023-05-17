@@ -223,13 +223,13 @@ class BedAssignService {
 
     @Transactional
     fun getTimeLine(ptId: String, bdasSeq: Int): CommonResponse<*> {
-
-
-
-
-        return CommonResponse(bdasReqRepository.findTimeLineInfo(ptId, bdasSeq))
-
-
+        val bedStatCd = bdasReqRepository.findBedStat(ptId, bdasSeq)
+        log.debug(bedStatCd)
+        when (bedStatCd) {
+            BedStat.BAST0003.name -> return CommonResponse(bdasReqRepository.findTimeLineInfo(ptId, bdasSeq))
+            BedStat.BAST0005.name -> return CommonResponse(Collections.EMPTY_LIST)
+        }
+        return CommonResponse(Collections.EMPTY_LIST)
 
     }
 

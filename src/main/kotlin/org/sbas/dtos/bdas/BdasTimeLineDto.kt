@@ -12,4 +12,5 @@ data class BdasTimeLineDto(
     @JsonIgnore var inhpAsgnYn: String?,
     var inhpAsgn: String?,
     var msg: String?,
+    var assignInstNm: String?,
 )
