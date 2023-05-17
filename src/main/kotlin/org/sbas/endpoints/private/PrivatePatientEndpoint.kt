@@ -107,9 +107,9 @@ class PrivatePatientEndpoint {
 
     @Operation(summary = "차수별 질병(감염병) 정보 조회", description = "")
     @GET
-    @Path("disesinfo/{param1}/{param2}")
-    fun disesinfo(@RestPath param1: String, @RestPath param2: String): Response? {
-        return Response.ok().build()
+    @Path("disease-info/{ptId}")
+    fun getDiseaseInfo(@RestPath ptId: String): Response? {
+        return Response.ok(bedAssignService.getDiseaseInfo(ptId)).build()
     }
 
     @Operation(summary = "차수별 중증정보 조회", description = "")

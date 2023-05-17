@@ -32,6 +32,14 @@ class BaseCodeRepository : PanacheRepositoryBase<BaseCode, BaseCodeId> {
     fun findByDstr1CdAndCdNm(dstr1Cd: String, cdNm: String): BaseCode? {
         return find("cd_grp_id = 'SIDO$dstr1Cd' and cd_nm = '$cdNm'").firstResult()
     }
+
+    fun getCdNm(grpId: String, cdId: String): String {
+        val findCode = find("from BaseCode where id.cdGrpId='$grpId' and id.cdId='$cdId'").firstResult()
+
+        if(findCode == null) return ""
+        else return findCode.cdNm ?: ""
+    }
+
 }
 
 @ApplicationScoped

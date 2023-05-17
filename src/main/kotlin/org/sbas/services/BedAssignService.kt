@@ -9,10 +9,12 @@ import org.sbas.dtos.bdas.*
 import org.sbas.entities.bdas.BdasReq
 import org.sbas.entities.bdas.BdasReqId
 import org.sbas.handlers.GeocodingHandler
+import org.sbas.repositories.BaseCodeRepository
 import org.sbas.repositories.BdasEsvyRepository
 import org.sbas.repositories.BdasReqRepository
 import org.sbas.repositories.InfoPtRepository
 import org.sbas.responses.CommonResponse
+import org.sbas.responses.patient.DiseaseInfoResponse
 import org.sbas.restparameters.NaverGeocodingApiParams
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
@@ -39,6 +41,9 @@ class BedAssignService {
 
     @Inject
     private lateinit var infoPtRepository: InfoPtRepository
+
+    @Inject
+    private lateinit var baseCodeRepository: BaseCodeRepository
 
     @Inject
     private lateinit var geoHandler: GeocodingHandler
@@ -228,6 +233,21 @@ class BedAssignService {
 
     }
 
+    @Transactional
+    fun getDiseaseInfo(ptId: String): CommonResponse<*> {
+        val findEsvy = bdasEsvyRepository.findByPtIdWithLatestBdasSeq(ptId)
+        val findReq = bdasReqRepository.findByPtId(ptId)
+        bdasReqRepository.getEntityManager().detach(findReq)
+        findReq?.ptTypeCd = convertFromArr(findReq?.ptTypeCd, "PTTP")
+        findReq?.undrDsesCd = convertFromArr(findReq?.undrDsesCd, "UDDS")
+        findReq?.svrtTypeCd = convertFromArr(findReq?.svrtTypeCd, "SVTP")
+        findReq?.dnrAgreYn = baseCodeRepository.getCdNm("DNRA", findReq?.dnrAgreYn!!)
+        findReq.reqBedTypeCd = baseCodeRepository.getCdNm("BDTP", findReq.reqBedTypeCd!!)
+
+        return CommonResponse(DiseaseInfoResponse(findEsvy, findReq))
+    }
+
+
     private fun makeToResultMap(list: MutableList<BdasListDto>, map: MutableMap<String, Any>) {
         list.map { getTagList(it) }
         map["count"] = list.size
@@ -249,5 +269,19 @@ class BedAssignService {
             dto.tagList!!.addAll(split.map { UndrDsesCd.valueOf(it).cdNm })
         }
         return dto
+    }
+
+    private fun convertFromArr(beforeConvert: String?, grpCd: String) : String? {
+        var convertArr = beforeConvert?.split(";")?.toMutableList() ?: mutableListOf()
+        log.warn(convertArr.size)
+        var result = ""
+
+        convertArr.forEachIndexed{ index, item ->
+            convertArr[index] = baseCodeRepository.getCdNm(grpCd, item)
+            result += if(index == convertArr.size-1) convertArr[index] else "${convertArr[index]};"
+        }
+        log.warn(result)
+
+        return result
     }
 }

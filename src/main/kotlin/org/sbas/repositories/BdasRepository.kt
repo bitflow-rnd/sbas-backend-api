@@ -39,6 +39,7 @@ class BdasReqRepository : PanacheRepositoryBase<BdasReq, BdasReqId> {
         return getEntityManager().createQuery(query).resultList
     }
 
+    fun findByPtId(ptId: String) = find("from BdasReq where id.ptId='$ptId' order by id.bdasSeq desc").firstResult()
 
 }
 
