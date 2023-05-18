@@ -4,13 +4,22 @@ import com.fasterxml.jackson.annotation.JsonIgnore
 import java.time.Instant
 
 data class BdasTimeLineDto(
-    var userNm: String?,
-    var jobCdNm: String?,
-    var ocpCdNm: String?,
-    var instNm: String?,
+    var title: String?,
+    var by: String?, // instNm + ocpCdNm + jobCdNm + userNm
     var updtDttm: Instant?,
-    @JsonIgnore var inhpAsgnYn: String?,
-    var inhpAsgn: String?,
     var msg: String?,
-    var assignInstNm: String?,
+    @JsonIgnore var inhpAsgnYn: String?,
+    @JsonIgnore var jobCd: String?,
+    @JsonIgnore var ocpCd: String?,
+    @JsonIgnore var assignInstNm: String?,
+) {
+    constructor(
+        title: String?,
+        assignInstNm: String?,
+    ) : this(title, assignInstNm, null, null, null, null, null, null)
+}
+
+data class TimeLineDtoList(
+    var count: Int?,
+    var items: List<BdasTimeLineDto>?,
 )

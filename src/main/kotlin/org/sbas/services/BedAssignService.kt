@@ -9,10 +9,7 @@ import org.sbas.dtos.bdas.*
 import org.sbas.entities.bdas.BdasReq
 import org.sbas.entities.bdas.BdasReqId
 import org.sbas.handlers.GeocodingHandler
-import org.sbas.repositories.BaseCodeRepository
-import org.sbas.repositories.BdasEsvyRepository
-import org.sbas.repositories.BdasReqRepository
-import org.sbas.repositories.InfoPtRepository
+import org.sbas.repositories.*
 import org.sbas.responses.CommonResponse
 import org.sbas.responses.patient.DiseaseInfoResponse
 import org.sbas.restparameters.NaverGeocodingApiParams
@@ -226,11 +223,14 @@ class BedAssignService {
         val bedStatCd = bdasReqRepository.findBedStat(ptId, bdasSeq)
         log.debug(bedStatCd)
         when (bedStatCd) {
-            BedStat.BAST0003.name -> return CommonResponse(bdasReqRepository.findTimeLineInfo(ptId, bdasSeq))
+            BedStat.BAST0003.name -> {
+                val list = bdasReqRepository.findTimeLineInfo(ptId, bdasSeq)
+                list.add(BdasTimeLineDto("승인대기", list[0].assignInstNm))
+                return CommonResponse(TimeLineDtoList(list.size, list))
+            }
             BedStat.BAST0005.name -> return CommonResponse(Collections.EMPTY_LIST)
         }
         return CommonResponse(Collections.EMPTY_LIST)
-
     }
 
     @Transactional

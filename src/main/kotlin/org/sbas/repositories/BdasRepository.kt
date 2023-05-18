@@ -19,7 +19,7 @@ class BdasReqRepository : PanacheRepositoryBase<BdasReq, BdasReqId> {
         return find("pt_id = '${ptId}' and bdas_seq = $bdasSeq", Sort.by("bdas_seq", Sort.Direction.Descending)).firstResult()
     }
 
-    fun findBdasReqList(): List<BdasListDto> {
+    fun findBdasReqList(): MutableList<BdasListDto> {
         val query = "select new org.sbas.dtos.bdas.BdasListDto(br.id.ptId, br.id.bdasSeq, pt.ptNm, pt.gndr, fn_get_age(pt.rrno1, pt.rrno2), " +
                 "pt.bascAddr, br.updtDttm, be.diagNm, fn_get_bed_asgn_stat(br.id.ptId, br.id.bdasSeq), '', be.rcptPhc, br.ptTypeCd, br.svrtTypeCd, br.undrDsesCd) " +
                 "from BdasReq br " +
@@ -30,19 +30,20 @@ class BdasReqRepository : PanacheRepositoryBase<BdasReq, BdasReqId> {
         return getEntityManager().createQuery(query, BdasListDto::class.java).resultList
     }
 
-    fun findTimeLineInfo(ptId: String, bdasSeq: Int): MutableList<Any?>? {
-        val query = "select new org.sbas.dtos.bdas.BdasTimeLineDto(iu.userNm, iu.jobCd, iu.ocpCd, iu.instNm, br.updtDttm, " +
-                "br.inhpAsgnYn, (case br.inhpAsgnYn when 'Y' then '원내배정' when 'N' then '전원요청' end), br.msg, " +
+    fun findTimeLineInfo(ptId: String, bdasSeq: Int): MutableList<BdasTimeLineDto> {
+        val query = "select new org.sbas.dtos.bdas.BdasTimeLineDto('병상요청(' || (case br.inhpAsgnYn when 'Y' then '원내배정' when 'N' then '전원요청' end) || ')', " +
+                "iu.instNm || ' / ' || iu.userNm, br.updtDttm, br.msg, " +
+                "br.inhpAsgnYn, iu.jobCd, iu.ocpCd, " +
                 "(select instNm from InfoInst where id = 'LG00000001')) " +
                 "from BdasReq br " +
                 "join InfoUser iu on iu.id = br.rgstUserId " +
                 "where br.id.ptId = '$ptId' and br.id.bdasSeq = $bdasSeq"
-        return getEntityManager().createQuery(query).resultList
+        return getEntityManager().createQuery(query, BdasTimeLineDto::class.java).resultList
     }
 
-    fun findBedStat(ptId: String, bdasSeq: Int): Any? {
+    fun findBedStat(ptId: String, bdasSeq: Int): String {
         val query = "select fn_get_bed_asgn_stat('${ptId}', ${bdasSeq}) as test"
-        return getEntityManager().createNativeQuery(query).singleResult
+        return getEntityManager().createNativeQuery(query).singleResult as String
     }
     fun findByPtId(ptId: String) = find("from BdasReq where id.ptId='$ptId' order by id.bdasSeq desc").firstResult()
 
