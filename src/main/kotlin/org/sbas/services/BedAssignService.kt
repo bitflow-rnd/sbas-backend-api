@@ -6,18 +6,18 @@ import org.sbas.constants.PtTypeCd
 import org.sbas.constants.SvrtTypeCd
 import org.sbas.constants.UndrDsesCd
 import org.sbas.dtos.bdas.*
+import org.sbas.entities.bdas.BdasAsgnAprvId
 import org.sbas.entities.bdas.BdasReq
 import org.sbas.entities.bdas.BdasReqId
 import org.sbas.handlers.GeocodingHandler
 import org.sbas.repositories.*
 import org.sbas.responses.CommonResponse
 import org.sbas.responses.patient.DiseaseInfoResponse
+import org.sbas.restclients.FirebaseService
 import org.sbas.restparameters.NaverGeocodingApiParams
-import java.time.LocalDateTime
-import java.time.format.DateTimeFormatter
+import org.sbas.utils.StringUtils
 import java.util.*
 import javax.enterprise.context.ApplicationScoped
-import javax.inject.Inject
 import javax.transaction.Transactional
 import javax.ws.rs.NotFoundException
 
@@ -25,25 +25,18 @@ import javax.ws.rs.NotFoundException
  * 병상배정 관련 서비스 클래스
  */
 @ApplicationScoped
-class BedAssignService {
-
-    @Inject
-    private lateinit var log: Logger
-
-    @Inject
-    private lateinit var bdasEsvyRepository: BdasEsvyRepository
-
-    @Inject
-    private lateinit var bdasReqRepository: BdasReqRepository
-
-    @Inject
-    private lateinit var infoPtRepository: InfoPtRepository
-
-    @Inject
-    private lateinit var baseCodeRepository: BaseCodeRepository
-
-    @Inject
-    private lateinit var geoHandler: GeocodingHandler
+class BedAssignService(
+    private var log: Logger,
+    private var bdasEsvyRepository: BdasEsvyRepository,
+    private var bdasReqRepository: BdasReqRepository,
+    private var bdasAsgnAprvRepository: BdasAsgnAprvRepository,
+    private var bdasAprvRepository: BdasAprvRepository,
+    private var infoPtRepository: InfoPtRepository,
+    private var infoHospRepository: InfoHospRepository,
+    private var baseCodeRepository: BaseCodeRepository,
+    private var geoHandler: GeocodingHandler,
+    private var firebaseService: FirebaseService,
+) {
 
     /**
      * 질병 정보 등록
@@ -140,8 +133,8 @@ class BedAssignService {
         bdasReqDprtInfo.dprtDstrLon = geocoding.addresses!![0].x // 경도
 
         // 요청 시간 설정
-        bdasReqDprtInfo.reqDt = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyyMMdd"))
-        bdasReqDprtInfo.reqTm = LocalDateTime.now().format(DateTimeFormatter.ofPattern("HHmmss"))
+        bdasReqDprtInfo.reqDt = StringUtils.getYyyyMmDd()
+        bdasReqDprtInfo.reqTm = StringUtils.getHhMmSs()
         
         // 출발지 정보 저장
         findBdasReq.saveDprtInfoFrom(bdasReqDprtInfo)
@@ -154,30 +147,47 @@ class BedAssignService {
     }
     
     @Transactional
-    fun reqConfirm(bdasAprvDto: BdasAprvDto) {
-        val findBdasReq = bdasReqRepository.findByPtIdAndBdasSeq(bdasAprvDto.ptId, bdasAprvDto.bdasSeq) ?: throw NotFoundException("bdasReq not found")
+    fun reqConfirm(bdasAsgnAprvDto: BdasAsgnAprvDto): CommonResponse<String> {
+        val findBdasReq = bdasReqRepository.findByPtIdAndBdasSeq(bdasAsgnAprvDto.ptId, bdasAsgnAprvDto.bdasSeq) ?: throw NotFoundException("bdasReq not found")
         // 배정반 승인/거절
+        if (bdasAsgnAprvDto.aprvYn == "N") { // 거절할 경우 거절 사유 및 메시지 작성
+            bdasAsgnAprvRepository.persist(bdasAsgnAprvDto.toUnableEntity())
+        } else if (bdasAsgnAprvDto.aprvYn == "Y") { // 승인할 경우 원내 배정 여부 체크
+            if (findBdasReq.inhpAsgnYn == "N") {
+                // 전원 요청시 병원 정보 저장
+                val hospList = infoHospRepository.findByHospIdList(bdasAsgnAprvDto.reqHospIdList)
+                hospList.forEachIndexed { idx, infoHosp ->
+                    log.debug("hospList>>>>>>>>>>> ${infoHosp.hospId}")
+                    bdasAsgnAprvRepository.persist(bdasAsgnAprvDto.toEntityWhenNotInHosp(
+                        asgnReqSeq = idx + 1,
+                        hospId = infoHosp.hospId!!,
+                        hospNm = infoHosp.dutyName!!,
+                    ))
+                }
+                val findById = bdasAsgnAprvRepository.findById(
+                    BdasAsgnAprvId(
+                        ptId = bdasAsgnAprvDto.ptId,
+                        bdasSeq = bdasAsgnAprvDto.bdasSeq,
+                        asgnReqSeq = 1
+                    )
+                )
+                firebaseService.sendMessage("jiseong12", "테스트입니다.", "jiseongtak")
+            } else if (findBdasReq.inhpAsgnYn == "Y") {
+                // 원내 배정이면 승인
+                bdasAsgnAprvRepository.persist(bdasAsgnAprvDto.toEntityWhenInHosp())
+            }
+        }
+        return CommonResponse("성공")
+    }
+
+    @Transactional
+    fun asgnConfirm(bdasAprvDto: BdasAprvDto) {
+        val findBdasReq = bdasReqRepository.findByPtIdAndBdasSeq(bdasAprvDto.ptId, bdasAprvDto.bdasSeq) ?: throw NotFoundException("bdasReq not found")
         if (bdasAprvDto.aprvYn == "N") {
-
+            bdasAprvRepository.persist(bdasAprvDto.toUnableEntity())
         } else if (bdasAprvDto.aprvYn == "Y") {
-
+            bdasAprvRepository.persist(bdasAprvDto.toEntity())
         }
-
-
-        if (findBdasReq.inhpAsgnYn == "N") {
-
-        } else if (findBdasReq.inhpAsgnYn == "Y") {
-
-        }
-
-        // 거절할 경우 거절 사유 및 메시지 작성
-
-        // 승인할 경우 원내 배정 여부 체크
-
-        // 원내 배정이면 승인
-
-        // 원내 배정 아니면 병원 선택
-
     }
 
     @Transactional
@@ -228,6 +238,12 @@ class BedAssignService {
                 list.add(BdasTimeLineDto("승인대기", list[0].assignInstNm))
                 return CommonResponse(TimeLineDtoList(list.size, list))
             }
+            BedStat.BAST0004.name -> {
+                val list = bdasReqRepository.findTimeLineInfo(ptId, bdasSeq)
+                list.addAll(bdasAsgnAprvRepository.findTimeLineInfo(ptId, bdasSeq))
+
+                return CommonResponse(TimeLineDtoList(list.size, list))
+            }
             BedStat.BAST0005.name -> return CommonResponse(Collections.EMPTY_LIST)
         }
         return CommonResponse(Collections.EMPTY_LIST)
@@ -246,7 +262,6 @@ class BedAssignService {
 
         return CommonResponse(DiseaseInfoResponse(findEsvy, findReq))
     }
-
 
     private fun makeToResultMap(list: MutableList<BdasListDto>, map: MutableMap<String, Any>) {
         list.map { getTagList(it) }

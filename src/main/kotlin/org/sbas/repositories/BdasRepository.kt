@@ -3,11 +3,12 @@ package org.sbas.repositories
 import io.quarkus.hibernate.orm.panache.kotlin.PanacheRepositoryBase
 import io.quarkus.panache.common.Sort
 import org.sbas.dtos.bdas.BdasListDto
+import org.sbas.dtos.bdas.BdasTimeLineDto
 import org.sbas.entities.bdas.*
 import javax.enterprise.context.ApplicationScoped
 
 @ApplicationScoped
-class BdasEsvyRepository: PanacheRepositoryBase<BdasEsvy, String> {
+class BdasEsvyRepository : PanacheRepositoryBase<BdasEsvy, String> {
     fun findByPtIdWithLatestBdasSeq(ptId: String): BdasEsvy? {
         return find("pt_id = '${ptId}'", Sort.by("bdas_seq", Sort.Direction.Descending)).firstResult()
     }
@@ -45,9 +46,21 @@ class BdasReqRepository : PanacheRepositoryBase<BdasReq, BdasReqId> {
         val query = "select fn_get_bed_asgn_stat('${ptId}', ${bdasSeq}) as test"
         return getEntityManager().createNativeQuery(query).singleResult as String
     }
-    fun findByPtId(ptId: String) = find("from BdasReq where id.ptId='$ptId' order by id.bdasSeq desc").firstResult()
 
+    fun findByPtId(ptId: String) = find("from BdasReq where id.ptId='$ptId' order by id.bdasSeq desc").firstResult()
 }
+
+@ApplicationScoped
+class BdasAsgnAprvRepository : PanacheRepositoryBase<BdasAsgnAprv, BdasAsgnAprvId> {
+    fun findTimeLineInfo(ptId: String, bdasSeq: Int): MutableList<BdasTimeLineDto> {
+        val query = "select new org.sbas.dtos.bdas.BdasTimeLineDto(baa.asgnStat, " +
+                "iu.instNm || ' / ' || iu.userNm, baa.updtDttm, baa.msg) " +
+                "from BdasAsgnAprv baa " +
+                "join InfoUser iu on iu.instId = baa.reqHospId"
+        return getEntityManager().createQuery(query, BdasTimeLineDto::class.java).resultList
+    }
+}
+
 
 @ApplicationScoped
 class BdasAprvRepository: PanacheRepositoryBase<BdasAprv, BdasAprvId> {

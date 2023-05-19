@@ -56,3 +56,7 @@ enum class UndrDsesCd(val cdNm: String) {
     UDDS0013("면역력저하자"),
     UDDS0014("기타"),
 }
+
+enum class AsgnStat(val value: String) {
+    APPROVE("배정완료"), REFUSE("배정거절"), WAIT("배정대기")
+}

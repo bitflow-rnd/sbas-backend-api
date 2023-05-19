@@ -17,6 +17,13 @@ data class BdasTimeLineDto(
         title: String?,
         assignInstNm: String?,
     ) : this(title, assignInstNm, null, null, null, null, null, null)
+
+    constructor(
+        title: String?,
+        by: String?,
+        updtDttm: Instant?,
+        msg: String?,
+    ) : this(title, by, updtDttm, msg, null, null, null, null)
 }
 
 data class TimeLineDtoList(
