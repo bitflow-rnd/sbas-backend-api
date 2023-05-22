@@ -6,10 +6,7 @@ import org.eclipse.microprofile.rest.client.inject.RestClient
 import org.jboss.logging.Logger
 import org.sbas.constants.SbasConst
 import org.sbas.constants.StatClas
-import org.sbas.dtos.InfoCntcDto
-import org.sbas.dtos.InfoUserDto
-import org.sbas.dtos.PagingListDto
-import org.sbas.dtos.toEntity
+import org.sbas.dtos.*
 import org.sbas.entities.info.InfoCert
 import org.sbas.entities.info.InfoCntc
 import org.sbas.entities.info.InfoUser
@@ -67,11 +64,16 @@ class UserService {
     }
 
     /**
-     * 백오피스에서 어드민(전산담당)이 처리하는 API
+     * 관리자 사용자 정보 관리 화면에서 사용자 목록 조회
      */
     @Transactional
-    fun getUsers(searchData: String): CommonResponse<List<InfoUser>> {
-        return CommonResponse(userRepository.findInfoUserList(searchData))
+    fun getUsers(param: InfoUserSearchParam): CommonResponse<*> {
+        val list = userRepository.findInfoUserList(param)
+        list.forEach { it.statClasNm = it.statClas!!.value }
+
+        val result = mutableMapOf("count" to list.size, "items" to list)
+
+        return CommonResponse(result)
     }
 
     /**

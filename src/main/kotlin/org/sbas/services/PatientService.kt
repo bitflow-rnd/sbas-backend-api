@@ -145,16 +145,16 @@ class PatientService {
         list.forEach { dto ->
             dto.statCdNm = BedStat.valueOf(dto.statCd!!).cdNm
             if (dto.ptTypeCd != null) {
-                val split = dto.ptTypeCd!!.split(";")
-                dto.tagList!!.addAll(split.map { PtTypeCd.valueOf(it).cdNm })
+                val splitList = dto.ptTypeCd!!.split(";")
+                dto.tagList!!.addAll(splitList.map { PtTypeCd.valueOf(it).cdNm })
             }
             if (dto.svrtTypeCd != null) {
-                val split = dto.svrtTypeCd!!.split(";")
-                dto.tagList!!.addAll(split.map { SvrtTypeCd.valueOf(it).cdNm })
+                val splitList = dto.svrtTypeCd!!.split(";")
+                dto.tagList!!.addAll(splitList.map { SvrtTypeCd.valueOf(it).cdNm })
             }
             if (dto.undrDsesCd != null) {
-                val split = dto.undrDsesCd!!.split(";")
-                dto.tagList!!.addAll(split.map { UndrDsesCd.valueOf(it).cdNm })
+                val splitList = dto.undrDsesCd!!.split(";")
+                dto.tagList!!.addAll(splitList.map { UndrDsesCd.valueOf(it).cdNm })
             }
         }
 
