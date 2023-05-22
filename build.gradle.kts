@@ -40,6 +40,8 @@ dependencies {
     implementation("io.quarkus:quarkus-smallrye-reactive-messaging")
     implementation("io.quarkus:quarkus-scheduler")
     implementation("com.google.firebase:firebase-admin:9.1.1")
+    // https://mvnrepository.com/artifact/com.linecorp.kotlin-jdsl/hibernate-kotlin-jdsl
+    implementation("com.linecorp.kotlin-jdsl:hibernate-kotlin-jdsl:2.2.1.RELEASE")
     testImplementation("io.quarkus:quarkus-junit5")
     testImplementation("io.rest-assured:rest-assured")
 }
@@ -72,4 +74,10 @@ tasks.withType<Test> {
 tasks.withType<JavaCompile> {
     options.encoding = "UTF-8"
     options.compilerArgs.add("-parameters")
+}
+
+tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile> {
+    kotlinOptions {
+        jvmTarget = "17"
+    }
 }

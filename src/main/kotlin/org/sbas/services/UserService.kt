@@ -7,6 +7,7 @@ import org.jboss.logging.Logger
 import org.sbas.constants.SbasConst
 import org.sbas.constants.StatClas
 import org.sbas.dtos.InfoCntcDto
+import org.sbas.dtos.InfoUserDto
 import org.sbas.dtos.PagingListDto
 import org.sbas.dtos.toEntity
 import org.sbas.entities.info.InfoCert
@@ -70,8 +71,7 @@ class UserService {
      */
     @Transactional
     fun getUsers(searchData: String): CommonResponse<List<InfoUser>> {
-
-        return CommonResponse(userRepository.findLike(searchData))
+        return CommonResponse(userRepository.findInfoUserList(searchData))
     }
 
     /**
@@ -121,7 +121,7 @@ class UserService {
         if(request.isApproved) {
             findUser.statClas = StatClas.URST0002
             return CommonResponse("${findUser.userNm}님 사용자 등록을 승인하였습니다.")
-        }else {
+        } else {
             findUser.statClas = StatClas.URST0003
             return CommonResponse("${findUser.userNm}님 사용자 등록이 반려되었습니다.")
         }
