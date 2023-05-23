@@ -1,6 +1,6 @@
 package org.sbas.entities.info
 
-import org.sbas.constants.StatClas
+import org.sbas.constants.UserStatCd
 import org.sbas.entities.CommonEntity
 import java.time.Instant
 import javax.persistence.*
@@ -27,7 +27,7 @@ class InfoUser(
     @Column(name = "push_key", nullable = false, length = 300)
     var pushKey: String? = null, // Push Key
 
-    @Column(name = "gndr", nullable = false, length = 1)
+    @Column(name = "gndr", length = 1)
     var gndr: String? = null, //성별
 
     @Column(name = "telno", nullable = false, length = 11)
@@ -39,7 +39,7 @@ class InfoUser(
     @Column(name = "ocp_cd", nullable = false, length = 8)
     var ocpCd: String? = null, // 직종 코드
 
-    @Column(name = "pt_type_cd", length = 8)
+    @Column(name = "pt_type_cd", length = 256)
     var ptTypeCd: String? = null, // 환자 유형 코드
 
     @Column(name = "inst_type_cd", nullable = false, length = 10)
@@ -57,15 +57,12 @@ class InfoUser(
     @Column(name = "duty_dstr_2_cd", nullable = false, length = 8)
     var dutyDstr2Cd: String? = null, // 근무 지역 코드 (시군구)
 
-    @Column(name = "duty_addr", length = 100)
-    var dutyAddr: String? = null, // 근무지 주소
-
     @Column(name = "attc_id", length = 12)
     var attcId: String? = null, // 첨부 ID
 
-    @Column(name = "stat_clas", length = 8)
+    @Column(name = "user_stat_cd", length = 8)
     @Enumerated(value = EnumType.STRING)
-    var statClas: StatClas? = null, // 상태 구분
+    var userStatCd: UserStatCd? = null, // 상태 구분
 
     @Column(name = "aprv_user_id", length = 10)
     var aprvUserId: String? = null, // 승인자 ID
@@ -73,13 +70,24 @@ class InfoUser(
     @Column(name = "aprv_dttm")
     var aprvDttm: Instant? = null, // 승인 일시
 
-    @Column(name = "btdt", length = 8)
-    var btDt: String = "", // 생년월일
+    @Column(name = "btdt", nullable = false, length = 8)
+    var btDt: String, // 생년월일
 
     @Column(name = "pw_err_cnt")
     var pwErrCnt: Int? = 0, // 비밀번호 오류 횟수
 
-    @Column(name = "auth_cd", length = 8)
-    var authCd: String = "" // 세부권한
+    @Column(name = "auth_cd", nullable = false, length = 8)
+    var authCd: String, // 세부권한
 
-) : CommonEntity()
+) : CommonEntity() {
+
+    fun updateUserStatCdByAdmin(aprvUserId: String, isApproved: Boolean) {
+        this.aprvDttm = Instant.now()
+        this.aprvUserId = aprvUserId
+        this.userStatCd = if (isApproved) {
+            UserStatCd.URST0002
+        } else {
+            UserStatCd.URST0003
+        }
+    }
+}

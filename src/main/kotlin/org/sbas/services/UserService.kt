@@ -5,12 +5,11 @@ import org.eclipse.microprofile.jwt.JsonWebToken
 import org.eclipse.microprofile.rest.client.inject.RestClient
 import org.jboss.logging.Logger
 import org.sbas.constants.SbasConst
-import org.sbas.constants.StatClas
+import org.sbas.constants.UserStatCd
 import org.sbas.dtos.*
 import org.sbas.entities.info.InfoCert
 import org.sbas.entities.info.InfoCntc
 import org.sbas.entities.info.InfoUser
-import org.sbas.utils.CustomizedException
 import org.sbas.parameters.*
 import org.sbas.repositories.InfoCertRepository
 import org.sbas.repositories.InfoCntcRepository
@@ -19,6 +18,7 @@ import org.sbas.responses.CommonResponse
 import org.sbas.restclients.NaverSensRestClient
 import org.sbas.restparameters.NaverSmsMsgApiParams
 import org.sbas.restparameters.NaverSmsReqMsgs
+import org.sbas.utils.CustomizedException
 import org.sbas.utils.TokenUtils
 import java.time.Instant
 import javax.enterprise.context.ApplicationScoped
@@ -51,16 +51,29 @@ class UserService {
     @ConfigProperty(name = "restclient.naversens.serviceid")
     private lateinit var naversensserviceid: String
 
+    /**
+     * 사용자 등록 요청
+     */
     @Transactional
-    fun reqUserReg(infoUser: InfoUser): CommonResponse<String> {
+    fun reqUserReg(infoUserSaveDto: InfoUserSaveDto): CommonResponse<String> {
+        userRepository.persist(infoUserSaveDto.toEntity())
+        return CommonResponse("${infoUserSaveDto.userNm}님 사용자 등록을 요청하였습니다.")
+    }
+    
+    @Transactional
+    fun reg(infoUserSaveDto: InfoUserSaveDto): CommonResponse<String> {
+        infoUserSaveDto.userStatCd = UserStatCd.URST0002
+        userRepository.persist(infoUserSaveDto.toEntity())
+        return CommonResponse("등록 성공")
+    }
 
-        infoUser.rgstUserId = "admin"
-        infoUser.updtUserId = "admin"
-        infoUser.statClas = StatClas.URST0001
+    @Transactional
+    fun aprv(request: UserRequest): CommonResponse<String> {
+        val findUser = userRepository.findByUserId(request.id)
+            ?: throw CustomizedException("선택한 유저 ID가 없습니다.", Response.Status.NOT_FOUND)
 
-        userRepository.persist(infoUser)
-
-        return CommonResponse("${infoUser.userNm}님 사용자 등록을 요청하였습니다.")
+        findUser.updateUserStatCdByAdmin(jwt.name, request.isApproved)
+        return CommonResponse("${findUser.id}, ${findUser.userStatCd!!.cdNm}")
     }
 
     /**
@@ -69,7 +82,7 @@ class UserService {
     @Transactional
     fun getUsers(param: InfoUserSearchParam): CommonResponse<*> {
         val list = userRepository.findInfoUserList(param)
-        list.forEach { it.statClasNm = it.statClas!!.value }
+        list.forEach { it.userStatCdNm = it.userStatCd!!.cdNm }
 
         val result = mutableMapOf("count" to list.size, "items" to list)
 
@@ -111,32 +124,13 @@ class UserService {
     }
 
     @Transactional
-    fun reg(request: UserRequest): CommonResponse<String> {
-        request.adminId = jwt.name
-
-        val findUser = userRepository.findByUserId(request.id)
-            ?: throw CustomizedException("선택한 유저 ID가 없습니다.", Response.Status.NOT_FOUND)
-
-        findUser.aprvDttm = Instant.now()
-        findUser.updtUserId = request.adminId
-        findUser.aprvUserId = request.adminId
-        if(request.isApproved) {
-            findUser.statClas = StatClas.URST0002
-            return CommonResponse("${findUser.userNm}님 사용자 등록을 승인하였습니다.")
-        } else {
-            findUser.statClas = StatClas.URST0003
-            return CommonResponse("${findUser.userNm}님 사용자 등록이 반려되었습니다.")
-        }
-    }
-
-    @Transactional
     fun deleteUser(request: UserIdRequest): CommonResponse<String> {
         request.adminId = jwt.name
 
         val findUser = userRepository.findByUserId(request.id)
             ?: throw CustomizedException("선택한 유저 ID가 없습니다.", Response.Status.NOT_FOUND)
 
-        findUser.statClas = StatClas.URST0006
+        findUser.userStatCd = UserStatCd.URST0006
         findUser.updtUserId = request.adminId
 
         return CommonResponse("${request.id} 계정을 삭제하였습니다.")
@@ -258,12 +252,10 @@ class UserService {
         findUser.instNm = findUser.instNm
         findUser.dutyDstr1Cd = findUser.dutyDstr1Cd
         findUser.dutyDstr2Cd = findUser.dutyDstr2Cd
-        findUser.dutyAddr = findUser.dutyAddr
         findUser.attcId = findUser.attcId
         findUser.updtUserId = infoUser.id
 
         return CommonResponse("SUCCESS")
-
     }
 
     /**

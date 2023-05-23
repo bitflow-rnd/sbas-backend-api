@@ -9,7 +9,7 @@ import com.linecorp.kotlinjdsl.query.spec.ExpressionOrderSpec
 import com.linecorp.kotlinjdsl.querydsl.expression.column
 import io.quarkus.hibernate.orm.panache.kotlin.PanacheRepositoryBase
 import kotlinx.coroutines.runBlocking
-import org.sbas.dtos.InfoUserDto
+import org.sbas.dtos.InfoUserListDto
 import org.sbas.dtos.InfoUserSearchParam
 import org.sbas.entities.info.InfoUser
 import org.sbas.parameters.PageRequest
@@ -39,18 +39,18 @@ class InfoUserRepository : PanacheRepositoryBase<InfoUser, String> {
 
 //    fun getMyUserDetail(userId: String) = find("from InfoUser where id = $userId").firstResult()
 
-    fun findInfoUserList(param: InfoUserSearchParam): List<InfoUserDto> {
+    fun findInfoUserList(param: InfoUserSearchParam): List<InfoUserListDto> {
         //TODO 페이징 처리?
-        val infoUserList: List<InfoUserDto> = queryFactory.listQuery {
+        val infoUserList: List<InfoUserListDto> = queryFactory.listQuery {
             select(listOf(column(InfoUser::id), column(InfoUser::dutyDstr1Cd), column(InfoUser::instTypeCd),
                 column(InfoUser::instNm), column(InfoUser::userNm), column(InfoUser::jobCd), column(InfoUser::authCd),
-                column(InfoUser::rgstDttm), column(InfoUser::statClas), column(InfoUser::rgstUserId)))
+                column(InfoUser::rgstDttm), column(InfoUser::userStatCd), column(InfoUser::rgstUserId)))
             from(entity(InfoUser::class))
             whereAnd(
                 param.dstr1Cd?.run { column(InfoUser::dutyDstr1Cd).equal(this) },
                 param.dstr2Cd?.run { column(InfoUser::dutyDstr2Cd).equal(this) },
                 param.ptTypeCd?.run { column(InfoUser::ptTypeCd).`in`(this) },
-                param.statClas?.run { column(InfoUser::statClas).equal(this) },
+                param.userStatCd?.run { column(InfoUser::userStatCd).equal(this) },
                 param.userNm?.run { column(InfoUser::userNm).like("%$this%") },
                 param.telno?.run { column(InfoUser::telno).like("%$this%") },
                 param.instNm?.run { column(InfoUser::instNm).like("%$this%") },
