@@ -1,7 +1,7 @@
 package org.sbas.services
 
 import org.jboss.logging.Logger
-import org.sbas.constants.BedStat
+import org.sbas.constants.BedStatCd
 import org.sbas.constants.PtTypeCd
 import org.sbas.constants.SvrtTypeCd
 import org.sbas.constants.UndrDsesCd
@@ -205,19 +205,19 @@ class BedAssignService(
 
         bdasReqRepository.findBdasReqList().forEach {
             dto -> when (dto.bedStatCd) {
-                BedStat.BAST0003.name -> {
+                BedStatCd.BAST0003.name -> {
                     bedRequestList.add(dto)
                     makeToResultMap(bedRequestList, bedRequest)
                 }
-                BedStat.BAST0005.name -> {
+                BedStatCd.BAST0005.name -> {
                     bedAssignList.add(dto)
                     makeToResultMap(bedAssignList, bedAssign)
                 }
-                BedStat.BAST0006.name -> {
+                BedStatCd.BAST0006.name -> {
                     transferList.add(dto)
                     makeToResultMap(transferList, transfer)
                 }
-                BedStat.BAST0007.name -> {
+                BedStatCd.BAST0007.name -> {
                     hospitalList.add(dto)
                     makeToResultMap(hospitalList, hospital)
                 }
@@ -233,18 +233,18 @@ class BedAssignService(
         val bedStatCd = bdasReqRepository.findBedStat(ptId, bdasSeq)
         log.debug(bedStatCd)
         when (bedStatCd) {
-            BedStat.BAST0003.name -> {
+            BedStatCd.BAST0003.name -> {
                 val list = bdasReqRepository.findTimeLineInfo(ptId, bdasSeq)
                 list.add(BdasTimeLineDto("승인대기", list[0].assignInstNm))
                 return CommonResponse(TimeLineDtoList(list.size, list))
             }
-            BedStat.BAST0004.name -> {
+            BedStatCd.BAST0004.name -> {
                 val list = bdasReqRepository.findTimeLineInfo(ptId, bdasSeq)
                 list.addAll(bdasAsgnAprvRepository.findTimeLineInfo(ptId, bdasSeq))
 
                 return CommonResponse(TimeLineDtoList(list.size, list))
             }
-            BedStat.BAST0005.name -> return CommonResponse(Collections.EMPTY_LIST)
+            BedStatCd.BAST0005.name -> return CommonResponse(Collections.EMPTY_LIST)
         }
         return CommonResponse(Collections.EMPTY_LIST)
     }
@@ -270,7 +270,7 @@ class BedAssignService(
     }
 
     private fun getTagList(dto: BdasListDto): BdasListDto {
-        dto.bedStatCdNm = BedStat.valueOf(dto.bedStatCd!!).cdNm
+        dto.bedStatCdNm = BedStatCd.valueOf(dto.bedStatCd!!).cdNm
         if (dto.ptTypeCd != null) {
             val split = dto.ptTypeCd!!.split(";")
             dto.tagList!!.addAll(split.map { PtTypeCd.valueOf(it).cdNm })

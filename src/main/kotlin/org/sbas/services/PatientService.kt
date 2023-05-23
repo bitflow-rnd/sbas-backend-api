@@ -15,7 +15,6 @@ import org.sbas.parameters.NewsScoreParameters
 import org.sbas.parameters.SearchParameters
 import org.sbas.repositories.*
 import org.sbas.responses.CommonResponse
-import org.sbas.utils.DynamicQueryBuilder
 import org.sbas.utils.StringUtils
 import java.io.File
 import java.io.IOException
@@ -61,9 +60,6 @@ class PatientService {
 
     @ConfigProperty(name = "domain.this")
     private lateinit var serverdomain: String
-
-    @Inject
-    private lateinit var dynamicQueryBuilder: DynamicQueryBuilder
 
     /**
      * 환자 기본정보 등록
@@ -143,7 +139,7 @@ class PatientService {
     fun findInfoPtList(searchParam: SearchParameters): CommonResponse<*> {
         val list = infoPtRepository.findInfoPtList()
         list.forEach { dto ->
-            dto.statCdNm = BedStat.valueOf(dto.statCd!!).cdNm
+            dto.statCdNm = BedStatCd.valueOf(dto.statCd!!).cdNm
             if (dto.ptTypeCd != null) {
                 val splitList = dto.ptTypeCd!!.split(";")
                 dto.tagList!!.addAll(splitList.map { PtTypeCd.valueOf(it).cdNm })

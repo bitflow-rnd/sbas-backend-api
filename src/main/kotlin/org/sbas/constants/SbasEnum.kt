@@ -3,7 +3,7 @@ package org.sbas.constants
 /**
  * 사용자 상태 코드
  */
-enum class StatClas(val value: String) {
+enum class UserStatCd(val cdNm: String) {
     URST0001("가입 승인 대기"), URST0002("가입 승인"), URST0003("가입 반려"), URST0004("휴면"),
     URST0005("탈퇴 (본인)"), URST0006("탈퇴 (관리자)"), URST0007("잠김")
 }
@@ -11,7 +11,7 @@ enum class StatClas(val value: String) {
 /**
  * 병상배정상태 코드
  */
-enum class BedStat(val cdNm: String) {
+enum class BedStatCd(val cdNm: String) {
     BAST0001("배정없음"), BAST0002("역학조사"), BAST0003("병상요청"),
     BAST0004("의료진승인"), BAST0005("병상승인"), BAST0006("이송중"), BAST0007("완료")
 }
@@ -57,6 +57,6 @@ enum class UndrDsesCd(val cdNm: String) {
     UDDS0014("기타"),
 }
 
-enum class AsgnStat(val value: String) {
+enum class AsgnStat(val cdNm: String) {
     APPROVE("배정완료"), REFUSE("배정거절"), WAIT("배정대기")
 }

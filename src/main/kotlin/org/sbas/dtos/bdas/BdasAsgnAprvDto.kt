@@ -26,7 +26,7 @@ data class BdasAsgnAprvDto(
             aprvYn = "N",
             negCd = this.negCd,
             msg = this.msg,
-            asgnStat = AsgnStat.WAIT.value,
+            asgnStat = AsgnStat.WAIT.cdNm,
         )
     }
 
@@ -39,7 +39,7 @@ data class BdasAsgnAprvDto(
             ),
             aprvYn = "Y",
             msg = this.msg,
-            asgnStat = AsgnStat.WAIT.value,
+            asgnStat = AsgnStat.WAIT.cdNm,
         )
     }
 
@@ -55,7 +55,7 @@ data class BdasAsgnAprvDto(
             msg = this.msg,
             reqHospId = hospId,
             reqHospNm = hospNm,
-            asgnStat = AsgnStat.WAIT.value,
+            asgnStat = AsgnStat.WAIT.cdNm,
         )
     }
 }

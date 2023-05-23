@@ -2,7 +2,7 @@ package org.sbas.entities.info
 
 import org.hibernate.annotations.GenericGenerator
 import org.hibernate.annotations.Parameter
-import org.sbas.constants.BedStat
+import org.sbas.constants.BedStatCd
 import org.sbas.dtos.InfoPtDto
 import org.sbas.entities.CommonEntity
 import org.sbas.entities.StringPrefixedSequenceIdGenerator
@@ -76,10 +76,10 @@ class InfoPt(
     var attcId: String? = null, // 첨부 ID
 
     @Column(name = "bed_stat_cd", length = 8)
-    var bedStatCd: String = BedStat.BAST0001.name,
+    var bedStatCd: String = BedStatCd.BAST0001.name,
 
     @Column(name = "bed_stat_nm", length = 8)
-    var bedStatNm: String = BedStat.BAST0001.cdNm,
+    var bedStatNm: String = BedStatCd.BAST0001.cdNm,
 
     @Column(name = "basc_addr", length = 100)
     var bascAddr: String? = null, // 기본 주소
@@ -117,8 +117,8 @@ class InfoPt(
     }
 
     fun changeBedStatAfterBdasReq() {
-        this.bedStatCd = BedStat.BAST0003.name
-        this.bedStatNm = BedStat.BAST0003.cdNm
+        this.bedStatCd = BedStatCd.BAST0003.name
+        this.bedStatNm = BedStatCd.BAST0003.cdNm
     }
 
     companion object {

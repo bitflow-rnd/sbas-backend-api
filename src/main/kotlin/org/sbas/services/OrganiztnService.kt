@@ -15,7 +15,6 @@ import org.sbas.repositories.InfoHospRepository
 import org.sbas.repositories.InfoInstRepository
 import org.sbas.responses.CommonResponse
 import org.sbas.utils.CustomizedException
-import org.sbas.utils.DynamicQueryBuilder
 import javax.enterprise.context.ApplicationScoped
 import javax.inject.Inject
 import javax.transaction.Transactional
@@ -43,9 +42,6 @@ class OrganiztnService {
 
     @Inject
     private lateinit var jwt: JsonWebToken
-
-    @Inject
-    private lateinit var dynamicQueryBuilder: DynamicQueryBuilder
 
     /**
      * 의료기관(병원) 목록 조회
