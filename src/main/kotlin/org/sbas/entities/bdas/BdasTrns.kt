@@ -64,19 +64,19 @@ class BdasTrns(
     @Column(name = "msg", length = 500)
     var msg : String? = null,
 
-    @Column(name = "dprt_dt", nullable = false, length = 8)
+    @Column(name = "dprt_dt", length = 8)
     var dprtDt: String? = null, // 출발 날짜
 
-    @Column(name = "dprt_tm", nullable = false, length = 6)
+    @Column(name = "dprt_tm", length = 6)
     var dprtTm: String? = null, // 출발 시간
 
-    @Column(name = "arvl_dt", nullable = false, length = 8)
+    @Column(name = "arvl_dt", length = 8)
     var arvlDt: String? = null, // 도착 날짜
 
-    @Column(name = "arvl_tm", nullable = false, length = 6)
+    @Column(name = "arvl_tm", length = 6)
     var arvlTm: String? = null, // 도착 시간
 
-    @Column(name = "trns_stat_cd", nullable = false, length = 8)
+    @Column(name = "trns_stat_cd", length = 8)
     var trnsStatCd: String? = null, // 이송 상태 코드
 ) : CommonEntity()
 

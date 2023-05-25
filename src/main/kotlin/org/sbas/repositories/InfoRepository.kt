@@ -1,5 +1,9 @@
 package org.sbas.repositories
 
+import com.linecorp.kotlinjdsl.QueryFactory
+import com.linecorp.kotlinjdsl.QueryFactoryImpl
+import com.linecorp.kotlinjdsl.query.creator.CriteriaQueryCreatorImpl
+import com.linecorp.kotlinjdsl.query.creator.SubqueryCreatorImpl
 import io.quarkus.hibernate.orm.panache.kotlin.PanacheQuery
 import io.quarkus.hibernate.orm.panache.kotlin.PanacheRepositoryBase
 import org.jboss.logging.Logger
@@ -8,12 +12,26 @@ import org.sbas.dtos.InfoPtSearchDto
 import org.sbas.entities.info.*
 import org.sbas.parameters.InstCdParameters
 import org.sbas.parameters.SearchHospRequest
+import javax.annotation.PostConstruct
 import javax.enterprise.context.ApplicationScoped
 import javax.inject.Inject
+import javax.persistence.EntityManager
 import javax.ws.rs.NotFoundException
 
 @ApplicationScoped
 class InfoPtRepository : PanacheRepositoryBase<InfoPt, String> {
+
+    @Inject
+    private lateinit var entityManager: EntityManager
+    private lateinit var queryFactory: QueryFactory
+
+    @PostConstruct
+    fun initialize() {
+        queryFactory = QueryFactoryImpl(
+            criteriaQueryCreator = CriteriaQueryCreatorImpl(entityManager),
+            subqueryCreator = SubqueryCreatorImpl()
+        )
+    }
 
     fun findByPtNmAndRrno(ptNm: String, rrno1: String, rrno2: String): InfoPt? =
         find("pt_nm = '$ptNm' AND rrno_1 = '$rrno1' AND rrno_2 = '$rrno2'").firstResult()

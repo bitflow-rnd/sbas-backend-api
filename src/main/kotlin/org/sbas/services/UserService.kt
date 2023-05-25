@@ -72,7 +72,7 @@ class UserService {
         val findUser = userRepository.findByUserId(request.id)
             ?: throw CustomizedException("선택한 유저 ID가 없습니다.", Response.Status.NOT_FOUND)
 
-        findUser.updateUserStatCdByAdmin(jwt.name, request.isApproved)
+        findUser.updateUserStatCdByAdmin(jwt.name ?: "administrator", request.isApproved)
         return CommonResponse("${findUser.id}, ${findUser.userStatCd!!.cdNm}")
     }
 

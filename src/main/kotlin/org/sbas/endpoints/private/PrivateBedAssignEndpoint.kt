@@ -3,8 +3,10 @@ package org.sbas.endpoints.private
 import org.eclipse.microprofile.openapi.annotations.Operation
 import org.eclipse.microprofile.openapi.annotations.tags.Tag
 import org.jboss.logging.Logger
+import org.sbas.dtos.bdas.BdasAdmsSaveDto
 import org.sbas.dtos.bdas.BdasAprvDto
 import org.sbas.dtos.bdas.BdasAsgnAprvDto
+import org.sbas.dtos.bdas.BdasTrnsSaveDto
 import org.sbas.services.BedAssignService
 import javax.inject.Inject
 import javax.ws.rs.GET
@@ -40,15 +42,15 @@ class PrivateBedAssignEndpoint {
     @Operation(summary = "이송/배차 처리 (+구급대, 구급대원 및 차량번호 등록)", description = "")
     @POST
     @Path("confirmtransf")
-    fun confirmtransf(): Response {
-        return Response.ok().build()
+    fun confirmtransf(bdasTrnsSaveDto: BdasTrnsSaveDto): Response {
+        return Response.ok(bedAssignService.confirmTrans(bdasTrnsSaveDto)).build()
     }
 
     @Operation(summary = "입/퇴원/재택회송 처리", description = "")
     @POST
     @Path("confirmhosptlzdiscg")
-    fun confirmhosptlzdiscg(): Response {
-        return Response.ok().build()
+    fun confirmhosptlzdiscg(bdasAdmsSaveDto: BdasAdmsSaveDto): Response {
+        return Response.ok(bedAssignService.confirmHosp(bdasAdmsSaveDto)).build()
     }
 
     @Operation(summary = "병상배정 목록 (상태별)", description = "")

@@ -6,6 +6,7 @@ import org.sbas.entities.bdas.BdasAprvId
 import org.sbas.entities.bdas.BdasAsgnAprv
 import org.sbas.entities.bdas.BdasAsgnAprvId
 import org.sbas.utils.NoArg
+import org.sbas.utils.StringUtils
 
 @NoArg
 data class BdasAsgnAprvDto(
@@ -90,12 +91,15 @@ data class BdasAprvDto(
                 ptId = this.ptId,
                 bdasSeq = this.bdasSeq,
             ),
+
+            aprvDt = StringUtils.getYyyyMmDd(),
+            aprvTm = StringUtils.getHhMmSs(),
             aprvYn = "Y",
             msg = this.msg,
             roomNm = this.roomNm,
             deptNm = this.deptNm,
             spclNm = this.spclNm,
-
+            chrgTelno = this.chrgTelno,
         )
     }
 }

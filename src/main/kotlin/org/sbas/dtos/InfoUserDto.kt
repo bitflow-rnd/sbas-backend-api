@@ -40,6 +40,7 @@ data class InfoUserSearchParam(
 /**
  * 사용자 등록 DTO
  */
+@NoArg
 data class InfoUserSaveDto(
     var userId: String,
     var pw: String?,

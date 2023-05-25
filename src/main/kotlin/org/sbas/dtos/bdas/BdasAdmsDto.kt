@@ -1,0 +1,52 @@
+package org.sbas.dtos.bdas
+
+import org.sbas.entities.bdas.BdasAdms
+import org.sbas.entities.bdas.BdasAdmsId
+import org.sbas.utils.NoArg
+import org.sbas.utils.StringUtils
+
+@NoArg
+data class BdasAdmsSaveDto(
+    val ptId: String,
+    val bdasSeq: Int,
+    val hospId: String,
+    val deptNm: String?,
+    val wardNm: String?,
+    val roomNm: String?,
+    val spclId: String?,
+    val spclNm: String?,
+    val chrgTelno: String?,
+    val dschRsnCd: String?,
+    val msg: String?,
+) {
+    fun toAdmsEntity(): BdasAdms {
+        return BdasAdms(
+            id = BdasAdmsId(ptId, bdasSeq),
+            hospId = hospId,
+            deptNm = deptNm,
+            wardNm = wardNm,
+            roomNm = roomNm,
+            spclId = spclId,
+            spclNm = spclNm,
+            chrgTelno = chrgTelno,
+            admsDt = StringUtils.getYyyyMmDd(),
+            admsTm = StringUtils.getHhMmSs(),
+            msg = msg,
+        )
+    }
+
+    fun toDschEntity(): BdasAdms {
+        return BdasAdms(
+            id = BdasAdmsId(ptId, bdasSeq),
+            hospId = hospId,
+            dschDt = StringUtils.getYyyyMmDd(),
+            dschTm = StringUtils.getHhMmSs(),
+            dschRsnCd = dschRsnCd,
+            msg = msg,
+        )
+    }
+
+    fun toHomeEntity() {
+
+    }
+}

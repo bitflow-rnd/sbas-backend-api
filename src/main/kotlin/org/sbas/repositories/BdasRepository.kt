@@ -59,12 +59,15 @@ class BdasAsgnAprvRepository : PanacheRepositoryBase<BdasAsgnAprv, BdasAsgnAprvI
                 "join InfoUser iu on iu.instId = baa.reqHospId"
         return getEntityManager().createQuery(query, BdasTimeLineDto::class.java).resultList
     }
+
+    fun findAlreadyAprvHosp(ptId: String, bdasSeq: Int) {
+        find("ptId = $ptId and bdasSeq = $bdasSeq and asgnStat = ''")
+    }
 }
 
 
 @ApplicationScoped
 class BdasAprvRepository: PanacheRepositoryBase<BdasAprv, BdasAprvId> {
-
 }
 
 @ApplicationScoped

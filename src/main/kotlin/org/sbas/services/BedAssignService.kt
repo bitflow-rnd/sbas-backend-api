@@ -1,12 +1,13 @@
 package org.sbas.services
 
+import io.quarkus.cache.CacheManager
 import org.jboss.logging.Logger
 import org.sbas.constants.BedStatCd
 import org.sbas.constants.PtTypeCd
 import org.sbas.constants.SvrtTypeCd
 import org.sbas.constants.UndrDsesCd
 import org.sbas.dtos.bdas.*
-import org.sbas.entities.bdas.BdasAsgnAprvId
+import org.sbas.entities.bdas.BdasAdmsId
 import org.sbas.entities.bdas.BdasReq
 import org.sbas.entities.bdas.BdasReqId
 import org.sbas.handlers.GeocodingHandler
@@ -20,6 +21,9 @@ import java.util.*
 import javax.enterprise.context.ApplicationScoped
 import javax.transaction.Transactional
 import javax.ws.rs.NotFoundException
+import kotlin.math.acos
+import kotlin.math.cos
+import kotlin.math.sin
 
 /**
  * 병상배정 관련 서비스 클래스
@@ -31,11 +35,14 @@ class BedAssignService(
     private var bdasReqRepository: BdasReqRepository,
     private var bdasAsgnAprvRepository: BdasAsgnAprvRepository,
     private var bdasAprvRepository: BdasAprvRepository,
+    private var bdasTrnsRepository: BdasTrnsRepository,
+    private var bdasAdmsRepository: BdasAdmsRepository,
     private var infoPtRepository: InfoPtRepository,
     private var infoHospRepository: InfoHospRepository,
     private var baseCodeRepository: BaseCodeRepository,
     private var geoHandler: GeocodingHandler,
     private var firebaseService: FirebaseService,
+    private var cacheManager: CacheManager,
 ) {
 
     /**
@@ -147,35 +154,30 @@ class BedAssignService(
     }
     
     @Transactional
-    fun reqConfirm(bdasAsgnAprvDto: BdasAsgnAprvDto): CommonResponse<String> {
-        val findBdasReq = bdasReqRepository.findByPtIdAndBdasSeq(bdasAsgnAprvDto.ptId, bdasAsgnAprvDto.bdasSeq) ?: throw NotFoundException("bdasReq not found")
+    fun reqConfirm(dto: BdasAsgnAprvDto): CommonResponse<String> {
+        val findBdasReq = bdasReqRepository.findByPtIdAndBdasSeq(dto.ptId, dto.bdasSeq) ?: throw NotFoundException("bdasReq not found")
         // 배정반 승인/거절
-        if (bdasAsgnAprvDto.aprvYn == "N") { // 거절할 경우 거절 사유 및 메시지 작성
-            bdasAsgnAprvRepository.persist(bdasAsgnAprvDto.toUnableEntity())
-        } else if (bdasAsgnAprvDto.aprvYn == "Y") { // 승인할 경우 원내 배정 여부 체크
+        if (dto.aprvYn == "N") { // 거절할 경우 거절 사유 및 메시지 작성
+            bdasAsgnAprvRepository.persist(dto.toUnableEntity())
+        } else if (dto.aprvYn == "Y") { // 승인할 경우 원내 배정 여부 체크
+
             if (findBdasReq.inhpAsgnYn == "N") {
                 // 전원 요청시 병원 정보 저장
-                val hospList = infoHospRepository.findByHospIdList(bdasAsgnAprvDto.reqHospIdList)
+                val hospList = infoHospRepository.findByHospIdList(dto.reqHospIdList)
                 hospList.forEachIndexed { idx, infoHosp ->
                     log.debug("hospList>>>>>>>>>>> ${infoHosp.hospId}")
-                    bdasAsgnAprvRepository.persist(bdasAsgnAprvDto.toEntityWhenNotInHosp(
+                    bdasAsgnAprvRepository.persist(dto.toEntityWhenNotInHosp(
                         asgnReqSeq = idx + 1,
                         hospId = infoHosp.hospId!!,
                         hospNm = infoHosp.dutyName!!,
                     ))
                 }
-                val findById = bdasAsgnAprvRepository.findById(
-                    BdasAsgnAprvId(
-                        ptId = bdasAsgnAprvDto.ptId,
-                        bdasSeq = bdasAsgnAprvDto.bdasSeq,
-                        asgnReqSeq = 1
-                    )
-                )
                 firebaseService.sendMessage("jiseong12", "테스트입니다.", "jiseongtak")
             } else if (findBdasReq.inhpAsgnYn == "Y") {
                 // 원내 배정이면 승인
-                bdasAsgnAprvRepository.persist(bdasAsgnAprvDto.toEntityWhenInHosp())
+                bdasAsgnAprvRepository.persist(dto.toEntityWhenInHosp())
             }
+
         }
         return CommonResponse("성공")
     }
@@ -184,9 +186,15 @@ class BedAssignService(
     fun asgnConfirm(bdasAprvDto: BdasAprvDto) {
         val findBdasReq = bdasReqRepository.findByPtIdAndBdasSeq(bdasAprvDto.ptId, bdasAprvDto.bdasSeq) ?: throw NotFoundException("bdasReq not found")
         if (bdasAprvDto.aprvYn == "N") {
+            // 거절하면 상태 변경
             bdasAprvRepository.persist(bdasAprvDto.toUnableEntity())
         } else if (bdasAprvDto.aprvYn == "Y") {
+            // 이미 승인한 병원이 있는지 확인
+            bdasAsgnAprvRepository.findAlreadyAprvHosp(bdasAprvDto.ptId, bdasAprvDto.bdasSeq)
+
             bdasAprvRepository.persist(bdasAprvDto.toEntity())
+            // 승인한 후에 나머지 병원들 상태 변경
+
         }
     }
 
@@ -263,6 +271,22 @@ class BedAssignService(
         return CommonResponse(DiseaseInfoResponse(findEsvy, findReq))
     }
 
+    @Transactional
+    fun confirmTrans(dto: BdasTrnsSaveDto): CommonResponse<String> {
+        bdasTrnsRepository.persist(dto.toEntity())
+        return CommonResponse("등록 성공")
+    }
+
+    @Transactional
+    fun confirmHosp(bdasAdmsSaveDto: BdasAdmsSaveDto) {
+        val findBdasAdms = bdasAdmsRepository.findById(BdasAdmsId(bdasAdmsSaveDto.ptId, bdasAdmsSaveDto.bdasSeq)) ?: throw NotFoundException("bdasAdms not found")
+        if (bdasAdmsRepository.isPersistent(findBdasAdms)) {
+            // 기존에 있으면 update
+
+        }
+        bdasAdmsRepository.persist(bdasAdmsSaveDto.toAdmsEntity())
+    }
+
     private fun makeToResultMap(list: MutableList<BdasListDto>, map: MutableMap<String, Any>) {
         list.map { getTagList(it) }
         map["count"] = list.size
@@ -298,5 +322,15 @@ class BedAssignService(
         log.warn(result)
 
         return result
+    }
+
+    // Haversine formula
+    private fun calculateDistance(lat1: Double, lon1: Double, lat2: Double, lon2: Double): Double {
+        val lat1Rad = Math.toRadians(lat1)
+        val lon1Rad = Math.toRadians(lon1)
+        val lat2Rad = Math.toRadians(lat2)
+        val lon2Rad = Math.toRadians(lon2)
+        val earthRadius = 6371.0 //Kilometers
+        return earthRadius * acos(sin(lat1Rad) * sin(lat2Rad) + cos(lat1Rad) * cos(lat2Rad) * cos(lon1Rad - lon2Rad))
     }
 }

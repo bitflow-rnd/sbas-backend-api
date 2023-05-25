@@ -20,6 +20,7 @@ import javax.ws.rs.core.Response
 
 @Tag(name = "사용자 관리(어드민 권한용)", description = "System Admin 사용자 - 사용자 등록, 수정, 삭제 등")
 @RolesAllowed("USER")
+//@RolesAllowed("ADMIN")
 @Path("v1/admin/user")
 class AdminUserEndpoint {
 
@@ -31,14 +32,14 @@ class AdminUserEndpoint {
 
     @Operation(summary = "사용자등록 승인/반려", description = "백오피스에서 어드민(전산담당)이 처리하는 사용자 등록 승인/반려 API")
     @POST
-    @Path("reg")
+    @Path("aprv")
     fun aprv(@Valid request: UserRequest): Response {
         return Response.ok(userService.aprv(request)).build()
     }
 
     @Operation(summary = "관리자 사용자 등록", description = "관리자 화면에서 사용자 등록")
     @POST
-    @Path("aprv")
+    @Path("reg")
     fun reg(infoUserSaveDto: InfoUserSaveDto): Response {
         return Response.ok(userService.reg(infoUserSaveDto)).build()
     }
