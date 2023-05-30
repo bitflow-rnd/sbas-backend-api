@@ -57,4 +57,8 @@ class BaseAttcRepository : PanacheRepositoryBase<BaseAttc, String> {
     }
 
     fun findByAttcId(attcId: String) = find("select ba from BaseAttc ba where ba.attcId = '$attcId'").firstResult()
+
+    fun findByAttcGrpIdAndAttcId(attcGrpId: String, attcId: String): BaseAttc? {
+        return find("attcGrpId = '$attcGrpId' and attcId = '$attcId'").firstResult()
+    }
 }

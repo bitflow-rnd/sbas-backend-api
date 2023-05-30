@@ -17,6 +17,10 @@ import org.sbas.repositories.BaseCodeRepository
 import org.sbas.responses.CommonResponse
 import org.sbas.responses.messages.FileResponse
 import org.sbas.utils.CustomizedException
+import java.io.File
+import java.io.FileInputStream
+import java.io.IOException
+import java.io.InputStream
 import javax.enterprise.context.ApplicationScoped
 import javax.inject.Inject
 import javax.transaction.Transactional
@@ -210,5 +214,30 @@ class CommonService {
         val fileName = fileHandler.createPrivateFile(param2)
 
         return CommonResponse(fileName)
+    }
+
+    @Transactional
+    fun publicFileDownload(attcGrpId: String, attcId: String): Response {
+        val baseAttc = baseAttcRepository.findByAttcGrpIdAndAttcId(attcGrpId, attcId) ?: throw NotFoundException("baseAttc not found")
+
+//        val filePath = "${baseAttc.loclPath}/${baseAttc.fileNm}"
+        val filePath = "${baseAttc.uriPath}/${baseAttc.fileNm}"
+        val file = File(filePath)
+        log.debug(file)
+
+        // 파일이 존재하거나 읽을 수 있을 때
+        if (file.exists() && file.canRead()) {
+            try {
+                // 파일 스트림 생성
+                val inputStream: InputStream = FileInputStream(file)
+                // 파일 다운로드 응답 생성
+                return Response.ok(inputStream)
+                    .header("Content-Disposition", "attachment; filename=\"" + file.name + "\"")
+                    .build()
+            } catch (e: IOException) {
+                e.printStackTrace()
+            }
+        }
+        return Response.status(Response.Status.NOT_FOUND).build()
     }
 }

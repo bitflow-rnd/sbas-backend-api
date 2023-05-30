@@ -21,13 +21,13 @@ class PrivateCommonEndpoint {
     lateinit var log: Logger
 
     @Inject
-    lateinit var service1: CommonService
+    lateinit var commonService: CommonService
 
     @Operation(summary = "파일목록 (권한별 공개 파일)", description = "")
     @GET
     @Path("files/{attcGrpId}")
     fun files(@RestPath attcGrpId: String): Response {
-        return Response.ok(service1.findFiles(attcGrpId)).build()
+        return Response.ok(commonService.findFiles(attcGrpId)).build()
     }
 
     @Operation(summary = "다운로드 (권한별 공개 파일)", description = "")
@@ -41,7 +41,7 @@ class PrivateCommonEndpoint {
     @POST
     @Path("upload")
     fun upload(@RestForm param1: String, @RestForm param2: FileUpload): Response {
-        return Response.ok(service1.privateFileUpload(param1, param2)).build()
+        return Response.ok(commonService.privateFileUpload(param1, param2)).build()
     }
 
     @Operation(summary = "개인정보수집동의 동의", description = "")
