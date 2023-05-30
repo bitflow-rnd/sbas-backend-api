@@ -220,8 +220,8 @@ class CommonService {
     fun publicFileDownload(attcGrpId: String, attcId: String): Response {
         val baseAttc = baseAttcRepository.findByAttcGrpIdAndAttcId(attcGrpId, attcId) ?: throw NotFoundException("baseAttc not found")
 
-//        val filePath = "${baseAttc.loclPath}/${baseAttc.fileNm}"
-        val filePath = "${baseAttc.uriPath}/${baseAttc.fileNm}"
+        val filePath = "${baseAttc.loclPath}/${baseAttc.fileNm}"
+//        val filePath = "${baseAttc.uriPath}/${baseAttc.fileNm}"
         val file = File(filePath)
         log.debug(file)
 
