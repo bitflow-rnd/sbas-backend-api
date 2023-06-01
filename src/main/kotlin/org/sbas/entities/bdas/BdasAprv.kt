@@ -54,6 +54,9 @@ data class BdasAprvId(
 
     @Column(name = "bdas_seq", nullable = false)
     var bdasSeq: Int? = null, // 병상 배정 순번
+
+    @Column(name = "asgn_req_seq", nullable = false)
+    var asgnReqSeq: Int? = null,
 ) : Serializable {
 
     companion object {

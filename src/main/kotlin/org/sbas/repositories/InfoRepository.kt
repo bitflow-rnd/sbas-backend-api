@@ -112,6 +112,10 @@ class InfoHospRepository : PanacheRepositoryBase<InfoHosp, String> {
         )
         return list("hosp_id in (${param})")
     }
+
+    fun findListByDstrCd1AndDstrCd2(dstrCd1: String, dstrCd2: String): List<InfoHosp> {
+        return find("dstrCd1 = '$dstrCd1' and dstrCd2 = '$dstrCd2'").list()
+    }
 }
 
 @ApplicationScoped

@@ -8,9 +8,7 @@ import org.sbas.responses.patient.EpidResult
 import org.sbas.restclients.NaverOcrRestClient
 import org.sbas.restparameters.NaverOcrApiParams
 import org.sbas.restparameters.OcrApiImagesParam
-import java.io.File
-import java.io.FileInputStream
-import java.util.*
+import org.sbas.utils.StringUtils
 import javax.enterprise.context.ApplicationScoped
 import javax.inject.Inject
 
@@ -116,11 +114,11 @@ class NaverApiHandler {
     private fun splitAddress(address: String): List<String?> {
         val addr = address.replace("\n()", "") // \n() 삭제
         val fullAddr = addr.replace(Regex("\\s*\\([^)]*\\)"), "") // (...) 부분 삭제
-
+        log.debug("NaverApiHandler splitAddress >>>>> $fullAddr")
         val list = mutableListOf<String?>()
         val splitedAddr = fullAddr.split(" ")
 
-        list.add(splitedAddr[0]) // dstr1Cd
+        list.add(StringUtils.getDstrCd1(splitedAddr[0])) // dstr1Cd
         list.add(splitedAddr[1]) // dstr2Cd
         list.add(splitedAddr.subList(0, 4).joinToString(" ")) // baseAddr
 

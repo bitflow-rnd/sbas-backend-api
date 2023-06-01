@@ -5,7 +5,7 @@ import org.eclipse.microprofile.openapi.annotations.tags.Tag
 import org.jboss.logging.Logger
 import org.sbas.dtos.bdas.BdasAdmsSaveDto
 import org.sbas.dtos.bdas.BdasAprvDto
-import org.sbas.dtos.bdas.BdasAsgnAprvDto
+import org.sbas.dtos.bdas.BdasReqAprvDto
 import org.sbas.dtos.bdas.BdasTrnsSaveDto
 import org.sbas.services.BedAssignService
 import javax.inject.Inject
@@ -27,16 +27,23 @@ class PrivateBedAssignEndpoint {
     @Operation(summary = "병상승인/불가 (병상배정반)", description = "")
     @POST
     @Path("reqconfirm")
-    fun reqconfirm(bdasAsgnAprvDto: BdasAsgnAprvDto): Response {
-        return Response.ok(bedAssignService.reqConfirm(bdasAsgnAprvDto)).build()
+    fun reqconfirm(bdasReqAprvDto: BdasReqAprvDto): Response {
+        return Response.ok(bedAssignService.reqConfirm(bdasReqAprvDto)).build()
+    }
+
+    @Operation(summary = "가용 병원 목록 조회", description = "")
+    @GET
+    @Path("hosp-list")
+    fun getHospList(bdasReqAprvDto: BdasReqAprvDto): Response {
+        //TODO parameter 결정
+        return Response.ok(bedAssignService.getAvalHospList(bdasReqAprvDto)).build()
     }
 
     @Operation(summary = "배정승인/불가 (의료진)", description = "")
     @POST
     @Path("asgnconfirm")
     fun asgnconfirm(bdasAprvDto: BdasAprvDto): Response {
-        bedAssignService.asgnConfirm(bdasAprvDto)
-        return Response.ok().build()
+        return Response.ok(bedAssignService.asgnConfirm(bdasAprvDto)).build()
     }
 
     @Operation(summary = "이송/배차 처리 (+구급대, 구급대원 및 차량번호 등록)", description = "")

@@ -51,23 +51,27 @@ class BdasReqRepository : PanacheRepositoryBase<BdasReq, BdasReqId> {
 }
 
 @ApplicationScoped
-class BdasAsgnAprvRepository : PanacheRepositoryBase<BdasAsgnAprv, BdasAsgnAprvId> {
+class BdasReqAprvRepository : PanacheRepositoryBase<BdasReqAprv, BdasReqAprvId> {
     fun findTimeLineInfo(ptId: String, bdasSeq: Int): MutableList<BdasTimeLineDto> {
-        val query = "select new org.sbas.dtos.bdas.BdasTimeLineDto(baa.asgnStat, " +
-                "iu.instNm || ' / ' || iu.userNm, baa.updtDttm, baa.msg) " +
-                "from BdasAsgnAprv baa " +
-                "join InfoUser iu on iu.instId = baa.reqHospId"
+        val query = "select new org.sbas.dtos.bdas.BdasTimeLineDto(bra.aprvYn, " +
+                "iu.instNm || ' / ' || iu.userNm, bra.updtDttm, bra.msg) " +
+                "from BdasReqAprv bra " +
+                "join InfoUser iu on iu.instId = bra.reqHospId"
         return getEntityManager().createQuery(query, BdasTimeLineDto::class.java).resultList
     }
 
-    fun findAlreadyAprvHosp(ptId: String, bdasSeq: Int) {
-        find("ptId = $ptId and bdasSeq = $bdasSeq and asgnStat = ''")
+    fun findReqAprvList(ptId: String, bdasSeq: Int): List<BdasReqAprv> {
+        return find("id.ptId = '$ptId' and id.bdasSeq = $bdasSeq").list()
     }
 }
 
 
 @ApplicationScoped
 class BdasAprvRepository: PanacheRepositoryBase<BdasAprv, BdasAprvId> {
+
+    fun findApprovedEntity(ptId: String, bdasSeq: Int): BdasAprv? {
+        return find("id.ptId = '$ptId' and id.bdasSeq = $bdasSeq and aprvYn = 'Y'").firstResult()
+    }
 }
 
 @ApplicationScoped

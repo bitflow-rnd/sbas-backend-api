@@ -235,9 +235,10 @@ class CommonService {
                     .header("Content-Disposition", "attachment; filename=\"" + file.name + "\"")
                     .build()
             } catch (e: IOException) {
-                e.printStackTrace()
+                throw CustomizedException("internal server error", Response.Status.INTERNAL_SERVER_ERROR)
             }
         }
+
         return Response.status(Response.Status.NOT_FOUND).build()
     }
 }

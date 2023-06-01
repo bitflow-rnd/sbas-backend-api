@@ -1,15 +1,15 @@
 package org.sbas.dtos.bdas
 
-import org.sbas.constants.AsgnStat
+import com.fasterxml.jackson.annotation.JsonIgnore
 import org.sbas.entities.bdas.BdasAprv
 import org.sbas.entities.bdas.BdasAprvId
-import org.sbas.entities.bdas.BdasAsgnAprv
-import org.sbas.entities.bdas.BdasAsgnAprvId
+import org.sbas.entities.bdas.BdasReqAprv
+import org.sbas.entities.bdas.BdasReqAprvId
 import org.sbas.utils.NoArg
 import org.sbas.utils.StringUtils
 
 @NoArg
-data class BdasAsgnAprvDto(
+data class BdasReqAprvDto(
     val ptId: String,
     val bdasSeq: Int,
     val aprvYn: String,
@@ -17,9 +17,9 @@ data class BdasAsgnAprvDto(
     val msg: String?,
     var reqHospIdList: MutableList<String> = mutableListOf(),
 ) {
-    fun toUnableEntity(): BdasAsgnAprv {
-        return BdasAsgnAprv(
-            id = BdasAsgnAprvId(
+    fun toRefuseEntity(): BdasReqAprv {
+        return BdasReqAprv(
+            id = BdasReqAprvId(
                 ptId = this.ptId,
                 bdasSeq = this.bdasSeq,
                 asgnReqSeq = 1,
@@ -27,27 +27,24 @@ data class BdasAsgnAprvDto(
             aprvYn = "N",
             negCd = this.negCd,
             msg = this.msg,
-            asgnStat = AsgnStat.WAIT.cdNm,
         )
     }
 
-    fun toEntityWhenInHosp(): BdasAsgnAprv {
-        return BdasAsgnAprv(
-            id = BdasAsgnAprvId(
+    fun toEntityWhenInHosp(): BdasReqAprv {
+        return BdasReqAprv(
+            id = BdasReqAprvId(
                 ptId = this.ptId,
                 bdasSeq = this.bdasSeq,
                 asgnReqSeq = 1,
             ),
             aprvYn = "Y",
             msg = this.msg,
-            asgnStat = AsgnStat.WAIT.cdNm,
         )
     }
 
-    fun toEntityWhenNotInHosp(asgnReqSeq: Int, hospId: String,
-                              hospNm: String): BdasAsgnAprv {
-        return BdasAsgnAprv(
-            id = BdasAsgnAprvId(
+    fun toEntityWhenNotInHosp(asgnReqSeq: Int, hospId: String, hospNm: String): BdasReqAprv {
+        return BdasReqAprv(
+            id = BdasReqAprvId(
                 ptId = this.ptId,
                 bdasSeq = this.bdasSeq,
                 asgnReqSeq = asgnReqSeq,
@@ -56,14 +53,16 @@ data class BdasAsgnAprvDto(
             msg = this.msg,
             reqHospId = hospId,
             reqHospNm = hospNm,
-            asgnStat = AsgnStat.WAIT.cdNm,
         )
     }
 }
 
+@NoArg
 data class BdasAprvDto(
     val ptId: String,
     val bdasSeq: Int,
+    val asgnReqSeq: Int,
+    val hospId: String?,
     val aprvYn: String,
     val negCd: String?,
     val msg: String?,
@@ -73,28 +72,31 @@ data class BdasAprvDto(
     val spclNm: String?,
     val chrgTelno: String?,
 ) {
-    fun toUnableEntity(): BdasAprv {
+    fun toRefuseEntity(msg: String?, negCd: String?): BdasAprv {
         return BdasAprv(
             id = BdasAprvId(
                 ptId = this.ptId,
                 bdasSeq = this.bdasSeq,
+                asgnReqSeq = this.asgnReqSeq,
             ),
-            aprvYn = "N",
-            negCd = this.negCd,
-            msg = this.msg,
+            hospId = this.hospId,
+            aprvYn = this.aprvYn,
+            negCd = negCd ?: this.negCd,
+            msg = msg ?: this.msg,
         )
     }
 
-    fun toEntity(): BdasAprv {
+    fun toApproveEntity(): BdasAprv {
         return BdasAprv(
             id = BdasAprvId(
                 ptId = this.ptId,
                 bdasSeq = this.bdasSeq,
+                asgnReqSeq = this.asgnReqSeq,
             ),
-
+            hospId = this.hospId,
             aprvDt = StringUtils.getYyyyMmDd(),
             aprvTm = StringUtils.getHhMmSs(),
-            aprvYn = "Y",
+            aprvYn = this.aprvYn,
             msg = this.msg,
             roomNm = this.roomNm,
             deptNm = this.deptNm,
@@ -103,3 +105,18 @@ data class BdasAprvDto(
         )
     }
 }
+
+data class BdasAprvResponse(
+    val isAlreadyApproved: Boolean,
+    val message: String?,
+)
+
+data class AvalHospListResponse(
+    val hospId: String,
+    val hospNm: String,
+    @JsonIgnore
+    val doubleDistance: Double,
+    val distance: String?,
+    val addr: String,
+//    val tagList = mutableListOf<String>()
+)

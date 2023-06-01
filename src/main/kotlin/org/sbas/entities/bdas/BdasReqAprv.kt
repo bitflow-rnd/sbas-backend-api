@@ -1,19 +1,14 @@
 package org.sbas.entities.bdas
 
-import org.sbas.constants.AsgnStat
 import org.sbas.entities.CommonEntity
 import java.io.Serializable
-import javax.persistence.Column
-import javax.persistence.Embeddable
-import javax.persistence.EmbeddedId
-import javax.persistence.Entity
-import javax.persistence.Table
+import javax.persistence.*
 
 @Entity
-@Table(name = "bdas_asgn_aprv")
-class BdasAsgnAprv(
+@Table(name = "bdas_req_aprv")
+class BdasReqAprv(
     @EmbeddedId
-    var id: BdasAsgnAprvId? = null,
+    var id: BdasReqAprvId? = null,
 
     @Column(name = "aprv_yn", nullable = false, length = 1)
     var aprvYn: String? = null, // 승인 여부
@@ -29,13 +24,25 @@ class BdasAsgnAprv(
 
     @Column(name = "req_hosp_nm", length = 50)
     var reqHospNm: String? = null,
+) : CommonEntity() {
 
-    @Column(name = "asgn_stat", length = 8)
-    var asgnStat: String? = null,
-) : CommonEntity()
+    fun convertToBdasAprv(): BdasAprv {
+        return BdasAprv(
+            id = BdasAprvId(
+                ptId = this.id!!.ptId,
+                bdasSeq = this.id!!.bdasSeq,
+                asgnReqSeq = this.id!!.asgnReqSeq,
+            ),
+            hospId = this.reqHospId,
+            aprvYn = "N",
+            negCd = "BNRN0008",
+            msg = "이미 배정 승인된 병원이 존재하여 불가 처리되었습니다.",
+        )
+    }
+}
 
 @Embeddable
-data class BdasAsgnAprvId(
+data class BdasReqAprvId(
     @Column(name = "pt_id", nullable = false, length = 10)
     var ptId: String? = null, // 환자 ID
 
