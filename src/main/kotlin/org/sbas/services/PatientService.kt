@@ -5,8 +5,8 @@ import org.eclipse.microprofile.jwt.JsonWebToken
 import org.jboss.logging.Logger
 import org.jboss.resteasy.reactive.multipart.FileUpload
 import org.sbas.constants.*
-import org.sbas.dtos.InfoPtDto
-import org.sbas.dtos.toEntity
+import org.sbas.dtos.info.InfoPtDto
+import org.sbas.dtos.info.toEntity
 import org.sbas.entities.base.BaseAttc
 import org.sbas.entities.info.InfoPt
 import org.sbas.handlers.FileHandler

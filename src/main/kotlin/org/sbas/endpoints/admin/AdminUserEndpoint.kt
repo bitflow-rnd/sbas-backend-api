@@ -3,8 +3,8 @@ package org.sbas.endpoints.admin
 import org.eclipse.microprofile.openapi.annotations.Operation
 import org.eclipse.microprofile.openapi.annotations.tags.Tag
 import org.jboss.logging.Logger
-import org.sbas.dtos.InfoUserSaveDto
-import org.sbas.dtos.InfoUserSearchParam
+import org.sbas.dtos.info.InfoUserSaveDto
+import org.sbas.dtos.info.InfoUserSearchParam
 import org.sbas.parameters.UpdatePushKeyRequest
 import org.sbas.parameters.UserIdRequest
 import org.sbas.parameters.UserRequest

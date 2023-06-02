@@ -7,8 +7,8 @@ import com.linecorp.kotlinjdsl.query.creator.SubqueryCreatorImpl
 import io.quarkus.hibernate.orm.panache.kotlin.PanacheQuery
 import io.quarkus.hibernate.orm.panache.kotlin.PanacheRepositoryBase
 import org.jboss.logging.Logger
-import org.sbas.dtos.InfoHospDetailDto
-import org.sbas.dtos.InfoPtSearchDto
+import org.sbas.dtos.info.InfoHospDetailDto
+import org.sbas.dtos.info.InfoPtSearchDto
 import org.sbas.entities.info.*
 import org.sbas.parameters.InstCdParameters
 import org.sbas.parameters.SearchHospRequest

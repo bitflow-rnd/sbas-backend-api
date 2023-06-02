@@ -1,4 +1,4 @@
-package org.sbas.dtos
+package org.sbas.dtos.info
 
 import org.sbas.entities.info.InfoHosp
 import org.sbas.utils.NoArg

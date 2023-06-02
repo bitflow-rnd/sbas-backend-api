@@ -1,6 +1,6 @@
 package org.sbas.entities.info
 
-import org.sbas.dtos.InfoInstUpdateReq
+import org.sbas.dtos.info.InfoInstUpdateReq
 import org.sbas.entities.CommonEntity
 import javax.persistence.Column
 import javax.persistence.Entity

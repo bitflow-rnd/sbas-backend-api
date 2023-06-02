@@ -11,6 +11,7 @@ import org.sbas.dtos.*
 import org.sbas.dtos.bdas.BdasEsvyDto
 import org.sbas.dtos.bdas.BdasReqDprtInfo
 import org.sbas.dtos.bdas.BdasReqSvrInfo
+import org.sbas.dtos.info.InfoPtDto
 import org.sbas.parameters.NewsScoreParameters
 import org.sbas.parameters.SearchParameters
 import org.sbas.services.BedAssignService

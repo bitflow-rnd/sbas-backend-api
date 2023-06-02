@@ -4,9 +4,9 @@ import org.eclipse.microprofile.openapi.annotations.Operation
 import org.eclipse.microprofile.openapi.annotations.tags.Tag
 import org.jboss.logging.Logger
 import org.jboss.resteasy.reactive.RestPath
-import org.sbas.dtos.FireStatnSaveReq
-import org.sbas.dtos.InfoCrewRegDto
-import org.sbas.dtos.InfoInstUpdateReq
+import org.sbas.dtos.info.FireStatnSaveReq
+import org.sbas.dtos.info.InfoCrewRegDto
+import org.sbas.dtos.info.InfoInstUpdateReq
 import org.sbas.entities.info.InfoCrewId
 import org.sbas.services.OrganiztnService
 import javax.annotation.security.RolesAllowed

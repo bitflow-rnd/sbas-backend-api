@@ -1,4 +1,4 @@
-package org.sbas.dtos
+package org.sbas.dtos.info
 
 import com.fasterxml.jackson.annotation.JsonIgnore
 import org.sbas.entities.info.InfoPt

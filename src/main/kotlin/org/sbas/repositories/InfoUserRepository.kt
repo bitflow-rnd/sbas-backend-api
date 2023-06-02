@@ -9,8 +9,8 @@ import com.linecorp.kotlinjdsl.query.spec.ExpressionOrderSpec
 import com.linecorp.kotlinjdsl.querydsl.expression.column
 import io.quarkus.hibernate.orm.panache.kotlin.PanacheRepositoryBase
 import kotlinx.coroutines.runBlocking
-import org.sbas.dtos.InfoUserListDto
-import org.sbas.dtos.InfoUserSearchParam
+import org.sbas.dtos.info.InfoUserListDto
+import org.sbas.dtos.info.InfoUserSearchParam
 import org.sbas.entities.info.InfoUser
 import org.sbas.parameters.PageRequest
 import javax.annotation.PostConstruct

@@ -4,7 +4,7 @@ import org.eclipse.microprofile.openapi.annotations.Operation
 import org.eclipse.microprofile.openapi.annotations.tags.Tag
 import org.jboss.logging.Logger
 import org.jboss.resteasy.reactive.RestPath
-import org.sbas.dtos.InfoCntcDto
+import org.sbas.dtos.info.InfoCntcDto
 import org.sbas.entities.info.InfoUser
 import org.sbas.parameters.ModifyPwRequest
 import org.sbas.parameters.ModifyTelnoRequest

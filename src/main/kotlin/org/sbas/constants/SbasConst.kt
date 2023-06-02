@@ -5,8 +5,6 @@ object SbasConst {
     // Temp
     const val MSG_SEND_NO = "01088657020"
 
-    val EGEN_GRP_CDS = arrayOf("Y000", "SIDO", "P004", "P001", "O000", "N000", "M000", "J004", "J002", "J000", "H030", "H020", "H000")
-
     /**
      * Naver Sens SMS meg send types
      */

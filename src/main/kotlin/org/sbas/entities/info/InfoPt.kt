@@ -3,7 +3,7 @@ package org.sbas.entities.info
 import org.hibernate.annotations.GenericGenerator
 import org.hibernate.annotations.Parameter
 import org.sbas.constants.BedStatCd
-import org.sbas.dtos.InfoPtDto
+import org.sbas.dtos.info.InfoPtDto
 import org.sbas.entities.CommonEntity
 import org.sbas.entities.StringPrefixedSequenceIdGenerator
 import java.io.Serial

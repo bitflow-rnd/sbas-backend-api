@@ -4,7 +4,7 @@ import org.eclipse.microprofile.openapi.annotations.Operation
 import org.eclipse.microprofile.openapi.annotations.tags.Tag
 import org.jboss.logging.Logger
 import org.sbas.constants.SbasConst
-import org.sbas.dtos.InfoUserSaveDto
+import org.sbas.dtos.info.InfoUserSaveDto
 import org.sbas.entities.info.InfoUser
 import org.sbas.parameters.CheckCertNoRequest
 import org.sbas.parameters.LoginRequest
