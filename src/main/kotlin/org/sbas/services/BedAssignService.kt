@@ -18,6 +18,7 @@ import org.sbas.restparameters.NaverGeocodingApiParams
 import org.sbas.utils.StringUtils
 import java.util.*
 import javax.enterprise.context.ApplicationScoped
+import javax.inject.Inject
 import javax.transaction.Transactional
 import javax.ws.rs.NotFoundException
 import kotlin.math.*
@@ -26,20 +27,19 @@ import kotlin.math.*
  * 병상배정 관련 서비스 클래스
  */
 @ApplicationScoped
-class BedAssignService(
-    private var log: Logger,
-    private var bdasEsvyRepository: BdasEsvyRepository,
-    private var bdasReqRepository: BdasReqRepository,
-    private var bdasReqAprvRepository: BdasReqAprvRepository,
-    private var bdasAprvRepository: BdasAprvRepository,
-    private var bdasTrnsRepository: BdasTrnsRepository,
-    private var bdasAdmsRepository: BdasAdmsRepository,
-    private var infoPtRepository: InfoPtRepository,
-    private var infoHospRepository: InfoHospRepository,
-    private var baseCodeRepository: BaseCodeRepository,
-    private var geoHandler: GeocodingHandler,
-    private var firebaseService: FirebaseService,
-) {
+class BedAssignService {
+    @Inject private lateinit var log: Logger
+    @Inject private lateinit var bdasEsvyRepository: BdasEsvyRepository
+    @Inject private lateinit var bdasReqRepository: BdasReqRepository
+    @Inject private lateinit var bdasReqAprvRepository: BdasReqAprvRepository
+    @Inject private lateinit var bdasAprvRepository: BdasAprvRepository
+    @Inject private lateinit var bdasTrnsRepository: BdasTrnsRepository
+    @Inject private lateinit var bdasAdmsRepository: BdasAdmsRepository
+    @Inject private lateinit var infoPtRepository: InfoPtRepository
+    @Inject private lateinit var infoHospRepository: InfoHospRepository
+    @Inject private lateinit var baseCodeRepository: BaseCodeRepository
+    @Inject private lateinit var geoHandler: GeocodingHandler
+    @Inject private lateinit var firebaseService: FirebaseService
 
     /**
      * 질병 정보 등록
@@ -177,8 +177,8 @@ class BedAssignService(
     }
 
     @Transactional
-    fun getAvalHospList(dto: BdasReqAprvDto): CommonResponse<*> {
-        val findBdasReq = bdasReqRepository.findByPtIdAndBdasSeq(dto.ptId, dto.bdasSeq) ?: throw NotFoundException("bdasReq not found")
+    fun getAvalHospList(ptId: String, bdasSeq: Int): CommonResponse<*> {
+        val findBdasReq = bdasReqRepository.findByPtIdAndBdasSeq(ptId, bdasSeq) ?: throw NotFoundException("bdasReq not found")
         val split = findBdasReq.dprtDstrBascAddr!!.split(" ")
         val dstrCd1 = StringUtils.getDstrCd1(split[0])
         val findBaseCode = baseCodeRepository.findByDstr1CdAndCdNm(dstrCd1, split[1]) ?: throw NotFoundException("baseCode not found")
@@ -211,7 +211,7 @@ class BedAssignService(
 
         // 거절한 병원의 정보 저장
         if (dto.aprvYn == "N") {
-            bdasAprvRepository.persist(dto.toRefuseEntity(null, null))
+            bdasAprvRepository.getEntityManager().merge(dto.toRefuseEntity(null, null))
             return CommonResponse(BdasAprvResponse(false, "배정 불가 처리되었습니다."))
         }
 
@@ -265,6 +265,9 @@ class BedAssignService(
                     bedRequestList.add(dto)
                     makeToResultMap(bedRequestList, bedRequest)
                 }
+                BedStatCd.BAST0004.name -> {
+                    bedAssignList.add(dto)
+                }
                 BedStatCd.BAST0005.name -> {
                     bedAssignList.add(dto)
                     makeToResultMap(bedAssignList, bedAssign)
@@ -279,6 +282,7 @@ class BedAssignService(
                 }
             }
         }
+        // list 말고 다른거로
         val res = listOf(bedRequest, bedAssign, transfer, hospital, complete)
 
         return CommonResponse(res)
@@ -300,7 +304,12 @@ class BedAssignService(
 
                 return CommonResponse(TimeLineDtoList(list.size, list))
             }
-            BedStatCd.BAST0005.name -> return CommonResponse(Collections.EMPTY_LIST)
+            BedStatCd.BAST0005.name -> {
+                val list = bdasReqRepository.findTimeLineInfo(ptId, bdasSeq)
+                list.addAll(bdasReqAprvRepository.findTimeLineInfo(ptId, bdasSeq))
+                list.addAll(bdasAprvRepository.findTimeLineInfo(ptId, bdasSeq))
+                return CommonResponse(TimeLineDtoList(list.size, list))
+            }
         }
         return CommonResponse(Collections.EMPTY_LIST)
     }

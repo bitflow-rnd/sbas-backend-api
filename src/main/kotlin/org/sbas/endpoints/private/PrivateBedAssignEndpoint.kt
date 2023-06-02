@@ -3,6 +3,7 @@ package org.sbas.endpoints.private
 import org.eclipse.microprofile.openapi.annotations.Operation
 import org.eclipse.microprofile.openapi.annotations.tags.Tag
 import org.jboss.logging.Logger
+import org.jboss.resteasy.reactive.RestPath
 import org.sbas.dtos.bdas.BdasAdmsSaveDto
 import org.sbas.dtos.bdas.BdasAprvDto
 import org.sbas.dtos.bdas.BdasReqAprvDto
@@ -33,10 +34,9 @@ class PrivateBedAssignEndpoint {
 
     @Operation(summary = "가용 병원 목록 조회", description = "")
     @GET
-    @Path("hosp-list")
-    fun getHospList(bdasReqAprvDto: BdasReqAprvDto): Response {
-        //TODO parameter 결정
-        return Response.ok(bedAssignService.getAvalHospList(bdasReqAprvDto)).build()
+    @Path("hosp-list/{ptId}/{bdasSeq}")
+    fun getHospList(@RestPath ptId: String, @RestPath bdasSeq: Int): Response {
+        return Response.ok(bedAssignService.getAvalHospList(ptId, bdasSeq)).build()
     }
 
     @Operation(summary = "배정승인/불가 (의료진)", description = "")

@@ -23,8 +23,8 @@ class BaseCode(
     @Column(name = "cd_val", length = 200)
     var cdVal: String? = null, // 코드 값
 
-    @Column(name = "cd_seq", precision = 3)
-    var cdSeq: Long? = null, // 코드 순번
+    @Column(name = "cd_seq")
+    var cdSeq: Int? = null, // 코드 순번
 
     @Column(name = "rmk", length = 200)
     var rmk: String? = null, // 비고

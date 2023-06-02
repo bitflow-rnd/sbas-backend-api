@@ -6,6 +6,8 @@ import org.sbas.dtos.bdas.BdasListDto
 import org.sbas.dtos.bdas.BdasTimeLineDto
 import org.sbas.entities.bdas.*
 import javax.enterprise.context.ApplicationScoped
+import javax.inject.Inject
+import javax.persistence.EntityManager
 
 @ApplicationScoped
 class BdasEsvyRepository : PanacheRepositoryBase<BdasEsvy, String> {
@@ -16,6 +18,10 @@ class BdasEsvyRepository : PanacheRepositoryBase<BdasEsvy, String> {
 
 @ApplicationScoped
 class BdasReqRepository : PanacheRepositoryBase<BdasReq, BdasReqId> {
+
+    @Inject
+    private lateinit var entityManager: EntityManager
+
     fun findByPtIdAndBdasSeq(ptId: String, bdasSeq: Int): BdasReq? {
         return find("pt_id = '${ptId}' and bdas_seq = $bdasSeq", Sort.by("bdas_seq", Sort.Direction.Descending)).firstResult()
     }
@@ -28,7 +34,7 @@ class BdasReqRepository : PanacheRepositoryBase<BdasReq, BdasReqId> {
                 "join BdasEsvy be on br.id.bdasSeq = be.bdasSeq " +
                 "where br.id.bdasSeq in (select max(id.bdasSeq) as bdasSeq from BdasReq group by id.ptId) " +
                 "order by br.updtDttm desc"
-        return getEntityManager().createQuery(query, BdasListDto::class.java).resultList
+        return entityManager.createQuery(query, BdasListDto::class.java).resultList
     }
 
     fun findTimeLineInfo(ptId: String, bdasSeq: Int): MutableList<BdasTimeLineDto> {
@@ -39,12 +45,12 @@ class BdasReqRepository : PanacheRepositoryBase<BdasReq, BdasReqId> {
                 "from BdasReq br " +
                 "join InfoUser iu on iu.id = br.rgstUserId " +
                 "where br.id.ptId = '$ptId' and br.id.bdasSeq = $bdasSeq"
-        return getEntityManager().createQuery(query, BdasTimeLineDto::class.java).resultList
+        return entityManager.createQuery(query, BdasTimeLineDto::class.java).resultList
     }
 
     fun findBedStat(ptId: String, bdasSeq: Int): String {
         val query = "select fn_get_bed_asgn_stat('${ptId}', ${bdasSeq}) as test"
-        return getEntityManager().createNativeQuery(query).singleResult as String
+        return entityManager.createNativeQuery(query).singleResult as String
     }
 
     fun findByPtId(ptId: String) = find("from BdasReq where id.ptId='$ptId' order by id.bdasSeq desc").firstResult()
@@ -53,10 +59,11 @@ class BdasReqRepository : PanacheRepositoryBase<BdasReq, BdasReqId> {
 @ApplicationScoped
 class BdasReqAprvRepository : PanacheRepositoryBase<BdasReqAprv, BdasReqAprvId> {
     fun findTimeLineInfo(ptId: String, bdasSeq: Int): MutableList<BdasTimeLineDto> {
-        val query = "select new org.sbas.dtos.bdas.BdasTimeLineDto(bra.aprvYn, " +
+        val query = "select new org.sbas.dtos.bdas.BdasTimeLineDto(case bra.aprvYn when 'Y' then '승인' when 'N' then '불가' end, " +
                 "iu.instNm || ' / ' || iu.userNm, bra.updtDttm, bra.msg) " +
                 "from BdasReqAprv bra " +
-                "join InfoUser iu on iu.instId = bra.reqHospId"
+                "join InfoUser iu on iu.id = bra.updtUserId " +
+                "where bra.id.ptId = '$ptId' and bra.id.bdasSeq = $bdasSeq and bra.id.asgnReqSeq = 1 "
         return getEntityManager().createQuery(query, BdasTimeLineDto::class.java).resultList
     }
 
@@ -71,6 +78,28 @@ class BdasAprvRepository: PanacheRepositoryBase<BdasAprv, BdasAprvId> {
 
     fun findApprovedEntity(ptId: String, bdasSeq: Int): BdasAprv? {
         return find("id.ptId = '$ptId' and id.bdasSeq = $bdasSeq and aprvYn = 'Y'").firstResult()
+    }
+
+    fun findTimeLineInfo(ptId: String, bdasSeq: Int): MutableList<BdasTimeLineDto> {
+        val subQuery = " select bra.id.asgnReqSeq " +
+                "from BdasReqAprv bra " +
+                "left join BdasAprv ba on bra.id.ptId = ba.id.ptId and bra.id.bdasSeq = ba.id.bdasSeq and bra.id.asgnReqSeq = ba.id.asgnReqSeq " +
+                "where ba.id.ptId is null and ba.id.bdasSeq is null "
+
+        val query = "select new org.sbas.dtos.bdas.BdasTimeLineDto(case ba.aprvYn when 'Y' then '배정완료' when 'N' then '배정거절' end, " +
+                "iu.instNm || ' / ' || iu.userNm, ba.updtDttm, ba.msg) " +
+                "from BdasAprv ba " +
+                "join InfoUser iu on iu.id = ba.updtUserId " +
+                "where ba.id.ptId = '$ptId' and ba.id.bdasSeq = $bdasSeq and ba.id.asgnReqSeq not in (${subQuery})"+
+                "order by ba.aprvYn "
+
+        val query2 = "select new org.sbas.dtos.bdas.BdasTimeLineDto(case ba.aprvYn when 'Y' then '배정완료' when 'N' then '배정거절' end, " +
+                "iu.instNm || ' / ' || iu.userNm, ba.updtDttm, ba.msg) " +
+                "from BdasAprv ba " +
+                "join InfoUser iu on iu.id = ba.updtUserId " +
+                "where ba.id.asgnReqSeq not in (${subQuery}) " +
+                "order by ba.aprvYn "
+        return getEntityManager().createQuery(query, BdasTimeLineDto::class.java).resultList
     }
 }
 

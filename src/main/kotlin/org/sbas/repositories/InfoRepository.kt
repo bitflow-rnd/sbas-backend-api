@@ -53,6 +53,10 @@ class InfoPtRepository : PanacheRepositoryBase<InfoPt, String> {
                 "order by a.updtDttm desc"
         return getEntityManager().createQuery(query, InfoPtSearchDto::class.java).resultList
     }
+
+    fun updateAttcId(attcId: String): Int {
+        return update("attcId = null where attcId = '${attcId}'")
+    }
 }
 
 @ApplicationScoped

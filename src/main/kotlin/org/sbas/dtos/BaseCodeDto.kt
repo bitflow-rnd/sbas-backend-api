@@ -15,7 +15,7 @@ data class BaseCodeSaveReq(
     var cdGrpNm: String,
     var cdId: String,
     var cdNm: String,
-    var cdSeq: Long,
+    var cdSeq: Int,
 )
 
 fun BaseCodeSaveReq.toCdIdEntity(): BaseCode {
@@ -38,7 +38,7 @@ data class BaseCodeUpdateReq(
     var cdId: String,
     var cdNm: String,
     var cdVal: String,
-    var cdSeq: Long,
+    var cdSeq: Int,
     var rmk: String,
 )
 

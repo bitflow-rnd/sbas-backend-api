@@ -15,6 +15,7 @@ import org.sbas.parameters.NewsScoreParameters
 import org.sbas.parameters.SearchParameters
 import org.sbas.repositories.*
 import org.sbas.responses.CommonResponse
+import org.sbas.utils.CustomizedException
 import org.sbas.utils.StringUtils
 import java.io.File
 import java.io.IOException
@@ -23,6 +24,7 @@ import javax.enterprise.context.ApplicationScoped
 import javax.inject.Inject
 import javax.transaction.Transactional
 import javax.ws.rs.NotFoundException
+import javax.ws.rs.core.Response
 
 
 /**
@@ -258,8 +260,8 @@ class PatientService {
 //        val uri = URI("$serverdomain${baseAttc.uriPath}/${baseAttc.fileNm}")
 //        log.warn("uri>>>>>>>>>$uri")
 //        val file = File(uri)
-        val file = File("${baseAttc.uriPath}/${baseAttc.fileNm}")
-//        val file = File("${baseAttc.loclPath}/${baseAttc.fileNm}")
+//        val file = File("${baseAttc.uriPath}/${baseAttc.fileNm}")
+        val file = File("${baseAttc.loclPath}/${baseAttc.fileNm}")
 
         if (file.exists()) {
             log.warn("file path1 >>>>>>>>> ${file.path}")
@@ -271,11 +273,11 @@ class PatientService {
 
         if (deleteById == 1L) {
             return if (file.delete()) {
+                infoPtRepository.updateAttcId(attcId)
                 CommonResponse("삭제 성공")
             } else {
-                throw RuntimeException("")
+                throw CustomizedException("삭제 실패", Response.Status.INTERNAL_SERVER_ERROR)
             }
-//            infoPtRepository.update("attc_id = null")
         } else {
             throw NotFoundException("$attcId delete fail")
         }

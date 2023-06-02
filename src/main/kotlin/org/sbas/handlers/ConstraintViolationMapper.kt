@@ -11,7 +11,6 @@ import javax.ws.rs.ext.Provider
 /**
  * 파라미터 validation 실패 시 처리
  */
-//TODO 수정필요
 @Provider
 class ConstraintViolationMapper : ExceptionMapper<ConstraintViolationException> {
 
