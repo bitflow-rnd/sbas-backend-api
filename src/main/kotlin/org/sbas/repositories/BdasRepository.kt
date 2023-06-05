@@ -26,7 +26,7 @@ class BdasReqRepository : PanacheRepositoryBase<BdasReq, BdasReqId> {
         return find("pt_id = '${ptId}' and bdas_seq = $bdasSeq", Sort.by("bdas_seq", Sort.Direction.Descending)).firstResult()
     }
 
-    fun findBdasReqList(): MutableList<BdasListDto> {
+    fun findBdasList(): MutableList<BdasListDto> {
         val query = "select new org.sbas.dtos.bdas.BdasListDto(br.id.ptId, br.id.bdasSeq, pt.ptNm, pt.gndr, fn_get_age(pt.rrno1, pt.rrno2), " +
                 "pt.bascAddr, br.updtDttm, be.diagNm, fn_get_bed_asgn_stat(br.id.ptId, br.id.bdasSeq), '', be.rcptPhc, br.ptTypeCd, br.svrtTypeCd, br.undrDsesCd) " +
                 "from BdasReq br " +
@@ -78,6 +78,10 @@ class BdasAprvRepository: PanacheRepositoryBase<BdasAprv, BdasAprvId> {
 
     fun findApprovedEntity(ptId: String, bdasSeq: Int): BdasAprv? {
         return find("id.ptId = '$ptId' and id.bdasSeq = $bdasSeq and aprvYn = 'Y'").firstResult()
+    }
+
+    fun findBdasAprv(ptId: String, bdasSeq: Int): MutableList<BdasAprv>? {
+        return find("id.ptId = '$ptId' and id.bdasSeq = $bdasSeq").list().toMutableList()
     }
 
     fun findTimeLineInfo(ptId: String, bdasSeq: Int): MutableList<BdasTimeLineDto> {

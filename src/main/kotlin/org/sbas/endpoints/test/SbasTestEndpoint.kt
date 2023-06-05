@@ -4,6 +4,7 @@ import org.eclipse.microprofile.jwt.JsonWebToken
 import org.eclipse.microprofile.openapi.annotations.tags.Tag
 import org.jboss.logging.Logger
 import org.sbas.handlers.GeocodingHandler
+import org.sbas.restclients.FirebaseService
 import org.sbas.restparameters.NaverGeocodingApiParams
 import org.sbas.restresponses.NaverGeocodingApiResponse
 import org.sbas.restresponses.NaverReverseGeocodingApiResponse
@@ -35,6 +36,9 @@ class SbasTestEndpoint {
     @Inject
     lateinit var security: SecurityContext
 
+    @Inject
+    lateinit var firebaseService: FirebaseService
+
     @GET
     @Path("user")
     @RolesAllowed("USER", "ADMIN")
@@ -56,6 +60,12 @@ class SbasTestEndpoint {
     @PermitAll
     fun reverseGeocodingTest(@QueryParam("latitude")latitude: Float, @QueryParam("longitude")longitude: Float): NaverReverseGeocodingApiResponse {
         return geoHandler.getReverseGeocoding(latitude, longitude)
+    }
+
+    @GET
+    @Path("firebase-test")
+    fun firebaseTest() {
+        firebaseService.sendMessage("jiseongtak", "123123", "jiseongtak")
     }
 
 }

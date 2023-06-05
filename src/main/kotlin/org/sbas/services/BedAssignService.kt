@@ -167,7 +167,7 @@ class BedAssignService {
                         hospNm = infoHosp.dutyName!!,
                     ))
                 }
-                firebaseService.sendMessage("jiseong12", "테스트입니다.", "jiseongtak")
+                firebaseService.sendMessage("jiseongtak", "테스트입니다.", "jiseongtak")
             } else if (findBdasReq.inhpAsgnYn == "Y") {
                 // 원내 배정이면 승인
                 bdasReqAprvRepository.persist(dto.toEntityWhenInHosp())
@@ -206,8 +206,14 @@ class BedAssignService {
     @Transactional
     fun asgnConfirm(dto: BdasAprvDto): CommonResponse<BdasAprvResponse> {
         // TODO 몇가지 다른 경우 고려
-        val approvedBdasAprv = bdasAprvRepository.findApprovedEntity(dto.ptId, dto.bdasSeq)
-        val list = bdasReqAprvRepository.findReqAprvList(dto.ptId, dto.bdasSeq)
+        val bdasReqAprvList = bdasReqAprvRepository.findReqAprvList(dto.ptId, dto.bdasSeq)
+        val bdasAprvList = bdasAprvRepository.findBdasAprv(dto.ptId, dto.bdasSeq)
+        val approvedBdasAprv = bdasAprvList?.filter { it.aprvYn == "Y" }
+        val asgnReqSeqList = mutableListOf(dto.asgnReqSeq)
+
+        bdasAprvList?.let {
+            asgnReqSeqList.addAll(it.mapNotNull { bdasAprv -> bdasAprv.id!!.asgnReqSeq })
+        }
 
         // 거절한 병원의 정보 저장
         if (dto.aprvYn == "N") {
@@ -217,13 +223,12 @@ class BedAssignService {
 
         // 이미 승인한 병원이 있는지 확인
         if (Objects.nonNull(approvedBdasAprv)) {
-//            bdasAprvRepository.getEntityManager().merge(dto.toRefuseEntity("이미 배정 승인된 병원이 존재하여 불가 처리되었습니다.", "BNRN0008"))
             return CommonResponse(BdasAprvResponse(true, "이미 승인한 병원이 존재합니다. 자동으로 배정 불가 처리되었습니다."))
         }
 
         // 승인한 병원의 정보 저장 및 나머지 병원 거절 + push 알림?
         bdasAprvRepository.persist(dto.toApproveEntity())
-        list.filter { dto.asgnReqSeq != it.id!!.asgnReqSeq }.forEach {
+        bdasReqAprvList.filter { it.id?.asgnReqSeq !in asgnReqSeqList }.forEach {
             bdasAprvRepository.persist(it.convertToBdasAprv())
         }
 
@@ -248,42 +253,45 @@ class BedAssignService {
 
     @Transactional
     fun getBedAsgnList(): CommonResponse<*> {
-        val bedRequestList = mutableListOf<BdasListDto>()
-        val bedAssignList = mutableListOf<BdasListDto>()
+        val bdasReqList = mutableListOf<BdasListDto>()
+        val bedReqAprvList = mutableListOf<BdasListDto>()
+        val bdasAprvList = mutableListOf<BdasListDto>()
         val transferList = mutableListOf<BdasListDto>()
         val hospitalList = mutableListOf<BdasListDto>()
 
         val bedRequest = mutableMapOf("count" to 0, "items" to Collections.EMPTY_LIST)
-        val bedAssign = mutableMapOf("count" to 0, "items" to Collections.EMPTY_LIST)
+        val bdasReqAprvMap = mutableMapOf("count" to 0, "items" to Collections.EMPTY_LIST)
+        val bdasAprvMap = mutableMapOf("count" to 0, "items" to Collections.EMPTY_LIST)
         val transfer = mutableMapOf("count" to 0, "items" to Collections.EMPTY_LIST)
         val hospital = mutableMapOf("count" to 0, "items" to Collections.EMPTY_LIST)
-        val complete = mutableMapOf("count" to 0, "items" to Collections.EMPTY_LIST)
 
-        bdasReqRepository.findBdasReqList().forEach {
-            dto -> when (dto.bedStatCd) {
+        val findBdasList = bdasReqRepository.findBdasList()
+        findBdasList.forEach {
+            when (it.bedStatCd) {
                 BedStatCd.BAST0003.name -> {
-                    bedRequestList.add(dto)
-                    makeToResultMap(bedRequestList, bedRequest)
+                    bdasReqList.add(it)
+                    makeToResultMap(bdasReqList, bedRequest)
                 }
                 BedStatCd.BAST0004.name -> {
-                    bedAssignList.add(dto)
+                    bedReqAprvList.add(it)
+                    makeToResultMap(bedReqAprvList, bdasReqAprvMap)
                 }
                 BedStatCd.BAST0005.name -> {
-                    bedAssignList.add(dto)
-                    makeToResultMap(bedAssignList, bedAssign)
+                    bdasAprvList.add(it)
+                    makeToResultMap(bdasAprvList, bdasAprvMap)
                 }
                 BedStatCd.BAST0006.name -> {
-                    transferList.add(dto)
+                    transferList.add(it)
                     makeToResultMap(transferList, transfer)
                 }
                 BedStatCd.BAST0007.name -> {
-                    hospitalList.add(dto)
+                    hospitalList.add(it)
                     makeToResultMap(hospitalList, hospital)
                 }
             }
         }
-        // list 말고 다른거로
-        val res = listOf(bedRequest, bedAssign, transfer, hospital, complete)
+
+        val res = listOf(bedRequest, bdasReqAprvMap, bdasAprvMap, transfer, hospital)
 
         return CommonResponse(res)
     }

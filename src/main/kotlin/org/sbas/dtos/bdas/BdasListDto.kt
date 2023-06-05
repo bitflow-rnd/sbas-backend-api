@@ -4,11 +4,11 @@ import com.fasterxml.jackson.annotation.JsonIgnore
 import java.time.Instant
 
 data class BdasListDto(
-    var ptId: String?,
-    var bdasSeq: Int?,
-    var ptNm: String?,
-    var gndr: String?,
-    var age: Int?,
+    val ptId: String?,
+    val bdasSeq: Int?,
+    val ptNm: String?,
+    val gndr: String?,
+    val age: Int?,
     var bascAddr: String?,
     var updtDttm: Instant?,
     var diagNm: String?,

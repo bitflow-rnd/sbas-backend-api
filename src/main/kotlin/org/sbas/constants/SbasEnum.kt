@@ -12,8 +12,8 @@ enum class UserStatCd(val cdNm: String) {
  * 병상배정상태 코드
  */
 enum class BedStatCd(val cdNm: String) {
-    BAST0001("배정없음"), BAST0002("역학조사"), BAST0003("병상요청"),
-    BAST0004("의료진승인"), BAST0005("병상승인"), BAST0006("이송중"), BAST0007("완료")
+    BAST0001("배정없음"), BAST0002("역학조사"), BAST0003("승인대기"),
+    BAST0004("배정대기"), BAST0005("병상승인"), BAST0006("이송중"), BAST0007("완료")
 }
 
 /**
