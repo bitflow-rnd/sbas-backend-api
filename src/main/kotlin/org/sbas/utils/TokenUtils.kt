@@ -39,7 +39,8 @@ class TokenUtils {
         fun generateUserToken(userId: String, userNm: String): String {
             return Jwt.issuer("https://sbas-test.bitflow.ai")
                     .upn(userId)
-                    .claim("userNm", userNm)
+                    .subject(userNm)
+//                    .claim("userNm", userNm)
                     .expiresIn(60 * 60 * 24 * 30)//30일
                     .groups("USER")
                     .sign()
@@ -48,7 +49,8 @@ class TokenUtils {
         fun generateAdminToken(userId: String, userNm: String): String {
             return Jwt.issuer("https://sbas-test.bitflow.ai")
                     .upn(userId)
-                    .claim("userNm", userNm)
+                    .subject(userNm)
+//                    .claim("userNm", userNm)
                     .expiresIn(60 * 60 * 24 * 30)
                     .groups("ADMIN")
                     .sign()
