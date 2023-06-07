@@ -150,12 +150,12 @@ class PatientService {
 
     @Transactional
     fun findBdasHistInfo(ptId: String): MutableList<BdasHisInfo> {
-        val bdasHisInfoList = infoPtRepository.findBdasHisInfo(ptId)
-        bdasHisInfoList.forEachIndexed { idx, bdasHisInfo ->
-            bdasHisInfo.order = "${bdasHisInfoList.size - idx}차수"
-            getTagList(bdasHisInfo)
-        }
-        return bdasHisInfoList
+//        val bdasHisInfoList = infoPtRepository.findBdasHisInfo(ptId)
+//        bdasHisInfoList.forEachIndexed { idx, bdasHisInfo ->
+//            bdasHisInfo.order = "${bdasHisInfoList.size - idx}차수"
+//            getTagList(bdasHisInfo)
+//        }
+        return mutableListOf()
     }
 
     @Transactional

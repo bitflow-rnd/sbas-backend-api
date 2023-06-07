@@ -69,23 +69,23 @@ class InfoPtRepository : PanacheRepositoryBase<InfoPt, String> {
         return getEntityManager().createNativeQuery(query).singleResult as Int
     }
 
-    fun findBdasHisInfo(ptId: String): MutableList<BdasHisInfo> {
-//        val query = "select new org.sbas.dtos.info.BdasHisInfo(b.id.ptId, b.id.bdasSeq, " +
-//                "be.diagNm, ba.hospId, '', ba.updtDttm, '') " +
-//                "from BdasEsvy be " +
-//                "left join BdasReq b on be.ptId = b.id.ptId " +
-//                "left join BdasAdms ba on b.id.bdasSeq = ba.id.bdasSeq " +
-//                "where be.ptId = '${ptId}' " +
-//                "order by ba.id.bdasSeq desc"
-        val bdasHisInfoList: List<BdasHisInfo> = queryFactory.listQuery {
-            select(listOf(col(BdasEsvy::ptId), col(BdasEsvy::bdasSeq)))
-            from(entity(BdasEsvy::class))
-//            where(col(BdasAdms::id).equal(BdasAdmsId(ptId, BdasEsvy::bdasSeq!!)))
-//            associate(BdasAdms::class, BdasAdmsId::class, on(BdasAdms::id))
-        }
-
-        return bdasHisInfoList as MutableList
-    }
+//    fun findBdasHisInfo(ptId: String): MutableList<BdasHisInfo> {
+////        val query = "select new org.sbas.dtos.info.BdasHisInfo(b.id.ptId, b.id.bdasSeq, " +
+////                "be.diagNm, ba.hospId, '', ba.updtDttm, '') " +
+////                "from BdasEsvy be " +
+////                "left join BdasReq b on be.ptId = b.id.ptId " +
+////                "left join BdasAdms ba on b.id.bdasSeq = ba.id.bdasSeq " +
+////                "where be.ptId = '${ptId}' " +
+////                "order by ba.id.bdasSeq desc"
+//        val bdasHisInfoList: List<BdasHisInfo> = queryFactory.listQuery {
+//            select(listOf(col(BdasEsvy::ptId), col(BdasEsvy::bdasSeq)))
+//            from(entity(BdasEsvy::class))
+////            where(col(BdasAdms::id).equal(BdasAdmsId(ptId, BdasEsvy::bdasSeq!!)))
+////            associate(BdasAdms::class, BdasAdmsId::class, on(BdasAdms::id))
+//        }
+//
+//        return bdasHisInfoList as MutableList
+//    }
 }
 
 @ApplicationScoped

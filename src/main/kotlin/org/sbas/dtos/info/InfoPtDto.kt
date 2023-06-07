@@ -72,10 +72,10 @@ data class InfoPtSearchDto(
     var statCd: String?,
     var statCdNm: String?,
     var updtDttm: Instant?,
-    var age: Int?,
     @JsonIgnore var ptTypeCd: String?,
     @JsonIgnore var svrtTypeCd: String?,
     @JsonIgnore var undrDsesCd: String?,
+    var age: Int?,
 ) {
     var tagList: MutableList<String>? = mutableListOf()
 }
