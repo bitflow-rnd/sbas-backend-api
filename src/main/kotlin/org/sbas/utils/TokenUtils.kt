@@ -8,6 +8,7 @@ import javax.ws.rs.core.Context
 import javax.ws.rs.core.MediaType
 import javax.ws.rs.core.SecurityContext
 
+
 /**
  * JWT 등 토큰관련 처리 도움 유틸
  */
@@ -38,8 +39,9 @@ class TokenUtils {
 
         fun generateUserToken(userId: String, userNm: String): String {
             return Jwt.issuer("https://sbas-test.bitflow.ai")
-                    .upn(userId)
-                    .subject(userNm)
+                    .upn(userNm)
+//                    .upn(userId)
+//                    .subject(userNm)
 //                    .claim("userNm", userNm)
                     .expiresIn(60 * 60 * 24 * 30)//30일
                     .groups("USER")
