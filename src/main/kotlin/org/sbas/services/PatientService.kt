@@ -125,7 +125,7 @@ class PatientService {
     }
 
     @Transactional
-    fun findInfoPt(ptId: String): CommonResponse<InfoPtInfo> {
+    fun findInfoPt(ptId: String): CommonResponse<*> {
         val infoPt = infoPtRepository.findById(ptId) ?: throw NotFoundException("$ptId not found")
         val infoPtBasicInfo = InfoPtBasicInfo(
             ptId = infoPt.ptId,
@@ -144,7 +144,8 @@ class PatientService {
 
         val bdasHisInfo = findBdasHistInfo(ptId)
 
-        return CommonResponse(InfoPtInfo(infoPtBasicInfo, bdasHisInfo, bdasHisInfo.size))
+//        return CommonResponse(InfoPtInfo(infoPtBasicInfo, bdasHisInfo, bdasHisInfo.size))
+        return CommonResponse(infoPtBasicInfo)
     }
 
     @Transactional
@@ -162,7 +163,18 @@ class PatientService {
         val list = infoPtRepository.findInfoPtList()
         list.forEach { dto ->
             dto.statCdNm = BedStatCd.valueOf(dto.statCd!!).cdNm
-            getTagList(dto)
+            if (dto.ptTypeCd != null) {
+                val splitList = dto.ptTypeCd!!.split(";")
+                dto.tagList!!.addAll(splitList.map { PtTypeCd.valueOf(it).cdNm })
+            }
+            if (dto.svrtTypeCd != null) {
+                val splitList = dto.svrtTypeCd!!.split(";")
+                dto.tagList!!.addAll(splitList.map { SvrtTypeCd.valueOf(it).cdNm })
+            }
+            if (dto.undrDsesCd != null) {
+                val splitList = dto.undrDsesCd!!.split(";")
+                dto.tagList!!.addAll(splitList.map { UndrDsesCd.valueOf(it).cdNm })
+            }
         }
 
         val res = mutableMapOf<String, Any>()

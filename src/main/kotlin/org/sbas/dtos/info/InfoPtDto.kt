@@ -73,7 +73,12 @@ data class InfoPtSearchDto(
     var statCdNm: String?,
     var updtDttm: Instant?,
     var age: Int?,
-) : TagList()
+    @JsonIgnore var ptTypeCd: String?,
+    @JsonIgnore var svrtTypeCd: String?,
+    @JsonIgnore var undrDsesCd: String?,
+) {
+    var tagList: MutableList<String>? = mutableListOf()
+}
 
 data class InfoPtBasicInfo(
     val ptId: String?,
