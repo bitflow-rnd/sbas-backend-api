@@ -194,7 +194,7 @@ class UserService {
      */
     @Transactional
     fun login(loginRequest: LoginRequest): CommonResponse<String>{
-        var findUser = userRepository.findByUserId(loginRequest.id)
+        val findUser = userRepository.findByUserId(loginRequest.id)
             ?: throw CustomizedException("등록된 ID가 없습니다.", Response.Status.NOT_FOUND)
 
         return when {
@@ -203,7 +203,7 @@ class UserService {
             }
             findUser.pw.equals(loginRequest.pw) -> {
                 findUser.pwErrCnt = 0
-                CommonResponse(TokenUtils.generateUserToken(findUser.id!!))
+                CommonResponse(TokenUtils.generateUserToken(findUser.id!!, findUser.userNm!!))
             }
             else -> {
                 findUser.pwErrCnt = findUser.pwErrCnt!! + 1
