@@ -18,6 +18,7 @@ data class BdasAdmsSaveDto(
     val chrgTelno: String?,
     val dschRsnCd: String?,
     val msg: String?,
+    val admsStatCd: String?,
 ) {
     fun toAdmsEntity(): BdasAdms {
         return BdasAdms(
@@ -32,6 +33,7 @@ data class BdasAdmsSaveDto(
             admsDt = StringUtils.getYyyyMmDd(),
             admsTm = StringUtils.getHhMmSs(),
             msg = msg,
+            admsStatCd = admsStatCd,
         )
     }
 
@@ -43,10 +45,16 @@ data class BdasAdmsSaveDto(
             dschTm = StringUtils.getHhMmSs(),
             dschRsnCd = dschRsnCd,
             msg = msg,
+            admsStatCd = admsStatCd,
         )
     }
 
-    fun toHomeEntity() {
-
+    fun toHomeEntity(): BdasAdms {
+        return BdasAdms(
+            id = BdasAdmsId(ptId, bdasSeq),
+            hospId = hospId,
+            msg = msg,
+            admsStatCd = admsStatCd,
+        )
     }
 }

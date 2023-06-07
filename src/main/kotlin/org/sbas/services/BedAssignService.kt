@@ -145,7 +145,7 @@ class BedAssignService {
         // infoPt 상태 변경
         val infoPt = infoPtRepository.findById(bdasReqDprtInfo.ptId)
         infoPt!!.changeBedStatAfterBdasReq()
-
+        firebaseService.sendMessage("jiseongtak", "새로운 병상배정 요청이 도착했습니다.", "jiseongtak")
         return CommonResponse("등록 성공")
     }
     
@@ -242,13 +242,33 @@ class BedAssignService {
     }
 
     @Transactional
-    fun confirmHosp(bdasAdmsSaveDto: BdasAdmsSaveDto) {
-        val findBdasAdms = bdasAdmsRepository.findById(BdasAdmsId(bdasAdmsSaveDto.ptId, bdasAdmsSaveDto.bdasSeq)) ?: throw NotFoundException("bdasAdms not found")
-        if (bdasAdmsRepository.isPersistent(findBdasAdms)) {
-            // 기존에 있으면 update
+    fun confirmHosp(dto: BdasAdmsSaveDto): CommonResponse<String> {
+        val findBdasAdms = bdasAdmsRepository.findById(BdasAdmsId(dto.ptId, dto.bdasSeq))
 
+        when (dto.admsStatCd) {
+            "IOST0001" -> {
+                if (findBdasAdms != null) {
+                    findBdasAdms.changeToAdms(dto)
+                } else {
+                    bdasAdmsRepository.persist(dto.toAdmsEntity())
+                }
+            }
+            "IOST0002" -> {
+                if (findBdasAdms != null) {
+                    findBdasAdms.changeToDsch(dto)
+                } else {
+                    bdasAdmsRepository.persist(dto.toDschEntity())
+                }
+            }
+            "IOST0003" -> {
+                if (findBdasAdms != null) {
+                    findBdasAdms.changeToHome(dto)
+                } else {
+                    bdasAdmsRepository.persist(dto.toHomeEntity())
+                }
+            }
         }
-        bdasAdmsRepository.persist(bdasAdmsSaveDto.toAdmsEntity())
+        return CommonResponse("성공")
     }
 
     @Transactional
@@ -299,27 +319,25 @@ class BedAssignService {
     @Transactional
     fun getTimeLine(ptId: String, bdasSeq: Int): CommonResponse<*> {
         val bedStatCd = bdasReqRepository.findBedStat(ptId, bdasSeq)
+        val timeLineList = mutableListOf<BdasTimeLineDto>()
         log.debug(bedStatCd)
         when (bedStatCd) {
             BedStatCd.BAST0003.name -> {
                 val list = bdasReqRepository.findTimeLineInfo(ptId, bdasSeq)
-                list.add(BdasTimeLineDto("승인대기", list[0].assignInstNm))
-                return CommonResponse(TimeLineDtoList(list.size, list))
+                timeLineList.addAll(list)
+                timeLineList.add(BdasTimeLineDto("승인대기", list[0].assignInstNm))
             }
             BedStatCd.BAST0004.name -> {
-                val list = bdasReqRepository.findTimeLineInfo(ptId, bdasSeq)
-                list.addAll(bdasReqAprvRepository.findTimeLineInfo(ptId, bdasSeq))
-
-                return CommonResponse(TimeLineDtoList(list.size, list))
+                timeLineList.addAll(bdasReqRepository.findTimeLineInfo(ptId, bdasSeq))
+                timeLineList.addAll(bdasReqAprvRepository.findTimeLineInfo(ptId, bdasSeq))
             }
             BedStatCd.BAST0005.name -> {
-                val list = bdasReqRepository.findTimeLineInfo(ptId, bdasSeq)
-                list.addAll(bdasReqAprvRepository.findTimeLineInfo(ptId, bdasSeq))
-                list.addAll(bdasAprvRepository.findTimeLineInfo(ptId, bdasSeq))
-                return CommonResponse(TimeLineDtoList(list.size, list))
+                timeLineList.addAll(bdasReqRepository.findTimeLineInfo(ptId, bdasSeq))
+                timeLineList.addAll(bdasReqAprvRepository.findTimeLineInfo(ptId, bdasSeq))
+                timeLineList.addAll(bdasAprvRepository.findTimeLineInfo(ptId, bdasSeq))
             }
         }
-        return CommonResponse(Collections.EMPTY_LIST)
+        return CommonResponse(TimeLineDtoList(timeLineList.size, timeLineList))
     }
 
     @Transactional

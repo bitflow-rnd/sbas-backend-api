@@ -72,11 +72,45 @@ data class InfoPtSearchDto(
     var statCd: String?,
     var statCdNm: String?,
     var updtDttm: Instant?,
-    @JsonIgnore var ptTypeCd: String?,
-    @JsonIgnore var svrtTypeCd: String?,
-    @JsonIgnore var undrDsesCd: String?,
     var age: Int?,
+) : TagList()
+
+data class InfoPtBasicInfo(
+    val ptId: String?,
+    val ptNm: String?,
+    val gndr: String?,
+    val age: Int?,
+    val rrno: String?,
+    val addr: String?,
+    val dethYn: String?,
+    val natiNm: String?,
+    val mpno: String?,
+    val telno: String?,
+    val nokNm: String?,
+    val job: String?,
+//    val undrDsesCd: String?,
 ) {
-    var tagList: MutableList<String>? = mutableListOf()
+//    val undrDsesCdList: MutableList<String> = mutableListOf()
 }
 
+data class BdasHisInfo(
+    val ptId: String?,
+    val bdasSeq: Int?,
+    val diagNm: String?,
+    val hospNm: String?,
+    var order: String?,
+    val updtDttm: Instant?,
+) : TagList()
+
+data class InfoPtInfo(
+    val basicInfo: InfoPtBasicInfo,
+    val bdasHisInfo: MutableList<BdasHisInfo>,
+    val count: Int,
+)
+
+abstract class TagList{
+    @JsonIgnore var ptTypeCd: String? = null
+    @JsonIgnore var svrtTypeCd: String? = null
+    @JsonIgnore var undrDsesCd: String? = null
+    var tagList: MutableList<String>? = mutableListOf()
+}

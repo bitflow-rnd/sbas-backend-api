@@ -1,12 +1,16 @@
 package org.sbas.entities.bdas
 
+import org.hibernate.annotations.DynamicUpdate
+import org.sbas.dtos.bdas.BdasAdmsSaveDto
 import org.sbas.entities.CommonEntity
+import org.sbas.utils.StringUtils
 import java.io.Serializable
 import javax.persistence.*
 
 /**
  * 입원 정보
  */
+@DynamicUpdate
 @Entity
 @Table(name = "bdas_adms")
 class BdasAdms(
@@ -34,10 +38,10 @@ class BdasAdms(
     @Column(name = "chrg_telno", length = 12)
     var chrgTelno: String? = null, // 담당 전화번호
 
-    @Column(name = "adms_dt", nullable = false, length = 8)
+    @Column(name = "adms_dt", length = 8)
     var admsDt: String? = null, // 입원 날짜
 
-    @Column(name = "adms_tm", nullable = false, length = 6)
+    @Column(name = "adms_tm", length = 6)
     var admsTm: String? = null, // 입원 시간
 
     @Column(name = "dsch_dt", length = 8)
@@ -51,7 +55,41 @@ class BdasAdms(
 
     @Column(name = "msg", length = 500)
     var msg: String? = null, // 퇴원 사유 상세
-) : CommonEntity()
+    
+    @Column(name = "adms_stat_cd", nullable = false)
+    var admsStatCd: String? = null // 입퇴원상태 코드
+) : CommonEntity() {
+
+    fun changeToAdms(dto: BdasAdmsSaveDto) {
+        hospId = dto.hospId
+        deptNm = dto.deptNm
+        wardNm = dto.wardNm
+        roomNm = dto.roomNm
+        spclId = dto.spclId
+        spclNm = dto.spclNm
+        chrgTelno = dto.chrgTelno
+        admsDt = StringUtils.getYyyyMmDd()
+        admsTm = StringUtils.getHhMmSs()
+        msg = dto.msg
+        admsStatCd = dto.admsStatCd
+    }
+
+    fun changeToDsch(dto: BdasAdmsSaveDto) {
+        hospId = dto.hospId
+        dschDt = StringUtils.getYyyyMmDd()
+        dschTm = StringUtils.getHhMmSs()
+        dschRsnCd = dto.dschRsnCd
+        msg = dto.msg
+        admsStatCd = dto.admsStatCd
+
+    }
+
+    fun changeToHome(dto: BdasAdmsSaveDto) {
+        hospId = dto.hospId
+        msg = dto.msg
+        admsStatCd = dto.admsStatCd
+    }
+}
 
 @Embeddable
 data class BdasAdmsId(

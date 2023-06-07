@@ -5,10 +5,8 @@ import org.eclipse.microprofile.jwt.JsonWebToken
 import org.jboss.logging.Logger
 import org.jboss.resteasy.reactive.multipart.FileUpload
 import org.sbas.constants.*
-import org.sbas.dtos.info.InfoPtDto
-import org.sbas.dtos.info.toEntity
+import org.sbas.dtos.info.*
 import org.sbas.entities.base.BaseAttc
-import org.sbas.entities.info.InfoPt
 import org.sbas.handlers.FileHandler
 import org.sbas.handlers.NaverApiHandler
 import org.sbas.parameters.NewsScoreParameters
@@ -127,14 +125,36 @@ class PatientService {
     }
 
     @Transactional
-    fun findInfoPt(ptId: String): CommonResponse<InfoPt> {
+    fun findInfoPt(ptId: String): CommonResponse<InfoPtInfo> {
         val infoPt = infoPtRepository.findById(ptId) ?: throw NotFoundException("$ptId not found")
-        return CommonResponse(infoPt)
+        val infoPtBasicInfo = InfoPtBasicInfo(
+            ptId = infoPt.ptId,
+            ptNm = infoPt.ptNm,
+            gndr = infoPt.gndr,
+            age = infoPtRepository.getAge(infoPt.rrno1, infoPt.rrno2),
+            rrno = "${infoPt.rrno1}-${infoPt.rrno2}******",
+            addr = "${infoPt.bascAddr} ${infoPt.detlAddr}",
+            dethYn = infoPt.dethYn,
+            natiNm = infoPt.natiNm,
+            mpno = infoPt.mpno,
+            telno = infoPt.telno,
+            nokNm = infoPt.nokNm,
+            job = infoPt.job,
+        )
+
+        val bdasHisInfo = findBdasHistInfo(ptId)
+
+        return CommonResponse(InfoPtInfo(infoPtBasicInfo, bdasHisInfo, bdasHisInfo.size))
     }
 
     @Transactional
-    fun findBdasHistInfo(ptId: String) {
-        
+    fun findBdasHistInfo(ptId: String): MutableList<BdasHisInfo> {
+        val bdasHisInfoList = infoPtRepository.findBdasHisInfo(ptId)
+        bdasHisInfoList.forEachIndexed { idx, bdasHisInfo ->
+            bdasHisInfo.order = "${bdasHisInfoList.size - idx}차수"
+            getTagList(bdasHisInfo)
+        }
+        return bdasHisInfoList
     }
 
     @Transactional
@@ -142,18 +162,7 @@ class PatientService {
         val list = infoPtRepository.findInfoPtList()
         list.forEach { dto ->
             dto.statCdNm = BedStatCd.valueOf(dto.statCd!!).cdNm
-            if (dto.ptTypeCd != null) {
-                val splitList = dto.ptTypeCd!!.split(";")
-                dto.tagList!!.addAll(splitList.map { PtTypeCd.valueOf(it).cdNm })
-            }
-            if (dto.svrtTypeCd != null) {
-                val splitList = dto.svrtTypeCd!!.split(";")
-                dto.tagList!!.addAll(splitList.map { SvrtTypeCd.valueOf(it).cdNm })
-            }
-            if (dto.undrDsesCd != null) {
-                val splitList = dto.undrDsesCd!!.split(";")
-                dto.tagList!!.addAll(splitList.map { UndrDsesCd.valueOf(it).cdNm })
-            }
+            getTagList(dto)
         }
 
         val res = mutableMapOf<String, Any>()
@@ -161,6 +170,21 @@ class PatientService {
         res["items"] = list
 
         return CommonResponse(res)
+    }
+
+    private fun getTagList(dto: TagList) {
+        if (dto.ptTypeCd != null) {
+            val splitList = dto.ptTypeCd!!.split(";")
+            dto.tagList!!.addAll(splitList.map { PtTypeCd.valueOf(it).cdNm })
+        }
+        if (dto.svrtTypeCd != null) {
+            val splitList = dto.svrtTypeCd!!.split(";")
+            dto.tagList!!.addAll(splitList.map { SvrtTypeCd.valueOf(it).cdNm })
+        }
+        if (dto.undrDsesCd != null) {
+            val splitList = dto.undrDsesCd!!.split(";")
+            dto.tagList!!.addAll(splitList.map { UndrDsesCd.valueOf(it).cdNm })
+        }
     }
 
     fun calculateNewsScore(param: NewsScoreParameters): CommonResponse<Int> {

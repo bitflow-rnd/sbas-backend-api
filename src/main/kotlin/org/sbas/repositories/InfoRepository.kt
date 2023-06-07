@@ -2,13 +2,19 @@ package org.sbas.repositories
 
 import com.linecorp.kotlinjdsl.QueryFactory
 import com.linecorp.kotlinjdsl.QueryFactoryImpl
+import com.linecorp.kotlinjdsl.listQuery
 import com.linecorp.kotlinjdsl.query.creator.CriteriaQueryCreatorImpl
 import com.linecorp.kotlinjdsl.query.creator.SubqueryCreatorImpl
+import com.linecorp.kotlinjdsl.querydsl.expression.col
 import io.quarkus.hibernate.orm.panache.kotlin.PanacheQuery
 import io.quarkus.hibernate.orm.panache.kotlin.PanacheRepositoryBase
 import org.jboss.logging.Logger
+import org.sbas.dtos.info.BdasHisInfo
 import org.sbas.dtos.info.InfoHospDetailDto
 import org.sbas.dtos.info.InfoPtSearchDto
+import org.sbas.entities.bdas.BdasAdms
+import org.sbas.entities.bdas.BdasAdmsId
+import org.sbas.entities.bdas.BdasEsvy
 import org.sbas.entities.info.*
 import org.sbas.parameters.InstCdParameters
 import org.sbas.parameters.SearchHospRequest
@@ -40,7 +46,7 @@ class InfoPtRepository : PanacheRepositoryBase<InfoPt, String> {
         return find("dstr_1_cd = '$dstr1Cd' and dstr_2_cd = '$dstr2Cd'").list()
     }
 
-    fun findInfoPtList(): List<InfoPtSearchDto> {
+    fun findInfoPtList(): MutableList<InfoPtSearchDto> {
         //TODO
         val query = "select new org.sbas.dtos.info.InfoPtSearchDto(a.ptId, b.id.bdasSeq, a.ptNm, a.gndr, " +
                 "a.dstr1Cd, fn_get_cd_nm('SIDO', a.dstr1Cd), a.dstr2Cd, fn_get_cd_nm('SIDO'||a.dstr1Cd, a.dstr2Cd), " +
@@ -56,6 +62,29 @@ class InfoPtRepository : PanacheRepositoryBase<InfoPt, String> {
 
     fun updateAttcId(attcId: String): Int {
         return update("attcId = null where attcId = '${attcId}'")
+    }
+
+    fun getAge(rrno1: String?, rrno2: String?): Int {
+        val query = "select fn_get_age('${rrno1}', '${rrno2}') as test"
+        return getEntityManager().createNativeQuery(query).singleResult as Int
+    }
+
+    fun findBdasHisInfo(ptId: String): MutableList<BdasHisInfo> {
+//        val query = "select new org.sbas.dtos.info.BdasHisInfo(b.id.ptId, b.id.bdasSeq, " +
+//                "be.diagNm, ba.hospId, '', ba.updtDttm, '') " +
+//                "from BdasEsvy be " +
+//                "left join BdasReq b on be.ptId = b.id.ptId " +
+//                "left join BdasAdms ba on b.id.bdasSeq = ba.id.bdasSeq " +
+//                "where be.ptId = '${ptId}' " +
+//                "order by ba.id.bdasSeq desc"
+        val bdasHisInfoList: List<BdasHisInfo> = queryFactory.listQuery {
+            select(listOf(col(BdasEsvy::ptId), col(BdasEsvy::bdasSeq)))
+            from(entity(BdasEsvy::class))
+//            where(col(BdasAdms::id).equal(BdasAdmsId(ptId, BdasEsvy::bdasSeq!!)))
+//            associate(BdasAdms::class, BdasAdmsId::class, on(BdasAdms::id))
+        }
+
+        return bdasHisInfoList as MutableList
     }
 }
 
