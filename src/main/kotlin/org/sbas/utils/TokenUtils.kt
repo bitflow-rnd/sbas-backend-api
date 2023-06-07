@@ -39,10 +39,9 @@ class TokenUtils {
 
         fun generateUserToken(userId: String, userNm: String): String {
             return Jwt.issuer("https://sbas-test.bitflow.ai")
-                    .upn(userNm)
-//                    .upn(userId)
-//                    .subject(userNm)
-//                    .claim("userNm", userNm)
+                    .upn(userId)
+                    .subject(userNm)
+                    .claim("userNm", userNm)
                     .expiresIn(60 * 60 * 24 * 30)//30일
                     .groups("USER")
                     .sign()
