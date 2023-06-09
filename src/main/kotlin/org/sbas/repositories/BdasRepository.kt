@@ -94,16 +94,22 @@ class BdasAprvRepository: PanacheRepositoryBase<BdasAprv, BdasAprvId> {
                 "iu.instNm || ' / ' || iu.userNm, ba.updtDttm, ba.msg) " +
                 "from BdasAprv ba " +
                 "join InfoUser iu on iu.id = ba.updtUserId " +
-                "where ba.id.ptId = '$ptId' and ba.id.bdasSeq = $bdasSeq and ba.id.asgnReqSeq not in (${subQuery})"+
+                "where ba.id.ptId = '$ptId' and ba.id.bdasSeq = $bdasSeq and ba.id.asgnReqSeq not in (${subQuery}) " +
+                "and iu.jobCd = 'PMGR0003' "+
                 "order by ba.aprvYn "
 
-        val query2 = "select new org.sbas.dtos.bdas.BdasTimeLineDto(case ba.aprvYn when 'Y' then '배정완료' when 'N' then '배정거절' end, " +
-                "iu.instNm || ' / ' || iu.userNm, ba.updtDttm, ba.msg) " +
-                "from BdasAprv ba " +
-                "join InfoUser iu on iu.id = ba.updtUserId " +
-                "where ba.id.asgnReqSeq not in (${subQuery}) " +
-                "order by ba.aprvYn "
-        return getEntityManager().createQuery(query, BdasTimeLineDto::class.java).resultList
+        val query2 = "select new org.sbas.dtos.bdas.BdasTimeLineDto('배정대기', " +
+                "iu.instNm || ' / ' || iu.userNm) " +
+                "from BdasReqAprv bra " +
+                "join InfoUser iu on iu.instId = bra.reqHospId " +
+                "where bra.id.ptId = '$ptId' and bra.id.bdasSeq = $bdasSeq and bra.id.asgnReqSeq in (${subQuery}) " +
+                "and iu.jobCd = 'PMGR0003' "+
+                "order by bra.id.asgnReqSeq "
+
+        val resultList = getEntityManager().createQuery(query, BdasTimeLineDto::class.java).resultList
+        resultList.addAll(getEntityManager().createQuery(query2, BdasTimeLineDto::class.java).resultList)
+
+        return resultList
     }
 }
 
