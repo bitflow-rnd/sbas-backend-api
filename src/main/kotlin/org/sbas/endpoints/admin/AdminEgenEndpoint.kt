@@ -15,7 +15,7 @@ import javax.ws.rs.core.MediaType
 import javax.ws.rs.core.Response
 
 @Tag(name = "E-Gen 연동 관리(어드민 권한용)", description = "System Admin 사용자 - E-Gen API를 통한 데이터 동기화, 등록, 수정, 삭제 등")
-@RolesAllowed("ADMIN")
+//@RolesAllowed("ADMIN")
 @Path("v1/admin/egen")
 class AdminEgenEndpoint {
 

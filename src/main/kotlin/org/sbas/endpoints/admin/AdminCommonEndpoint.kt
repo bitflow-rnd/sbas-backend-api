@@ -15,7 +15,7 @@ import javax.ws.rs.Path
 import javax.ws.rs.core.Response
 
 @Tag(name = "공통 관리(어드민 권한용)", description = "System Admin 사용자 - 코드 등록, 수정, 삭제 등")
-@RolesAllowed("ADMIN")
+//@RolesAllowed("ADMIN")
 @Path("v1/admin/common")
 class AdminCommonEndpoint {
 
