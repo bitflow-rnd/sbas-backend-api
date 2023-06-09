@@ -98,7 +98,7 @@ class CommonService {
      * 공통코드 그룹 목록
      */
     @Transactional
-    fun findBaseCdGrpList(): CommonResponse<List<BaseCode>> {
+    fun findBaseCdGrpList(): CommonResponse<*> {
         return CommonResponse(baseCodeRepository.findBaseCdGrpList())
     }
 
