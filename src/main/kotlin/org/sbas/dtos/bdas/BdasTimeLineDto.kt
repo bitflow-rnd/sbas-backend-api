@@ -16,9 +16,9 @@ data class BdasTimeLineDto(
 ) {
     constructor(
         title: String?,
-        assignInstNm: String?,
+        by: String?,
         timeLineStatus: String?,
-    ) : this(title, assignInstNm, null, null, timeLineStatus, null, null, null, null)
+    ) : this(title, by, null, null, timeLineStatus, null, null, null, null)
 
     constructor(
         title: String?,

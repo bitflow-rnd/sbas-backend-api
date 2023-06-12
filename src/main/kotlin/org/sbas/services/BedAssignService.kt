@@ -325,7 +325,7 @@ class BedAssignService {
             BedStatCd.BAST0003.name -> {
                 val list = bdasReqRepository.findTimeLineInfo(ptId, bdasSeq)
                 timeLineList.addAll(list)
-                timeLineList.add(BdasTimeLineDto("승인대기", list[0].assignInstNm))
+                timeLineList.add(BdasTimeLineDto("승인대기", list[0].assignInstNm, TimeLineStatCd.SUSPEND.cdNm))
                 timeLineList.addAll(mutableListOf(closedBdasAprv, closedBdasTrans, closedBdasAdms))
             }
             BedStatCd.BAST0004.name -> {
