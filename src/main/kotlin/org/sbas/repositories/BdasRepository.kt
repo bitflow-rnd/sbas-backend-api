@@ -2,6 +2,7 @@ package org.sbas.repositories
 
 import io.quarkus.hibernate.orm.panache.kotlin.PanacheRepositoryBase
 import io.quarkus.panache.common.Sort
+import org.sbas.constants.TimeLineStatCd
 import org.sbas.dtos.bdas.BdasListDto
 import org.sbas.dtos.bdas.BdasTimeLineDto
 import org.sbas.entities.bdas.*
@@ -39,7 +40,7 @@ class BdasReqRepository : PanacheRepositoryBase<BdasReq, BdasReqId> {
 
     fun findTimeLineInfo(ptId: String, bdasSeq: Int): MutableList<BdasTimeLineDto> {
         val query = "select new org.sbas.dtos.bdas.BdasTimeLineDto('병상요청(' || (case br.inhpAsgnYn when 'Y' then '원내배정' when 'N' then '전원요청' end) || ')', " +
-                "iu.instNm || ' / ' || iu.userNm, br.updtDttm, br.msg, " +
+                "iu.instNm || ' / ' || iu.userNm, br.updtDttm, br.msg, '${TimeLineStatCd.COMPLETE.cdNm}', " +
                 "br.inhpAsgnYn, iu.jobCd, iu.ocpCd, " +
                 "(select instNm from InfoInst where id = 'LG00000001')) " +
                 "from BdasReq br " +
@@ -58,9 +59,10 @@ class BdasReqRepository : PanacheRepositoryBase<BdasReq, BdasReqId> {
 
 @ApplicationScoped
 class BdasReqAprvRepository : PanacheRepositoryBase<BdasReqAprv, BdasReqAprvId> {
+
     fun findTimeLineInfo(ptId: String, bdasSeq: Int): MutableList<BdasTimeLineDto> {
         val query = "select new org.sbas.dtos.bdas.BdasTimeLineDto(case bra.aprvYn when 'Y' then '승인' when 'N' then '불가' end, " +
-                "iu.instNm || ' / ' || iu.userNm, bra.updtDttm, bra.msg) " +
+                "iu.instNm || ' / ' || iu.userNm, bra.updtDttm, bra.msg, '${TimeLineStatCd.COMPLETE.cdNm}') " +
                 "from BdasReqAprv bra " +
                 "join InfoUser iu on iu.id = bra.updtUserId " +
                 "where bra.id.ptId = '$ptId' and bra.id.bdasSeq = $bdasSeq and bra.id.asgnReqSeq = 1 "
@@ -91,7 +93,7 @@ class BdasAprvRepository: PanacheRepositoryBase<BdasAprv, BdasAprvId> {
                 "where ba.id.ptId is null and ba.id.bdasSeq is null "
 
         val query = "select new org.sbas.dtos.bdas.BdasTimeLineDto(case ba.aprvYn when 'Y' then '배정완료' when 'N' then '배정거절' end, " +
-                "iu.instNm || ' / ' || iu.userNm, ba.updtDttm, ba.msg) " +
+                "iu.instNm || ' / ' || iu.userNm, ba.updtDttm, ba.msg, '${TimeLineStatCd.COMPLETE.cdNm}') " +
                 "from BdasAprv ba " +
                 "join InfoUser iu on iu.id = ba.updtUserId " +
                 "where ba.id.ptId = '$ptId' and ba.id.bdasSeq = $bdasSeq and ba.id.asgnReqSeq not in (${subQuery}) " +
@@ -99,7 +101,7 @@ class BdasAprvRepository: PanacheRepositoryBase<BdasAprv, BdasAprvId> {
                 "order by ba.aprvYn "
 
         val query2 = "select new org.sbas.dtos.bdas.BdasTimeLineDto('배정대기', " +
-                "iu.instNm || ' / ' || iu.userNm) " +
+                "iu.instNm || ' / ' || iu.userNm, '${TimeLineStatCd.SUSPEND.cdNm}') " +
                 "from BdasReqAprv bra " +
                 "join InfoUser iu on iu.instId = bra.reqHospId " +
                 "where bra.id.ptId = '$ptId' and bra.id.bdasSeq = $bdasSeq and bra.id.asgnReqSeq in (${subQuery}) " +

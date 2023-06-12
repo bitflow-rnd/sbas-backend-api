@@ -1,10 +1,7 @@
 package org.sbas.services
 
 import org.jboss.logging.Logger
-import org.sbas.constants.BedStatCd
-import org.sbas.constants.PtTypeCd
-import org.sbas.constants.SvrtTypeCd
-import org.sbas.constants.UndrDsesCd
+import org.sbas.constants.*
 import org.sbas.dtos.bdas.*
 import org.sbas.entities.bdas.BdasAdmsId
 import org.sbas.entities.bdas.BdasReq
@@ -320,21 +317,30 @@ class BedAssignService {
     fun getTimeLine(ptId: String, bdasSeq: Int): CommonResponse<*> {
         val bedStatCd = bdasReqRepository.findBedStat(ptId, bdasSeq)
         val timeLineList = mutableListOf<BdasTimeLineDto>()
+        val closedBdasAprv = BdasTimeLineDto("병상배정", TimeLineStatCd.CLOSED.cdNm)
+        val closedBdasTrans = BdasTimeLineDto("이송", TimeLineStatCd.CLOSED.cdNm)
+        val closedBdasAdms = BdasTimeLineDto("입원", TimeLineStatCd.CLOSED.cdNm)
         log.debug(bedStatCd)
         when (bedStatCd) {
             BedStatCd.BAST0003.name -> {
                 val list = bdasReqRepository.findTimeLineInfo(ptId, bdasSeq)
                 timeLineList.addAll(list)
                 timeLineList.add(BdasTimeLineDto("승인대기", list[0].assignInstNm))
+                timeLineList.addAll(mutableListOf(closedBdasAprv, closedBdasTrans, closedBdasAdms))
             }
             BedStatCd.BAST0004.name -> {
                 timeLineList.addAll(bdasReqRepository.findTimeLineInfo(ptId, bdasSeq))
                 timeLineList.addAll(bdasReqAprvRepository.findTimeLineInfo(ptId, bdasSeq))
+                timeLineList.addAll(bdasAprvRepository.findTimeLineInfo(ptId, bdasSeq))
+                timeLineList.add(closedBdasTrans)
+                timeLineList.add(closedBdasAdms)
             }
             BedStatCd.BAST0005.name -> {
                 timeLineList.addAll(bdasReqRepository.findTimeLineInfo(ptId, bdasSeq))
                 timeLineList.addAll(bdasReqAprvRepository.findTimeLineInfo(ptId, bdasSeq))
                 timeLineList.addAll(bdasAprvRepository.findTimeLineInfo(ptId, bdasSeq))
+                timeLineList.add(BdasTimeLineDto("이송대기", TimeLineStatCd.CLOSED.cdNm))
+                timeLineList.add(closedBdasAdms)
             }
         }
         return CommonResponse(TimeLineDtoList(timeLineList.size, timeLineList))

@@ -4,10 +4,11 @@ import com.fasterxml.jackson.annotation.JsonIgnore
 import java.time.Instant
 
 data class BdasTimeLineDto(
-    var title: String?,
-    var by: String?, // instNm + ocpCdNm + jobCdNm + userNm
-    var updtDttm: Instant?,
-    var msg: String?,
+    val title: String?,
+    val by: String?, // instNm + ocpCdNm + jobCdNm + userNm
+    val updtDttm: Instant?,
+    val msg: String?,
+    val timeLineStatus: String?,
     @JsonIgnore var inhpAsgnYn: String?,
     @JsonIgnore var jobCd: String?,
     @JsonIgnore var ocpCd: String?,
@@ -16,17 +17,24 @@ data class BdasTimeLineDto(
     constructor(
         title: String?,
         assignInstNm: String?,
-    ) : this(title, assignInstNm, null, null, null, null, null, null)
+        timeLineStatus: String?,
+    ) : this(title, assignInstNm, null, null, timeLineStatus, null, null, null, null)
 
     constructor(
         title: String?,
         by: String?,
         updtDttm: Instant?,
         msg: String?,
-    ) : this(title, by, updtDttm, msg, null, null, null, null)
+        timeLineStatus: String?,
+    ) : this(title, by, updtDttm, msg, timeLineStatus, null, null, null, null)
+
+    constructor(
+        title: String?,
+        timeLineStatus: String?,
+    ) : this(title, null, null, null, timeLineStatus, null, null, null, null)
 }
 
 data class TimeLineDtoList(
-    var count: Int?,
-    var items: List<BdasTimeLineDto>?,
+    val count: Int?,
+    val items: List<BdasTimeLineDto>?,
 )

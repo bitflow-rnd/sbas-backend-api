@@ -56,3 +56,7 @@ enum class UndrDsesCd(val cdNm: String) {
     UDDS0013("면역력저하자"),
     UDDS0014("기타"),
 }
+
+enum class TimeLineStatCd(val cdNm: String) {
+    COMPLETE("complete"), SUSPEND("suspend"), CLOSED("closed")
+}
