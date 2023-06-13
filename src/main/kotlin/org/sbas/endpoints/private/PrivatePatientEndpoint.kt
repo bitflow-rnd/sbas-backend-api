@@ -81,7 +81,7 @@ class PrivatePatientEndpoint {
     @POST
     @Path("modinfo/{ptId}")
     fun modinfo(@RestPath ptId: String, @RequestBody infoPtDto: InfoPtDto): Response {
-        log.debug("res==============>>>>>>> $infoPtDto")
+        log.debug("res============>>>>>>> $infoPtDto")
         return Response.ok(patientService.updateInfoPt(ptId, infoPtDto)).build()
     }
 
