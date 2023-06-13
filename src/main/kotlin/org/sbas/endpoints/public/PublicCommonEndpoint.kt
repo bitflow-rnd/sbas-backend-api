@@ -59,7 +59,7 @@ class PublicCommonEndpoint {
     @Operation(summary = "공통코드 목록", description = "특정 코드 그룹에 따른 하위 공통코드 목록 조회")
     @GET
     @Path("codes/{cdGrpId}")
-    fun codes(@RestPath cdGrpId: String): CommonResponse<List<BaseCode>> {
+    fun codes(@RestPath cdGrpId: String): CommonResponse<*> {
         return CommonResponse(commonService.findBaseCodeList(cdGrpId))
     }
 

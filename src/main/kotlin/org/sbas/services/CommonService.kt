@@ -68,8 +68,20 @@ class CommonService {
      */
     @Transactional
     @CacheResult(cacheName = "cdGrpId")
-    fun findBaseCodeList(@CacheKey cdGrpId: String): List<BaseCode> {
-        return baseCodeRepository.findBaseCodeByCdGrpId(cdGrpId = cdGrpId)
+    fun findBaseCodeList(@CacheKey cdGrpId: String): List<BaseCodeResponse> {
+        val findBaseCodeList = baseCodeRepository.findBaseCodeByCdGrpId(cdGrpId = cdGrpId)
+
+        return findBaseCodeList.map {
+            BaseCodeResponse(
+                cdGrpId = it.id.cdGrpId,
+                cdGrpNm = it.cdGrpNm,
+                cdId = it.id.cdId,
+                cdNm = it.cdNm,
+                cdVal = it.cdVal,
+                cdSeq = it.cdSeq,
+                rmk = it.rmk,
+            )
+        }.toMutableList()
     }
 
     /**

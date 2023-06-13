@@ -13,7 +13,6 @@ class BaseCodeRepository : PanacheRepositoryBase<BaseCode, BaseCodeId> {
     fun findBaseCodeByCdGrpId(cdGrpId: String): List<BaseCode> = find("cd_grp_id = '$cdGrpId'").list()
 
     fun findBaseCdGrpList(): MutableList<Any?> {
-//        val query = "select * from BaseCode where"
         val query = "select new map(a.id.cdGrpId as cdGrpId, a.cdGrpNm as cdGrpNm) from BaseCode a group by a.id.cdGrpId, a.cdGrpNm order by a.id.cdGrpId"
 //        return find("select a.id.cdGrpId, a.cdGrpNm from BaseCode a group by a.id.cdGrpId, a.cdGrpNm",
 //            Sort.by("a.id.cdGrpId")).list()

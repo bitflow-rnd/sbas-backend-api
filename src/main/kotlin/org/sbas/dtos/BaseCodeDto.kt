@@ -51,3 +51,16 @@ data class SidoSiGunGuDto(
     var siDoCd: String? = null,
     var siGunGuCd: String? = null,
 )
+
+/**
+ * 공통코드 응답 Dto
+ */
+data class BaseCodeResponse(
+    val cdGrpId: String,
+    val cdGrpNm: String?,
+    val cdId: String,
+    val cdNm: String?,
+    val cdVal: String?,
+    val cdSeq: Int?,
+    val rmk: String?,
+)

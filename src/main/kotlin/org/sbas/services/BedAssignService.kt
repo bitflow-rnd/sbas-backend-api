@@ -219,7 +219,7 @@ class BedAssignService {
         }
 
         // 이미 승인한 병원이 있는지 확인
-        if (Objects.nonNull(approvedBdasAprv)) {
+        if (!approvedBdasAprv.isNullOrEmpty()) {
             return CommonResponse(BdasAprvResponse(true, "이미 승인한 병원이 존재합니다. 자동으로 배정 불가 처리되었습니다."))
         }
 
