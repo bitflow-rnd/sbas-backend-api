@@ -53,14 +53,14 @@ class AdminCommonEndpoint {
         return Response.ok(commonService.saveBaseCode(baseCodeSaveReq)).build()
     }
 
-    @Operation(summary = "곻통코드 수정", description = "")
+    @Operation(summary = "곻통코드 수정", description = "공통코드 수정")
     @POST
     @Path("modcode")
     fun modifyCode(baseCodeUpdateReq: BaseCodeUpdateReq): Response {
         return Response.ok(commonService.updateBaseCode(baseCodeUpdateReq)).build()
     }
 
-    @Operation(summary = "공통코드 삭제", description = "")
+    @Operation(summary = "공통코드 삭제", description = "공통코드 삭제")
     @POST
     @Path("delcode")
     fun deleteCode(baseCodeUpdateReq: BaseCodeUpdateReq): Response {
