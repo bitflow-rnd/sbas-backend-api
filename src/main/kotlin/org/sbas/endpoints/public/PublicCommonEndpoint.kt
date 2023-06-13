@@ -6,9 +6,6 @@ import org.jboss.logging.Logger
 import org.jboss.resteasy.reactive.RestForm
 import org.jboss.resteasy.reactive.RestPath
 import org.jboss.resteasy.reactive.multipart.FileUpload
-import org.sbas.entities.base.BaseCode
-import org.sbas.entities.base.BaseCodeEgen
-import org.sbas.responses.CommonResponse
 import org.sbas.services.CommonService
 import javax.annotation.security.PermitAll
 import javax.inject.Inject
@@ -52,29 +49,29 @@ class PublicCommonEndpoint {
     @Operation(summary = "E-GEN 공통코드 목록", description = "특정 코드 그룹(대분류 코드)에 따른 하위 공통코드 목록 조회")
     @GET
     @Path("egencodes/{cmMid}")
-    fun egencodes(@RestPath cmMid: String): CommonResponse<List<BaseCodeEgen>> {
-        return CommonResponse(commonService.findCodeEgenList(cmMid))
+    fun egencodes(@RestPath cmMid: String): Response {
+        return Response.ok(commonService.findCodeEgenList(cmMid)).build()
     }
 
     @Operation(summary = "공통코드 목록", description = "특정 코드 그룹에 따른 하위 공통코드 목록 조회")
     @GET
     @Path("codes/{cdGrpId}")
-    fun codes(@RestPath cdGrpId: String): CommonResponse<*> {
-        return CommonResponse(commonService.findBaseCodeList(cdGrpId))
+    fun codes(@RestPath cdGrpId: String): Response {
+        return Response.ok(commonService.findBaseCodeList(cdGrpId)).build()
     }
 
-    @Operation(summary = "시/도 목록", description = "")
+    @Operation(summary = "시/도 목록", description = "시/도 목록 조회")
     @GET
     @Path("sidos")
-    fun sidos(): CommonResponse<List<BaseCode>> {
-        return CommonResponse(commonService.findSidoList())
+    fun sidos(): Response {
+        return Response.ok(commonService.findSidoList()).build()
     }
 
-    @Operation(summary = "시/군/구 목록", description = "")
+    @Operation(summary = "시/군/구 목록", description = "시/군/구 목록 조회")
     @GET
     @Path("guguns/{cdGrpId}")
-    fun guguns(@RestPath cdGrpId: String): CommonResponse<List<BaseCode>> {
-        return CommonResponse(commonService.findGugunList(cdGrpId))
+    fun guguns(@RestPath cdGrpId: String): Response {
+        return Response.ok(commonService.findGugunList(cdGrpId)).build()
     }
 
     @Operation(summary = "파일 다운로드 (전체 공개 파일)", description = "")

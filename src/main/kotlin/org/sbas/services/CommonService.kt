@@ -58,8 +58,8 @@ class CommonService {
      */
     @Transactional
     @CacheResult(cacheName = "cmMid")
-    fun findCodeEgenList(cmMid: String): List<BaseCodeEgen> {
-        return egenCodeRepository.findCodeEgenByCmMid(cmMid = cmMid)
+    fun findCodeEgenList(cmMid: String): CommonResponse<List<BaseCodeEgen>> {
+        return CommonResponse(egenCodeRepository.findCodeEgenByCmMid(cmMid = cmMid))
     }
 
     /**
@@ -68,20 +68,9 @@ class CommonService {
      */
     @Transactional
     @CacheResult(cacheName = "cdGrpId")
-    fun findBaseCodeList(@CacheKey cdGrpId: String): List<BaseCodeResponse> {
+    fun findBaseCodeList(@CacheKey cdGrpId: String): CommonResponse<List<BaseCodeResponse>> {
         val findBaseCodeList = baseCodeRepository.findBaseCodeByCdGrpId(cdGrpId = cdGrpId)
-
-        return findBaseCodeList.map {
-            BaseCodeResponse(
-                cdGrpId = it.id.cdGrpId,
-                cdGrpNm = it.cdGrpNm,
-                cdId = it.id.cdId,
-                cdNm = it.cdNm,
-                cdVal = it.cdVal,
-                cdSeq = it.cdSeq,
-                rmk = it.rmk,
-            )
-        }.toMutableList()
+        return toBaseCodeResponse(findBaseCodeList)
     }
 
     /**
@@ -89,8 +78,9 @@ class CommonService {
      */
     @Transactional
     @CacheResult(cacheName = "sido")
-    fun findSidoList(): List<BaseCode> {
-        return baseCodeRepository.findBaseCodeByCdGrpId("SIDO")
+    fun findSidoList(): CommonResponse<List<BaseCodeResponse>> {
+        val findBaseCodeList = baseCodeRepository.findBaseCodeByCdGrpId("SIDO")
+        return toBaseCodeResponse(findBaseCodeList)
     }
 
     /**
@@ -99,9 +89,12 @@ class CommonService {
      */
     @Transactional
     @CacheResult(cacheName = "cdGrpId")
-    fun findGugunList(@CacheKey cdGrpId: String): List<BaseCode> {
+    fun findGugunList(@CacheKey cdGrpId: String): CommonResponse<List<BaseCodeResponse>> {
         return when {
-            cdGrpId.matches(Regex("^(SIDO)\\d+")) -> baseCodeRepository.findBaseCodeByCdGrpId(cdGrpId = cdGrpId)
+            cdGrpId.matches(Regex("^(SIDO)\\d+")) -> {
+                val findBaseCodeList = baseCodeRepository.findBaseCodeByCdGrpId(cdGrpId = cdGrpId)
+                toBaseCodeResponse(findBaseCodeList)
+            }
             else -> throw NotFoundException("${cdGrpId}는 시/도의 코드 그룹 ID가 아닙니다.")
         }
     }
@@ -253,4 +246,20 @@ class CommonService {
 
         return Response.status(Response.Status.NOT_FOUND).build()
     }
+
+    /**
+     * BaseCode -> BaseCodeResponse 변환
+     */
+    private fun toBaseCodeResponse(findBaseCodeList: List<BaseCode>) =
+        CommonResponse(findBaseCodeList.map {
+            BaseCodeResponse(
+                cdGrpId = it.id.cdGrpId,
+                cdGrpNm = it.cdGrpNm,
+                cdId = it.id.cdId,
+                cdNm = it.cdNm,
+                cdVal = it.cdVal,
+                cdSeq = it.cdSeq,
+                rmk = it.rmk,
+            )
+        }.toList())
 }
