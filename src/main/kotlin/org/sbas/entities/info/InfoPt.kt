@@ -48,10 +48,10 @@ class InfoPt(
     @Column(name = "dstr_2_cd", length = 8)
     var dstr2Cd: String? = null, // 지역 코드 (시군구)
 
-    @Column(name = "addr", nullable = false, length = 100)
+    @Column(name = "addr", length = 100)
     var addr: String? = null, // 주소
 
-    @Column(name = "telno", length = 11)
+    @Column(name = "telno", length = 12)
     var telno: String? = null, // 전화번호
 
     @Column(name = "nati_cd", nullable = false, length = 8)
@@ -61,12 +61,12 @@ class InfoPt(
     var picaVer: String? = null, // 개인정보수집동의 버전
 
     @Column(name = "deth_yn", nullable = false, length = 10)
-    var dethYn: String = "N", // 사망여부
+    var dethYn: String?, // 사망여부
 
     @Column(name = "nok_nm", length = 10)
     var nokNm: String? = null, // 보호자 이름
 
-    @Column(name = "mpno", length = 11)
+    @Column(name = "mpno", length = 12)
     var mpno: String? = null, // 휴대전화번호
 
     @Column(name = "job", length = 20)

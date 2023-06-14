@@ -59,9 +59,9 @@ data class InfoUserSaveDto(
     val attcId: String?,
     val btDt: String,
     val authCd: String,
-    var userStatCd: UserStatCd = UserStatCd.URST0001,
+    var userStatCd: UserStatCd?,
 ) {
-    fun toEntity(): InfoUser {
+    fun toEntity(userStatCd: UserStatCd?): InfoUser {
         return InfoUser(
             id = id,
             pw = pw,

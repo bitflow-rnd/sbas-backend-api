@@ -60,14 +60,20 @@ class UserService {
      */
     @Transactional
     fun reqUserReg(infoUserSaveDto: InfoUserSaveDto): CommonResponse<String> {
-        userRepository.persist(infoUserSaveDto.toEntity())
+        val infoUser = infoUserSaveDto.toEntity(UserStatCd.URST0001)
+        infoUser.setRgstAndUpdtUserIdTo(infoUserSaveDto.id)
+        userRepository.persist(infoUser)
         return CommonResponse("${infoUserSaveDto.userNm}님 사용자 등록을 요청하였습니다.")
     }
-    
+
+    /**
+     * 관리자 사용자 등록
+     */
     @Transactional
     fun reg(infoUserSaveDto: InfoUserSaveDto): CommonResponse<String> {
-        infoUserSaveDto.userStatCd = UserStatCd.URST0002
-        userRepository.persist(infoUserSaveDto.toEntity())
+        val infoUser = infoUserSaveDto.toEntity(UserStatCd.URST0002)
+        infoUser.setRgstAndUpdtUserIdTo(infoUserSaveDto.id)
+        userRepository.persist(infoUser)
         return CommonResponse("등록 성공")
     }
 
