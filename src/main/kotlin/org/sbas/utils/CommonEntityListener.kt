@@ -21,6 +21,8 @@ class CommonEntityListener {
             entity.rgstUserId = jsonWebToken.name
             entity.updtUserId = jsonWebToken.name
         }
+        entity.rgstUserId = "administrator"
+        entity.updtUserId = "administrator"
     }
 
     @PreUpdate
@@ -30,5 +32,6 @@ class CommonEntityListener {
         if (jsonWebToken.name != null) {
             entity.updtUserId = jsonWebToken.name
         }
+        entity.updtUserId = "administrator"
     }
 }
