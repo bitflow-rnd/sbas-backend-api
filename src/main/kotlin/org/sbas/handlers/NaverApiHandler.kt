@@ -7,6 +7,7 @@ import org.sbas.constants.NaverApiConst
 import org.sbas.repositories.BaseCodeRepository
 import org.sbas.responses.patient.EpidResult
 import org.sbas.restclients.NaverOcrRestClient
+import org.sbas.restparameters.NaverGeocodingApiParams
 import org.sbas.restparameters.NaverOcrApiParams
 import org.sbas.restparameters.OcrApiImagesParam
 import org.sbas.utils.StringUtils
@@ -38,6 +39,9 @@ class NaverApiHandler {
 
     @Inject
     private lateinit var baseCodeRepository: BaseCodeRepository
+
+    @Inject
+    private lateinit var geocodingHandler: GeocodingHandler
 
     fun recognizeImage(uri: String, filename: String): EpidResult {
         val dotIdx = filename.lastIndexOf(".")
@@ -113,6 +117,7 @@ class NaverApiHandler {
             instAddr = list[24],
             diagDrNm = list[25],
             rptChfNm = list[26],
+            zip = splitAddress(address)[5],
         )
     }
 
@@ -127,7 +132,7 @@ class NaverApiHandler {
         splitedAddr[0] = StringUtils.getKakaoSidoName(splitedAddr[0])
         val baseCode = baseCodeRepository.findByDstr1CdAndCdNm(dstrCd1,splitedAddr[1]) ?: throw NotFoundException("baseCode not found")
 
-        list.add(dstrCd1)
+        list.add(dstrCd1) // dstr1Cd
         list.add(baseCode.id.cdId) // dstr2Cd
         list.add(splitedAddr.subList(0, 4).joinToString(" ")) // baseAddr
 
@@ -139,7 +144,18 @@ class NaverApiHandler {
         }
 
         list.add(fullAddr) // fullAddr
+        list.add(getZipCode(fullAddr)) // zip
 
         return list
+    }
+
+    private fun getZipCode(address: String): String {
+        val response = geocodingHandler.getGeocoding(NaverGeocodingApiParams(query = address))
+
+        val zip = response.addresses!![0].addressElements?.find {
+            it.types?.get(0) == "POSTAL_CODE"
+        }?.longName ?: ""
+
+        return zip
     }
 }

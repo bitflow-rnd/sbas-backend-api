@@ -132,7 +132,11 @@ data class EpidResult (
 
     // idx: 26
     @Schema(description = "신고기관장 성명", example = "홍길동")
-    var rptChfNm: String?
+    var rptChfNm: String?,
+
+    // ids: 27
+    @Schema(description = "우편번호", example = "02702")
+    var zip: String?,
 )
 
 /*
