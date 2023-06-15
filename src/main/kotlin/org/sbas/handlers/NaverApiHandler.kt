@@ -4,6 +4,7 @@ import org.eclipse.microprofile.config.inject.ConfigProperty
 import org.eclipse.microprofile.rest.client.inject.RestClient
 import org.jboss.logging.Logger
 import org.sbas.constants.NaverApiConst
+import org.sbas.repositories.BaseCodeRepository
 import org.sbas.responses.patient.EpidResult
 import org.sbas.restclients.NaverOcrRestClient
 import org.sbas.restparameters.NaverOcrApiParams
@@ -11,6 +12,7 @@ import org.sbas.restparameters.OcrApiImagesParam
 import org.sbas.utils.StringUtils
 import javax.enterprise.context.ApplicationScoped
 import javax.inject.Inject
+import javax.ws.rs.NotFoundException
 
 
 /**
@@ -33,6 +35,9 @@ class NaverApiHandler {
 
     @ConfigProperty(name = "upload.path.middle")
     lateinit var uploadRelPath: String
+
+    @Inject
+    private lateinit var baseCodeRepository: BaseCodeRepository
 
     fun recognizeImage(uri: String, filename: String): EpidResult {
         val dotIdx = filename.lastIndexOf(".")
@@ -116,10 +121,14 @@ class NaverApiHandler {
         val fullAddr = addr.replace(Regex("\\s*\\([^)]*\\)"), "") // (...) 부분 삭제
         log.debug("NaverApiHandler splitAddress >>>>> $fullAddr")
         val list = mutableListOf<String?>()
-        val splitedAddr = fullAddr.split(" ")
+        val splitedAddr = fullAddr.split(" ").toMutableList()
 
-        list.add(StringUtils.getDstrCd1(splitedAddr[0])) // dstr1Cd
-        list.add(splitedAddr[1]) // dstr2Cd
+        val dstrCd1 = StringUtils.getDstrCd1(splitedAddr[0])
+        splitedAddr[0] = StringUtils.getKakaoSidoName(splitedAddr[0])
+        val baseCode = baseCodeRepository.findByDstr1CdAndCdNm(dstrCd1,splitedAddr[1]) ?: throw NotFoundException("baseCode not found")
+
+        list.add(dstrCd1)
+        list.add(baseCode.id.cdId) // dstr2Cd
         list.add(splitedAddr.subList(0, 4).joinToString(" ")) // baseAddr
 
         // dtlAddr 상세주소가 있는 경우, 없으면 null

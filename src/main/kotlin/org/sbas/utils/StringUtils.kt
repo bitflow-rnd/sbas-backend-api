@@ -52,5 +52,28 @@ class StringUtils {
             return map.entries.find { addr.startsWith(it.key) }?.value ?: ""
         }
 
+        fun getKakaoSidoName(sido: String): String {
+            val map = mapOf(
+                "서울" to "서울",
+                "부산" to "부산",
+                "대구" to "대구",
+                "인천" to "인천",
+                "광주" to "광주",
+                "대전" to "대전",
+                "울산" to "울산",
+                "세종" to "세종",
+                "경기" to "경기",
+                "강원" to "강원",
+                "충청북" to "충북", "충북" to "충북",
+                "충청남" to "충남", "충남" to "충남",
+                "전라북" to "전북", "전북" to "전북",
+                "전라남" to "전남", "전남" to "전남",
+                "경상북" to "경북", "경북" to "경북",
+                "경상남" to "경남", "경남" to "경남",
+            )
+
+            return map.entries.find { sido.startsWith(it.key) }?.value ?: ""
+        }
+
     }
 }
