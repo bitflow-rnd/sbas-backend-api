@@ -46,7 +46,8 @@ class BedAssignService {
         // 환자 정보 저장
         val findInfoPt = infoPtRepository.findById(bdasEsvyDto.ptId) ?: throw NotFoundException("${bdasEsvyDto.ptId} not found")
         bdasEsvyDto.saveInfoPt(findInfoPt)
-        
+
+        log. debug("regDisesInfo >>>>> ${bdasEsvyDto.ptId}")
 //        val findBdasEsvy = bdasEsvyRepository.findByPtIdWithLatestBdasSeq(findInfoPt.id!!)
 //        if (findBdasEsvy != null) { // 수정하는 경우
 //            findBdasEsvy.bdasSeq
@@ -142,7 +143,10 @@ class BedAssignService {
         // infoPt 상태 변경
         val infoPt = infoPtRepository.findById(bdasReqDprtInfo.ptId)
         infoPt!!.changeBedStatAfterBdasReq()
-        firebaseService.sendMessage("jiseongtak", "새로운 병상배정 요청이 도착했습니다.", "jiseongtak")
+        
+        // 푸쉬 알람 보내기
+        firebaseService.sendMessage(findBdasReq.rgstUserId!!, "새로운 병상배정 요청이 도착했습니다.", "jiseongtak")
+        
         return CommonResponse("등록 성공")
     }
     

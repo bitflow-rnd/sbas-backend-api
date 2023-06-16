@@ -55,6 +55,8 @@ class BdasReqRepository : PanacheRepositoryBase<BdasReq, BdasReqId> {
     }
 
     fun findByPtId(ptId: String) = find("from BdasReq where id.ptId='$ptId' order by id.bdasSeq desc").firstResult()
+
+    // 요청 지역에 해당하는 기관들 중 배정반 찾기
 }
 
 @ApplicationScoped

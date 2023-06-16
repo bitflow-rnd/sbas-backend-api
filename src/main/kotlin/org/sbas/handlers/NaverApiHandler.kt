@@ -84,6 +84,8 @@ class NaverApiHandler {
 
         val address = list[6]
 
+        val splitAddress = splitAddress(address)
+
         return EpidResult(
             rcptPhc = list[0],
             ptNm = list[1],
@@ -92,11 +94,11 @@ class NaverApiHandler {
             nokNm = list[3],
             gndr = list[4],
             telno = list[5].replace("-", ""),
-            dstr1Cd = splitAddress(address)[0],
-            dstr2Cd = splitAddress(address)[1],
-            baseAddr = splitAddress(address)[2],
-            dtlAddr = splitAddress(address)[3],
-            fullAddr = splitAddress(address)[4],
+            dstr1Cd = splitAddress[0],
+            dstr2Cd = splitAddress[1],
+            baseAddr = splitAddress[2],
+            dtlAddr = splitAddress[3],
+            fullAddr = splitAddress[4],
             mpno = list[7].replace("-", ""),
             diagNm = list[8],
             diagGrde = list[9],
@@ -117,7 +119,7 @@ class NaverApiHandler {
             instAddr = list[24],
             diagDrNm = list[25],
             rptChfNm = list[26],
-            zip = splitAddress(address)[5],
+            zip = splitAddress[5],
         )
     }
 

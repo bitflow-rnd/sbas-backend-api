@@ -2,19 +2,13 @@ package org.sbas.repositories
 
 import com.linecorp.kotlinjdsl.QueryFactory
 import com.linecorp.kotlinjdsl.QueryFactoryImpl
-import com.linecorp.kotlinjdsl.listQuery
 import com.linecorp.kotlinjdsl.query.creator.CriteriaQueryCreatorImpl
 import com.linecorp.kotlinjdsl.query.creator.SubqueryCreatorImpl
-import com.linecorp.kotlinjdsl.querydsl.expression.col
 import io.quarkus.hibernate.orm.panache.kotlin.PanacheQuery
 import io.quarkus.hibernate.orm.panache.kotlin.PanacheRepositoryBase
 import org.jboss.logging.Logger
-import org.sbas.dtos.info.BdasHisInfo
 import org.sbas.dtos.info.InfoHospDetailDto
 import org.sbas.dtos.info.InfoPtSearchDto
-import org.sbas.entities.bdas.BdasAdms
-import org.sbas.entities.bdas.BdasAdmsId
-import org.sbas.entities.bdas.BdasEsvy
 import org.sbas.entities.info.*
 import org.sbas.parameters.InstCdParameters
 import org.sbas.parameters.SearchHospRequest
