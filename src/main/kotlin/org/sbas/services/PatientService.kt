@@ -143,6 +143,7 @@ class PatientService {
             telno = infoPt.telno,
             nokNm = infoPt.nokNm,
             job = infoPt.job,
+            attcId = infoPt.attcId,
         )
 
         val bdasHisInfo = findBdasHistInfo(ptId)

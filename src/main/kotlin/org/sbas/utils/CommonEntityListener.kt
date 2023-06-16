@@ -20,9 +20,10 @@ class CommonEntityListener {
         if (jsonWebToken.name != null) {
             entity.rgstUserId = jsonWebToken.name
             entity.updtUserId = jsonWebToken.name
+        } else {
+            entity.rgstUserId = "administrator"
+            entity.updtUserId = "administrator"
         }
-        entity.rgstUserId = "administrator"
-        entity.updtUserId = "administrator"
     }
 
     @PreUpdate
@@ -31,7 +32,8 @@ class CommonEntityListener {
         // 이전에 수행할 로직을 여기에 작성합니다.
         if (jsonWebToken.name != null) {
             entity.updtUserId = jsonWebToken.name
+        } else {
+            entity.updtUserId = "administrator"
         }
-        entity.updtUserId = "administrator"
     }
 }
