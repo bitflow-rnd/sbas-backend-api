@@ -34,12 +34,12 @@ fun BaseCodeSaveReq.toCdIdEntity(): BaseCode {
 @NoArg
 data class BaseCodeUpdateReq(
     var cdGrpId: String,
-    var cdGrpNm: String,
+    var cdGrpNm: String?,
     var cdId: String,
-    var cdNm: String,
-    var cdVal: String,
-    var cdSeq: Int,
-    var rmk: String,
+    var cdNm: String?,
+    var cdVal: String?,
+    var cdSeq: Int?,
+    var rmk: String?,
 )
 
 fun BaseCodeUpdateReq.getId(): BaseCodeId {

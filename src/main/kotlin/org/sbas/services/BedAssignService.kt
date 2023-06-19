@@ -275,12 +275,12 @@ class BedAssignService {
     @Transactional
     fun getBedAsgnList(): CommonResponse<*> {
         val bdasReqList = mutableListOf<BdasListDto>()
-        val bedReqAprvList = mutableListOf<BdasListDto>()
+        val bdasReqAprvList = mutableListOf<BdasListDto>()
         val bdasAprvList = mutableListOf<BdasListDto>()
         val transferList = mutableListOf<BdasListDto>()
         val hospitalList = mutableListOf<BdasListDto>()
 
-        val bedRequest = mutableMapOf("count" to 0, "items" to Collections.EMPTY_LIST)
+        val bdasReqMap = mutableMapOf("count" to 0, "items" to Collections.EMPTY_LIST)
         val bdasReqAprvMap = mutableMapOf("count" to 0, "items" to Collections.EMPTY_LIST)
         val bdasAprvMap = mutableMapOf("count" to 0, "items" to Collections.EMPTY_LIST)
         val transfer = mutableMapOf("count" to 0, "items" to Collections.EMPTY_LIST)
@@ -290,29 +290,29 @@ class BedAssignService {
         findBdasList.forEach {
             when (it.bedStatCd) {
                 BedStatCd.BAST0003.name -> {
-                    bdasReqList.add(it)
-                    makeToResultMap(bdasReqList, bedRequest)
+                    bdasReqList.add(getTagList(it))
+                    makeToResultMap(bdasReqList, bdasReqMap)
                 }
                 BedStatCd.BAST0004.name -> {
-                    bedReqAprvList.add(it)
-                    makeToResultMap(bedReqAprvList, bdasReqAprvMap)
+                    bdasReqAprvList.add(getTagList(it))
+                    makeToResultMap(bdasReqAprvList, bdasReqAprvMap)
                 }
                 BedStatCd.BAST0005.name -> {
-                    bdasAprvList.add(it)
+                    bdasAprvList.add(getTagList(it))
                     makeToResultMap(bdasAprvList, bdasAprvMap)
                 }
                 BedStatCd.BAST0006.name -> {
-                    transferList.add(it)
+                    transferList.add(getTagList(it))
                     makeToResultMap(transferList, transfer)
                 }
                 BedStatCd.BAST0007.name -> {
-                    hospitalList.add(it)
+                    hospitalList.add(getTagList(it))
                     makeToResultMap(hospitalList, hospital)
                 }
             }
         }
 
-        val res = listOf(bedRequest, bdasReqAprvMap, bdasAprvMap, transfer, hospital)
+        val res = listOf(bdasReqMap, bdasReqAprvMap, bdasAprvMap, transfer, hospital)
 
         return CommonResponse(res)
     }
@@ -365,7 +365,6 @@ class BedAssignService {
     }
 
     private fun makeToResultMap(list: MutableList<BdasListDto>, map: MutableMap<String, Any>) {
-        list.map { getTagList(it) }
         map["count"] = list.size
         map["items"] = list
     }

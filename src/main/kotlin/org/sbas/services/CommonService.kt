@@ -1,5 +1,6 @@
 package org.sbas.services
 
+import io.quarkus.cache.CacheInvalidate
 import io.quarkus.cache.CacheKey
 import io.quarkus.cache.CacheResult
 import org.eclipse.microprofile.config.inject.ConfigProperty
@@ -57,7 +58,7 @@ class CommonService {
      * @param cmMid 대분류 코드
      */
     @Transactional
-    @CacheResult(cacheName = "cmMid")
+//    @CacheResult(cacheName = "cmMid")
     fun findCodeEgenList(cmMid: String): CommonResponse<List<BaseCodeEgen>> {
         return CommonResponse(egenCodeRepository.findCodeEgenByCmMid(cmMid = cmMid))
     }
@@ -67,7 +68,7 @@ class CommonService {
      * @param cdGrpId 코드 그룹 ID
      */
     @Transactional
-    @CacheResult(cacheName = "cdGrpId")
+//    @CacheResult(cacheName = "cdGrpId")
     fun findBaseCodeList(@CacheKey cdGrpId: String): CommonResponse<List<BaseCodeResponse>> {
         val findBaseCodeList = baseCodeRepository.findBaseCodeByCdGrpId(cdGrpId = cdGrpId)
         return toBaseCodeResponse(findBaseCodeList)
@@ -77,7 +78,7 @@ class CommonService {
      * 시/도 목록 조회
      */
     @Transactional
-    @CacheResult(cacheName = "sido")
+//    @CacheResult(cacheName = "sido")
     fun findSidoList(): CommonResponse<List<BaseCodeResponse>> {
         val findBaseCodeList = baseCodeRepository.findBaseCodeByCdGrpId("SIDO")
         return toBaseCodeResponse(findBaseCodeList)
@@ -88,7 +89,7 @@ class CommonService {
      * @param cdGrpId 시/도의 코드 그룹 ID ex) SIDO11, SIDO26...
      */
     @Transactional
-    @CacheResult(cacheName = "cdGrpId")
+//    @CacheResult(cacheName = "cdGrpId")
     fun findGugunList(@CacheKey cdGrpId: String): CommonResponse<List<BaseCodeResponse>> {
         return when {
             cdGrpId.matches(Regex("^(SIDO)\\d+")) -> {
@@ -114,7 +115,7 @@ class CommonService {
     fun updateBaseCdGrp(updateReq: BaseCodeUpdateReq): CommonResponse<String> {
         val baseCodeList = baseCodeRepository.findBaseCodeByCdGrpId(updateReq.cdGrpId)
         if (baseCodeList.isNotEmpty()) {
-            baseCodeList.forEach { it.updateBaseCdGrp(updateReq.cdGrpNm) }
+            baseCodeList.forEach { it.updateBaseCdGrp(updateReq.cdGrpNm!!) }
             return CommonResponse("성공")
         } else {
             throw NotFoundException("${updateReq.cdGrpId} not found")
@@ -153,6 +154,7 @@ class CommonService {
      * 공통코드 수정
      */
     @Transactional
+//    @CacheInvalidate(cacheName = "cdGrpId")
     fun updateBaseCode(updateReq: BaseCodeUpdateReq): CommonResponse<String> {
         val baseCodeId = updateReq.getId()
         val findBaseCode = baseCodeRepository.findById(baseCodeId) ?: throw NotFoundException("$baseCodeId Not found")
@@ -164,6 +166,7 @@ class CommonService {
      * 공통코드 삭제
      */
     @Transactional
+//    @CacheInvalidate(cacheName = "cdGrpId")
     fun deleteBaseCode(updateReq: BaseCodeUpdateReq): CommonResponse<Boolean> {
         val baseCodeId = updateReq.getId()
         return CommonResponse(baseCodeRepository.deleteById(baseCodeId))
