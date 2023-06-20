@@ -149,7 +149,10 @@ class BedAssignService {
         
         return CommonResponse("등록 성공")
     }
-    
+
+    /**
+     * 배정반 승인
+     */
     @Transactional
     fun reqConfirm(dto: BdasReqAprvDto): CommonResponse<String> {
         val findBdasReq = bdasReqRepository.findByPtIdAndBdasSeq(dto.ptId, dto.bdasSeq) ?: throw NotFoundException("bdasReq not found")
@@ -177,6 +180,9 @@ class BedAssignService {
         return CommonResponse("성공")
     }
 
+    /**
+     * 가용 병원 목록 조회
+     */
     @Transactional
     fun getAvalHospList(ptId: String, bdasSeq: Int): CommonResponse<*> {
         val findBdasReq = bdasReqRepository.findByPtIdAndBdasSeq(ptId, bdasSeq) ?: throw NotFoundException("bdasReq not found")
@@ -200,10 +206,14 @@ class BedAssignService {
                 addr = it.dutyAddr!!,
             )
         }
-        val sortedList = list.sortedBy { it.doubleDistance }
+        // TODO 페이징 처리??
+        val sortedList = list.subList(0, 10).sortedBy { it.doubleDistance }
         return CommonResponse(mutableMapOf("count" to sortedList.size, "items" to sortedList))
     }
 
+    /**
+     * 의료진 승인
+     */
     @Transactional
     fun asgnConfirm(dto: BdasAprvDto): CommonResponse<BdasAprvResponse> {
         // TODO 몇가지 다른 경우 고려
