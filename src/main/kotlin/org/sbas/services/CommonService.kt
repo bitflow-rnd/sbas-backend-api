@@ -101,6 +101,15 @@ class CommonService {
     }
 
     /**
+     * 공통코드 그룹 등록
+     */
+    @Transactional
+    fun saveBaseCodeGrp(saveReq: BaseCodeGrpSaveReq): CommonResponse<String> {
+        baseCodeRepository.persist(saveReq.toEntity())
+        return CommonResponse("cdGrpId: ${saveReq.toEntity().id.cdGrpId}")
+    }
+
+    /**
      * 공통코드 그룹 목록
      */
     @Transactional

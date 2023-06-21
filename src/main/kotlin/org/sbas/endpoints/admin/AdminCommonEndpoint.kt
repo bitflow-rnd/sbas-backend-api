@@ -4,11 +4,13 @@ import org.eclipse.microprofile.openapi.annotations.Operation
 import org.eclipse.microprofile.openapi.annotations.tags.Tag
 import org.jboss.logging.Logger
 import org.jboss.resteasy.reactive.RestPath
+import org.sbas.dtos.BaseCodeGrpSaveReq
 import org.sbas.dtos.BaseCodeSaveReq
 import org.sbas.dtos.BaseCodeUpdateReq
 import org.sbas.services.CommonService
 import javax.annotation.security.RolesAllowed
 import javax.inject.Inject
+import javax.validation.Valid
 import javax.ws.rs.GET
 import javax.ws.rs.POST
 import javax.ws.rs.Path
@@ -24,6 +26,13 @@ class AdminCommonEndpoint {
 
     @Inject
     lateinit var commonService: CommonService
+
+    @Operation(summary = "공통코드 그룹 등록", description = "공통코드 그룹 등록")
+    @POST
+    @Path("regcodegrps")
+    fun regCodeGrps(@Valid saveReq: BaseCodeGrpSaveReq): Response {
+        return Response.ok(commonService.saveBaseCodeGrp(saveReq)).build()
+    }
 
     @Operation(summary = "공통코드 그룹 목록", description = "공통코드 그룹 목록")
     @GET
@@ -49,7 +58,7 @@ class AdminCommonEndpoint {
     @Operation(summary = "공통코드 등록", description = "공통코드 등록")
     @POST
     @Path("regcode")
-    fun regCode(baseCodeSaveReq: BaseCodeSaveReq): Response {
+    fun regCode(@Valid baseCodeSaveReq: BaseCodeSaveReq): Response {
         return Response.ok(commonService.saveBaseCode(baseCodeSaveReq)).build()
     }
 
