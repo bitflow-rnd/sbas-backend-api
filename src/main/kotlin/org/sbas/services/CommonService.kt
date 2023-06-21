@@ -1,8 +1,6 @@
 package org.sbas.services
 
-import io.quarkus.cache.CacheInvalidate
 import io.quarkus.cache.CacheKey
-import io.quarkus.cache.CacheResult
 import org.eclipse.microprofile.config.inject.ConfigProperty
 import org.jboss.logging.Logger
 import org.jboss.resteasy.reactive.multipart.FileUpload
@@ -121,10 +119,13 @@ class CommonService {
      * 공통코드 그룹 수정
      */
     @Transactional
-    fun updateBaseCdGrp(updateReq: BaseCodeUpdateReq): CommonResponse<String> {
+    fun updateBaseCdGrp(updateReq: BaseCodeGrpUpdateReq): CommonResponse<String> {
+        val baseCodeGrp = baseCodeRepository.findBaseCodeGrp(updateReq.cdGrpId) ?: throw NotFoundException("${updateReq.cdGrpId} not found")
+        baseCodeGrp.updateBaseCodeGrp(updateReq.cdGrpNm, updateReq.rmk)
+
         val baseCodeList = baseCodeRepository.findBaseCodeByCdGrpId(updateReq.cdGrpId)
         if (baseCodeList.isNotEmpty()) {
-            baseCodeList.forEach { it.updateBaseCdGrp(updateReq.cdGrpNm!!) }
+            baseCodeList.forEach { it.updateBaseCodeGrpNm(updateReq.cdGrpNm) }
             return CommonResponse("성공")
         } else {
             throw NotFoundException("${updateReq.cdGrpId} not found")

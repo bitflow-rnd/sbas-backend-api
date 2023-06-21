@@ -10,7 +10,13 @@ import javax.transaction.Transactional
 @ApplicationScoped
 class BaseCodeRepository : PanacheRepositoryBase<BaseCode, BaseCodeId> {
 
-    fun findBaseCodeByCdGrpId(cdGrpId: String): List<BaseCode> = find("cd_grp_id = '$cdGrpId' and cd_seq != 0", Sort.by("cd_id", "cd_seq")).list()
+    fun findBaseCodeByCdGrpId(cdGrpId: String): List<BaseCode> {
+        return find("cd_grp_id = '$cdGrpId' and cd_seq != 0", Sort.by("cd_id", "cd_seq")).list()
+    }
+
+    fun findBaseCodeGrp(cdGrpId: String): BaseCode? {
+        return find("cd_grp_id = '$cdGrpId' and cd_seq = 0").firstResult()
+    }
 
     fun findBaseCdGrpList(): MutableList<Any?> {
 //        val query = "select new map(a.id.cdGrpId as cdGrpId, a.cdGrpNm as cdGrpNm) from BaseCode a group by a.id.cdGrpId, a.cdGrpNm order by a.id.cdGrpId"

@@ -6,6 +6,9 @@ import org.sbas.entities.base.BaseCodeId
 import org.sbas.utils.NoArg
 import javax.validation.constraints.NotBlank
 
+/**
+ * 공통코드 그룹 등록 Dto
+ */
 @NoArg
 data class BaseCodeGrpSaveReq(
     @field: [NotBlank(message = "코드 그룹 번호는 필수 값입니다.") Length(max = 4, message = "최대 4자리입니다.")]
@@ -28,7 +31,7 @@ data class BaseCodeGrpSaveReq(
  */
 @NoArg
 data class BaseCodeSaveReq(
-    @field: NotBlank(message = "코드 그룹 번호는 필수 값입니다.")
+    @field: [NotBlank(message = "코드 그룹 번호는 필수 값입니다.") Length(max = 4, message = "최대 4자리입니다.")]
     var cdGrpId: String,
     var cdGrpNm: String,
     @field: [NotBlank(message = "코드번호는 필수 값입니다.") Length(max = 8, message = "최대 8자리입니다.")]
@@ -48,12 +51,25 @@ fun BaseCodeSaveReq.toCdIdEntity(): BaseCode {
 }
 
 /**
+ * 공통코드 그룹 수정 Dto
+ */
+@NoArg
+data class BaseCodeGrpUpdateReq(
+    @field: [NotBlank(message = "코드 그룹 번호는 필수 값입니다.") Length(max = 4, message = "최대 4자리입니다.")]
+    var cdGrpId: String,
+    var cdGrpNm: String?,
+    var rmk: String?,
+)
+
+/**
  * 공통코드 수정 Dto
  */
 @NoArg
 data class BaseCodeUpdateReq(
+    @field: [NotBlank(message = "코드 그룹 번호는 필수 값입니다.") Length(max = 4, message = "최대 4자리입니다.")]
     var cdGrpId: String,
     var cdGrpNm: String?,
+    @field: [NotBlank(message = "코드번호는 필수 값입니다.") Length(max = 8, message = "최대 8자리입니다.")]
     var cdId: String,
     var cdNm: String?,
     var cdVal: String?,

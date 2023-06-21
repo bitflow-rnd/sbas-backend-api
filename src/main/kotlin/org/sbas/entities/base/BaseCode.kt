@@ -30,8 +30,13 @@ class BaseCode(
     var rmk: String? = null, // 비고
 ) : CommonEntity() {
 
-    fun updateBaseCdGrp(cdGrpNm: String) {
-        this.cdGrpNm = cdGrpNm
+    fun updateBaseCodeGrpNm(cdGrpNm: String?) {
+        this.cdGrpNm = cdGrpNm ?: this.cdGrpNm
+    }
+
+    fun updateBaseCodeGrp(cdGrpNm: String?, rmk: String?) {
+        this.cdGrpNm = cdGrpNm ?: this.cdGrpNm
+        this.rmk = rmk ?: this.rmk
     }
 
     fun updateBaseCode(updateReq: BaseCodeUpdateReq) {

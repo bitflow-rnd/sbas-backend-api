@@ -5,6 +5,7 @@ import org.eclipse.microprofile.openapi.annotations.tags.Tag
 import org.jboss.logging.Logger
 import org.jboss.resteasy.reactive.RestPath
 import org.sbas.dtos.BaseCodeGrpSaveReq
+import org.sbas.dtos.BaseCodeGrpUpdateReq
 import org.sbas.dtos.BaseCodeSaveReq
 import org.sbas.dtos.BaseCodeUpdateReq
 import org.sbas.services.CommonService
@@ -44,8 +45,8 @@ class AdminCommonEndpoint {
     @Operation(summary = "공통코드 그룹 수정", description = "공통코드 그룹 수정")
     @POST
     @Path("modcodegrps")
-    fun modifyCodeGroups(baseCodeUpdateReq: BaseCodeUpdateReq): Response {
-        return Response.ok(commonService.updateBaseCdGrp(baseCodeUpdateReq)).build()
+    fun modifyCodeGroups(@Valid updateReq: BaseCodeGrpUpdateReq): Response {
+        return Response.ok(commonService.updateBaseCdGrp(updateReq)).build()
     }
 
     @Operation(summary = "공통코드 그룹 삭제", description = "공통코드 그룹 삭제")
