@@ -4,6 +4,7 @@ import org.hibernate.validator.constraints.Length
 import org.sbas.entities.base.BaseCode
 import org.sbas.entities.base.BaseCodeId
 import org.sbas.utils.NoArg
+import javax.validation.constraints.Min
 import javax.validation.constraints.NotBlank
 
 /**
@@ -32,22 +33,27 @@ data class BaseCodeGrpSaveReq(
 @NoArg
 data class BaseCodeSaveReq(
     @field: [NotBlank(message = "코드 그룹 번호는 필수 값입니다.") Length(max = 4, message = "최대 4자리입니다.")]
-    var cdGrpId: String,
-    var cdGrpNm: String,
+    val cdGrpId: String,
+    val cdGrpNm: String?,
     @field: [NotBlank(message = "코드번호는 필수 값입니다.") Length(max = 8, message = "최대 8자리입니다.")]
-    var cdId: String,
-    var cdNm: String,
-    var cdSeq: Int,
-)
-
-fun BaseCodeSaveReq.toCdIdEntity(): BaseCode {
-    val baseCodeId = BaseCodeId(cdGrpId = this.cdGrpId, cdId = this.cdId)
-    return BaseCode(
-        id = baseCodeId,
-        cdGrpNm = cdGrpNm,
-        cdNm = cdNm,
-        cdSeq = cdSeq,
-    )
+    val cdId: String,
+    val cdNm: String?,
+    @field: Min(value = 1)
+    val cdSeq: Int?,
+    val cdVal: String?,
+    val rmk: String?,
+) {
+    fun toEntity(): BaseCode {
+        val baseCodeId = BaseCodeId(cdGrpId = this.cdGrpId, cdId = this.cdId)
+        return BaseCode(
+            id = baseCodeId,
+            cdGrpNm = cdGrpNm,
+            cdNm = cdNm,
+            cdSeq = cdSeq,
+            cdVal = cdVal,
+            rmk = rmk,
+        )
+    }
 }
 
 /**
@@ -73,12 +79,13 @@ data class BaseCodeUpdateReq(
     var cdId: String,
     var cdNm: String?,
     var cdVal: String?,
+    @field: Min(value = 1)
     var cdSeq: Int?,
     var rmk: String?,
-)
-
-fun BaseCodeUpdateReq.getId(): BaseCodeId {
-    return BaseCodeId(cdGrpId = this.cdGrpId, cdId = this.cdId)
+) {
+    fun getId(): BaseCodeId {
+        return BaseCodeId(cdGrpId = this.cdGrpId, cdId = this.cdId)
+    }
 }
 
 @NoArg

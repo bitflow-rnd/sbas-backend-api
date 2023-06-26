@@ -9,6 +9,7 @@ import org.sbas.dtos.*
 import org.sbas.entities.base.BaseAttc
 import org.sbas.entities.base.BaseCode
 import org.sbas.entities.base.BaseCodeEgen
+import org.sbas.entities.base.BaseCodeId
 import org.sbas.handlers.FileHandler
 import org.sbas.repositories.BaseAttcRepository
 import org.sbas.repositories.BaseCodeEgenRepository
@@ -52,25 +53,116 @@ class CommonService {
     private lateinit var serverdomain: String
 
     /**
-     * E-GEN 공통코드 목록 조회
-     * @param cmMid 대분류 코드
+     * 공통코드 그룹 목록 조회
      */
     @Transactional
-//    @CacheResult(cacheName = "cmMid")
-    fun findCodeEgenList(cmMid: String): CommonResponse<List<BaseCodeEgen>> {
-        return CommonResponse(egenCodeRepository.findCodeEgenByCmMid(cmMid = cmMid))
+    fun findBaseCdGrpList(): CommonResponse<*> {
+        return CommonResponse(baseCodeRepository.findBaseCodeGrpList())
+    }
+
+    /**
+     * 공통코드 그룹 등록
+     */
+    @Transactional
+    fun saveBaseCodeGrp(saveReq: BaseCodeGrpSaveReq): CommonResponse<String> {
+        val baseCodeGrp = baseCodeRepository.findBaseCodeGrp(saveReq.cdGrpId)
+        if (baseCodeGrp != null) {
+            throw CustomizedException("${saveReq.cdGrpId} 이미 등록되어 있습니다.", Response.Status.CONFLICT)
+        }
+        baseCodeRepository.persist(saveReq.toEntity())
+
+        return CommonResponse("cdGrpId: ${saveReq.cdGrpId}")
+    }
+
+    /**
+     * 공통코드 그룹 수정
+     */
+    @Transactional
+    fun updateBaseCdGrp(updateReq: BaseCodeGrpUpdateReq): CommonResponse<String> {
+        val baseCodeGrp = baseCodeRepository.findBaseCodeGrp(updateReq.cdGrpId) ?: throw NotFoundException("${updateReq.cdGrpId} not found")
+        
+        // 코드 그룹 항목 수정
+        baseCodeGrp.changeBaseCodeGrp(updateReq.cdGrpNm, updateReq.rmk)
+
+        // 같은 코드 그룹 ID인 항목들 변경
+        val baseCodeList = baseCodeRepository.findBaseCodeByCdGrpId(updateReq.cdGrpId)
+        if (baseCodeList.isNotEmpty()) {
+            baseCodeList.forEach { it.changeBaseCodeGrpNm(updateReq.cdGrpNm) }
+            return CommonResponse("수정 성공")
+        } else {
+            throw NotFoundException("${updateReq.cdGrpId} not found")
+        }
+    }
+
+    /**
+     * 공통코드 그룹 삭제
+     */
+    @Transactional
+    fun deleteBaseCdGrp(cdGrpId: String): CommonResponse<String> {
+        val baseCodeList = baseCodeRepository.findBaseCodeByCdGrpId(cdGrpId)
+        val baseCodeGrp = baseCodeRepository.findBaseCodeGrp(cdGrpId) ?: throw NotFoundException("$cdGrpId not found")
+        
+        // cdSeq 가 0이 아닌 항목들이 존재하면 삭제 X
+        if (baseCodeList.any { it.cdSeq != 0 }) {
+            throw CustomizedException("하위 항목들이 존재합니다.", Response.Status.CONFLICT)
+        }
+        
+        baseCodeRepository.delete(baseCodeGrp)
+        
+        return CommonResponse("삭제 성공")
     }
 
     /**
      * 공통코드 목록 조회
-     * @param cdGrpId 코드 그룹 ID
      */
     @Transactional
 //    @CacheResult(cacheName = "cdGrpId")
     fun findBaseCodeList(@CacheKey cdGrpId: String): CommonResponse<List<BaseCodeResponse>> {
-        val findBaseCodeList = baseCodeRepository.findBaseCodeByCdGrpId(cdGrpId = cdGrpId)
-        return toBaseCodeResponse(findBaseCodeList)
+        val baseCodeList = baseCodeRepository.findBaseCodeByCdGrpId(cdGrpId = cdGrpId)
+        return toBaseCodeResponse(baseCodeList)
     }
+
+    /**
+     * 공통코드 등록
+     */
+    @Transactional
+    fun saveBaseCode(saveReq: BaseCodeSaveReq): CommonResponse<String> {
+        val findBaseCode = baseCodeRepository.findById(BaseCodeId(saveReq.cdGrpId, saveReq.cdId))
+        if (findBaseCode != null) {
+            throw CustomizedException("${saveReq.cdId} 이미 등록되어 있습니다.", Response.Status.CONFLICT)
+        }
+        baseCodeRepository.persist(saveReq.toEntity())
+
+        return CommonResponse("cdId: ${saveReq.cdId}")
+    }
+
+    /**
+     * 공통코드 수정
+     */
+    @Transactional
+//    @CacheInvalidate(cacheName = "cdGrpId")
+    fun updateBaseCode(updateReq: BaseCodeUpdateReq): CommonResponse<String> {
+        val baseCodeId = updateReq.getId()
+        val findBaseCode = baseCodeRepository.findById(baseCodeId) ?: throw NotFoundException("${baseCodeId.cdId} not found")
+
+        findBaseCode.changeBaseCode(updateReq)
+
+        return CommonResponse("수정 성공")
+    }
+
+    /**
+     * 공통코드 삭제
+     */
+    @Transactional
+//    @CacheInvalidate(cacheName = "cdGrpId")
+    fun deleteBaseCode(cdId: String): CommonResponse<String> {
+        val baseCode = baseCodeRepository.findBaseCodeByCdId(cdId) ?: throw NotFoundException("$cdId not found")
+
+        baseCodeRepository.delete(baseCode)
+        
+        return CommonResponse("삭제 성공")
+    }
+
 
     /**
      * 시/도 목록 조회
@@ -99,87 +191,13 @@ class CommonService {
     }
 
     /**
-     * 공통코드 그룹 등록
+     * E-GEN 공통코드 목록 조회
+     * @param cmMid 대분류 코드
      */
     @Transactional
-    fun saveBaseCodeGrp(saveReq: BaseCodeGrpSaveReq): CommonResponse<String> {
-        baseCodeRepository.persist(saveReq.toEntity())
-        return CommonResponse("cdGrpId: ${saveReq.toEntity().id.cdGrpId}")
-    }
-
-    /**
-     * 공통코드 그룹 목록
-     */
-    @Transactional
-    fun findBaseCdGrpList(): CommonResponse<*> {
-        return CommonResponse(baseCodeRepository.findBaseCdGrpList())
-    }
-
-    /**
-     * 공통코드 그룹 수정
-     */
-    @Transactional
-    fun updateBaseCdGrp(updateReq: BaseCodeGrpUpdateReq): CommonResponse<String> {
-        val baseCodeGrp = baseCodeRepository.findBaseCodeGrp(updateReq.cdGrpId) ?: throw NotFoundException("${updateReq.cdGrpId} not found")
-        baseCodeGrp.updateBaseCodeGrp(updateReq.cdGrpNm, updateReq.rmk)
-
-        val baseCodeList = baseCodeRepository.findBaseCodeByCdGrpId(updateReq.cdGrpId)
-        if (baseCodeList.isNotEmpty()) {
-            baseCodeList.forEach { it.updateBaseCodeGrpNm(updateReq.cdGrpNm) }
-            return CommonResponse("성공")
-        } else {
-            throw NotFoundException("${updateReq.cdGrpId} not found")
-        }
-    }
-
-    /**
-     * 공통코드 그룹 삭제
-     */
-    @Transactional
-    fun deleteBaseCdGrp(cdGrpId: String): CommonResponse<String> {
-        val findBaseCode = baseCodeRepository.findBaseCodeByCdGrpId(cdGrpId)
-        if (findBaseCode.isNotEmpty()) {
-            findBaseCode.forEach{ baseCodeRepository.delete(it) }
-            return CommonResponse("삭제 성공")
-        }
-        return CommonResponse("삭제 실패")
-    }
-
-    /**
-     * 공통코드 등록
-     */
-    @Transactional
-    fun saveBaseCode(saveReq: BaseCodeSaveReq): CommonResponse<BaseCode?> {
-        val findById = baseCodeRepository.findById(saveReq.toCdIdEntity().id)
-        when (findById) {
-            null -> {
-                baseCodeRepository.persist(saveReq.toCdIdEntity())
-                saveReq.toCdIdEntity()
-            }
-        }
-        return CommonResponse(findById)
-    }
-
-    /**
-     * 공통코드 수정
-     */
-    @Transactional
-//    @CacheInvalidate(cacheName = "cdGrpId")
-    fun updateBaseCode(updateReq: BaseCodeUpdateReq): CommonResponse<String> {
-        val baseCodeId = updateReq.getId()
-        val findBaseCode = baseCodeRepository.findById(baseCodeId) ?: throw NotFoundException("$baseCodeId Not found")
-        findBaseCode.updateBaseCode(updateReq)
-        return CommonResponse("수정 성공")
-    }
-
-    /**
-     * 공통코드 삭제
-     */
-    @Transactional
-//    @CacheInvalidate(cacheName = "cdGrpId")
-    fun deleteBaseCode(updateReq: BaseCodeUpdateReq): CommonResponse<Boolean> {
-        val baseCodeId = updateReq.getId()
-        return CommonResponse(baseCodeRepository.deleteById(baseCodeId))
+//    @CacheResult(cacheName = "cmMid")
+    fun findCodeEgenList(cmMid: String): CommonResponse<List<BaseCodeEgen>> {
+        return CommonResponse(egenCodeRepository.findCodeEgenByCmMid(cmMid = cmMid))
     }
 
     /**
@@ -263,8 +281,8 @@ class CommonService {
     /**
      * BaseCode -> BaseCodeResponse 변환
      */
-    private fun toBaseCodeResponse(findBaseCodeList: List<BaseCode>) =
-        CommonResponse(findBaseCodeList.map {
+    private fun toBaseCodeResponse(baseCodeList: List<BaseCode>) =
+        CommonResponse(baseCodeList.map {
             BaseCodeResponse(
                 cdGrpId = it.id.cdGrpId,
                 cdGrpNm = it.cdGrpNm,

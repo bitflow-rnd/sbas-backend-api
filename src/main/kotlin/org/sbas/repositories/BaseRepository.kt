@@ -10,19 +10,24 @@ import javax.transaction.Transactional
 @ApplicationScoped
 class BaseCodeRepository : PanacheRepositoryBase<BaseCode, BaseCodeId> {
 
-    fun findBaseCodeByCdGrpId(cdGrpId: String): List<BaseCode> {
-        return find("cd_grp_id = '$cdGrpId' and cd_seq != 0", Sort.by("cd_id", "cd_seq")).list()
-    }
-
     fun findBaseCodeGrp(cdGrpId: String): BaseCode? {
-        return find("cd_grp_id = '$cdGrpId' and cd_seq = 0").firstResult()
+        return find("cd_grp_id = '$cdGrpId' and cd_seq = 0 and cd_grp_id = cd_id").firstResult()
     }
 
-    fun findBaseCdGrpList(): MutableList<Any?> {
-//        val query = "select new map(a.id.cdGrpId as cdGrpId, a.cdGrpNm as cdGrpNm) from BaseCode a group by a.id.cdGrpId, a.cdGrpNm order by a.id.cdGrpId"
-        val query2 = "select new map(a.id.cdGrpId as cdGrpId, a.cdGrpNm as cdGrpNm, a.rmk as rmk) from BaseCode a where a.id.cdGrpId = a.id.cdId and cdSeq = 0 order by a.id.cdGrpId"
-        return getEntityManager().createQuery(query2).resultList
+    fun findBaseCodeGrpList(): MutableList<Any?> {
+        val query = "select new map(a.id.cdGrpId as cdGrpId, a.cdGrpNm as cdGrpNm, a.rmk as rmk) from BaseCode a " +
+                "where a.id.cdGrpId = a.id.cdId and cdSeq = 0 order by a.id.cdGrpId"
+        return getEntityManager().createQuery(query).resultList
     }
+
+    fun findBaseCodeByCdGrpId(cdGrpId: String): MutableList<BaseCode> {
+        return find("cd_grp_id = '$cdGrpId' and cd_seq != 0", Sort.by("cd_id", "cd_seq")).list().toMutableList()
+    }
+
+    fun findBaseCodeByCdId(cdId: String): BaseCode? {
+        return find("cd_id = '$cdId'").firstResult()
+    }
+
 
     @Transactional
     fun findCdIdByAddrNm(addrNm: String): SidoSiGunGuDto {
@@ -46,7 +51,6 @@ class BaseCodeRepository : PanacheRepositoryBase<BaseCode, BaseCodeId> {
         if(findCode == null) return ""
         else return findCode.cdNm ?: ""
     }
-
 }
 
 @ApplicationScoped

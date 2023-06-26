@@ -31,7 +31,7 @@ class AdminCommonEndpoint {
     @Operation(summary = "공통코드 그룹 등록", description = "공통코드 그룹 등록")
     @POST
     @Path("regcodegrps")
-    fun regCodeGrps(@Valid saveReq: BaseCodeGrpSaveReq): Response {
+    fun regCodeGroups(@Valid saveReq: BaseCodeGrpSaveReq): Response {
         return Response.ok(commonService.saveBaseCodeGrp(saveReq)).build()
     }
 
@@ -72,9 +72,9 @@ class AdminCommonEndpoint {
 
     @Operation(summary = "공통코드 삭제", description = "공통코드 삭제")
     @POST
-    @Path("delcode")
-    fun deleteCode(baseCodeUpdateReq: BaseCodeUpdateReq): Response {
-        return Response.ok(commonService.deleteBaseCode(baseCodeUpdateReq)).build()
+    @Path("delcode/{cdId}")
+    fun deleteCode(@RestPath cdId: String): Response {
+        return Response.ok(commonService.deleteBaseCode(cdId)).build()
     }
 
     @Operation(summary = "", description = "")
