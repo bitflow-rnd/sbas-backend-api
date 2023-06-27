@@ -4,6 +4,7 @@ import org.sbas.constants.UserStatCd
 import org.sbas.entities.info.InfoUser
 import org.sbas.utils.NoArg
 import java.time.Instant
+import javax.validation.constraints.NotBlank
 import javax.ws.rs.QueryParam
 
 /**
@@ -42,11 +43,14 @@ data class InfoUserSearchParam(
  */
 @NoArg
 data class InfoUserSaveDto(
+    @field: NotBlank
     val id: String,
+    @field: NotBlank
     val pw: String?,
     val userNm: String?,
     val userCi: String?,
     val pushKey: String?,
+    @field: NotBlank
     val telno: String?,
     val jobCd: String?,
     val ocpCd: String?,

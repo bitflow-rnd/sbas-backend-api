@@ -32,8 +32,10 @@ class BedAssignService {
     @Inject private lateinit var bdasAprvRepository: BdasAprvRepository
     @Inject private lateinit var bdasTrnsRepository: BdasTrnsRepository
     @Inject private lateinit var bdasAdmsRepository: BdasAdmsRepository
+
     @Inject private lateinit var infoPtRepository: InfoPtRepository
     @Inject private lateinit var infoHospRepository: InfoHospRepository
+
     @Inject private lateinit var baseCodeRepository: BaseCodeRepository
     @Inject private lateinit var geoHandler: GeocodingHandler
     @Inject private lateinit var firebaseService: FirebaseService
@@ -186,11 +188,15 @@ class BedAssignService {
     @Transactional
     fun getAvalHospList(ptId: String, bdasSeq: Int): CommonResponse<*> {
         val findBdasReq = bdasReqRepository.findByPtIdAndBdasSeq(ptId, bdasSeq) ?: throw NotFoundException("bdasReq not found")
+        
+        // dstrCd1, dstrCd2 구하기
         val split = findBdasReq.dprtDstrBascAddr!!.split(" ")
         val dstrCd1 = StringUtils.getDstrCd1(split[0])
         val findBaseCode = baseCodeRepository.findByDstr1CdAndCdNm(dstrCd1, split[1]) ?: throw NotFoundException("baseCode not found")
-
+        
+        // dstrCd1, dstrCd2에 해당하는 infoHosp 목록
         val infoHospList = infoHospRepository.findListByDstrCd1AndDstrCd2(dstrCd1, findBaseCode.id.cdId)
+        log.debug("getAvalHospList >>>>>>>>>>>>>> ${infoHospList.size}")
         val list = infoHospList.map {
             val distance = calculateDistance(
                 lat1 = findBdasReq.dprtDstrLat!!.toDouble(),
@@ -356,6 +362,13 @@ class BedAssignService {
                 timeLineList.add(BdasTimeLineDto("이송대기", TimeLineStatCd.CLOSED.cdNm))
                 timeLineList.add(closedBdasAdms)
             }
+            BedStatCd.BAST0006.name -> {
+                timeLineList.addAll(bdasReqRepository.findTimeLineInfo(ptId, bdasSeq))
+                timeLineList.addAll(bdasReqAprvRepository.findTimeLineInfo(ptId, bdasSeq))
+                timeLineList.addAll(bdasAprvRepository.findTimeLineInfo(ptId, bdasSeq))
+                timeLineList.addAll(bdasTrnsRepository.findTimeLineInfo(ptId, bdasSeq))
+                timeLineList.add(closedBdasAdms)
+            }
         }
         return CommonResponse(TimeLineDtoList(timeLineList.size, timeLineList))
     }
@@ -424,5 +437,9 @@ class BedAssignService {
         result < 1.000 -> "${(result * 1000.0).roundToInt()}m"
         result >= 1.000 -> "${(result * 100.0).roundToInt() / 100.0}km"
         else -> ""
+    }
+
+    private fun createDefaultBdasReq(bdasReqId: BdasReqId): BdasReq {
+        return BdasReq.createDefault(bdasReqId)
     }
 }

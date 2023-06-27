@@ -118,7 +118,18 @@ class BdasAprvRepository: PanacheRepositoryBase<BdasAprv, BdasAprvId> {
 }
 
 @ApplicationScoped
-class BdasTrnsRepository: PanacheRepositoryBase<BdasTrns, BdasTrnsId>
+class BdasTrnsRepository: PanacheRepositoryBase<BdasTrns, BdasTrnsId> {
+
+    fun findTimeLineInfo(ptId: String, bdasSeq: Int): MutableList<BdasTimeLineDto> {
+        val query = "select new org.sbas.dtos.bdas.BdasTimeLineDto('이송', iu.instNm || ' / ' || iu.userNm, " +
+                "bt.updtDttm, bt.msg, '${TimeLineStatCd.COMPLETE.cdNm}' ) " +
+                "from BdasTrns bt " +
+                "join InfoUser iu on iu.id = bt.updtUserId " +
+                "where bt.id.ptId = '$ptId' and bt.id.bdasSeq = $bdasSeq"
+
+        return getEntityManager().createQuery(query, BdasTimeLineDto::class.java).resultList
+    }
+}
 
 @ApplicationScoped
 class BdasAdmsRepository: PanacheRepositoryBase<BdasAdms, BdasAdmsId>

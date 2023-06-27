@@ -16,7 +16,7 @@ class ConstraintViolationMapper : ExceptionMapper<ConstraintViolationException> 
 
     override fun toResponse(e: ConstraintViolationException): Response {
         return Response.status(Response.Status.BAD_REQUEST)
-            .entity(CommonResponse(SbasConst.ResCode.FAIL,
+            .entity(CommonResponse(SbasConst.ResCode.FAIL_VALIDATION,
                 null,
                 e.constraintViolations.map {
                     PropertyValidationError(

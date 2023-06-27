@@ -131,8 +131,8 @@ class InfoHospRepository : PanacheRepositoryBase<InfoHosp, String> {
         return InfoHospDetailDto(findHosp, count)
     }
 
-    fun findByHospIdList(list: List<String>): List<InfoHosp> {
-        val param = list.joinToString(
+    fun findByHospIdList(hospList: List<String>): List<InfoHosp> {
+        val param = hospList.joinToString(
             separator = "','",
             prefix = "'",
             postfix = "'",

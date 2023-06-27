@@ -156,9 +156,9 @@ class CommonService {
     @Transactional
 //    @CacheInvalidate(cacheName = "cdGrpId")
     fun deleteBaseCode(cdId: String): CommonResponse<String> {
-        val baseCode = baseCodeRepository.findBaseCodeByCdId(cdId) ?: throw NotFoundException("$cdId not found")
+        val findBaseCode = baseCodeRepository.findBaseCodeByCdId(cdId) ?: throw NotFoundException("$cdId not found")
 
-        baseCodeRepository.delete(baseCode)
+        baseCodeRepository.delete(findBaseCode)
         
         return CommonResponse("삭제 성공")
     }
