@@ -337,10 +337,11 @@ class BedAssignService {
     fun getTimeLine(ptId: String, bdasSeq: Int): CommonResponse<*> {
         val bedStatCd = bdasReqRepository.findBedStat(ptId, bdasSeq)
         val timeLineList = mutableListOf<BdasTimeLineDto>()
+
         val closedBdasAprv = BdasTimeLineDto("병상배정", TimeLineStatCd.CLOSED.cdNm)
         val closedBdasTrans = BdasTimeLineDto("이송", TimeLineStatCd.CLOSED.cdNm)
         val closedBdasAdms = BdasTimeLineDto("입원", TimeLineStatCd.CLOSED.cdNm)
-        log.debug(bedStatCd)
+
         when (bedStatCd) {
             BedStatCd.BAST0003.name -> {
                 val list = bdasReqRepository.findTimeLineInfo(ptId, bdasSeq)
@@ -359,7 +360,7 @@ class BedAssignService {
                 timeLineList.addAll(bdasReqRepository.findTimeLineInfo(ptId, bdasSeq))
                 timeLineList.addAll(bdasReqAprvRepository.findTimeLineInfo(ptId, bdasSeq))
                 timeLineList.addAll(bdasAprvRepository.findTimeLineInfo(ptId, bdasSeq))
-                timeLineList.add(BdasTimeLineDto("이송대기", TimeLineStatCd.CLOSED.cdNm))
+                timeLineList.add(BdasTimeLineDto("이송대기", TimeLineStatCd.SUSPEND.cdNm))
                 timeLineList.add(closedBdasAdms)
             }
             BedStatCd.BAST0006.name -> {
@@ -368,6 +369,9 @@ class BedAssignService {
                 timeLineList.addAll(bdasAprvRepository.findTimeLineInfo(ptId, bdasSeq))
                 timeLineList.addAll(bdasTrnsRepository.findTimeLineInfo(ptId, bdasSeq))
                 timeLineList.add(closedBdasAdms)
+            }
+            BedStatCd.BAST0007.name -> {
+
             }
         }
         return CommonResponse(TimeLineDtoList(timeLineList.size, timeLineList))
