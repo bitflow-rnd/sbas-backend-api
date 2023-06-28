@@ -63,6 +63,11 @@ class InfoPtRepository : PanacheRepositoryBase<InfoPt, String> {
         return getEntityManager().createNativeQuery(query).singleResult as Int
     }
 
+    fun findBedStat(ptId: String, bdasSeq: Int): String {
+        val query = "select fn_get_bed_asgn_stat('${ptId}', ${bdasSeq}) as test"
+        return entityManager.createNativeQuery(query).singleResult as String
+    }
+
 //    fun findBdasHisInfo(ptId: String): MutableList<BdasHisInfo> {
 ////        val query = "select new org.sbas.dtos.info.BdasHisInfo(b.id.ptId, b.id.bdasSeq, " +
 ////                "be.diagNm, ba.hospId, '', ba.updtDttm, '') " +

@@ -97,6 +97,8 @@ data class InfoPtBasicInfo(
     val nokNm: String?,
     val job: String?,
     val attcId: String?,
+    val bedStatCd: String?,
+    val bedStatNm: String?,
 //    val undrDsesCd: String?,
 ) {
 //    val undrDsesCdList: MutableList<String> = mutableListOf()
