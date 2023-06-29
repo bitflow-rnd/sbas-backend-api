@@ -3,16 +3,12 @@ package org.sbas.services
 import org.eclipse.microprofile.jwt.JsonWebToken
 import org.jboss.logging.Logger
 import org.jboss.resteasy.reactive.RestResponse
-import org.sbas.dtos.*
-import org.sbas.dtos.info.FireStatnSaveReq
-import org.sbas.dtos.info.InfoCrewRegDto
-import org.sbas.dtos.info.InfoHospDetailDto
-import org.sbas.dtos.info.InfoInstUpdateReq
+import org.sbas.dtos.PagingListDto
+import org.sbas.dtos.info.*
 import org.sbas.entities.info.InfoCrew
 import org.sbas.entities.info.InfoCrewId
 import org.sbas.entities.info.InfoInst
 import org.sbas.entities.info.update
-import org.sbas.parameters.InstCdParameters
 import org.sbas.parameters.SearchHospRequest
 import org.sbas.repositories.InfoCrewRepository
 import org.sbas.repositories.InfoHospRepository
@@ -121,13 +117,24 @@ class OrganiztnService {
         }
     }
 
-
     /**
      * 구급대 목록
      */
     @Transactional
-    fun findFireStatns(param: InstCdParameters): List<InfoInst> {
-        return infoInstRepository.findFireStatns(param)
+    fun findFireStatns(param: FireStatnSearchParam): CommonResponse<*> {
+        // Kotlin JDSL이 연관관계가 없는 엔티티의 left join을 지원하지 않아서 아래와 같이 작성
+        val fireStatnList = infoInstRepository.findFireStatns(param)
+        val crewCountList = infoCrewRepository.countInfoCrewsByInstId()
+
+        fireStatnList.forEach { dto ->
+            crewCountList.forEach {
+                if (dto.instId == it.instId) {
+                    dto.crewCount = it.crewCount
+                }
+            }
+        }
+
+        return CommonResponse(mutableMapOf("count" to fireStatnList.size, "items" to fireStatnList))
     }
 
     @Transactional

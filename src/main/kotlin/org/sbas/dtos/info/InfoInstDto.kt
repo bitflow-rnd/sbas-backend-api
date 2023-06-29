@@ -51,3 +51,27 @@ data class FireStatnSaveReq(
     }
 }
 
+@NoArg
+data class FireStatnSearchParam(
+    val instId: String?,
+    val instNm: String?,
+    val dstrCd1: String?,
+    val dstrCd2: String?,
+    val chrgTelno: String?,
+)
+
+@NoArg
+data class FireStatnListDto(
+    val instId: String,
+    val instNm: String?,
+    val dstrCd1: String?,
+    val dstrCd2: String?,
+    val chrgTelno: String?,
+) {
+    var crewCount: Long = 0L
+}
+
+data class CrewCount(
+    val crewCount: Long,
+    val instId: String,
+)

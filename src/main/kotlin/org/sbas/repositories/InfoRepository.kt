@@ -2,15 +2,16 @@ package org.sbas.repositories
 
 import com.linecorp.kotlinjdsl.QueryFactory
 import com.linecorp.kotlinjdsl.QueryFactoryImpl
+import com.linecorp.kotlinjdsl.listQuery
 import com.linecorp.kotlinjdsl.query.creator.CriteriaQueryCreatorImpl
 import com.linecorp.kotlinjdsl.query.creator.SubqueryCreatorImpl
+import com.linecorp.kotlinjdsl.query.spec.ExpressionOrderSpec
+import com.linecorp.kotlinjdsl.querydsl.expression.col
 import io.quarkus.hibernate.orm.panache.kotlin.PanacheQuery
 import io.quarkus.hibernate.orm.panache.kotlin.PanacheRepositoryBase
 import org.jboss.logging.Logger
-import org.sbas.dtos.info.InfoHospDetailDto
-import org.sbas.dtos.info.InfoPtSearchDto
+import org.sbas.dtos.info.*
 import org.sbas.entities.info.*
-import org.sbas.parameters.InstCdParameters
 import org.sbas.parameters.SearchHospRequest
 import javax.annotation.PostConstruct
 import javax.enterprise.context.ApplicationScoped
@@ -90,6 +91,14 @@ class InfoPtRepository : PanacheRepositoryBase<InfoPt, String> {
 @ApplicationScoped
 class InfoCrewRepository : PanacheRepositoryBase<InfoCrew, InfoCrewId> {
     fun findInfoCrews(instId: String) = find("inst_id = '$instId'").list()
+
+    fun countInfoCrewsByInstId(): MutableList<CrewCount> {
+        val query = "select new org.sbas.dtos.info.CrewCount(count(ic.id.crewId), ic.id.instId) " +
+                "from InfoCrew ic " +
+                "group by ic.id.instId "
+
+        return getEntityManager().createQuery(query, CrewCount::class.java).resultList
+    }
 }
 
 @ApplicationScoped
@@ -153,6 +162,18 @@ class InfoHospRepository : PanacheRepositoryBase<InfoHosp, String> {
 @ApplicationScoped
 class InfoInstRepository : PanacheRepositoryBase<InfoInst, String> {
 
+    @Inject
+    private lateinit var entityManager: EntityManager
+    private lateinit var queryFactory: QueryFactory
+
+    @PostConstruct
+    fun initialize() {
+        queryFactory = QueryFactoryImpl(
+            criteriaQueryCreator = CriteriaQueryCreatorImpl(entityManager),
+            subqueryCreator = SubqueryCreatorImpl()
+        )
+    }
+
     fun findInstCodeList(dstrCd1: String, dstrCd2: String, instTypeCd: String) =
         find(
             "select i from InfoInst i where " +
@@ -161,8 +182,31 @@ class InfoInstRepository : PanacheRepositoryBase<InfoInst, String> {
                 "('$instTypeCd' = '' or i.instTypeCd = '$instTypeCd')"
         ).list()
 
-    fun findFireStatns(param: InstCdParameters) =
-        find("inst_type_cd = 'ORGN0002' and dstr_cd_1 = ?1 and dstr_cd_2 = ?2", param.dstrCd1, param.dstrCd2).list()
+    fun findFireStatns(param: FireStatnSearchParam): List<FireStatnListDto> {
+
+        val fireStatnList: List<FireStatnListDto> = queryFactory.listQuery {
+            selectMulti(
+                col(InfoInst::id), col(InfoInst::instNm),
+                col(InfoInst::dstrCd1), col(InfoInst::dstrCd2),
+                col(InfoInst::chrgTelno),
+            )
+            from(entity(InfoInst::class))
+            whereAnd(
+                col(InfoInst::instTypeCd).equal("ORGN0002"),
+                param.instId?.run { col(InfoInst::id).equal(this) },
+                param.instNm?.run { col(InfoInst::instNm).equal(this) },
+                param.dstrCd1?.run { col(InfoInst::dstrCd1).equal(this) },
+                param.dstrCd2?.run { col(InfoInst::dstrCd2).equal(this) },
+                param.chrgTelno?.run { col(InfoInst::chrgTelno).like("%$this%") },
+            )
+            orderBy(
+                ExpressionOrderSpec(col(InfoInst::id), ascending = false),
+                ExpressionOrderSpec(col(InfoInst::rgstDttm), ascending = false),
+                ExpressionOrderSpec(col(InfoInst::instNm), ascending = false),
+            )
+        }
+        return fireStatnList
+    }
 }
 
 @ApplicationScoped
