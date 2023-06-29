@@ -122,7 +122,7 @@ class OrganiztnService {
      */
     @Transactional
     fun findFireStatns(param: FireStatnSearchParam): CommonResponse<*> {
-        // Kotlin JDSL이 연관관계가 없는 엔티티의 left join을 지원하지 않아서 아래와 같이 작성
+        // Kotlin JDSL이 연관관계가 없는 엔티티의 left join을 지원하지 않아서 아래와 같이 작성했습니다.
         val fireStatnList = infoInstRepository.findFireStatns(param)
         val crewCountList = infoCrewRepository.countInfoCrewsByInstId()
 

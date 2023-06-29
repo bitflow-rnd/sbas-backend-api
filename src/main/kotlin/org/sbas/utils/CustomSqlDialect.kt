@@ -11,6 +11,7 @@ class CustomSqlDialect : PostgreSQL10Dialect() {
     init {
         registerFunction("fn_get_bed_asgn_stat", StandardSQLFunction("fn_get_bed_asgn_stat", StandardBasicTypes.STRING))
         registerFunction("fn_get_cd_nm", StandardSQLFunction("fn_get_cd_nm", StandardBasicTypes.STRING))
+        registerFunction("fn_get_dstr_cd2_nm", StandardSQLFunction("fn_get_dstr_cd2_nm", StandardBasicTypes.STRING))
         registerFunction("fn_get_age", StandardSQLFunction("fn_get_age", StandardBasicTypes.INTEGER))
         registerFunction("split_part", StandardSQLFunction("split_part", StandardBasicTypes.STRING))
     }

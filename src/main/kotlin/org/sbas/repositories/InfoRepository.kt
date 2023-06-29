@@ -7,6 +7,7 @@ import com.linecorp.kotlinjdsl.query.creator.CriteriaQueryCreatorImpl
 import com.linecorp.kotlinjdsl.query.creator.SubqueryCreatorImpl
 import com.linecorp.kotlinjdsl.query.spec.ExpressionOrderSpec
 import com.linecorp.kotlinjdsl.querydsl.expression.col
+import com.linecorp.kotlinjdsl.querydsl.expression.function
 import io.quarkus.hibernate.orm.panache.kotlin.PanacheQuery
 import io.quarkus.hibernate.orm.panache.kotlin.PanacheRepositoryBase
 import org.jboss.logging.Logger
@@ -18,6 +19,7 @@ import javax.enterprise.context.ApplicationScoped
 import javax.inject.Inject
 import javax.persistence.EntityManager
 import javax.ws.rs.NotFoundException
+import kotlin.reflect.jvm.javaGetter
 
 @ApplicationScoped
 class InfoPtRepository : PanacheRepositoryBase<InfoPt, String> {
@@ -187,7 +189,8 @@ class InfoInstRepository : PanacheRepositoryBase<InfoInst, String> {
         val fireStatnList: List<FireStatnListDto> = queryFactory.listQuery {
             selectMulti(
                 col(InfoInst::id), col(InfoInst::instNm),
-                col(InfoInst::dstrCd1), col(InfoInst::dstrCd2),
+                function("fn_get_cd_nm", String::class.java, literal("SIDO"), col(InfoInst::dstrCd1)),
+                function("fn_get_dstr_cd2_nm", String::class.java, col(InfoInst::dstrCd1), col(InfoInst::dstrCd2)),
                 col(InfoInst::chrgTelno),
             )
             from(entity(InfoInst::class))
