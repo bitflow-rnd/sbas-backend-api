@@ -7,7 +7,6 @@ import com.linecorp.kotlinjdsl.query.creator.CriteriaQueryCreatorImpl
 import com.linecorp.kotlinjdsl.query.creator.SubqueryCreatorImpl
 import com.linecorp.kotlinjdsl.query.spec.ExpressionOrderSpec
 import com.linecorp.kotlinjdsl.querydsl.expression.col
-import com.linecorp.kotlinjdsl.querydsl.expression.function
 import io.quarkus.hibernate.orm.panache.kotlin.PanacheQuery
 import io.quarkus.hibernate.orm.panache.kotlin.PanacheRepositoryBase
 import org.jboss.logging.Logger
@@ -19,7 +18,6 @@ import javax.enterprise.context.ApplicationScoped
 import javax.inject.Inject
 import javax.persistence.EntityManager
 import javax.ws.rs.NotFoundException
-import kotlin.reflect.jvm.javaGetter
 
 @ApplicationScoped
 class InfoPtRepository : PanacheRepositoryBase<InfoPt, String> {
@@ -94,12 +92,12 @@ class InfoPtRepository : PanacheRepositoryBase<InfoPt, String> {
 class InfoCrewRepository : PanacheRepositoryBase<InfoCrew, InfoCrewId> {
     fun findInfoCrews(instId: String) = find("inst_id = '$instId'").list()
 
-    fun countInfoCrewsByInstId(): MutableList<CrewCount> {
-        val query = "select new org.sbas.dtos.info.CrewCount(count(ic.id.crewId), ic.id.instId) " +
+    fun countInfoCrewsByInstId(): MutableList<CrewCountList> {
+        val query = "select new org.sbas.dtos.info.CrewCountList(count(ic.id.crewId), ic.id.instId) " +
                 "from InfoCrew ic " +
                 "group by ic.id.instId "
 
-        return getEntityManager().createQuery(query, CrewCount::class.java).resultList
+        return getEntityManager().createQuery(query, CrewCountList::class.java).resultList
     }
 }
 

@@ -2,6 +2,7 @@ package org.sbas.dtos.info
 
 import org.sbas.entities.info.InfoInst
 import org.sbas.utils.NoArg
+import javax.ws.rs.QueryParam
 
 @NoArg
 data class InfoInstUpdateReq(
@@ -53,11 +54,11 @@ data class FireStatnSaveReq(
 
 @NoArg
 data class FireStatnSearchParam(
-    val instId: String?,
-    val instNm: String?,
-    val dstrCd1: String?,
-    val dstrCd2: String?,
-    val chrgTelno: String?,
+    @field: QueryParam("instId") val instId: String?,
+    @field: QueryParam("instNm") val instNm: String?,
+    @field: QueryParam("dstrCd1") val dstrCd1: String?,
+    @field: QueryParam("dstrCd2") val dstrCd2: String?,
+    @field: QueryParam("chrgTelno") val chrgTelno: String?,
 )
 
 @NoArg
@@ -71,7 +72,7 @@ data class FireStatnListDto(
     var crewCount: Long = 0L
 }
 
-data class CrewCount(
+data class CrewCountList(
     val crewCount: Long,
     val instId: String,
 )

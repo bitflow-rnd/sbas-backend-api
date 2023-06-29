@@ -12,6 +12,7 @@ import org.sbas.responses.CommonResponse
 import org.sbas.services.OrganiztnService
 import javax.inject.Inject
 import javax.validation.Valid
+import javax.ws.rs.BeanParam
 import javax.ws.rs.GET
 import javax.ws.rs.Path
 import javax.ws.rs.QueryParam
@@ -53,7 +54,7 @@ class PublicOrganiztnEndpoint {
     @Operation(summary = "구급대 목록", description = "특정 지역 코드에 해당하는 구급대 목록")
     @GET
     @Path("firestatns")
-    fun firestatns(param: FireStatnSearchParam): Response {
+    fun firestatns(@BeanParam param: FireStatnSearchParam): Response {
         return Response.ok(organiztnService.findFireStatns(param)).build()
     }
 
