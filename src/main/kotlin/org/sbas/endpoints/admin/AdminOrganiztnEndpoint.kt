@@ -9,7 +9,6 @@ import org.sbas.dtos.info.InfoCrewRegDto
 import org.sbas.dtos.info.InfoInstUpdateReq
 import org.sbas.entities.info.InfoCrewId
 import org.sbas.services.OrganiztnService
-import javax.annotation.security.RolesAllowed
 import javax.inject.Inject
 import javax.validation.Valid
 import javax.ws.rs.GET
@@ -18,7 +17,7 @@ import javax.ws.rs.Path
 import javax.ws.rs.core.Response
 
 @Tag(name = "기관 관리(어드민 권한용)", description = "System Admin 사용자 - 기관 등록, 수정, 삭제 등")
-@RolesAllowed("USER")
+//@RolesAllowed("USER")
 @Path("v1/admin/organ")
 class AdminOrganiztnEndpoint{
 
@@ -31,29 +30,29 @@ class AdminOrganiztnEndpoint{
     @Operation(summary = "구급대 등록", description = "")
     @POST
     @Path("regfirestatn")
-    fun regfirestatn(fireStatnSaveReq: FireStatnSaveReq): Response {
-        return Response.ok(organiztnService.saveFireStatn(fireStatnSaveReq)).build()
+    fun regFireStatn(fireStatnSaveReq: FireStatnSaveReq): Response {
+        return Response.ok(organiztnService.regFireStatn(fireStatnSaveReq)).build()
     }
 
     @Operation(summary = "구급대 수정", description = "")
     @POST
     @Path("modfirestatn")
-    fun modfirestatn(infoInstUpdateReq: InfoInstUpdateReq): Response {
+    fun modFireStatn(infoInstUpdateReq: InfoInstUpdateReq): Response {
         return Response.ok(organiztnService.updateFireStatn(infoInstUpdateReq)).build()
     }
 
     @Operation(summary = "구급대 삭제", description = "")
     @POST
     @Path("delfirestatn/{instId}")
-    fun delfirestatn(@RestPath instId: String): Response {
+    fun delFireStatn(@RestPath instId: String): Response {
         return Response.ok(organiztnService.deleteFireStatn(instId)).build()
     }
 
-    @Operation(summary = "구급대원 조회", description = "구급대원 목록 조회 API")
+    @Operation(summary = "구급대원 조회", description = "구급대원 상세 조회 API")
     @GET
-    @Path("firemen/{instId}")
-    fun getFiremen(@RestPath instId: String): Response {
-        return Response.ok(organiztnService.getFiremen(instId)).build()
+    @Path("fireman/{instId}/{crewId}")
+    fun getFireman(@RestPath instId: String, @RestPath crewId: String): Response {
+        return Response.ok(organiztnService.findFireman(instId, crewId)).build()
     }
 
     @Operation(summary = "구급대원 등록", description = "구급대원 등록 API")

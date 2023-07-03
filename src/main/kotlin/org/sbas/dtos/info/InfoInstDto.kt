@@ -54,11 +54,11 @@ data class FireStatnSaveReq(
 
 @NoArg
 data class FireStatnSearchParam(
-    @field: QueryParam("instId") val instId: String?,
-    @field: QueryParam("instNm") val instNm: String?,
-    @field: QueryParam("dstrCd1") val dstrCd1: String?,
-    @field: QueryParam("dstrCd2") val dstrCd2: String?,
-    @field: QueryParam("chrgTelno") val chrgTelno: String?,
+    @field: QueryParam("instId") var instId: String?,
+    @field: QueryParam("instNm") var instNm: String?,
+    @field: QueryParam("dstrCd1") var dstrCd1: String?,
+    @field: QueryParam("dstrCd2") var dstrCd2: String?,
+    @field: QueryParam("chrgTelno") var chrgTelno: String?,
 )
 
 @NoArg
@@ -75,4 +75,17 @@ data class FireStatnListDto(
 data class CrewCountList(
     val crewCount: Long,
     val instId: String,
+)
+
+@NoArg
+data class FireStatnDto(
+    val instId: String,
+    val instNm: String?,
+    val chrgId: String?,
+    val chrgNm: String?,
+    val chrgTelno: String?,
+    val rmk: String?,
+    val baseAddr: String?,
+    val lat: String?,
+    val lon: String?,
 )

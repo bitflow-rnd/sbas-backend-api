@@ -5,10 +5,8 @@ import org.eclipse.microprofile.openapi.annotations.tags.Tag
 import org.hibernate.validator.constraints.Length
 import org.jboss.logging.Logger
 import org.jboss.resteasy.reactive.RestPath
-import org.sbas.constants.SbasConst
 import org.sbas.dtos.info.FireStatnSearchParam
 import org.sbas.parameters.SearchHospRequest
-import org.sbas.responses.CommonResponse
 import org.sbas.services.OrganiztnService
 import javax.inject.Inject
 import javax.validation.Valid
@@ -54,16 +52,8 @@ class PublicOrganiztnEndpoint {
     @Operation(summary = "구급대 목록", description = "특정 지역 코드에 해당하는 구급대 목록")
     @GET
     @Path("firestatns")
-    fun firestatns(@BeanParam param: FireStatnSearchParam): Response {
+    fun getFireStatns(@BeanParam param: FireStatnSearchParam): Response {
         return Response.ok(organiztnService.findFireStatns(param)).build()
-    }
-
-    @Operation(summary = "구급대 상세", description = "특정 구급대 소속의 구급대원 목록 및 차량번호 조회")
-    @GET
-    @Path("firestatn/{instId}")
-    fun firestatn(@RestPath("instId") instId: String): CommonResponse<*> {
-        val infoCrew = organiztnService.findInfoCrews(instId)
-        return CommonResponse(SbasConst.ResCode.SUCCESS, "find crew", infoCrew)
     }
 
 //    @Operation(summary = "", description = "")

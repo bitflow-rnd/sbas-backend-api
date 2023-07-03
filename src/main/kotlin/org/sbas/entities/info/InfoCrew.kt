@@ -1,5 +1,7 @@
 package org.sbas.entities.info
 
+import org.sbas.dtos.info.InfoCrewDto
+import org.sbas.dtos.info.InfoCrewRegDto
 import org.sbas.entities.CommonEntity
 import java.io.Serializable
 import javax.persistence.*
@@ -25,7 +27,28 @@ class InfoCrew(
     @Column(name = "pstn", length = 15)
     var pstn: String? = null,
 
-) : CommonEntity()
+) : CommonEntity() {
+
+    fun toInfoCrewDto(): InfoCrewDto {
+        return InfoCrewDto(
+            instId = id!!.instId,
+            crewId = id!!.crewId,
+            crewNm = crewNm,
+            telno = telno,
+            rmk = rmk,
+            pstn = pstn,
+        )
+    }
+
+    fun update(dto: InfoCrewRegDto) {
+        with(dto) {
+            crewNm?.let { this.crewNm = it }
+            telno?.let { this.telno = it }
+            rmk?.let { this.rmk = it }
+            pstn?.let { this.pstn = it }
+        }
+    }
+}
 
 @Embeddable
 data class InfoCrewId(

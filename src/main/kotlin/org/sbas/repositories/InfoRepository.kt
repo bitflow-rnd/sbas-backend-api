@@ -90,9 +90,43 @@ class InfoPtRepository : PanacheRepositoryBase<InfoPt, String> {
 
 @ApplicationScoped
 class InfoCrewRepository : PanacheRepositoryBase<InfoCrew, InfoCrewId> {
-    fun findInfoCrews(instId: String) = find("inst_id = '$instId'").list()
 
-    fun countInfoCrewsByInstId(): MutableList<CrewCountList> {
+    @Inject
+    private lateinit var entityManager: EntityManager
+    private lateinit var queryFactory: QueryFactory
+
+    @PostConstruct
+    fun initialize() {
+        queryFactory = QueryFactoryImpl(
+            criteriaQueryCreator = CriteriaQueryCreatorImpl(entityManager),
+            subqueryCreator = SubqueryCreatorImpl()
+        )
+    }
+
+    fun findInfoCrews(param: InfoCrewSearchParam): MutableList<InfoCrewDto> {
+        val infoCrewList = queryFactory.listQuery<InfoCrewDto> {
+            selectMulti(
+                col(InfoCrewId::instId), col(InfoCrewId::crewId), col(InfoCrew::crewNm),
+                col(InfoCrew::telno), col(InfoCrew::rmk), col(InfoCrew::pstn),
+            )
+            from(entity(InfoCrew::class))
+            associate(entity(InfoCrew::class), InfoCrewId::class, on(InfoCrew::id))
+            whereAnd(
+                col(InfoCrewId::instId).equal(param.instId),
+                param.crewId?.run { col(InfoCrewId::crewId).like("%$this%") },
+                param.crewNm?.run { col(InfoCrew::crewNm).like("%$this%") },
+                param.telno?.run { col(InfoCrew::telno).like("%$this%") },
+            )
+        }
+
+        return infoCrewList.toMutableList()
+    }
+
+    fun findInfoCrew(instId: String, crewId: String): InfoCrew? {
+        return find("inst_id = '$instId' and crew_id = '$crewId'").firstResult()
+    }
+
+    fun countInfoCrewsGroupByInstId(): MutableList<CrewCountList> {
         val query = "select new org.sbas.dtos.info.CrewCountList(count(ic.id.crewId), ic.id.instId) " +
                 "from InfoCrew ic " +
                 "group by ic.id.instId "
@@ -182,7 +216,7 @@ class InfoInstRepository : PanacheRepositoryBase<InfoInst, String> {
                 "('$instTypeCd' = '' or i.instTypeCd = '$instTypeCd')"
         ).list()
 
-    fun findFireStatns(param: FireStatnSearchParam): List<FireStatnListDto> {
+    fun findFireStatns(param: FireStatnSearchParam): MutableList<FireStatnListDto> {
 
         val fireStatnList: List<FireStatnListDto> = queryFactory.listQuery {
             selectMulti(
@@ -194,8 +228,8 @@ class InfoInstRepository : PanacheRepositoryBase<InfoInst, String> {
             from(entity(InfoInst::class))
             whereAnd(
                 col(InfoInst::instTypeCd).equal("ORGN0002"),
-                param.instId?.run { col(InfoInst::id).equal(this) },
-                param.instNm?.run { col(InfoInst::instNm).equal(this) },
+                param.instId?.run { col(InfoInst::id).like("%$this%") },
+                param.instNm?.run { col(InfoInst::instNm).like("%$this%") },
                 param.dstrCd1?.run { col(InfoInst::dstrCd1).equal(this) },
                 param.dstrCd2?.run { col(InfoInst::dstrCd2).equal(this) },
                 param.chrgTelno?.run { col(InfoInst::chrgTelno).like("%$this%") },
@@ -206,7 +240,12 @@ class InfoInstRepository : PanacheRepositoryBase<InfoInst, String> {
                 ExpressionOrderSpec(col(InfoInst::instNm), ascending = false),
             )
         }
-        return fireStatnList
+
+        return fireStatnList.toMutableList()
+    }
+
+    fun findFireStatn(instId: String): InfoInst? {
+        return find("inst_type_cd = 'ORGN0002' and inst_id = '$instId'").firstResult()
     }
 }
 

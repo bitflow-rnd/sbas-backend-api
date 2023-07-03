@@ -1,14 +1,11 @@
 package org.sbas.services
 
-import org.eclipse.microprofile.jwt.JsonWebToken
 import org.jboss.logging.Logger
 import org.jboss.resteasy.reactive.RestResponse
 import org.sbas.dtos.PagingListDto
 import org.sbas.dtos.info.*
-import org.sbas.entities.info.InfoCrew
 import org.sbas.entities.info.InfoCrewId
 import org.sbas.entities.info.InfoInst
-import org.sbas.entities.info.update
 import org.sbas.parameters.SearchHospRequest
 import org.sbas.repositories.InfoCrewRepository
 import org.sbas.repositories.InfoHospRepository
@@ -39,9 +36,6 @@ class OrganiztnService {
 
     @Inject
     private lateinit var infoInstRepository: InfoInstRepository
-
-    @Inject
-    private lateinit var jwt: JsonWebToken
 
     /**
      * 의료기관(병원) 목록 조회
@@ -83,7 +77,7 @@ class OrganiztnService {
      * 구급대 등록
      */
     @Transactional
-    fun saveFireStatn(fireStatnSaveReq: FireStatnSaveReq): CommonResponse<String> {
+    fun regFireStatn(fireStatnSaveReq: FireStatnSaveReq): CommonResponse<String> {
         infoInstRepository.persist(fireStatnSaveReq.toEntity())
         return CommonResponse("등록 성공")
     }
@@ -95,6 +89,7 @@ class OrganiztnService {
     fun updateFireStatn(updateReq: InfoInstUpdateReq): CommonResponse<String> {
         val infoInst = infoInstRepository.findById(updateReq.instId)
             ?: throw CustomizedException("${updateReq.instId} not found", Response.Status.NOT_FOUND)
+
         infoInst.update(updateReq)
 
         return CommonResponse("${updateReq.instId}의 정보가 수정되었습니다.")
@@ -122,9 +117,8 @@ class OrganiztnService {
      */
     @Transactional
     fun findFireStatns(param: FireStatnSearchParam): CommonResponse<*> {
-        // Kotlin JDSL이 연관관계가 없는 엔티티의 left join을 지원하지 않아서 아래와 같이 작성했습니다.
         val fireStatnList = infoInstRepository.findFireStatns(param)
-        val crewCountList = infoCrewRepository.countInfoCrewsByInstId()
+        val crewCountList = infoCrewRepository.countInfoCrewsGroupByInstId()
 
         fireStatnList.forEach { dto ->
             crewCountList.forEach {
@@ -137,21 +131,35 @@ class OrganiztnService {
         return CommonResponse(mutableMapOf("count" to fireStatnList.size, "items" to fireStatnList))
     }
 
+    /**
+     * 구급대 상세
+     */
     @Transactional
-    fun findInfoCrews(instId: String): List<InfoCrew> {
-        return infoCrewRepository.findInfoCrews(instId)
+    fun findFireStatn(instId: String): CommonResponse<FireStatnDto> {
+        val findFireStatn = infoInstRepository.findFireStatn(instId) ?: throw NotFoundException("$instId firestatn not found")
+
+        return CommonResponse(findFireStatn.toFireStatnDto())
     }
 
     /**
-     * 구급대원 리스트 조회
+     * 구급대원 목록 조회
      */
     @Transactional
-    fun getFiremen(instId: String): CommonResponse<List<InfoCrew>> {
-        val findInfoCrew = infoCrewRepository.findInfoCrews(instId)
+    fun findFiremen(param: InfoCrewSearchParam): CommonResponse<MutableMap<String, Any>> {
+        log.debug("findFiremen >>>>>> instId: ${param.instId}")
+        val infoCrewList = infoCrewRepository.findInfoCrews(param)
+        return CommonResponse(mutableMapOf("count" to infoCrewList.size, "items" to infoCrewList))
+    }
 
-        if(findInfoCrew.isEmpty()) throw NotFoundException("해당 구급대에 구급대원이 없습니다.")
+    /**
+     * 구급대원 조회
+     */
+    @Transactional
+    fun findFireman(instId: String, crewId: String): CommonResponse<InfoCrewDto> {
+        val findInfoCrew = infoCrewRepository.findInfoCrew(instId, crewId)
+            ?: throw CustomizedException("해당 구급대원이 없습니다.", RestResponse.Status.NOT_FOUND)
 
-        return CommonResponse(findInfoCrew)
+        return CommonResponse(findInfoCrew.toInfoCrewDto())
     }
 
     /**
@@ -159,7 +167,7 @@ class OrganiztnService {
      */
     @Transactional
     fun regFireman(infoCrewRegDto: InfoCrewRegDto): CommonResponse<String> {
-        infoCrewRepository.persist(infoCrewRegDto.toEntityForInsert(jwt.name))
+        infoCrewRepository.persist(infoCrewRegDto.toEntityForInsert())
 
         return CommonResponse("등록 성공")
     }
@@ -172,11 +180,7 @@ class OrganiztnService {
         val findInfoCrew = infoCrewRepository.findById(InfoCrewId(infoCrewRegDto.instId, infoCrewRegDto.crewId))
             ?: throw CustomizedException("해당 구급대원이 없습니다.", RestResponse.Status.NOT_FOUND)
 
-        findInfoCrew.pstn = infoCrewRegDto.pstn
-        findInfoCrew.crewNm = infoCrewRegDto.crewNm
-        findInfoCrew.telno = infoCrewRegDto.telno
-        findInfoCrew.rmk = infoCrewRegDto.rmk
-        findInfoCrew.updtUserId = jwt.name
+        findInfoCrew.update(infoCrewRegDto)
 
         return CommonResponse("${findInfoCrew.crewNm} 구급대원의 정보가 수정되었습니다.")
     }

@@ -130,7 +130,7 @@ class PatientService {
     @Transactional
     fun findInfoPt(ptId: String): CommonResponse<*> {
         val infoPt = infoPtRepository.findById(ptId) ?: throw NotFoundException("$ptId not found")
-        val bdasReq = bdasEsvyRepository.findByPtIdWithLatestBdasSeq(ptId)?.bdasSeq!!
+        val bdasReq = bdasEsvyRepository.findByPtIdWithLatestBdasSeq(ptId)?.bdasSeq ?: -1
         val bedStatCd = infoPtRepository.findBedStat(infoPt.ptId!!, bdasReq)
 
         val infoPtBasicInfo = InfoPtBasicInfo(
