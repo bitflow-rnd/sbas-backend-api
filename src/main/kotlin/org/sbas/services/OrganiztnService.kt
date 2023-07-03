@@ -12,6 +12,7 @@ import org.sbas.repositories.InfoHospRepository
 import org.sbas.repositories.InfoInstRepository
 import org.sbas.responses.CommonResponse
 import org.sbas.utils.CustomizedException
+import org.sbas.utils.StringUtils
 import javax.enterprise.context.ApplicationScoped
 import javax.inject.Inject
 import javax.transaction.Transactional
@@ -78,7 +79,10 @@ class OrganiztnService {
      */
     @Transactional
     fun regFireStatn(fireStatnSaveReq: FireStatnSaveReq): CommonResponse<String> {
-        infoInstRepository.persist(fireStatnSaveReq.toEntity())
+        val fireStatnInstId = StringUtils.incrementCode(infoInstRepository.findLatestFireStatInstId(), "FS") ?: "FS00000001"
+
+        infoInstRepository.persist(fireStatnSaveReq.toEntity(fireStatnInstId))
+
         return CommonResponse("등록 성공")
     }
 
@@ -167,7 +171,9 @@ class OrganiztnService {
      */
     @Transactional
     fun regFireman(infoCrewRegDto: InfoCrewRegDto): CommonResponse<String> {
-        infoCrewRepository.persist(infoCrewRegDto.toEntityForInsert())
+        val crewId = StringUtils.incrementCode(infoCrewRepository.findLatestCrewId(infoCrewRegDto.instId), "CR") ?: "CR00000001"
+
+        infoCrewRepository.persist(infoCrewRegDto.toEntityForInsert(crewId))
 
         return CommonResponse("등록 성공")
     }

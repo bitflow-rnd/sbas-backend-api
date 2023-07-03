@@ -13,20 +13,20 @@ import javax.ws.rs.core.MultivaluedMap
 class RequestNaverSmsHeaderFactory : ClientHeadersFactory{
 
     @ConfigProperty(name = "restclient.naversens.serviceid")
-    lateinit var naversensserviceid: String
+    private lateinit var naversensserviceid: String
 
     @ConfigProperty(name = "restclient.naversens.access-key")
-    lateinit var accessKey: String
+    private lateinit var accessKey: String
 
     @ConfigProperty(name = "restclient.naversens.secret-key")
-    lateinit var secretKey: String
+    private lateinit var secretKey: String
 
     override fun update(incomingHeaders: MultivaluedMap<String, String>?,
                         clientOutgoingHeaders: MultivaluedMap<String, String>?): MultivaluedMap<String, String> {
 
         val result: MultivaluedMap<String, String> = MultivaluedHashMap()
 
-        var timestamp = System.currentTimeMillis().toString()
+        val timestamp = System.currentTimeMillis().toString()
 
         val signature = makeSignature("POST", timestamp)
 

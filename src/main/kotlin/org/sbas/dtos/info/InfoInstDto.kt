@@ -22,7 +22,6 @@ data class InfoInstUpdateReq(
 
 @NoArg
 data class FireStatnSaveReq(
-    var instId: String,
     var instNm: String,
     var dstrCd1: String,
     var dstrCd2: String,
@@ -34,7 +33,7 @@ data class FireStatnSaveReq(
     var lat: String,
     var lon: String,
 ) {
-    fun toEntity(): InfoInst {
+    fun toEntity(instId: String): InfoInst {
         return InfoInst(
             id = instId,
             instTypeCd = "ORGN0002",

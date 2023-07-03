@@ -1,10 +1,7 @@
 package org.sbas.repositories
 
 import com.linecorp.kotlinjdsl.QueryFactory
-import com.linecorp.kotlinjdsl.QueryFactoryImpl
 import com.linecorp.kotlinjdsl.listQuery
-import com.linecorp.kotlinjdsl.query.creator.CriteriaQueryCreatorImpl
-import com.linecorp.kotlinjdsl.query.creator.SubqueryCreatorImpl
 import com.linecorp.kotlinjdsl.query.spec.ExpressionOrderSpec
 import com.linecorp.kotlinjdsl.querydsl.expression.column
 import io.quarkus.hibernate.orm.panache.kotlin.PanacheRepositoryBase
@@ -13,26 +10,15 @@ import org.sbas.dtos.info.InfoUserListDto
 import org.sbas.dtos.info.InfoUserSearchParam
 import org.sbas.entities.info.InfoUser
 import org.sbas.parameters.PageRequest
-import javax.annotation.PostConstruct
 import javax.enterprise.context.ApplicationScoped
 import javax.inject.Inject
-import javax.persistence.EntityManager
 import javax.transaction.Transactional
 
 @ApplicationScoped
 class InfoUserRepository : PanacheRepositoryBase<InfoUser, String> {
 
     @Inject
-    private lateinit var entityManager: EntityManager
     private lateinit var queryFactory: QueryFactory
-
-    @PostConstruct
-    fun initialize() {
-        queryFactory = QueryFactoryImpl(
-            criteriaQueryCreator = CriteriaQueryCreatorImpl(entityManager),
-            subqueryCreator = SubqueryCreatorImpl()
-        )
-    }
 
     @Transactional
     fun findByUserId(userId: String) = runBlocking { find("id", userId).firstResult() }

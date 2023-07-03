@@ -7,9 +7,9 @@ class StringUtils {
 
     companion object {
 
-        const val DATE_FORMAT = "yyyyMMdd"
-        const val TIME_FORMAT_HM = "HHmm"
-        const val TIME_FORMAT_HMS = "HHmmss"
+        private const val DATE_FORMAT = "yyyyMMdd"
+        private const val TIME_FORMAT_HM = "HHmm"
+        private const val TIME_FORMAT_HMS = "HHmmss"
 
         fun getYyyyMmDd(): String {
             val date = Date(System.currentTimeMillis())
@@ -75,5 +75,16 @@ class StringUtils {
             return map.entries.find { sido.startsWith(it.key) }?.value ?: ""
         }
 
+        fun incrementCode(code: String?, prefix: String): String? {
+            if (code.isNullOrEmpty()) {
+                return null
+            }
+
+            val numberPart = code.substring(2).toInt()
+
+            val incrementedNumber = numberPart + 1
+
+            return prefix + incrementedNumber.toString().padStart(8, '0')
+        }
     }
 }

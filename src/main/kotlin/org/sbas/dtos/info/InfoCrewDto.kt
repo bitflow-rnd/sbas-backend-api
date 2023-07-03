@@ -14,7 +14,7 @@ data class InfoCrewRegDto (
     var rmk : String?,
     var pstn : String?,
 ) {
-    fun toEntityForInsert(): InfoCrew {
+    fun toEntityForInsert(crewId: String): InfoCrew {
         val infoCrewId = InfoCrewId(instId, crewId)
         return InfoCrew(
             id = infoCrewId,

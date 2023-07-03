@@ -134,19 +134,19 @@ class ForbiddenExceptionMapper : ExceptionMapper<ForbiddenException> {
     }
 }
 
-@Provider
-class PersistenceExceptionMapper: ExceptionMapper<PersistenceException> {
-    override fun toResponse(exception: PersistenceException): Response {
-        val message = if (exception.cause!!.cause != null) {
-            exception.cause!!.cause!!.message
-        } else if (exception.cause != null) {
-            exception.cause!!.message
-        } else {
-            exception.message
-        }
-        return Response.status(Response.Status.CONFLICT)
-            .type(MediaType.APPLICATION_JSON)
-            .entity(CommonResponse(SbasConst.ResCode.FAIL, message,null))
-            .build()
-    }
-}
+//@Provider
+//class PersistenceExceptionMapper: ExceptionMapper<PersistenceException> {
+//    override fun toResponse(exception: PersistenceException): Response {
+//        val message = if (exception.cause!!.cause != null) {
+//            exception.cause!!.cause!!.message
+//        } else if (exception.cause != null) {
+//            exception.cause!!.message
+//        } else {
+//            exception.message
+//        }
+//        return Response.status(Response.Status.CONFLICT)
+//            .type(MediaType.APPLICATION_JSON)
+//            .entity(CommonResponse(SbasConst.ResCode.FAIL, message,null))
+//            .build()
+//    }
+//}

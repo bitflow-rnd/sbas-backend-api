@@ -1,38 +1,25 @@
 package org.sbas.repositories
 
 import com.linecorp.kotlinjdsl.QueryFactory
-import com.linecorp.kotlinjdsl.QueryFactoryImpl
 import com.linecorp.kotlinjdsl.listQuery
-import com.linecorp.kotlinjdsl.query.creator.CriteriaQueryCreatorImpl
-import com.linecorp.kotlinjdsl.query.creator.SubqueryCreatorImpl
 import com.linecorp.kotlinjdsl.query.spec.ExpressionOrderSpec
 import com.linecorp.kotlinjdsl.querydsl.expression.col
 import io.quarkus.hibernate.orm.panache.kotlin.PanacheQuery
 import io.quarkus.hibernate.orm.panache.kotlin.PanacheRepositoryBase
+import io.quarkus.panache.common.Sort
 import org.jboss.logging.Logger
 import org.sbas.dtos.info.*
 import org.sbas.entities.info.*
 import org.sbas.parameters.SearchHospRequest
-import javax.annotation.PostConstruct
 import javax.enterprise.context.ApplicationScoped
 import javax.inject.Inject
-import javax.persistence.EntityManager
 import javax.ws.rs.NotFoundException
 
 @ApplicationScoped
 class InfoPtRepository : PanacheRepositoryBase<InfoPt, String> {
 
-    @Inject
-    private lateinit var entityManager: EntityManager
-    private lateinit var queryFactory: QueryFactory
-
-    @PostConstruct
-    fun initialize() {
-        queryFactory = QueryFactoryImpl(
-            criteriaQueryCreator = CriteriaQueryCreatorImpl(entityManager),
-            subqueryCreator = SubqueryCreatorImpl()
-        )
-    }
+//    @Inject
+//    private lateinit var queryFactory: QueryFactory
 
     fun findByPtNmAndRrno(ptNm: String, rrno1: String, rrno2: String): InfoPt? =
         find("pt_nm = '$ptNm' AND rrno_1 = '$rrno1' AND rrno_2 = '$rrno2'").firstResult()
@@ -66,7 +53,7 @@ class InfoPtRepository : PanacheRepositoryBase<InfoPt, String> {
 
     fun findBedStat(ptId: String, bdasSeq: Int): String {
         val query = "select fn_get_bed_asgn_stat('${ptId}', ${bdasSeq}) as test"
-        return entityManager.createNativeQuery(query).singleResult as String
+        return getEntityManager().createNativeQuery(query).singleResult as String
     }
 
 //    fun findBdasHisInfo(ptId: String): MutableList<BdasHisInfo> {
@@ -92,16 +79,7 @@ class InfoPtRepository : PanacheRepositoryBase<InfoPt, String> {
 class InfoCrewRepository : PanacheRepositoryBase<InfoCrew, InfoCrewId> {
 
     @Inject
-    private lateinit var entityManager: EntityManager
     private lateinit var queryFactory: QueryFactory
-
-    @PostConstruct
-    fun initialize() {
-        queryFactory = QueryFactoryImpl(
-            criteriaQueryCreator = CriteriaQueryCreatorImpl(entityManager),
-            subqueryCreator = SubqueryCreatorImpl()
-        )
-    }
 
     fun findInfoCrews(param: InfoCrewSearchParam): MutableList<InfoCrewDto> {
         val infoCrewList = queryFactory.listQuery<InfoCrewDto> {
@@ -133,16 +111,21 @@ class InfoCrewRepository : PanacheRepositoryBase<InfoCrew, InfoCrewId> {
 
         return getEntityManager().createQuery(query, CrewCountList::class.java).resultList
     }
+
+    fun findLatestCrewId(instId: String): String? {
+        return find("inst_id = '$instId'", Sort.by("crew_id", Sort.Direction.Descending))
+            .firstResult()?.id?.crewId
+    }
 }
 
 @ApplicationScoped
 class InfoHospRepository : PanacheRepositoryBase<InfoHosp, String> {
 
     @Inject
-    lateinit var log: Logger
+    private lateinit var log: Logger
 
     @Inject
-    lateinit var userRepository: InfoUserRepository
+    private lateinit var userRepository: InfoUserRepository
 
     fun findInfoHopByCondition(searchParam: SearchHospRequest?): PanacheQuery<InfoHosp> {
         val queryBuilder = StringBuilder("from InfoHosp where 1 = 1")
@@ -197,16 +180,7 @@ class InfoHospRepository : PanacheRepositoryBase<InfoHosp, String> {
 class InfoInstRepository : PanacheRepositoryBase<InfoInst, String> {
 
     @Inject
-    private lateinit var entityManager: EntityManager
     private lateinit var queryFactory: QueryFactory
-
-    @PostConstruct
-    fun initialize() {
-        queryFactory = QueryFactoryImpl(
-            criteriaQueryCreator = CriteriaQueryCreatorImpl(entityManager),
-            subqueryCreator = SubqueryCreatorImpl()
-        )
-    }
 
     fun findInstCodeList(dstrCd1: String, dstrCd2: String, instTypeCd: String) =
         find(
@@ -242,6 +216,10 @@ class InfoInstRepository : PanacheRepositoryBase<InfoInst, String> {
         }
 
         return fireStatnList.toMutableList()
+    }
+
+    fun findLatestFireStatInstId(): String? {
+        return find("inst_type_cd = 'ORGN0002'", Sort.by("inst_id", Sort.Direction.Descending)).firstResult()?.id
     }
 
     fun findFireStatn(instId: String): InfoInst? {

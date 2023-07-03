@@ -10,7 +10,7 @@ import javax.ws.rs.core.MultivaluedMap
 class NaverOcrHeaderFactory : ClientHeadersFactory{
 
     @ConfigProperty(name = "restclient.naverocr.secret.key")
-    lateinit var secretkey: String
+    private lateinit var secretkey: String
 
     override fun update(incomingHeaders: MultivaluedMap<String, String>?,
                         clientOutgoingHeaders: MultivaluedMap<String, String>?): MultivaluedMap<String, String> {

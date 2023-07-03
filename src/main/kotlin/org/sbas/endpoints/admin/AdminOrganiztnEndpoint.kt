@@ -27,21 +27,21 @@ class AdminOrganiztnEndpoint{
     @Inject
     private lateinit var organiztnService: OrganiztnService
 
-    @Operation(summary = "구급대 등록", description = "")
+    @Operation(summary = "구급대 등록", description = "구급대 등록 API")
     @POST
     @Path("regfirestatn")
     fun regFireStatn(fireStatnSaveReq: FireStatnSaveReq): Response {
         return Response.ok(organiztnService.regFireStatn(fireStatnSaveReq)).build()
     }
 
-    @Operation(summary = "구급대 수정", description = "")
+    @Operation(summary = "구급대 수정", description = "구급대 수정 API")
     @POST
     @Path("modfirestatn")
     fun modFireStatn(infoInstUpdateReq: InfoInstUpdateReq): Response {
         return Response.ok(organiztnService.updateFireStatn(infoInstUpdateReq)).build()
     }
 
-    @Operation(summary = "구급대 삭제", description = "")
+    @Operation(summary = "구급대 삭제", description = "구급대 삭제 API")
     @POST
     @Path("delfirestatn/{instId}")
     fun delFireStatn(@RestPath instId: String): Response {
