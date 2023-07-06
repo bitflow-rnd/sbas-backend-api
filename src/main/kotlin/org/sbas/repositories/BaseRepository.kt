@@ -51,6 +51,10 @@ class BaseCodeRepository : PanacheRepositoryBase<BaseCode, BaseCodeId> {
         if(findCode == null) return ""
         else return findCode.cdNm ?: ""
     }
+
+    fun getDstrCd1Nm() {
+
+    }
 }
 
 @ApplicationScoped

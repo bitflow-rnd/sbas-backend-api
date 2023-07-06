@@ -2,14 +2,16 @@ package org.sbas.services
 
 import org.jboss.logging.Logger
 import org.jboss.resteasy.reactive.RestResponse
-import org.sbas.dtos.PagingListDto
 import org.sbas.dtos.info.*
 import org.sbas.entities.info.InfoCrewId
 import org.sbas.entities.info.InfoInst
+import org.sbas.handlers.GeocodingHandler
+import org.sbas.repositories.BaseCodeRepository
 import org.sbas.repositories.InfoCrewRepository
 import org.sbas.repositories.InfoHospRepository
 import org.sbas.repositories.InfoInstRepository
 import org.sbas.responses.CommonResponse
+import org.sbas.restparameters.NaverGeocodingApiParams
 import org.sbas.utils.CustomizedException
 import org.sbas.utils.StringUtils
 import javax.enterprise.context.ApplicationScoped
@@ -36,6 +38,12 @@ class OrganiztnService {
 
     @Inject
     private lateinit var infoInstRepository: InfoInstRepository
+
+    @Inject
+    private lateinit var baseCodeRepository: BaseCodeRepository
+
+    @Inject
+    private lateinit var geoHandler: GeocodingHandler
 
     /**
      * 의료기관(병원) 목록 조회
@@ -79,6 +87,12 @@ class OrganiztnService {
     @Transactional
     fun regFireStatn(fireStatnSaveReq: FireStatnSaveReq): CommonResponse<String> {
         val fireStatnInstId = StringUtils.incrementCode("FS", 8, infoInstRepository.findLatestFireStatInstId())
+
+        baseCodeRepository.findBaseCodeByCdId(fireStatnSaveReq.dstrCd1 ?: "")
+
+        val geocoding = geoHandler.getGeocoding(NaverGeocodingApiParams(query = fireStatnSaveReq.detlAddr!!))
+        fireStatnSaveReq.lat = geocoding.addresses!![0].y // 위도
+        fireStatnSaveReq.lon = geocoding.addresses!![0].x // 경도
 
         infoInstRepository.persist(fireStatnSaveReq.toEntity(fireStatnInstId))
 

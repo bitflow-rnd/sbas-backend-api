@@ -39,8 +39,8 @@ class InfoInst(
     @Column(name = "chrg_telno", length = 12)
     var chrgTelno: String? = null, // 담당자 전화번호
 
-    @Column(name = "base_addr")
-    var baseAddr: String? = null, // 기본 주소
+    @Column(name = "detl_addr")
+    var detlAddr: String? = null, // 상세 주소
 
     @Column(name = "lat")
     var lat: String? = null, // 위도
@@ -65,7 +65,7 @@ class InfoInst(
             dstrCd2 = dstrCd2,
             chrgTelno = chrgTelno,
             rmk = rmk,
-            baseAddr = baseAddr,
+            detlAddr = detlAddr?.split(" ")?.get(2),
             lat = lat,
             lon = lon,
         )
@@ -79,7 +79,7 @@ class InfoInst(
             chrgId?.let { this@InfoInst.chrgId = it }
             chrgNm?.let { this@InfoInst.chrgNm = it }
             chrgTelno?.let { this@InfoInst.chrgTelno = it }
-            baseAddr?.let { this@InfoInst.baseAddr = it }
+            baseAddr?.let { this@InfoInst.detlAddr = it }
             lat?.let { this@InfoInst.lat = it }
             lon?.let { this@InfoInst.lon = it }
             rmk?.let { this@InfoInst.rmk = it }

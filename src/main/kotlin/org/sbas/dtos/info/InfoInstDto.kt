@@ -22,14 +22,14 @@ data class InfoInstUpdateReq(
 
 @NoArg
 data class FireStatnSaveReq(
-    var instNm: String?,
-    var dstrCd1: String?,
-    var dstrCd2: String?,
-    var chrgId: String?,
-    var chrgNm: String?,
-    var chrgTelno: String?,
-    var rmk: String?,
-    var baseAddr: String?,
+    val instNm: String?,
+    val dstrCd1: String?,
+    val dstrCd2: String?,
+    val chrgId: String?,
+    val chrgNm: String?,
+    val chrgTelno: String?,
+    val rmk: String?,
+    val detlAddr: String?,
     var lat: String?,
     var lon: String?,
 ) {
@@ -44,7 +44,7 @@ data class FireStatnSaveReq(
             chrgNm = chrgNm,
             chrgTelno = chrgTelno,
             rmk = rmk,
-            baseAddr = baseAddr,
+            detlAddr = detlAddr,
             lat = lat,
             lon = lon,
         )
@@ -86,7 +86,7 @@ data class FireStatnDto(
     val dstrCd2: String?,
     val chrgTelno: String?,
     val rmk: String?,
-    val baseAddr: String?,
+    val detlAddr: String?,
     val lat: String?,
     val lon: String?,
 )
