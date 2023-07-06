@@ -22,16 +22,16 @@ data class InfoInstUpdateReq(
 
 @NoArg
 data class FireStatnSaveReq(
-    var instNm: String,
-    var dstrCd1: String,
-    var dstrCd2: String,
-    var chrgId: String,
-    var chrgNm: String,
-    var chrgTelno: String,
-    var rmk: String,
-    var baseAddr: String,
-    var lat: String,
-    var lon: String,
+    var instNm: String?,
+    var dstrCd1: String?,
+    var dstrCd2: String?,
+    var chrgId: String?,
+    var chrgNm: String?,
+    var chrgTelno: String?,
+    var rmk: String?,
+    var baseAddr: String?,
+    var lat: String?,
+    var lon: String?,
 ) {
     fun toEntity(instId: String): InfoInst {
         return InfoInst(
