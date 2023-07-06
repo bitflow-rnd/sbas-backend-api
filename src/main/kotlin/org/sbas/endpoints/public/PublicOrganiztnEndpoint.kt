@@ -29,8 +29,8 @@ class PublicOrganiztnEndpoint {
     @GET
     @Path("medinsts")
     fun getMedInsts(@BeanParam param: InfoHospSearchParam): Response? {
-        param.dutyDivNams?.run {
-            param.dutyDivNam = joinToString(
+        if (!param.dutyDivNams.isNullOrEmpty()) {
+            param.dutyDivNam = param.dutyDivNams!!.joinToString(
                 separator = "','",
                 prefix = "'",
                 postfix = "'",

@@ -100,13 +100,13 @@ data class InfoHospDetailDto(
 @NoArg
 data class InfoHospSearchParam(
     @field: QueryParam("hospId")var hospId: String?,
-    var dutyName: String?,
-    var dstrCd1: String?,
-    var dstrCd2: String?,
-    var pageRequest: PageRequest?,
-    var dutyDivNams: MutableList<String>?,
+    @field: QueryParam("dutyName") var dutyName: String?,
+    @field: QueryParam("dstrCd1")var dstrCd1: String?,
+    @field: QueryParam("dstrCd2")var dstrCd2: String?,
+//    @field: QueryParam("pageRequest") var pageRequest: PageRequest?,
+    @field: QueryParam("dutyDivNams") var dutyDivNams: MutableList<String>?,
 ) {
-    var dutyDivNam: String? = ""
+    var dutyDivNam: String? = null
 }
 
 data class InfoHospListDto(

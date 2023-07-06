@@ -138,6 +138,7 @@ class InfoHospRepository : PanacheRepositoryBase<InfoHosp, String> {
             orderBy(
                 ExpressionOrderSpec(col(InfoHosp::hospId), ascending = false),
             )
+            limit(10)
         }
 
         return infoHosps.toMutableList()
