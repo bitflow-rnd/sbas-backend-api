@@ -50,6 +50,9 @@ class PatientService {
     private lateinit var bdasEsvyRepository: BdasEsvyRepository
 
     @Inject
+    private lateinit var bdasReqRepository: BdasReqRepository
+
+    @Inject
     private lateinit var fileHandler: FileHandler
 
     @Inject
@@ -130,8 +133,9 @@ class PatientService {
     @Transactional
     fun findInfoPt(ptId: String): CommonResponse<*> {
         val infoPt = infoPtRepository.findById(ptId) ?: throw NotFoundException("$ptId not found")
-        val bdasReq = bdasEsvyRepository.findByPtIdWithLatestBdasSeq(ptId)?.bdasSeq ?: -1
-        val bedStatCd = infoPtRepository.findBedStat(infoPt.ptId!!, bdasReq)
+        val bdasSeq = bdasEsvyRepository.findByPtIdWithLatestBdasSeq(ptId)?.bdasSeq ?: -1
+        val bedStatCd = infoPtRepository.findBedStat(infoPt.ptId!!, bdasSeq)
+        val bdasReq = bdasReqRepository.findByPtIdAndBdasSeq(ptId, bdasSeq)
 
         val infoPtBasicInfo = InfoPtBasicInfo(
             ptId = infoPt.ptId,
@@ -152,22 +156,21 @@ class PatientService {
             attcId = infoPt.attcId,
             bedStatCd = bedStatCd,
             bedStatNm = BedStatCd.valueOf(bedStatCd).cdNm,
+            undrDsesCd = bdasReq?.undrDsesCd?.split(";"),
         )
 
-        val bdasHisInfo = findBdasHistInfo(ptId)
-
-//        return CommonResponse(InfoPtInfo(infoPtBasicInfo, bdasHisInfo, bdasHisInfo.size))
         return CommonResponse(infoPtBasicInfo)
     }
 
     @Transactional
-    fun findBdasHistInfo(ptId: String): MutableList<BdasHisInfo> {
-//        val bdasHisInfoList = infoPtRepository.findBdasHisInfo(ptId)
-//        bdasHisInfoList.forEachIndexed { idx, bdasHisInfo ->
-//            bdasHisInfo.order = "${bdasHisInfoList.size - idx}차수"
-//            getTagList(bdasHisInfo)
-//        }
-        return mutableListOf()
+    fun findBdasHistInfo(ptId: String): CommonResponse<MutableMap<String, Any>> {
+        val bdasHisInfoList = infoPtRepository.findBdasHisInfo(ptId)
+        bdasHisInfoList.forEachIndexed { idx, bdasHisInfo ->
+            bdasHisInfo.order = "${bdasHisInfoList.size - idx}차수"
+            getTagList(bdasHisInfo)
+        }
+
+        return CommonResponse(mutableMapOf("count" to bdasHisInfoList.size, "items" to bdasHisInfoList))
     }
 
     @Transactional
@@ -196,17 +199,17 @@ class PatientService {
         return CommonResponse(res)
     }
 
-    private fun getTagList(dto: TagList) {
+    private fun getTagList(dto: BdasHisInfo) {
         if (dto.ptTypeCd != null) {
-            val splitList = dto.ptTypeCd!!.split(";")
+            val splitList = dto.ptTypeCd.split(";")
             dto.tagList!!.addAll(splitList.map { PtTypeCd.valueOf(it).cdNm })
         }
         if (dto.svrtTypeCd != null) {
-            val splitList = dto.svrtTypeCd!!.split(";")
+            val splitList = dto.svrtTypeCd.split(";")
             dto.tagList!!.addAll(splitList.map { SvrtTypeCd.valueOf(it).cdNm })
         }
         if (dto.undrDsesCd != null) {
-            val splitList = dto.undrDsesCd!!.split(";")
+            val splitList = dto.undrDsesCd.split(";")
             dto.tagList!!.addAll(splitList.map { UndrDsesCd.valueOf(it).cdNm })
         }
     }

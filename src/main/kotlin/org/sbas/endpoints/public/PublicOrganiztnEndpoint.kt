@@ -6,10 +6,9 @@ import org.hibernate.validator.constraints.Length
 import org.jboss.logging.Logger
 import org.jboss.resteasy.reactive.RestPath
 import org.sbas.dtos.info.FireStatnSearchParam
-import org.sbas.parameters.SearchHospRequest
+import org.sbas.dtos.info.InfoHospSearchParam
 import org.sbas.services.OrganiztnService
 import javax.inject.Inject
-import javax.validation.Valid
 import javax.ws.rs.BeanParam
 import javax.ws.rs.GET
 import javax.ws.rs.Path
@@ -29,8 +28,16 @@ class PublicOrganiztnEndpoint {
     @Operation(summary = "의료기관 목록", description = "검색조건 및 거리 별 의료기관 조회. 페이징 및 총 검색 카운트도 반환")
     @GET
     @Path("medinsts")
-    fun getMedInsts(@Valid request: SearchHospRequest?): Response? {
-        return Response.ok(organiztnService.findInfoHospList(request)).build()
+    fun getMedInsts(@BeanParam param: InfoHospSearchParam): Response? {
+        param.dutyDivNams?.run {
+            param.dutyDivNam = joinToString(
+                separator = "','",
+                prefix = "'",
+                postfix = "'",
+            )
+        }
+
+        return Response.ok(organiztnService.findInfoHospList(param)).build()
     }
 
     @Operation(summary = "의료기관 상세", description = "상세정보 및 해당 기관 등록 의료진 수 카운트 리턴")

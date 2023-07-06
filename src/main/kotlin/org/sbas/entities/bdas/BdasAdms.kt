@@ -61,33 +61,38 @@ class BdasAdms(
 ) : CommonEntity() {
 
     fun changeToAdms(dto: BdasAdmsSaveDto) {
-        hospId = dto.hospId
-        deptNm = dto.deptNm
-        wardNm = dto.wardNm
-        roomNm = dto.roomNm
-        spclId = dto.spclId
-        spclNm = dto.spclNm
-        chrgTelno = dto.chrgTelno
-        admsDt = StringUtils.getYyyyMmDd()
-        admsTm = StringUtils.getHhMmSs()
-        msg = dto.msg
-        admsStatCd = dto.admsStatCd
+        with(dto) {
+            hospId?.let { this@BdasAdms.hospId = it }
+            deptNm?.let { this@BdasAdms.deptNm = it }
+            wardNm?.let { this@BdasAdms.wardNm = dto.wardNm }
+            roomNm?.let { this@BdasAdms.roomNm = dto.roomNm }
+            spclId?.let { this@BdasAdms.spclId = dto.spclId }
+            spclNm?.let { this@BdasAdms.spclNm = dto.spclNm }
+            chrgTelno?.let { this@BdasAdms.chrgTelno = dto.chrgTelno }
+            msg?.let { this@BdasAdms.msg = dto.msg }
+        }
+        this.admsDt = StringUtils.getYyyyMmDd()
+        this.admsTm = StringUtils.getHhMmSs()
+        admsStatCd = "IOST0001"
     }
 
     fun changeToDsch(dto: BdasAdmsSaveDto) {
-        hospId = dto.hospId
-        dschDt = StringUtils.getYyyyMmDd()
-        dschTm = StringUtils.getHhMmSs()
-        dschRsnCd = dto.dschRsnCd
-        msg = dto.msg
-        admsStatCd = dto.admsStatCd
-
+        with(dto) {
+            hospId?.let { this@BdasAdms.hospId = it }
+            msg?.let { this@BdasAdms.msg = it }
+            dschRsnCd?.let { this@BdasAdms.dschRsnCd = it }
+        }
+        this.dschDt = StringUtils.getYyyyMmDd()
+        this.dschTm = StringUtils.getHhMmSs()
+        this.admsStatCd = "IOST0002"
     }
 
     fun changeToHome(dto: BdasAdmsSaveDto) {
-        hospId = dto.hospId
-        msg = dto.msg
-        admsStatCd = dto.admsStatCd
+        with(dto) {
+            hospId?.let { this@BdasAdms.hospId = it }
+            msg?.let { this@BdasAdms.msg = it }
+        }
+        this.admsStatCd = "IOST0003"
     }
 }
 

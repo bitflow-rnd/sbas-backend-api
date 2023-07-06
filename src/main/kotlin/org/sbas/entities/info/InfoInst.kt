@@ -61,6 +61,8 @@ class InfoInst(
             instNm = instNm,
             chrgId = chrgId,
             chrgNm = chrgNm,
+            dstrCd1 = dstrCd1,
+            dstrCd2 = dstrCd2,
             chrgTelno = chrgTelno,
             rmk = rmk,
             baseAddr = baseAddr,
@@ -71,17 +73,17 @@ class InfoInst(
 
     fun update(updateDto: InfoInstUpdateReq) {
         with(updateDto) {
-            instNm?.let { this.instNm = it }
-            dstrCd1?.let { this.dstrCd1 = it }
-            dstrCd2?.let { this.dstrCd2 = it }
-            chrgId?.let { this.chrgId = it }
-            chrgNm?.let { this.chrgNm = it }
-            chrgTelno?.let { this.chrgTelno = it }
-            baseAddr?.let { this.baseAddr = it }
-            lat?.let { this.lat = it }
-            lon?.let { this.lon = it }
-            rmk?.let { this.rmk = it }
-            attcId?.let { this.attcId = it }
+            instNm?.let { this@InfoInst.instNm = it }
+            dstrCd1?.let { this@InfoInst.dstrCd1 = it }
+            dstrCd2?.let { this@InfoInst.dstrCd2 = it }
+            chrgId?.let { this@InfoInst.chrgId = it }
+            chrgNm?.let { this@InfoInst.chrgNm = it }
+            chrgTelno?.let { this@InfoInst.chrgTelno = it }
+            baseAddr?.let { this@InfoInst.baseAddr = it }
+            lat?.let { this@InfoInst.lat = it }
+            lon?.let { this@InfoInst.lon = it }
+            rmk?.let { this@InfoInst.rmk = it }
+            attcId?.let { this@InfoInst.attcId = it }
         }
     }
 }

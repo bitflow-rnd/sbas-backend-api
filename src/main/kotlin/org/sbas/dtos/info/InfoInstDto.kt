@@ -82,6 +82,8 @@ data class FireStatnDto(
     val instNm: String?,
     val chrgId: String?,
     val chrgNm: String?,
+    val dstrCd1: String?,
+    val dstrCd2: String?,
     val chrgTelno: String?,
     val rmk: String?,
     val baseAddr: String?,

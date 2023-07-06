@@ -9,7 +9,7 @@ import org.sbas.utils.StringUtils
 data class BdasAdmsSaveDto(
     val ptId: String,
     val bdasSeq: Int,
-    val hospId: String,
+    val hospId: String?,
     val deptNm: String?,
     val wardNm: String?,
     val roomNm: String?,
@@ -33,7 +33,7 @@ data class BdasAdmsSaveDto(
             admsDt = StringUtils.getYyyyMmDd(),
             admsTm = StringUtils.getHhMmSs(),
             msg = msg,
-            admsStatCd = admsStatCd,
+            admsStatCd = "IOST0001",
         )
     }
 
@@ -45,7 +45,7 @@ data class BdasAdmsSaveDto(
             dschTm = StringUtils.getHhMmSs(),
             dschRsnCd = dschRsnCd,
             msg = msg,
-            admsStatCd = admsStatCd,
+            admsStatCd = "IOST0002",
         )
     }
 
@@ -54,7 +54,7 @@ data class BdasAdmsSaveDto(
             id = BdasAdmsId(ptId, bdasSeq),
             hospId = hospId,
             msg = msg,
-            admsStatCd = admsStatCd,
+            admsStatCd = "IOST0003",
         )
     }
 }

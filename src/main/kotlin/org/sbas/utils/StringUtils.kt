@@ -75,16 +75,15 @@ class StringUtils {
             return map.entries.find { sido.startsWith(it.key) }?.value ?: ""
         }
 
-        fun incrementCode(code: String?, prefix: String): String? {
+        fun incrementCode(prefix: String, codeNumberLength: Int, code: String?): String {
             if (code.isNullOrEmpty()) {
-                return null
+                return prefix + 1.toString().padStart(codeNumberLength, '0')
             }
 
-            val numberPart = code.substring(2).toInt()
-
+            val numberPart = code.substring(prefix.length).toInt()
             val incrementedNumber = numberPart + 1
 
-            return prefix + incrementedNumber.toString().padStart(8, '0')
+            return prefix + incrementedNumber.toString().padStart(codeNumberLength, '0')
         }
     }
 }

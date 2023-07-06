@@ -99,10 +99,8 @@ data class InfoPtBasicInfo(
     val attcId: String?,
     val bedStatCd: String?,
     val bedStatNm: String?,
-//    val undrDsesCd: String?,
-) {
-//    val undrDsesCdList: MutableList<String> = mutableListOf()
-}
+    val undrDsesCd: List<String>?,
+)
 
 data class BdasHisInfo(
     val ptId: String?,
@@ -111,17 +109,9 @@ data class BdasHisInfo(
     val hospNm: String?,
     var order: String?,
     val updtDttm: Instant?,
-) : TagList()
-
-data class InfoPtInfo(
-    val basicInfo: InfoPtBasicInfo,
-    val bdasHisInfo: MutableList<BdasHisInfo>,
-    val count: Int,
-)
-
-abstract class TagList{
-    @JsonIgnore var ptTypeCd: String? = null
-    @JsonIgnore var svrtTypeCd: String? = null
-    @JsonIgnore var undrDsesCd: String? = null
+    @JsonIgnore val ptTypeCd: String?,
+    @JsonIgnore val svrtTypeCd: String?,
+    @JsonIgnore val undrDsesCd: String?,
+) {
     var tagList: MutableList<String>? = mutableListOf()
 }

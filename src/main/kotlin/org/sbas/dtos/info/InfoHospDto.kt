@@ -1,7 +1,10 @@
 package org.sbas.dtos.info
 
 import org.sbas.entities.info.InfoHosp
+import org.sbas.parameters.PageRequest
 import org.sbas.utils.NoArg
+import java.time.Instant
+import javax.ws.rs.QueryParam
 
 @NoArg
 data class InfoHospSaveReq(
@@ -92,4 +95,28 @@ data class InfoHospSaveReq(
 data class InfoHospDetailDto(
     var infoHosp: InfoHosp,
     var medicCnt: Long,
+)
+
+@NoArg
+data class InfoHospSearchParam(
+    @field: QueryParam("hospId")var hospId: String?,
+    var dutyName: String?,
+    var dstrCd1: String?,
+    var dstrCd2: String?,
+    var pageRequest: PageRequest?,
+    var dutyDivNams: MutableList<String>?,
+) {
+    var dutyDivNam: String? = ""
+}
+
+data class InfoHospListDto(
+    val hospId: String?,
+    val hpId: String?,
+    val dutyName: String?,
+    val dutyDivNam: String?,
+    val dstrCd1: String?,
+    val dstrCd2: String?,
+    val dutyTel1: String?,
+//    val dutyTel3: String?,
+    val updtDttm: Instant?,
 )

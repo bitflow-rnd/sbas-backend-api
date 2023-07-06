@@ -67,7 +67,7 @@ class InfoHosp(
     var dstrCd1: String? = null, // 시도
 
     @Column(name="dstr_cd2", length = 8)
-    var dstrCd2: String? = null,
+    var dstrCd2: String? = null, // 시군구
 
 
 ) : CommonEntity(), Serializable {

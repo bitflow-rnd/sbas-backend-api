@@ -10,7 +10,6 @@ import io.quarkus.panache.common.Sort
 import org.jboss.logging.Logger
 import org.sbas.dtos.info.*
 import org.sbas.entities.info.*
-import org.sbas.parameters.SearchHospRequest
 import javax.enterprise.context.ApplicationScoped
 import javax.inject.Inject
 import javax.ws.rs.NotFoundException
@@ -56,23 +55,18 @@ class InfoPtRepository : PanacheRepositoryBase<InfoPt, String> {
         return getEntityManager().createNativeQuery(query).singleResult as String
     }
 
-//    fun findBdasHisInfo(ptId: String): MutableList<BdasHisInfo> {
-////        val query = "select new org.sbas.dtos.info.BdasHisInfo(b.id.ptId, b.id.bdasSeq, " +
-////                "be.diagNm, ba.hospId, '', ba.updtDttm, '') " +
-////                "from BdasEsvy be " +
-////                "left join BdasReq b on be.ptId = b.id.ptId " +
-////                "left join BdasAdms ba on b.id.bdasSeq = ba.id.bdasSeq " +
-////                "where be.ptId = '${ptId}' " +
-////                "order by ba.id.bdasSeq desc"
-//        val bdasHisInfoList: List<BdasHisInfo> = queryFactory.listQuery {
-//            select(listOf(col(BdasEsvy::ptId), col(BdasEsvy::bdasSeq)))
-//            from(entity(BdasEsvy::class))
-////            where(col(BdasAdms::id).equal(BdasAdmsId(ptId, BdasEsvy::bdasSeq!!)))
-////            associate(BdasAdms::class, BdasAdmsId::class, on(BdasAdms::id))
-//        }
-//
-//        return bdasHisInfoList as MutableList
-//    }
+    fun findBdasHisInfo(ptId: String): MutableList<BdasHisInfo> {
+        val query = "select new org.sbas.dtos.info.BdasHisInfo(be.ptId, be.bdasSeq, " +
+                "be.diagNm, ih.dutyName, '', ba.updtDttm, br.ptTypeCd, br.svrtTypeCd, br.undrDsesCd) " +
+                "from BdasEsvy be " +
+                "join BdasReq br on be.bdasSeq = br.id.bdasSeq " +
+                "left join BdasAdms ba on be.id.bdasSeq = ba.id.bdasSeq " +
+                "join InfoHosp ih on ba.hospId = ih.hospId " +
+                "where be.ptId = '${ptId}' " +
+                "order by ba.id.bdasSeq desc"
+
+        return getEntityManager().createQuery(query, BdasHisInfo::class.java).resultList.toMutableList()
+    }
 }
 
 @ApplicationScoped
@@ -122,15 +116,37 @@ class InfoCrewRepository : PanacheRepositoryBase<InfoCrew, InfoCrewId> {
 class InfoHospRepository : PanacheRepositoryBase<InfoHosp, String> {
 
     @Inject
-    private lateinit var log: Logger
+    private lateinit var queryFactory: QueryFactory
 
     @Inject
     private lateinit var userRepository: InfoUserRepository
 
-    fun findInfoHopByCondition(searchParam: SearchHospRequest?): PanacheQuery<InfoHosp> {
+    fun findInfoHosps(param: InfoHospSearchParam): MutableList<InfoHospListDto> {
+        val infoHosps = queryFactory.listQuery<InfoHospListDto> {
+            selectMulti(
+                col(InfoHosp::hospId), col(InfoHosp::hpId), col(InfoHosp::dutyName), col(InfoHosp::dutyDivNam),
+                col(InfoHosp::dstrCd1), col(InfoHosp::dstrCd2), col(InfoHosp::dutyTel1), col(InfoHosp::updtDttm),
+            )
+            from(entity(InfoHosp::class))
+            whereAnd(
+                param.hospId?.run { col(InfoHosp::hospId).like("%$this%") },
+                param.dutyName?.run { col(InfoHosp::dutyName).like("%$this%") },
+                param.dstrCd1?.run { col(InfoHosp::dstrCd1).equal(this) },
+                param.dstrCd2?.run { col(InfoHosp::dstrCd2).equal(this) },
+                param.dutyDivNam?.run { col(InfoHosp::dutyDivNam).`in`(this) },
+            )
+            orderBy(
+                ExpressionOrderSpec(col(InfoHosp::hospId), ascending = false),
+            )
+        }
+
+        return infoHosps.toMutableList()
+    }
+
+    fun findInfoHopByCondition(param: InfoHospSearchParam): PanacheQuery<InfoHosp> {
         val queryBuilder = StringBuilder("from InfoHosp where 1 = 1")
 
-            searchParam?.dutyDivNam?.forEachIndexed { index, dutyDivName ->
+            param.dutyDivNam?.forEachIndexed { index, dutyDivName ->
                 if (index == 0) {
                     queryBuilder.append(" and (")
                 }else{
@@ -138,16 +154,16 @@ class InfoHospRepository : PanacheRepositoryBase<InfoHosp, String> {
                 }
                 queryBuilder.append("dutyDivNam = '$dutyDivName'")
 
-                if(index == searchParam.dutyDivNam.size -1){
+                if(index == param.dutyDivNams!!.size -1){
                     queryBuilder.append(")")
                 }
             }
 
-        searchParam?.dstrCd1?.let { dstrCd1 ->
+        param.dstrCd1?.let { dstrCd1 ->
             queryBuilder.append(" and dutyAddr like fn_get_cd_nm('SIDO','$dstrCd1')||'%'")
         }
-        searchParam?.dstrCd2?.let { dstrCd2 -> queryBuilder.append(" and dstr2Cd = '$dstrCd2'") }
-        searchParam?.hospId?.let { hospId -> queryBuilder.append(" and (hospId = '$hospId' or dutyName like '%$hospId%')") }
+        param.dstrCd2?.let { dstrCd2 -> queryBuilder.append(" and dstr2Cd = '$dstrCd2'") }
+        param.hospId?.let { hospId -> queryBuilder.append(" and (hospId = '$hospId' or dutyName like '%$hospId%')") }
 
         val query = queryBuilder.toString()
 

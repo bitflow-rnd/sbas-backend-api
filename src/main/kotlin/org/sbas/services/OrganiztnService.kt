@@ -6,7 +6,6 @@ import org.sbas.dtos.PagingListDto
 import org.sbas.dtos.info.*
 import org.sbas.entities.info.InfoCrewId
 import org.sbas.entities.info.InfoInst
-import org.sbas.parameters.SearchHospRequest
 import org.sbas.repositories.InfoCrewRepository
 import org.sbas.repositories.InfoHospRepository
 import org.sbas.repositories.InfoInstRepository
@@ -42,19 +41,19 @@ class OrganiztnService {
      * 의료기관(병원) 목록 조회
      */
     @Transactional
-    fun findInfoHospList(searchParam: SearchHospRequest?): CommonResponse<PagingListDto> {
-        val findHosp = infoHospRepository.findInfoHopByCondition(searchParam)
+    fun findInfoHospList(param: InfoHospSearchParam): CommonResponse<MutableList<InfoHospListDto>> {
+        val findHosp = infoHospRepository.findInfoHosps(param)
 
-        val count = findHosp.count()
-        val resultList = if(searchParam?.pageRequest == null){
-            findHosp.page(0, 10).list() as MutableList
-        }else {
-            findHosp.page(searchParam.pageRequest?.page!! -1, searchParam.pageRequest?.size!!).list() as MutableList
-        }
+//        val count = findHosp.count()
+//        val resultList = if(param.pageRequest == null){
+//            findHosp.page(0, 10).list() as MutableList
+//        }else {
+//            findHosp.page(param.pageRequest?.page!! -1, param.pageRequest?.size!!).list() as MutableList
+//        }
+//
+//        val result = PagingListDto(count, resultList)
 
-        val result = PagingListDto(count, resultList)
-
-        return CommonResponse(result)
+        return CommonResponse(findHosp)
     }
 
     /**
@@ -79,7 +78,7 @@ class OrganiztnService {
      */
     @Transactional
     fun regFireStatn(fireStatnSaveReq: FireStatnSaveReq): CommonResponse<String> {
-        val fireStatnInstId = StringUtils.incrementCode(infoInstRepository.findLatestFireStatInstId(), "FS") ?: "FS00000001"
+        val fireStatnInstId = StringUtils.incrementCode("FS", 8, infoInstRepository.findLatestFireStatInstId())
 
         infoInstRepository.persist(fireStatnSaveReq.toEntity(fireStatnInstId))
 
@@ -171,7 +170,7 @@ class OrganiztnService {
      */
     @Transactional
     fun regFireman(infoCrewRegDto: InfoCrewRegDto): CommonResponse<String> {
-        val crewId = StringUtils.incrementCode(infoCrewRepository.findLatestCrewId(infoCrewRegDto.instId), "CR") ?: "CR00000001"
+        val crewId = StringUtils.incrementCode("CR", 8, infoCrewRepository.findLatestCrewId(infoCrewRegDto.instId))
 
         infoCrewRepository.persist(infoCrewRegDto.toEntityForInsert(crewId))
 
