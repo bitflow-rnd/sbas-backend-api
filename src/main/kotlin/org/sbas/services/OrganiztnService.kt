@@ -88,9 +88,12 @@ class OrganiztnService {
     fun regFireStatn(fireStatnSaveReq: FireStatnSaveReq): CommonResponse<String> {
         val fireStatnInstId = StringUtils.incrementCode("FS", 8, infoInstRepository.findLatestFireStatInstId())
 
-        baseCodeRepository.findBaseCodeByCdId(fireStatnSaveReq.dstrCd1 ?: "")
+        val baseCode = baseCodeRepository.findBaseCodeByCdId(fireStatnSaveReq.dstrCd1 ?: "")
+        val dstrCd2Nm = baseCodeRepository.getDstrCd2Nm(fireStatnSaveReq.dstrCd1, fireStatnSaveReq.dstrCd2)
 
-        val geocoding = geoHandler.getGeocoding(NaverGeocodingApiParams(query = fireStatnSaveReq.detlAddr!!))
+        val fullAddr = baseCode!!.cdNm + dstrCd2Nm + fireStatnSaveReq.detlAddr
+
+        val geocoding = geoHandler.getGeocoding(NaverGeocodingApiParams(query = fullAddr))
         fireStatnSaveReq.lat = geocoding.addresses!![0].y // 위도
         fireStatnSaveReq.lon = geocoding.addresses!![0].x // 경도
 

@@ -52,8 +52,9 @@ class BaseCodeRepository : PanacheRepositoryBase<BaseCode, BaseCodeId> {
         else return findCode.cdNm ?: ""
     }
 
-    fun getDstrCd1Nm() {
-
+    fun getDstrCd2Nm(dstrCd1: String?, dstrCd2: String?): String {
+        val query = "select fn_get_dstr_cd2_nm('$dstrCd1', '$dstrCd2') as test"
+        return getEntityManager().createNativeQuery(query).singleResult as String
     }
 }
 

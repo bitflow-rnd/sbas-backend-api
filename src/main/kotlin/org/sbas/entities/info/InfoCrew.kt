@@ -42,10 +42,10 @@ class InfoCrew(
 
     fun update(dto: InfoCrewRegDto) {
         with(dto) {
-            crewNm?.let { this.crewNm = it }
-            telno?.let { this.telno = it }
-            rmk?.let { this.rmk = it }
-            pstn?.let { this.pstn = it }
+            crewNm?.let { this@InfoCrew.crewNm = it }
+            telno?.let { this@InfoCrew.telno = it }
+            rmk?.let { this@InfoCrew.rmk = it }
+            pstn?.let { this@InfoCrew.pstn = it }
         }
     }
 }
