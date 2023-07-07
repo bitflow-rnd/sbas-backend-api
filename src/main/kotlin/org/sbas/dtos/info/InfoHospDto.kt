@@ -1,7 +1,6 @@
 package org.sbas.dtos.info
 
 import org.sbas.entities.info.InfoHosp
-import org.sbas.parameters.PageRequest
 import org.sbas.utils.NoArg
 import java.time.Instant
 import javax.ws.rs.QueryParam
@@ -103,9 +102,10 @@ data class InfoHospSearchParam(
     @field: QueryParam("dutyName") var dutyName: String?,
     @field: QueryParam("dstrCd1")var dstrCd1: String?,
     @field: QueryParam("dstrCd2")var dstrCd2: String?,
-//    @field: QueryParam("pageRequest") var pageRequest: PageRequest?,
-    @field: QueryParam("dutyDivNams") var dutyDivNams: MutableList<String>?,
+    @field: QueryParam("page") var page: Int? = 0,
+    @field: QueryParam("dutyDivNams") var dutyDivNams: String?,
 ) {
+    val pageSize: Int = 10
     var dutyDivNam: String? = null
 }
 
@@ -117,6 +117,6 @@ data class InfoHospListDto(
     val dstrCd1: String?,
     val dstrCd2: String?,
     val dutyTel1: String?,
-//    val dutyTel3: String?,
+    val dutyTel3: String?,
     val updtDttm: Instant?,
 )

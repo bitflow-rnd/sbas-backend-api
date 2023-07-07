@@ -3,11 +3,10 @@ package org.sbas.repositories
 import com.linecorp.kotlinjdsl.QueryFactory
 import com.linecorp.kotlinjdsl.listQuery
 import com.linecorp.kotlinjdsl.query.spec.ExpressionOrderSpec
+import com.linecorp.kotlinjdsl.querydsl.CriteriaQueryDsl
 import com.linecorp.kotlinjdsl.querydsl.expression.col
-import io.quarkus.hibernate.orm.panache.kotlin.PanacheQuery
 import io.quarkus.hibernate.orm.panache.kotlin.PanacheRepositoryBase
 import io.quarkus.panache.common.Sort
-import org.jboss.logging.Logger
 import org.sbas.dtos.info.*
 import org.sbas.entities.info.*
 import javax.enterprise.context.ApplicationScoped
@@ -125,51 +124,40 @@ class InfoHospRepository : PanacheRepositoryBase<InfoHosp, String> {
         val infoHosps = queryFactory.listQuery<InfoHospListDto> {
             selectMulti(
                 col(InfoHosp::hospId), col(InfoHosp::hpId), col(InfoHosp::dutyName), col(InfoHosp::dutyDivNam),
-                col(InfoHosp::dstrCd1), col(InfoHosp::dstrCd2), col(InfoHosp::dutyTel1), col(InfoHosp::updtDttm),
+                col(InfoHosp::dstrCd1), col(InfoHosp::dstrCd2), col(InfoHosp::dutyTel1), col(InfoHosp::dutyTel1), col(InfoHosp::updtDttm),
             )
             from(entity(InfoHosp::class))
-            whereAnd(
-                param.hospId?.run { col(InfoHosp::hospId).like("%$this%") },
-                param.dutyName?.run { col(InfoHosp::dutyName).like("%$this%") },
-                param.dstrCd1?.run { col(InfoHosp::dstrCd1).equal(this) },
-                param.dstrCd2?.run { col(InfoHosp::dstrCd2).equal(this) },
-                param.dutyDivNam?.run { col(InfoHosp::dutyDivNam).`in`(this) },
-            )
-            orderBy(
-                ExpressionOrderSpec(col(InfoHosp::hospId), ascending = false),
-            )
-            limit(10)
+            whereAndOrder(param)
+            limit(param.pageSize)
+            param.page?.run { offset(this.minus(1).times(param.pageSize)) }
         }
 
         return infoHosps.toMutableList()
     }
 
-    fun findInfoHopByCondition(param: InfoHospSearchParam): PanacheQuery<InfoHosp> {
-        val queryBuilder = StringBuilder("from InfoHosp where 1 = 1")
-
-            param.dutyDivNam?.forEachIndexed { index, dutyDivName ->
-                if (index == 0) {
-                    queryBuilder.append(" and (")
-                }else{
-                    queryBuilder.append(" or ")
-                }
-                queryBuilder.append("dutyDivNam = '$dutyDivName'")
-
-                if(index == param.dutyDivNams!!.size -1){
-                    queryBuilder.append(")")
-                }
-            }
-
-        param.dstrCd1?.let { dstrCd1 ->
-            queryBuilder.append(" and dutyAddr like fn_get_cd_nm('SIDO','$dstrCd1')||'%'")
+    fun countInfoHosps(param: InfoHospSearchParam): Int {
+        val count = queryFactory.listQuery {
+            selectMulti(
+                col(InfoHosp::hospId), col(InfoHosp::hpId), col(InfoHosp::dutyName), col(InfoHosp::dutyDivNam),
+                col(InfoHosp::dstrCd1), col(InfoHosp::dstrCd2), col(InfoHosp::dutyTel1), col(InfoHosp::dutyTel1),col(InfoHosp::updtDttm),
+            )
+            from(entity(InfoHosp::class))
+            whereAndOrder(param)
         }
-        param.dstrCd2?.let { dstrCd2 -> queryBuilder.append(" and dstr2Cd = '$dstrCd2'") }
-        param.hospId?.let { hospId -> queryBuilder.append(" and (hospId = '$hospId' or dutyName like '%$hospId%')") }
+        return count.size
+    }
 
-        val query = queryBuilder.toString()
-
-        return find(query)
-
+    private fun CriteriaQueryDsl<InfoHospListDto>.whereAndOrder(param: InfoHospSearchParam) {
+        whereAnd(
+            param.hospId?.run { col(InfoHosp::hospId).like("%$this%") },
+            param.dutyName?.run { col(InfoHosp::dutyName).like("%$this%") },
+            param.dstrCd1?.run { col(InfoHosp::dstrCd1).equal(this) },
+            param.dstrCd2?.run { col(InfoHosp::dstrCd2).equal(this) },
+            param.dutyDivNam?.run { col(InfoHosp::dutyDivNam).`in`(this) },
+        )
+        orderBy(
+            ExpressionOrderSpec(col(InfoHosp::hospId), ascending = false),
+        )
     }
 
     fun findInfoHospDetail(hpId: String) : InfoHospDetailDto {
