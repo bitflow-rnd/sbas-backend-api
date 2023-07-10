@@ -38,7 +38,8 @@ dependencies {
     implementation("io.quarkus:quarkus-hibernate-orm")
     implementation("io.quarkus:quarkus-smallrye-openapi")
     implementation("io.quarkus:quarkus-smallrye-reactive-messaging")
-    implementation("io.quarkus:quarkus-scheduler")
+//    implementation("io.quarkus:quarkus-scheduler")
+
     implementation("com.google.firebase:firebase-admin:9.1.1")
     implementation("com.linecorp.kotlin-jdsl:hibernate-kotlin-jdsl:2.2.1.RELEASE")
     testImplementation("io.quarkus:quarkus-junit5")
