@@ -2,26 +2,37 @@ package org.sbas.dtos
 
 import org.sbas.entities.base.BaseAttc
 import org.sbas.utils.NoArg
-import java.time.LocalDateTime
-import java.time.format.DateTimeFormatter
+import org.sbas.utils.StringUtils
 
 @NoArg
 data class FileDto(
-    var filename: String,
+    var fileName: String,
     var localPath: String,
     var uriPath: String
 )
 
-fun FileDto.toEntity(fileTypeCd: String, rmk: String?): BaseAttc {
-    val now = LocalDateTime.now()
-
+fun FileDto.toPublicEntity(fileTypeCd: String, rmk: String?): BaseAttc {
     return BaseAttc(
-        attcDt = now.format(DateTimeFormatter.ofPattern("yyyyMMdd")),
-        attcTm = now.format(DateTimeFormatter.ofPattern("HHmmss")),
+        attcDt = StringUtils.getYyyyMmDd(),
+        attcTm = StringUtils.getHhMmSs(),
         fileTypeCd = fileTypeCd,
-        fileNm = filename,
+        fileNm = fileName,
         loclPath = localPath,
         uriPath = uriPath,
+        privYn = "N",
+        rmk = rmk,
+    )
+}
+
+fun FileDto.toPrivateEntity(fileTypeCd: String, rmk: String?): BaseAttc {
+    return BaseAttc(
+        attcDt = StringUtils.getYyyyMmDd(),
+        attcTm = StringUtils.getHhMmSs(),
+        fileTypeCd = fileTypeCd,
+        fileNm = fileName,
+        loclPath = localPath,
+        uriPath = uriPath,
+        privYn = "Y",
         rmk = rmk,
     )
 }

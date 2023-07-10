@@ -58,6 +58,9 @@ class BaseAttc(
     @Column(name = "uri_path", nullable = false, length = 100)
     var uriPath: String? = null, // uri 경로
 
+    @Column(name = "priv_yn", nullable = false)
+    var privYn: String? = null,
+
     @Column(name = "rmk", length = 200)
     var rmk: String? = null, // 비고
 

@@ -9,4 +9,5 @@ package org.sbas.utils
  * DTO 나 Parameter 쓰실때 사용하시면 될 것 같습니다.
  */
 @Target(AnnotationTarget.CLASS)
+@Retention(AnnotationRetention.BINARY)
 annotation class NoArg

@@ -1,4 +1,4 @@
-package org.sbas.utils
+package org.sbas.entities
 
 import org.eclipse.microprofile.jwt.JsonWebToken
 import org.sbas.entities.CommonEntity

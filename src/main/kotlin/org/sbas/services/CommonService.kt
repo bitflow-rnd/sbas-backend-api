@@ -21,6 +21,7 @@ import java.io.File
 import java.io.FileInputStream
 import java.io.IOException
 import java.io.InputStream
+import java.util.*
 import javax.enterprise.context.ApplicationScoped
 import javax.inject.Inject
 import javax.transaction.Transactional
@@ -212,28 +213,61 @@ class CommonService {
      * 전체 공개 권한 파일 업로드
      */
     @Transactional
-    fun publicFileUpload(param1: String, param2: FileUpload): CommonResponse<String?> {
-        if(param2.fileName()=="") throw CustomizedException("파일을 등록하시오.", Response.Status.BAD_REQUEST)
+    fun publicFileUpload(param1: String, param2: MutableList<FileUpload>): CommonResponse<MutableList<String>> {
+        if (Objects.isNull(param2)) {
+            throw CustomizedException("파일을 등록하시오.", Response.Status.BAD_REQUEST)
+        }
+        // TODO attc_grp_id
+        val result = mutableListOf<String>()
+        param2.forEach {
+            val fileDto = fileHandler.createPublicFile(it)
 
-        val fileName = fileHandler.createPublicFile(param2)
+            val dotPos = fileDto.fileName.lastIndexOf(".")
+            val fileExt = fileDto.fileName.substring(dotPos + 1).lowercase()
 
-        val dotPos = fileName!!.filename.lastIndexOf(".")
-        val fileExt = fileName.filename.substring(dotPos + 1).lowercase()
+            val fileTypeCd = getFileTypeCd(fileExt)
+            val baseAttc = fileDto.toPublicEntity(fileTypeCd, null)
 
-        val fileTypeCd = if(fileExt == "bmp" || fileExt == "jpeg" || fileExt == "jpg"
-            || fileExt == "gif" || fileExt == "png" || fileExt == "pdf"){
-            SbasConst.FileTypeCd.IMAGE
-        }else {
-            SbasConst.FileTypeCd.VIDEO
+            baseAttcRepository.persist(baseAttc)
+
+            result.add(baseAttc.attcId!!)
         }
 
-        val result = fileName.toEntity(fileTypeCd, null)
+        return CommonResponse(result)
+    }
 
-        log.warn(result)
+    @Transactional
+    fun privateFileUpload(param1: String, param2: MutableList<FileUpload>): CommonResponse<MutableList<String>> {
+        if (Objects.isNull(param2)) {
+            throw CustomizedException("파일을 등록하시오.", Response.Status.BAD_REQUEST)
+        }
 
-        baseAttcRepository.persist(result)
+        val result = mutableListOf<String>()
+        param2.forEach {
+            val fileDto = fileHandler.createPrivateFile(it)
 
-        return CommonResponse(result.attcId)
+            val dotPos = fileDto.fileName.lastIndexOf(".")
+            val fileExt = fileDto.fileName.substring(dotPos + 1).lowercase()
+
+            val fileTypeCd = getFileTypeCd(fileExt)
+            val baseAttc = fileDto.toPrivateEntity(fileTypeCd, null)
+
+            baseAttcRepository.persist(baseAttc)
+
+            result.add(baseAttc.attcId!!)
+        }
+
+        return CommonResponse(result)
+    }
+
+    private fun getFileTypeCd(fileExt: String): String {
+        val imageExtensions = setOf("bmp", "jpeg", "jpg", "gif", "png", "pdf")
+        val fileTypeCd = if (fileExt.lowercase() in imageExtensions) {
+            SbasConst.FileTypeCd.IMAGE
+        } else {
+            SbasConst.FileTypeCd.VIDEO
+        }
+        return fileTypeCd
     }
 
     @Transactional
@@ -243,13 +277,6 @@ class CommonService {
         val response: FileResponse = FileResponse(findFile.fileTypeCd, "$serverdomain${findFile.uriPath}/${findFile.fileNm}")
 
         return CommonResponse(response)
-    }
-
-    @Transactional
-    fun privateFileUpload(param1: String, param2: FileUpload): CommonResponse<String?> {
-        val fileName = fileHandler.createPrivateFile(param2)
-
-        return CommonResponse(fileName)
     }
 
     @Transactional

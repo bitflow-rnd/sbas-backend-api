@@ -269,15 +269,15 @@ class PatientService {
         val fileInfo = fileHandler.createPublicFile(param)
         if (fileInfo != null) {
             // Naver Clova OCR call
-            val res = naverApiHandler.recognizeImage(fileInfo.uriPath, fileInfo.filename)
+            val res = naverApiHandler.recognizeImage(fileInfo.uriPath, fileInfo.fileName)
             log.debug("texts are $res")
             // Then move from public to private
-            fileHandler.moveFilePublicToPrivate(fileInfo.localPath, fileInfo.filename)
+            fileHandler.moveFilePublicToPrivate(fileInfo.localPath, fileInfo.fileName)
             val item = BaseAttc(
                 attcDt = StringUtils.getYyyyMmDd(),
                 attcTm = StringUtils.getHhMmSs(),
                 fileTypeCd = SbasConst.FileTypeCd.IMAGE,
-                fileNm = fileInfo.filename,
+                fileNm = fileInfo.fileName,
                 loclPath = fileInfo.localPath,
                 uriPath = fileInfo.uriPath,
             )

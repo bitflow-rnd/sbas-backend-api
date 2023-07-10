@@ -2,7 +2,6 @@ package org.sbas.entities
 
 import org.hibernate.annotations.CreationTimestamp
 import org.hibernate.annotations.UpdateTimestamp
-import org.sbas.utils.CommonEntityListener
 import java.time.Instant
 import javax.persistence.*
 

@@ -1,6 +1,5 @@
 package org.sbas.parameters
 
-import com.fasterxml.jackson.annotation.JsonProperty
 import org.sbas.utils.NoArg
 
 @NoArg

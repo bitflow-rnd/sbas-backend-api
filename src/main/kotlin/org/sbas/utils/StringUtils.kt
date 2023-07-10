@@ -7,13 +7,20 @@ class StringUtils {
 
     companion object {
 
-        private const val DATE_FORMAT = "yyyyMMdd"
+        private const val DATE_FORMAT = "yyyyMM"
+        private const val DATE_FORMAT_DD = "yyyyMMdd"
         private const val TIME_FORMAT_HM = "HHmm"
         private const val TIME_FORMAT_HMS = "HHmmss"
 
-        fun getYyyyMmDd(): String {
+        fun getYyyyMM(): String {
             val date = Date(System.currentTimeMillis())
             val simpleDateFormat = SimpleDateFormat(DATE_FORMAT)
+            return simpleDateFormat.format(date)
+        }
+
+        fun getYyyyMmDd(): String {
+            val date = Date(System.currentTimeMillis())
+            val simpleDateFormat = SimpleDateFormat(DATE_FORMAT_DD)
             return simpleDateFormat.format(date)
         }
 
