@@ -1,6 +1,6 @@
 package org.sbas.entities.info
 
-import org.sbas.constants.UserStatCd
+import org.sbas.constants.enums.UserStatCd
 import org.sbas.entities.CommonEntity
 import java.time.Instant
 import javax.persistence.*

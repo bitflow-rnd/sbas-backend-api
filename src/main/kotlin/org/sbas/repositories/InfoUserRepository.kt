@@ -63,4 +63,8 @@ class InfoUserRepository : PanacheRepositoryBase<InfoUser, String> {
         return find("order by id").page(page-1, size).list()
     }
 
+    fun findBdasUserByReqDstrCd(dstrCd1: String?, dstrCd2: String?): List<InfoUser> {
+        return find("duty_dstr_1_cd = '$dstrCd1' and duty_dstr_2_cd = '$dstrCd2' and (job_cd = 'PMGR0002' OR job_cd like '병상승인%')").list()
+    }
+
 }

@@ -2,7 +2,7 @@ package org.sbas.repositories
 
 import io.quarkus.hibernate.orm.panache.kotlin.PanacheRepositoryBase
 import io.quarkus.panache.common.Sort
-import org.sbas.constants.TimeLineStatCd
+import org.sbas.constants.enums.TimeLineStatCd
 import org.sbas.dtos.bdas.BdasListDto
 import org.sbas.dtos.bdas.BdasTimeLineDto
 import org.sbas.entities.bdas.*
@@ -132,4 +132,13 @@ class BdasTrnsRepository: PanacheRepositoryBase<BdasTrns, BdasTrnsId> {
 }
 
 @ApplicationScoped
-class BdasAdmsRepository: PanacheRepositoryBase<BdasAdms, BdasAdmsId>
+class BdasAdmsRepository: PanacheRepositoryBase<BdasAdms, BdasAdmsId> {
+
+    fun findTimeLineInfo(ptId: String, bdasSeq: Int): MutableList<BdasTimeLineDto> {
+        val query = "select new org.sbas.dtos.bdas.BdasTimeLineDto(case ba.admsStatCd when 'Y' then '배정완료' when 'N' then '배정거절' end) " +
+                "from BdasAdms ba " +
+                "where ba.id.ptId = '$ptId' and ba.id.bdasSeq = $bdasSeq"
+
+        return getEntityManager().createQuery(query, BdasTimeLineDto::class.java).resultList
+    }
+}

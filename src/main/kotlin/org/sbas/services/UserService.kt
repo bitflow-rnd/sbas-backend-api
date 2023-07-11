@@ -5,7 +5,7 @@ import org.eclipse.microprofile.jwt.JsonWebToken
 import org.eclipse.microprofile.rest.client.inject.RestClient
 import org.jboss.logging.Logger
 import org.sbas.constants.SbasConst
-import org.sbas.constants.UserStatCd
+import org.sbas.constants.enums.UserStatCd
 import org.sbas.dtos.*
 import org.sbas.dtos.info.InfoCntcDto
 import org.sbas.dtos.info.InfoUserSaveDto

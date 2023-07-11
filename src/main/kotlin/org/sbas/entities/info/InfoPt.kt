@@ -2,7 +2,8 @@ package org.sbas.entities.info
 
 import org.hibernate.annotations.GenericGenerator
 import org.hibernate.annotations.Parameter
-import org.sbas.constants.BedStatCd
+import org.sbas.constants.enums.BedStatCd
+import org.sbas.constants.enums.NatiCd
 import org.sbas.dtos.info.InfoPtDto
 import org.sbas.entities.CommonEntity
 import org.sbas.entities.StringPrefixedSequenceIdGenerator
@@ -55,12 +56,13 @@ class InfoPt(
     var telno: String? = null, // 전화번호
 
     @Column(name = "nati_cd", nullable = false, length = 8)
-    var natiCd: String? = null, // 국적 코드
+    @Enumerated(EnumType.STRING)
+    var natiCd: NatiCd? = null, // 국적 코드
 
     @Column(name = "pica_ver", length = 10)
     var picaVer: String? = null, // 개인정보수집동의 버전
 
-    @Column(name = "deth_yn", nullable = false, length = 10)
+    @Column(name = "deth_yn", nullable = false, length = 1)
     var dethYn: String?, // 사망여부
 
     @Column(name = "nok_nm", length = 10)

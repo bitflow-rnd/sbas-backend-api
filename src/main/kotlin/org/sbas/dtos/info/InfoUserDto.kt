@@ -1,6 +1,6 @@
 package org.sbas.dtos.info
 
-import org.sbas.constants.UserStatCd
+import org.sbas.constants.enums.UserStatCd
 import org.sbas.entities.info.InfoUser
 import org.sbas.utils.NoArg
 import java.time.Instant

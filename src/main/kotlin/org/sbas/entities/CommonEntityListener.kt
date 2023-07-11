@@ -1,7 +1,6 @@
 package org.sbas.entities
 
 import org.eclipse.microprofile.jwt.JsonWebToken
-import org.sbas.entities.CommonEntity
 import javax.enterprise.context.ApplicationScoped
 import javax.inject.Inject
 import javax.persistence.PrePersist

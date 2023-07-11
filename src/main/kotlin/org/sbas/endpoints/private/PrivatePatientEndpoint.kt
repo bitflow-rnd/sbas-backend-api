@@ -18,6 +18,7 @@ import org.sbas.services.BedAssignService
 import org.sbas.services.CommonService
 import org.sbas.services.PatientService
 import javax.inject.Inject
+import javax.validation.Valid
 import javax.ws.rs.BeanParam
 import javax.ws.rs.GET
 import javax.ws.rs.POST
@@ -60,13 +61,13 @@ class PrivatePatientEndpoint {
     @GET
     @Path("read-epidreport/{attcId}")
     fun readEpidReport(@RestPath attcId: String): Response {
-        return Response.ok(patientService.findEpidReportByAttcId(attcId)).build()
+        return Response.ok(patientService.readEpidReport(attcId)).build()
     }
 
     @Operation(summary = "환자 기본정보 등록", description = "")
     @POST
     @Path("regbasicinfo")
-    fun regbasicinfo(infoPtDto: InfoPtDto): Response {
+    fun regbasicinfo(@Valid infoPtDto: InfoPtDto): Response {
         return Response.ok(patientService.saveInfoPt(infoPtDto)).build()
     }
 

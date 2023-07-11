@@ -5,8 +5,11 @@ import org.eclipse.microprofile.jwt.JsonWebToken
 import org.jboss.logging.Logger
 import org.jboss.resteasy.reactive.multipart.FileUpload
 import org.sbas.constants.*
+import org.sbas.constants.enums.BedStatCd
+import org.sbas.constants.enums.PtTypeCd
+import org.sbas.constants.enums.SvrtTypeCd
+import org.sbas.constants.enums.UndrDsesCd
 import org.sbas.dtos.info.*
-import org.sbas.entities.base.BaseAttc
 import org.sbas.handlers.FileHandler
 import org.sbas.handlers.NaverApiHandler
 import org.sbas.parameters.NewsScoreParameters
@@ -119,8 +122,8 @@ class PatientService {
     @Transactional
     fun findInfoPtWithMyOrgan(): CommonResponse<*> {
         //TODO
-        val infoUser = infoUserRepository.findById(jwt.name) ?: throw NotFoundException()
-        val infoInst = infoInstRepository.findById(infoUser.instId!!) ?: throw NotFoundException()
+        val infoUser = infoUserRepository.findById(jwt.name) ?: throw NotFoundException("infoUser not found")
+        val infoInst = infoInstRepository.findById(infoUser.instId!!) ?: throw NotFoundException("infoInst not found")
         val infoPtList = infoPtRepository.findByDstrCd(infoInst.dstrCd1!!, infoInst.dstrCd2!!)
 
         val res = mutableMapOf<String, Any>()
@@ -266,30 +269,21 @@ class PatientService {
 
     @Transactional
     fun uploadEpidReport(param: FileUpload): CommonResponse<*>? {
-        val fileInfo = fileHandler.createPublicFile(param)
-        if (fileInfo != null) {
-            // Naver Clova OCR call
-            val res = naverApiHandler.recognizeImage(fileInfo.uriPath, fileInfo.fileName)
-            log.debug("texts are $res")
-            // Then move from public to private
-            fileHandler.moveFilePublicToPrivate(fileInfo.localPath, fileInfo.fileName)
-            val item = BaseAttc(
-                attcDt = StringUtils.getYyyyMmDd(),
-                attcTm = StringUtils.getHhMmSs(),
-                fileTypeCd = SbasConst.FileTypeCd.IMAGE,
-                fileNm = fileInfo.fileName,
-                loclPath = fileInfo.localPath,
-                uriPath = fileInfo.uriPath,
-            )
-            baseAttcRepository.persist(item)
-            return CommonResponse(res)
-        }
-        return null
+        val fileDto = fileHandler.createPrivateFile(param)
+
+        // Naver Clova OCR call
+        val res = naverApiHandler.recognizeImage(fileDto.uriPath, fileDto.fileName)
+        log.debug("texts are $res")
+
+        val attcGrpId = baseAttcRepository.getNextValAttcGrpId()
+        baseAttcRepository.persist(fileDto.toPrivateEntity(attcGrpId = attcGrpId, fileTypeCd = SbasConst.FileTypeCd.IMAGE, "역학조사서"))
+
+        return CommonResponse(res)
     }
 
     @Transactional
-    fun findEpidReportByAttcId(attcId: String): CommonResponse<*> {
-        val baseAttc = baseAttcRepository.find("attc_id = '$attcId'").firstResult() ?: throw NotFoundException("$attcId not found")
+    fun readEpidReport(attcId: String): CommonResponse<*> {
+        val baseAttc = baseAttcRepository.findByAttcId(attcId) ?: throw NotFoundException("$attcId not found")
 
         val url = URL("$serverdomain${baseAttc.uriPath}/${baseAttc.fileNm}")
 
@@ -306,7 +300,7 @@ class PatientService {
 
     @Transactional
     fun delEpidReport(attcId: String): CommonResponse<String> {
-        val baseAttc = baseAttcRepository.find("attc_id = '$attcId'").firstResult() ?: throw NotFoundException("$attcId not found")
+        val baseAttc = baseAttcRepository.findByAttcId(attcId) ?: throw NotFoundException("$attcId not found")
 
 //        val uri = URI("$serverdomain${baseAttc.uriPath}/${baseAttc.fileNm}")
 //        log.warn("uri>>>>>>>>>$uri")

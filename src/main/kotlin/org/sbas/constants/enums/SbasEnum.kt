@@ -1,4 +1,4 @@
-package org.sbas.constants
+package org.sbas.constants.enums
 
 /**
  * 사용자 상태 코드

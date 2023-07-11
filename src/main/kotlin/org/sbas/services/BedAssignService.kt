@@ -1,7 +1,7 @@
 package org.sbas.services
 
 import org.jboss.logging.Logger
-import org.sbas.constants.*
+import org.sbas.constants.enums.*
 import org.sbas.dtos.bdas.*
 import org.sbas.entities.bdas.BdasAdmsId
 import org.sbas.entities.bdas.BdasReq
@@ -18,7 +18,10 @@ import javax.enterprise.context.ApplicationScoped
 import javax.inject.Inject
 import javax.transaction.Transactional
 import javax.ws.rs.NotFoundException
-import kotlin.math.*
+import kotlin.math.acos
+import kotlin.math.cos
+import kotlin.math.roundToInt
+import kotlin.math.sin
 
 /**
  * 병상배정 관련 서비스 클래스
@@ -35,6 +38,7 @@ class BedAssignService {
 
     @Inject private lateinit var infoPtRepository: InfoPtRepository
     @Inject private lateinit var infoHospRepository: InfoHospRepository
+    @Inject private lateinit var infoUserRepository: InfoUserRepository
 
     @Inject private lateinit var baseCodeRepository: BaseCodeRepository
     @Inject private lateinit var geoHandler: GeocodingHandler
@@ -145,10 +149,15 @@ class BedAssignService {
         // infoPt 상태 변경
         val infoPt = infoPtRepository.findById(bdasReqDprtInfo.ptId)
         infoPt!!.changeBedStatAfterBdasReq()
-        
+
+        val bdasUsers =
+            infoUserRepository.findBdasUserByReqDstrCd(findBdasReq.reqDstr1Cd, findBdasReq.reqDstr2Cd)
+
         // 푸쉬 알람 보내기
-        firebaseService.sendMessage(findBdasReq.rgstUserId!!, "새로운 병상배정 요청이 도착했습니다.", "jiseongtak")
-        
+        bdasUsers.forEach {
+            firebaseService.sendMessage(findBdasReq.rgstUserId!!, "새로운 병상배정 요청이 도착했습니다.", it.id!!)
+        }
+
         return CommonResponse("등록 성공")
     }
 
@@ -188,11 +197,14 @@ class BedAssignService {
     @Transactional
     fun getAvalHospList(ptId: String, bdasSeq: Int): CommonResponse<*> {
         val findBdasReq = bdasReqRepository.findByPtIdAndBdasSeq(ptId, bdasSeq) ?: throw NotFoundException("bdasReq not found")
-        
+
         // dstrCd1, dstrCd2 구하기
-        val split = findBdasReq.dprtDstrBascAddr!!.split(" ")
-        val dstrCd1 = StringUtils.getDstrCd1(split[0])
-        val findBaseCode = baseCodeRepository.findByDstr1CdAndCdNm(dstrCd1, split[1]) ?: throw NotFoundException("baseCode not found")
+        val splitAddress = findBdasReq.dprtDstrBascAddr!!.split(" ")
+        val sido = splitAddress[0]
+        val siGunGu = splitAddress[1]
+
+        val dstrCd1 = StringUtils.getDstrCd1(sido)
+        val findBaseCode = baseCodeRepository.findByDstr1CdAndCdNm(dstrCd1, siGunGu) ?: throw NotFoundException("baseCode not found")
         
         // dstrCd1, dstrCd2에 해당하는 infoHosp 목록
         val infoHospList = infoHospRepository.findListByDstrCd1AndDstrCd2(dstrCd1, findBaseCode.id.cdId)
@@ -371,7 +383,11 @@ class BedAssignService {
                 timeLineList.add(closedBdasAdms)
             }
             BedStatCd.BAST0007.name -> {
-
+                timeLineList.addAll(bdasReqRepository.findTimeLineInfo(ptId, bdasSeq))
+                timeLineList.addAll(bdasReqAprvRepository.findTimeLineInfo(ptId, bdasSeq))
+                timeLineList.addAll(bdasAprvRepository.findTimeLineInfo(ptId, bdasSeq))
+                timeLineList.addAll(bdasTrnsRepository.findTimeLineInfo(ptId, bdasSeq))
+                timeLineList.addAll(bdasAdmsRepository.findTimeLineInfo(ptId, bdasSeq))
             }
         }
         return CommonResponse(TimeLineDtoList(timeLineList.size, timeLineList))
