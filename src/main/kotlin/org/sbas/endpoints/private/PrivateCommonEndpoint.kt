@@ -7,6 +7,7 @@ import org.jboss.resteasy.reactive.RestForm
 import org.jboss.resteasy.reactive.RestPath
 import org.jboss.resteasy.reactive.multipart.FileUpload
 import org.sbas.services.CommonService
+import org.sbas.services.FileService
 import javax.inject.Inject
 import javax.ws.rs.GET
 import javax.ws.rs.POST
@@ -25,11 +26,14 @@ class PrivateCommonEndpoint {
     @Inject
     lateinit var commonService: CommonService
 
+    @Inject
+    lateinit var fileService: FileService
+
     @Operation(summary = "파일목록 (권한별 공개 파일)", description = "")
     @GET
     @Path("files/{attcGrpId}")
     fun files(@RestPath attcGrpId: String): Response {
-        return Response.ok(commonService.findFiles(attcGrpId)).build()
+        return Response.ok(fileService.findFiles(attcGrpId)).build()
     }
 
     @Operation(summary = "다운로드 (권한별 공개 파일)", description = "")
@@ -37,14 +41,14 @@ class PrivateCommonEndpoint {
     @Path("download/{attcGrpId}/{attcId}")
     @Produces(MediaType.APPLICATION_OCTET_STREAM)
     fun download(@RestPath attcGrpId: String, @RestPath attcId: String): Response {
-        return commonService.publicFileDownload(attcGrpId, attcId)
+        return fileService.publicFileDownload(attcGrpId, attcId)
     }
 
     @Operation(summary = "업로드 (권한별 공개 파일)", description = "private 파일 업로드 API")
     @POST
     @Path("upload")
     fun upload(@RestForm param1: String?, @RestForm fileUpload: MutableList<FileUpload>): Response {
-        return Response.ok(commonService.privateFileUpload(param1, fileUpload)).build()
+        return Response.ok(fileService.privateFileUpload(param1, fileUpload)).build()
     }
 
     @Operation(summary = "개인정보수집동의 동의", description = "")

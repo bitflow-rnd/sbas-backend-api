@@ -72,6 +72,10 @@ class BaseAttcRepository : PanacheRepositoryBase<BaseAttc, String> {
         return delete("attc_id = '$attcId'")
     }
 
+    fun findFilesByAttcGrpId(attcGrpId: String): List<BaseAttc> {
+        return find("attcGrpId = '$attcGrpId'").list()
+    }
+
     fun findByAttcId(attcId: String) = find("select ba from BaseAttc ba where ba.attcId = '$attcId'").firstResult()
 
     fun findByAttcGrpIdAndAttcId(attcGrpId: String, attcId: String): BaseAttc? {

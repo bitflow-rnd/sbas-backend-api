@@ -7,6 +7,7 @@ import org.jboss.resteasy.reactive.RestForm
 import org.jboss.resteasy.reactive.RestPath
 import org.jboss.resteasy.reactive.multipart.FileUpload
 import org.sbas.services.CommonService
+import org.sbas.services.FileService
 import javax.annotation.security.PermitAll
 import javax.inject.Inject
 import javax.ws.rs.GET
@@ -31,6 +32,9 @@ class PublicCommonEndpoint {
 
     @Inject
     lateinit var commonService: CommonService
+
+    @Inject
+    lateinit var fileService: FileService
 
     @Operation(summary = "등록 관련 공통코드 셋 (일괄 조회)", description = "")
     @GET
@@ -79,21 +83,21 @@ class PublicCommonEndpoint {
     @Path("download/{attcGrpId}/{attcId}")
     @Produces(MediaType.APPLICATION_OCTET_STREAM)
     fun download(@RestPath attcGrpId: String, @RestPath attcId: String): Response {
-        return commonService.publicFileDownload(attcGrpId, attcId)
+        return fileService.publicFileDownload(attcGrpId, attcId)
     }
 
     @Operation(summary = "파일 업로드 (전체 공개 파일)", description = "파일 업로드 API(attcId 반환)")
     @POST
     @Path("upload")
     fun upload(@RestForm param1: String?, @RestForm param2: MutableList<FileUpload>): Response {
-        return Response.ok(commonService.publicFileUpload(param1, param2)).build()
+        return Response.ok(fileService.publicFileUpload(param1, param2)).build()
     }
 
     @Operation(summary = "파일 읽기 (전체 공개 파일)", description = "attcId로 파일 읽기 API")
     @GET
     @Path("image/{attcId}")
     fun getImage(@RestPath attcId: String): Response {
-        return Response.ok(commonService.getImage(attcId)).build()
+        return Response.ok(fileService.getImage(attcId)).build()
     }
 
     @Operation(summary = "개인정보수집동의 목록", description = "")
