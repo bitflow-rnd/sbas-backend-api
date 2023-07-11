@@ -213,13 +213,12 @@ class CommonService {
      * 전체 공개 권한 파일 업로드
      */
     @Transactional
-    fun publicFileUpload(param1: String, param2: MutableList<FileUpload>): CommonResponse<MutableList<String>> {
+    fun publicFileUpload(param1: String?, param2: MutableList<FileUpload>): CommonResponse<MutableList<String>> {
         if (Objects.isNull(param2)) {
-            throw CustomizedException("파일을 등록하시오.", Response.Status.BAD_REQUEST)
+            throw CustomizedException("파일을 등록하세요.", Response.Status.BAD_REQUEST)
         }
 
         val attcGrpId = baseAttcRepository.getNextValAttcGrpId()
-        log.debug(">>>>>>>>>>>>>>> $attcGrpId")
 
         val result = mutableListOf<String>()
         param2.forEach {
@@ -240,13 +239,12 @@ class CommonService {
     }
 
     @Transactional
-    fun privateFileUpload(param1: String, param2: MutableList<FileUpload>): CommonResponse<MutableList<String>> {
+    fun privateFileUpload(param1: String?, param2: MutableList<FileUpload>): CommonResponse<MutableList<String>> {
         if (Objects.isNull(param2)) {
-            throw CustomizedException("파일을 등록하시오.", Response.Status.BAD_REQUEST)
+            throw CustomizedException("파일을 등록하세요.", Response.Status.BAD_REQUEST)
         }
 
         val attcGrpId = baseAttcRepository.getNextValAttcGrpId()
-        log.debug(">>>>>>>>>>>>>>> $attcGrpId")
 
         val result = mutableListOf<String>()
         param2.forEach {
@@ -304,11 +302,11 @@ class CommonService {
                     .header("Content-Disposition", "attachment; filename=\"" + file.name + "\"")
                     .build()
             } catch (e: IOException) {
-                throw CustomizedException("internal server error", Response.Status.INTERNAL_SERVER_ERROR)
+                throw CustomizedException("파일 다운로드 에러 발생", Response.Status.INTERNAL_SERVER_ERROR)
             }
+        } else {
+            throw NotFoundException("file not found")
         }
-
-        return Response.status(Response.Status.NOT_FOUND).build()
     }
 
     /**

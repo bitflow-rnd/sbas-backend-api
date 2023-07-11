@@ -38,7 +38,7 @@ class FileHandler {
         val localPath = getLocalPath(UPLOAD_PATH_LOCAL_PUBLIC)
         val uriPath = "$UPLOAD_PATH_MIDDLE/${StringUtils.getYyyyMM()}"
 
-        val file = makeFileWithPath(fileUpload, UPLOAD_PATH_LOCAL_PUBLIC)
+        val file = makeFileWithPath(fileNameWithExt, UPLOAD_PATH_LOCAL_PUBLIC)
         log.debug("file uploaded at ${file.absolutePath}")
         file.writeBytes(fileUpload.uploadedFile().readBytes())
 
@@ -53,7 +53,7 @@ class FileHandler {
         val localPath = getLocalPath(UPLOAD_PATH_LOCAL_PRIVATE)
         val uriPath = "$UPLOAD_PATH_MIDDLE/${StringUtils.getYyyyMM()}"
 
-        val file = makeFileWithPath(fileUpload, UPLOAD_PATH_LOCAL_PRIVATE)
+        val file = makeFileWithPath(fileNameWithExt, UPLOAD_PATH_LOCAL_PRIVATE)
         log.debug("file uploaded at ${file.absolutePath}")
         file.writeBytes(fileUpload.uploadedFile().readBytes())
 
@@ -80,18 +80,16 @@ class FileHandler {
         return false
     }
 
-    private fun makeFileWithPath(fileUpload: FileUpload, path: String): File {
+    private fun makeFileWithPath(fileName: String, path: String): File {
         val localPath = getLocalPath(path)
 
-        val fileNameWithExt = getFileNameWithExt(fileUpload)
-
-        val file = File("$localPath/$fileNameWithExt")
+        val file = File("$localPath/$fileName")
         val isCreated = file.createNewFile()
 
         return if (isCreated) {
             file
         } else {
-            throw CustomizedException("파일 생성 시 오류 발생", Response.Status.INTERNAL_SERVER_ERROR)
+            throw CustomizedException("파일 생성 시 에러 발생", Response.Status.INTERNAL_SERVER_ERROR)
         }
     }
 

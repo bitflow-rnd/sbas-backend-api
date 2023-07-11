@@ -6,35 +6,36 @@ import org.sbas.utils.StringUtils
 
 @NoArg
 data class FileDto(
-    var fileName: String,
-    var localPath: String,
-    var uriPath: String
-)
+    val fileName: String,
+    val localPath: String,
+    val uriPath: String
+) {
 
-fun FileDto.toPublicEntity(attcGrpId: String, fileTypeCd: String, rmk: String?): BaseAttc {
-    return BaseAttc(
-        attcGrpId = attcGrpId,
-        attcDt = StringUtils.getYyyyMmDd(),
-        attcTm = StringUtils.getHhMmSs(),
-        fileTypeCd = fileTypeCd,
-        fileNm = fileName,
-        loclPath = localPath,
-        uriPath = uriPath,
-        privYn = "N",
-        rmk = rmk,
-    )
-}
+    fun toPublicEntity(attcGrpId: String, fileTypeCd: String, rmk: String?): BaseAttc {
+        return BaseAttc(
+            attcGrpId = attcGrpId,
+            attcDt = StringUtils.getYyyyMmDd(),
+            attcTm = StringUtils.getHhMmSs(),
+            fileTypeCd = fileTypeCd,
+            fileNm = fileName,
+            loclPath = localPath,
+            uriPath = uriPath,
+            privYn = "N",
+            rmk = rmk,
+        )
+    }
 
-fun FileDto.toPrivateEntity(attcGrpId: String, fileTypeCd: String, rmk: String?): BaseAttc {
-    return BaseAttc(
-        attcGrpId = attcGrpId,
-        attcDt = StringUtils.getYyyyMmDd(),
-        attcTm = StringUtils.getHhMmSs(),
-        fileTypeCd = fileTypeCd,
-        fileNm = fileName,
-        loclPath = localPath,
-        uriPath = uriPath,
-        privYn = "Y",
-        rmk = rmk,
-    )
+    fun toPrivateEntity(attcGrpId: String, fileTypeCd: String, rmk: String?): BaseAttc {
+        return BaseAttc(
+            attcGrpId = attcGrpId,
+            attcDt = StringUtils.getYyyyMmDd(),
+            attcTm = StringUtils.getHhMmSs(),
+            fileTypeCd = fileTypeCd,
+            fileNm = fileName,
+            loclPath = localPath,
+            uriPath = uriPath,
+            privYn = "Y",
+            rmk = rmk,
+        )
+    }
 }

@@ -11,6 +11,8 @@ import javax.inject.Inject
 import javax.ws.rs.GET
 import javax.ws.rs.POST
 import javax.ws.rs.Path
+import javax.ws.rs.Produces
+import javax.ws.rs.core.MediaType
 import javax.ws.rs.core.Response
 
 @Tag(name = "공통 관리(사용자 권한용)", description = "로그인 된 사용자(세부권한별 분기) - 다운로드, 업로드, 코드 및 환자 목록조회 등")
@@ -32,15 +34,16 @@ class PrivateCommonEndpoint {
 
     @Operation(summary = "다운로드 (권한별 공개 파일)", description = "")
     @GET
-    @Path("download/{param1}/{param2}")
-    fun download(): Response {
-        return Response.ok().build()
+    @Path("download/{attcGrpId}/{attcId}")
+    @Produces(MediaType.APPLICATION_OCTET_STREAM)
+    fun download(@RestPath attcGrpId: String, @RestPath attcId: String): Response {
+        return commonService.publicFileDownload(attcGrpId, attcId)
     }
 
     @Operation(summary = "업로드 (권한별 공개 파일)", description = "private 파일 업로드 API")
     @POST
     @Path("upload")
-    fun upload(@RestForm param1: String, @RestForm fileUpload: MutableList<FileUpload>): Response {
+    fun upload(@RestForm param1: String?, @RestForm fileUpload: MutableList<FileUpload>): Response {
         return Response.ok(commonService.privateFileUpload(param1, fileUpload)).build()
     }
 
