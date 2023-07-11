@@ -11,8 +11,9 @@ data class FileDto(
     var uriPath: String
 )
 
-fun FileDto.toPublicEntity(fileTypeCd: String, rmk: String?): BaseAttc {
+fun FileDto.toPublicEntity(attcGrpId: String, fileTypeCd: String, rmk: String?): BaseAttc {
     return BaseAttc(
+        attcGrpId = attcGrpId,
         attcDt = StringUtils.getYyyyMmDd(),
         attcTm = StringUtils.getHhMmSs(),
         fileTypeCd = fileTypeCd,
@@ -24,8 +25,9 @@ fun FileDto.toPublicEntity(fileTypeCd: String, rmk: String?): BaseAttc {
     )
 }
 
-fun FileDto.toPrivateEntity(fileTypeCd: String, rmk: String?): BaseAttc {
+fun FileDto.toPrivateEntity(attcGrpId: String, fileTypeCd: String, rmk: String?): BaseAttc {
     return BaseAttc(
+        attcGrpId = attcGrpId,
         attcDt = StringUtils.getYyyyMmDd(),
         attcTm = StringUtils.getHhMmSs(),
         fileTypeCd = fileTypeCd,

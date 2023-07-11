@@ -217,7 +217,10 @@ class CommonService {
         if (Objects.isNull(param2)) {
             throw CustomizedException("파일을 등록하시오.", Response.Status.BAD_REQUEST)
         }
-        // TODO attc_grp_id
+
+        val attcGrpId = baseAttcRepository.getNextValAttcGrpId()
+        log.debug(">>>>>>>>>>>>>>> $attcGrpId")
+
         val result = mutableListOf<String>()
         param2.forEach {
             val fileDto = fileHandler.createPublicFile(it)
@@ -226,7 +229,7 @@ class CommonService {
             val fileExt = fileDto.fileName.substring(dotPos + 1).lowercase()
 
             val fileTypeCd = getFileTypeCd(fileExt)
-            val baseAttc = fileDto.toPublicEntity(fileTypeCd, null)
+            val baseAttc = fileDto.toPublicEntity(attcGrpId = attcGrpId, fileTypeCd = fileTypeCd, rmk = null)
 
             baseAttcRepository.persist(baseAttc)
 
@@ -242,6 +245,9 @@ class CommonService {
             throw CustomizedException("파일을 등록하시오.", Response.Status.BAD_REQUEST)
         }
 
+        val attcGrpId = baseAttcRepository.getNextValAttcGrpId()
+        log.debug(">>>>>>>>>>>>>>> $attcGrpId")
+
         val result = mutableListOf<String>()
         param2.forEach {
             val fileDto = fileHandler.createPrivateFile(it)
@@ -250,7 +256,7 @@ class CommonService {
             val fileExt = fileDto.fileName.substring(dotPos + 1).lowercase()
 
             val fileTypeCd = getFileTypeCd(fileExt)
-            val baseAttc = fileDto.toPrivateEntity(fileTypeCd, null)
+            val baseAttc = fileDto.toPrivateEntity(attcGrpId = attcGrpId, fileTypeCd = fileTypeCd, rmk = null)
 
             baseAttcRepository.persist(baseAttc)
 

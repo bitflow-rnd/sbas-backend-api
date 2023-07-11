@@ -15,15 +15,6 @@ import javax.persistence.*
 class BaseAttc(
 
     @Id
-    @GenericGenerator(
-        name = "base_attc_grp_seq",
-        strategy = "org.sbas.entities.StringPrefixedSequenceIdGenerator",
-        parameters = [
-            Parameter(name = StringPrefixedSequenceIdGenerator.VALUE_PREFIX_PARAMETER, value = "AT"),
-            Parameter(name = StringPrefixedSequenceIdGenerator.NUMBER_FORMAT_PARAMETER, value = "%08d"),
-            Parameter(name = StringPrefixedSequenceIdGenerator.incrementSize, value = "1")
-        ]) // AT00000001
-    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "base_attc_grp_seq")
     @Column(name = "attc_grp_id", nullable = false, length = 10)
     var attcGrpId: String? = null, // 첨부파일 그룹 ID
 
@@ -69,3 +60,5 @@ class BaseAttc(
         private const val serialVersionUID = -7627032719191928277L
     }
 }
+
+

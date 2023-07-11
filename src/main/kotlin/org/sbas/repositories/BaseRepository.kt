@@ -77,4 +77,14 @@ class BaseAttcRepository : PanacheRepositoryBase<BaseAttc, String> {
     fun findByAttcGrpIdAndAttcId(attcGrpId: String, attcId: String): BaseAttc? {
         return find("attcGrpId = '$attcGrpId' and attcId = '$attcId'").firstResult()
     }
+
+    fun getNextValAttcGrpId(): String {
+        val nextValue = getEntityManager().createNativeQuery("select nextval('base_attc_grp_seq')").singleResult
+        return "AT" + nextValue.toString().padStart(8, '0')
+    }
+
+    fun getCurrValAttcGrpId(): String {
+        val currentValue = getEntityManager().createNativeQuery("select currval('base_attc_grp_seq')").singleResult
+        return "AT" + currentValue.toString().padStart(8, '0')
+    }
 }
