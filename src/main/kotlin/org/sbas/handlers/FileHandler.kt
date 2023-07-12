@@ -36,7 +36,7 @@ class FileHandler {
     fun createPublicFile(fileUpload: FileUpload): FileDto {
         val fileNameWithExt = getFileNameWithExt(fileUpload)
         val localPath = getLocalPath(UPLOAD_PATH_LOCAL_PUBLIC)
-        val uriPath = "$UPLOAD_PATH_MIDDLE/${StringUtils.getYyyyMM()}"
+        val uriPath = "/$UPLOAD_PATH_MIDDLE/${StringUtils.getYyyyMM()}"
 
         val file = makeFileWithPath(fileNameWithExt, UPLOAD_PATH_LOCAL_PUBLIC)
         log.debug("file uploaded at ${file.absolutePath}")
@@ -51,7 +51,7 @@ class FileHandler {
     fun createPrivateFile(fileUpload: FileUpload): FileDto {
         val fileNameWithExt = getFileNameWithExt(fileUpload)
         val localPath = getLocalPath(UPLOAD_PATH_LOCAL_PRIVATE)
-        val uriPath = "$UPLOAD_PATH_MIDDLE/${StringUtils.getYyyyMM()}"
+        val uriPath = "/$UPLOAD_PATH_MIDDLE/${StringUtils.getYyyyMM()}"
 
         val file = makeFileWithPath(fileNameWithExt, UPLOAD_PATH_LOCAL_PRIVATE)
         log.debug("file uploaded at ${file.absolutePath}")
