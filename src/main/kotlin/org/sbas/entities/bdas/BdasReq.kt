@@ -65,17 +65,8 @@ class BdasReq(
     @Column(name = "sbp", nullable = true)
     var sbp: Int? = null, // 수축기 혈압
 
-    @Column(name = "svrt_type_cd_anly", nullable = true, length = 8)
-    var svrtTypeCdAnly: String? = null, // 중증 유형 코드 (분석)
-
     @Column(name = "news_score", nullable = true)
     var newsScore: Int? = null, // NEWS Score
-
-    @Column(name = "who_score", nullable = true)
-    var whoScore: Int? = null, // WHO Score
-
-    @Column(name = "req_type_cd", nullable = false, length = 8)
-    var reqTypeCd: String? = null, // 요청 유형 코드
 
     @Column(name = "req_dstr_1_cd", nullable = false, length = 8)
     var reqDstr1Cd: String? = null, // 요청 지역 코드 (시도)
@@ -107,9 +98,6 @@ class BdasReq(
     @Column(name = "nok_2_telno", nullable = true, length = 12)
     var nok2Telno: String? = null, // 보호자2 전화번호
 
-    @Column(name = "dprt_hosp_id", nullable = true, length = 10)
-    var dprtHospId: String? = null, // 출발 병원 ID
-
     @Column(name = "inhp_asgn_yn", nullable = false, length = 8)
     var inhpAsgnYn: String? = null, // 원내 배정 여부
 
@@ -137,7 +125,6 @@ class BdasReq(
                 dnrAgreYn = "",
                 svrtIptTypeCd = "",
                 svrtTypeCd = "",
-                reqTypeCd = "",
                 reqDstr1Cd = "",
                 dprtDstrTypeCd = "",
                 inhpAsgnYn = "",
@@ -171,7 +158,6 @@ class BdasReq(
     fun saveDprtInfoFrom(bdasReqDprtInfo: BdasReqDprtInfo) {
         this.reqDt = bdasReqDprtInfo.reqDt
         this.reqTm = bdasReqDprtInfo.reqTm
-        this.reqTypeCd = bdasReqDprtInfo.reqTypeCd
         this.reqDstr1Cd = bdasReqDprtInfo.reqDstr1Cd
         this.reqDstr2Cd = bdasReqDprtInfo.reqDstr2Cd
         this.dprtDstrTypeCd = bdasReqDprtInfo.dprtDstrTypeCd
@@ -182,7 +168,6 @@ class BdasReq(
         this.dprtDstrLon = bdasReqDprtInfo.dprtDstrLon
         this.nok1Telno = bdasReqDprtInfo.nok1Telno
         this.nok2Telno = bdasReqDprtInfo.nok2Telno
-        this.dprtHospId = bdasReqDprtInfo.dprtHospId
         this.inhpAsgnYn = bdasReqDprtInfo.inhpAsgnYn
         this.deptNm = bdasReqDprtInfo.deptNm
         this.spclNm = bdasReqDprtInfo.spclNm

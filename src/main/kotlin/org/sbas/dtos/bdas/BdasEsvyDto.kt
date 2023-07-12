@@ -36,10 +36,6 @@ data class BdasEsvyDto(
     var instAddr: String?,
     var diagDrNm: String?,
     var rptChfNm: String?,
-
-    var instBascAddr: String?,
-    var instDetlAddr: String?,
-    var instZip: String?,
     var diagAttcId: String?,
 ) {
     fun toEntity(): BdasEsvy {
@@ -70,9 +66,6 @@ data class BdasEsvyDto(
             instAddr = this.instAddr,
             diagDrNm = this.diagDrNm,
             rptChfNm = this.rptChfNm,
-            instBascAddr = this.instBascAddr,
-            instDetlAddr = this.instDetlAddr,
-            instZip = this.instZip,
             diagAttcId = this.diagAttcId,
         )
     }

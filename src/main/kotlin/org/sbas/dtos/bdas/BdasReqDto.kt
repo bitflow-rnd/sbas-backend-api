@@ -11,7 +11,6 @@ data class BdasReqDprtInfo (
     var reqDt: String? = null,
     var reqTm: String? = null,
 
-    var reqTypeCd: String? = null,
     var reqDstr1Cd: String? = null,
     var reqDstr2Cd: String? = null,
     
@@ -28,7 +27,6 @@ data class BdasReqDprtInfo (
     var nok2Telno: String? = null,
     
     // 담당 병원 정보
-    var dprtHospId: String? = null,
     var inhpAsgnYn: String? = null,
     var deptNm: String? = null,
     var spclNm: String? = null,
@@ -58,8 +56,6 @@ data class BdasReqSvrInfo(
     var spo2: Int?,
     var sbp: Int?,
     var newsScore: Int?,
-    var whoScore: Int?,
 
     var svrtTypeCd: String?,
-    var svrtTypeCdAnly: String?,
 )
