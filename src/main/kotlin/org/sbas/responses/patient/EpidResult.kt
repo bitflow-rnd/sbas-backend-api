@@ -1,6 +1,7 @@
 package org.sbas.responses.patient
 
 import org.eclipse.microprofile.openapi.annotations.media.Schema
+import org.sbas.constants.enums.NatiCd
 import org.sbas.utils.NoArg
 
 @NoArg
@@ -137,6 +138,8 @@ data class EpidResult (
     // ids: 27
     @Schema(description = "우편번호", example = "02702")
     var zip: String?,
+
+    var natiCd: NatiCd?,
 )
 
 /*

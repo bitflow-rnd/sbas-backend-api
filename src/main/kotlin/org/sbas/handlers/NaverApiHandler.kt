@@ -4,6 +4,7 @@ import org.eclipse.microprofile.config.inject.ConfigProperty
 import org.eclipse.microprofile.rest.client.inject.RestClient
 import org.jboss.logging.Logger
 import org.sbas.constants.NaverApiConst
+import org.sbas.constants.enums.NatiCd
 import org.sbas.repositories.BaseCodeRepository
 import org.sbas.responses.patient.EpidResult
 import org.sbas.restclients.NaverOcrRestClient
@@ -120,6 +121,7 @@ class NaverApiHandler {
             diagDrNm = list[25],
             rptChfNm = list[26],
             zip = splitAddress[5],
+            natiCd = getNatiCd(list[2].split("-")[1]),
         )
     }
 
@@ -159,5 +161,16 @@ class NaverApiHandler {
         }?.longName ?: ""
 
         return zip
+    }
+
+    private fun getNatiCd(rrno2: String?): NatiCd? {
+        if (rrno2.isNullOrBlank()) {
+            return null
+        }
+
+        return when {
+            rrno2.toInt() >= 5 -> NatiCd.NATI0002
+            else -> NatiCd.NATI0001
+        }
     }
 }
