@@ -62,7 +62,7 @@ class NaverApiHandler {
             "edpireportimg",
 //            encoded,
             null,
-            "$serverdomain$uri/$filename"
+            "$serverdomain/$uri/$filename"
         )
         val now = System.currentTimeMillis()
         val images = mutableListOf<OcrApiImagesParam>()

@@ -114,7 +114,13 @@ class FileService {
     fun getImage(attcId: String): CommonResponse<FileResponse> {
         val findFile = baseAttcRepository.findByAttcId(attcId) ?: throw NotFoundException("not found")
 
-        val response = FileResponse(findFile.fileTypeCd, "$serverdomain${findFile.uriPath}/${findFile.fileNm}")
+        val fileAccessType = when (findFile.privYn) {
+            "Y" -> "public"
+            "N" -> "private"
+            else -> null
+        }
+
+        val response = FileResponse(findFile.fileTypeCd, "$serverdomain/$fileAccessType${findFile.uriPath}/${findFile.fileNm}")
 
         return CommonResponse(response)
     }
@@ -123,8 +129,8 @@ class FileService {
     fun publicFileDownload(attcGrpId: String, attcId: String): Response {
         val baseAttc = baseAttcRepository.findByAttcGrpIdAndAttcId(attcGrpId, attcId) ?: throw NotFoundException("baseAttc not found")
 
-        val filePath = "${baseAttc.loclPath}/${baseAttc.fileNm}"
-//        val filePath = "${baseAttc.uriPath}/${baseAttc.fileNm}"
+//        val filePath = "${baseAttc.loclPath}/${baseAttc.fileNm}"
+        val filePath = "public${baseAttc.uriPath}/${baseAttc.fileNm}"
         val file = File(filePath)
         log.debug(file)
 

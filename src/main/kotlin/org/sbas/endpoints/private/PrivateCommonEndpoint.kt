@@ -47,8 +47,8 @@ class PrivateCommonEndpoint {
     @Operation(summary = "업로드 (권한별 공개 파일)", description = "private 파일 업로드 API")
     @POST
     @Path("upload")
-    fun upload(@RestForm param1: String?, @RestForm fileUpload: MutableList<FileUpload>): Response {
-        return Response.ok(fileService.privateFileUpload(param1, fileUpload)).build()
+    fun upload(@RestForm param1: String?, @RestForm param2: MutableList<FileUpload>): Response {
+        return Response.ok(fileService.privateFileUpload(param1, param2)).build()
     }
 
     @Operation(summary = "개인정보수집동의 동의", description = "")
