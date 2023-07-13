@@ -49,7 +49,7 @@ class FileService {
      * 전체 공개 권한 파일 업로드
      */
     @Transactional
-    fun publicFileUpload(param1: String?, param2: MutableList<FileUpload>): CommonResponse<MutableList<String>> {
+    fun publicFileUpload(param1: String?, param2: MutableList<FileUpload>): CommonResponse<String> {
         if (Objects.isNull(param2)) {
             throw CustomizedException("파일을 등록하세요.", Response.Status.BAD_REQUEST)
         }
@@ -71,11 +71,11 @@ class FileService {
             result.add(baseAttc.attcId!!)
         }
 
-        return CommonResponse(result)
+        return CommonResponse(result[0])
     }
 
     @Transactional
-    fun privateFileUpload(param1: String?, param2: MutableList<FileUpload>): CommonResponse<MutableList<String>> {
+    fun privateFileUpload(param1: String?, param2: MutableList<FileUpload>): CommonResponse<String> {
         if (Objects.isNull(param2)) {
             throw CustomizedException("파일을 등록하세요.", Response.Status.BAD_REQUEST)
         }
@@ -97,7 +97,7 @@ class FileService {
             result.add(baseAttc.attcId!!)
         }
 
-        return CommonResponse(result)
+        return CommonResponse(result[0])
     }
 
     private fun getFileTypeCd(fileExt: String): String {
