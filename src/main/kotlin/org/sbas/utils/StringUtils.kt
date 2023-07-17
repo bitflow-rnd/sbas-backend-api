@@ -60,7 +60,7 @@ class StringUtils {
         }
 
         fun getKakaoSidoName(sido: String): String {
-            val map = mapOf(
+            val siDoMap = mapOf(
                 "서울" to "서울",
                 "부산" to "부산",
                 "대구" to "대구",
@@ -79,7 +79,7 @@ class StringUtils {
                 "경상남" to "경남", "경남" to "경남",
             )
 
-            return map.entries.find { sido.startsWith(it.key) }?.value ?: ""
+            return siDoMap.entries.find { sido.startsWith(it.key) }?.value ?: ""
         }
 
         fun incrementCode(prefix: String, codeNumberLength: Int, code: String?): String {

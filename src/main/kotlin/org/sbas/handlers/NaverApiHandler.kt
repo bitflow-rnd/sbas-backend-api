@@ -8,9 +8,9 @@ import org.sbas.constants.enums.NatiCd
 import org.sbas.repositories.BaseCodeRepository
 import org.sbas.responses.patient.EpidResult
 import org.sbas.restclients.NaverOcrRestClient
-import org.sbas.restparameters.NaverGeocodingApiParams
 import org.sbas.restparameters.NaverOcrApiParams
 import org.sbas.restparameters.OcrApiImagesParam
+import org.sbas.restresponses.FieldName
 import org.sbas.utils.StringUtils
 import javax.enterprise.context.ApplicationScoped
 import javax.inject.Inject
@@ -24,19 +24,16 @@ import javax.ws.rs.NotFoundException
 class NaverApiHandler {
 
     @Inject
-    lateinit var log: Logger
+    private lateinit var log: Logger
 
     @RestClient
-    lateinit var naverOcrClient: NaverOcrRestClient
-
-    @ConfigProperty(name = "restclient.naverocr.secret.key")
-    lateinit var secretkey: String
+    private lateinit var naverOcrClient: NaverOcrRestClient
 
     @ConfigProperty(name = "domain.this")
-    lateinit var serverdomain: String
+    private lateinit var serverdomain: String
 
     @ConfigProperty(name = "upload.path.middle")
-    lateinit var uploadRelPath: String
+    private lateinit var uploadRelPath: String
 
     @Inject
     private lateinit var baseCodeRepository: BaseCodeRepository
@@ -47,20 +44,9 @@ class NaverApiHandler {
     fun recognizeImage(uri: String, filename: String): EpidResult {
         val dotIdx = filename.lastIndexOf(".")
 
-        /* 로컬 테스트용 코드
-        // 로컬 이미지 파일 경로 설정
-        val file = File("c:/sbas/www/public/upload/202304/$filename")
-        // 이미지 파일 읽어들이기
-        val inputStream = FileInputStream(file)
-        val bytes = ByteArray(file.length().toInt())
-        inputStream.read(bytes)
-        // Base64 인코딩
-        val encoded: String = Base64.getEncoder().encodeToString(bytes)
-        */
-
         val image = OcrApiImagesParam(
             filename.substring(dotIdx + 1),
-            "edpireportimg",
+            "epidreportimg",
 //            encoded,
             null,
             "$serverdomain/$uri/$filename"
@@ -76,52 +62,55 @@ class NaverApiHandler {
             NaverApiConst.ClovaOcr.LANG
         )
         val res = naverOcrClient.recognize(reqparam)
-        val texts = res.images[0].fields
-        val list = ArrayList<String>()
+        val fields = res.images[0].fields
 
-        for ( field in texts!! ) {
-            list.add(field.inferText!!)
-        }
+        val nameToInferTextMap = fields?.associate { field -> field.name to field.inferText }
+        log.debug("nadnsfnasdfn $nameToInferTextMap")
 
-        val address = list[6]
+        val nameList = FieldName.nameList
+        val filteredMap = nameToInferTextMap?.filterKeys { it in nameList }
+        val nullHandledMap = FieldName.nameList.associateWith { filteredMap?.get(it) }
 
-        val splitAddress = splitAddress(address)
+        val rrno = nullHandledMap["주민등록번호"]
+        val address = nullHandledMap["주소"]
+        val splitAddress = splitAddress(address!!)
 
         return EpidResult(
-            rcptPhc = list[0],
-            ptNm = list[1],
-            rrno1 = list[2].split("-")[0],
-            rrno2 = list[2].split("-")[1],
-            nokNm = list[3],
-            gndr = list[4],
-            telno = list[5].replace("-", ""),
+            rcptPhc = nullHandledMap["수신보건소"],
+            ptNm = nullHandledMap["환자이름"],
+            rrno1 = getRrnoAndGndr(rrno)?.get("rrno1"),
+            rrno2 = getRrnoAndGndr(rrno)?.get("rrno2"),
+            gndr = getRrnoAndGndr(rrno)?.get("gndr"),
+            nokNm = nullHandledMap["보호자명"],
+            telno = nullHandledMap["전화번호"]?.replace("-", ""),
+
             dstr1Cd = splitAddress[0],
             dstr2Cd = splitAddress[1],
             baseAddr = splitAddress[2],
             dtlAddr = splitAddress[3],
             fullAddr = splitAddress[4],
-            mpno = list[7].replace("-", ""),
-            diagNm = list[8],
-            diagGrde = list[9],
-            job = list[10],
-            cv19Symp = list[11],
-            occrDt = list[12],
-            diagDt = list[13],
-            rptDt = list[14],
-            dfdgExamRslt = list[15],
-            ptCatg = list[16],
-            admsYn = list[17],
-            dethYn = list[18],
-            rptType = list[19],
-            rmk = list[20],
-            instNm = list[21],
-            instId = list[22],
-            instTelno = list[23].replace("-", ""),
-            instAddr = list[24],
-            diagDrNm = list[25],
-            rptChfNm = list[26],
-            zip = splitAddress[5],
-            natiCd = getNatiCd(list[2].split("-")[1]),
+
+            mpno = nullHandledMap["휴대전화번호"]?.replace("-", ""),
+            diagNm = nullHandledMap["질병명"],
+            diagGrde = nullHandledMap["질병급"],
+            job = nullHandledMap["직업"],
+            cv19Symp = nullHandledMap[nameList[11]],
+            occrDt = nullHandledMap[nameList[12]],
+            diagDt = nullHandledMap[nameList[13]],
+            rptDt = nullHandledMap[nameList[14]],
+            dfdgExamRslt = nullHandledMap[nameList[15]],
+            ptCatg = nullHandledMap[nameList[16]],
+            admsYn = nullHandledMap[nameList[17]],
+            dethYn = nullHandledMap[nameList[18]],
+            rptType = nullHandledMap[nameList[19]],
+            rmk = nullHandledMap[nameList[20]],
+            instNm = nullHandledMap[nameList[21]],
+            instId = nullHandledMap[nameList[22]],
+            instTelno = nullHandledMap[nameList[23]]?.replace("-", ""),
+            instAddr = nullHandledMap[nameList[24]],
+            diagDrNm = nullHandledMap[nameList[25]],
+            rptChfNm = nullHandledMap[nameList[26]],
+            natiCd = getNatiCd(rrno?.split("-")?.get(1)),
         )
     }
 
@@ -148,28 +137,68 @@ class NaverApiHandler {
         }
 
         list.add(fullAddr) // fullAddr
-        list.add(getZipCode(fullAddr)) // zip
 
         return list
     }
 
-    private fun getZipCode(address: String): String {
-        val response = geocodingHandler.getGeocoding(NaverGeocodingApiParams(query = address))
+//    private fun splitAddress(address: String): List<String?> {
+//
+//        val addr = address.replace("\n()", "") // \n() 삭제
+//        val fullAddr = addr.replace(Regex("\\s*\\([^)]*\\)"), "") // (...) 부분
+//
+//        val siDoMap = StringUtils.siDoMap
+//        val siDo = siDoMap.keys.filter { fullAddr.contains(it) }[0]
+//        val dstrCd1 = StringUtils.getDstrCd1(siDo)
+//        val siGunGu = address.substringAfter(siDo).split(" ")[1]
+//
+//        val list = mutableListOf<String?>()
+////        val splitedAddr = fullAddr.split(" ").toMutableList()
+////
+//        val baseCode = baseCodeRepository.findByDstr1CdAndCdNm(dstrCd1, siGunGu) ?: throw NotFoundException("baseCode not found")
+////
+//        list.add(dstrCd1) // dstr1Cd
+//        list.add(baseCode.id.cdId) // dstr2Cd
+////        list.add(splitedAddr.subList(0, 4).joinToString(" ")) // baseAddr
+////
+////        // dtlAddr 상세주소가 있는 경우, 없으면 null
+////        if (splitedAddr.size > 4) {
+////            list.add(splitedAddr[4])
+////        } else {
+////            list.add(null)
+////        }
+////
+////        list.add(fullAddr) // fullAddr
+//
+//        return list
+//    }
 
-        val zip = response.addresses!![0].addressElements?.find {
-            it.types?.get(0) == "POSTAL_CODE"
-        }?.longName ?: ""
+    private fun getRrnoAndGndr(rrno: String?): MutableMap<String, String>? {
+        if (rrno.isNullOrBlank()) {
+            return null
+        }
+        val rrno1 = rrno.split("-")[0]
+        val rrno2 = rrno.split("-")[1].first().toString()
 
-        return zip
+        val gndr = when (rrno2) {
+            "1", "3", "5", "7" -> "남"
+            "2", "4", "6", "8" -> "여"
+            else -> ""
+        }
+
+        return mutableMapOf("rrno1" to rrno1, "rrno2" to rrno2, "gndr" to gndr)
     }
 
     private fun getNatiCd(rrno2: String?): NatiCd? {
         if (rrno2.isNullOrBlank()) {
             return null
         }
+        var rrno: String = rrno2
+        if (rrno2.length > 1) {
+            rrno = rrno2.first().toString()
+        }
 
         return when {
-            rrno2.toInt() >= 5 -> NatiCd.NATI0002
+            rrno.toInt() >= 5 -> NatiCd.NATI0002
             else -> NatiCd.NATI0001
         }
     }
