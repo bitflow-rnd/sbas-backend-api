@@ -136,6 +136,8 @@ data class EpidResult (
     var rptChfNm: String?,
 
     var natiCd: NatiCd?,
+
+    var attcId: String?,
 )
 
 /*

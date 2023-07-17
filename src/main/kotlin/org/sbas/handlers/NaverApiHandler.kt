@@ -1,5 +1,6 @@
 package org.sbas.handlers
 
+import io.netty.util.internal.StringUtil
 import org.eclipse.microprofile.config.inject.ConfigProperty
 import org.eclipse.microprofile.rest.client.inject.RestClient
 import org.jboss.logging.Logger
@@ -41,7 +42,7 @@ class NaverApiHandler {
     @Inject
     private lateinit var geocodingHandler: GeocodingHandler
 
-    fun recognizeImage(uri: String, filename: String): EpidResult {
+    fun recognizeImage(uri: String, filename: String, attcId: String?): EpidResult {
         val dotIdx = filename.lastIndexOf(".")
 
         val image = OcrApiImagesParam(
@@ -64,7 +65,9 @@ class NaverApiHandler {
         val res = naverOcrClient.recognize(reqparam)
         val fields = res.images[0].fields
 
-        val nameToInferTextMap = fields?.associate { field -> field.name to field.inferText }
+        val nameToInferTextMap = fields?.associate { field ->
+            field.name to if (StringUtil.isNullOrEmpty(field.inferText)) null else field.inferText
+        }
         log.debug("nadnsfnasdfn $nameToInferTextMap")
 
         val nameList = FieldName.nameList
@@ -111,6 +114,7 @@ class NaverApiHandler {
             diagDrNm = nullHandledMap[nameList[25]],
             rptChfNm = nullHandledMap[nameList[26]],
             natiCd = getNatiCd(rrno?.split("-")?.get(1)),
+            attcId = attcId,
         )
     }
 

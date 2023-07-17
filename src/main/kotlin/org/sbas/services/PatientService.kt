@@ -271,12 +271,13 @@ class PatientService {
     fun uploadEpidReport(param: FileUpload): CommonResponse<*>? {
         val fileDto = fileHandler.createPrivateFile(param)
 
-        // Naver Clova OCR call
-        val res = naverApiHandler.recognizeImage("private${fileDto.uriPath}", fileDto.fileName)
-        log.debug("texts are $res")
-
         val attcGrpId = baseAttcRepository.getNextValAttcGrpId()
-        baseAttcRepository.persist(fileDto.toPrivateEntity(attcGrpId = attcGrpId, fileTypeCd = SbasConst.FileTypeCd.IMAGE, "역학조사서"))
+        val entity = fileDto.toPrivateEntity(attcGrpId = attcGrpId, fileTypeCd = SbasConst.FileTypeCd.IMAGE, "역학조사서")
+        baseAttcRepository.persist(entity)
+
+        // Naver Clova OCR call
+        val res = naverApiHandler.recognizeImage("private${fileDto.uriPath}", fileDto.fileName, entity.attcId)
+        log.debug("texts are $res")
 
         return CommonResponse(res)
     }
@@ -291,7 +292,7 @@ class PatientService {
             val inputStream = url.openStream()
             inputStream.close()
 
-            val res = naverApiHandler.recognizeImage("private${baseAttc.uriPath!!}", baseAttc.fileNm!!)
+            val res = naverApiHandler.recognizeImage("private${baseAttc.uriPath!!}", baseAttc.fileNm!!, baseAttc.attcId)
             CommonResponse(res)
         } catch (e: IOException) {
             throw NotFoundException("역학조사서 파일이 존재하지 않습니다.")
