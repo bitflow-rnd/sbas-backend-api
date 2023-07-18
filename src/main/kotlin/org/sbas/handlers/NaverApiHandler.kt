@@ -68,7 +68,6 @@ class NaverApiHandler {
         val nameToInferTextMap = fields?.associate { field ->
             field.name to if (StringUtil.isNullOrEmpty(field.inferText)) null else field.inferText
         }
-        log.debug("nadnsfnasdfn $nameToInferTextMap")
 
         val nameList = FieldName.nameList
         val filteredMap = nameToInferTextMap?.filterKeys { it in nameList }

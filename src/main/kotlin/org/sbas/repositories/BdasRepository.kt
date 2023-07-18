@@ -28,6 +28,7 @@ class BdasReqRepository : PanacheRepositoryBase<BdasReq, BdasReqId> {
     }
 
     fun findBdasList(): MutableList<BdasListDto> {
+        //TODO
         val query = "select new org.sbas.dtos.bdas.BdasListDto(br.id.ptId, br.id.bdasSeq, pt.ptNm, pt.gndr, fn_get_age(pt.rrno1, pt.rrno2), " +
                 "pt.bascAddr, br.updtDttm, be.diagNm, fn_get_bed_asgn_stat(br.id.ptId, br.id.bdasSeq), '', be.rcptPhc, br.ptTypeCd, br.svrtTypeCd, br.undrDsesCd) " +
                 "from BdasReq br " +
@@ -134,9 +135,16 @@ class BdasTrnsRepository: PanacheRepositoryBase<BdasTrns, BdasTrnsId> {
 @ApplicationScoped
 class BdasAdmsRepository: PanacheRepositoryBase<BdasAdms, BdasAdmsId> {
 
+    fun findByIdOrderByAdmsSeqDesc(ptId: String, bdasSeq: Int): BdasAdms? {
+        return find("pt_id = '$ptId' and bdas_seq = $bdasSeq", Sort.by("adms_seq", Sort.Direction.Descending)).firstResult()
+    }
+
+
     fun findTimeLineInfo(ptId: String, bdasSeq: Int): MutableList<BdasTimeLineDto> {
-        val query = "select new org.sbas.dtos.bdas.BdasTimeLineDto(case ba.admsStatCd when 'Y' then '배정완료' when 'N' then '배정거절' end) " +
+        val query = "select new org.sbas.dtos.bdas.BdasTimeLineDto(" +
+                "ba.admsStatCd.cdNm, ) " +
                 "from BdasAdms ba " +
+                "join InfoUser iu on iu.id = ba.updtUserId " +
                 "where ba.id.ptId = '$ptId' and ba.id.bdasSeq = $bdasSeq"
 
         return getEntityManager().createQuery(query, BdasTimeLineDto::class.java).resultList

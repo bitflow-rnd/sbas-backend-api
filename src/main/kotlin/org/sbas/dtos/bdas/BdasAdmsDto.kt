@@ -1,15 +1,19 @@
 package org.sbas.dtos.bdas
 
+import org.sbas.constants.enums.AdmsStatCd
 import org.sbas.entities.bdas.BdasAdms
 import org.sbas.entities.bdas.BdasAdmsId
 import org.sbas.utils.NoArg
 import org.sbas.utils.StringUtils
+import javax.validation.constraints.NotBlank
+import javax.validation.constraints.NotEmpty
+import javax.validation.constraints.NotNull
 
 @NoArg
 data class BdasAdmsSaveDto(
-    val ptId: String,
-    val bdasSeq: Int,
-    val hospId: String?,
+    @field: NotBlank val ptId: String,
+    @field: NotNull val bdasSeq: Int,
+    @field: NotBlank val hospId: String,
     val deptNm: String?,
     val wardNm: String?,
     val roomNm: String?,
@@ -18,14 +22,22 @@ data class BdasAdmsSaveDto(
     val chrgTelno: String?,
     val dschRsnCd: String?,
     val msg: String?,
-    val admsStatCd: String?,
+    @field: NotNull val admsStatCd: AdmsStatCd,
 ) {
-    fun toAdmsEntity(): BdasAdms {
+
+    fun toEntity(admsStatCd: AdmsStatCd, admsSeq: Int): BdasAdms {
+        return when (admsStatCd) {
+            AdmsStatCd.IOST0001 -> toAdmsEntity(admsSeq)
+            AdmsStatCd.IOST0002 -> toDschEntity(admsSeq)
+            AdmsStatCd.IOST0003 -> toHomeEntity(admsSeq)
+        }
+    }
+
+    private fun toAdmsEntity(admsSeq: Int): BdasAdms {
         return BdasAdms(
-            id = BdasAdmsId(ptId, bdasSeq),
+            id = BdasAdmsId(ptId = ptId, bdasSeq = bdasSeq, admsSeq),
             hospId = hospId,
             deptNm = deptNm,
-            wardNm = wardNm,
             roomNm = roomNm,
             spclId = spclId,
             spclNm = spclNm,
@@ -33,28 +45,28 @@ data class BdasAdmsSaveDto(
             admsDt = StringUtils.getYyyyMmDd(),
             admsTm = StringUtils.getHhMmSs(),
             msg = msg,
-            admsStatCd = "IOST0001",
+            admsStatCd = AdmsStatCd.IOST0001,
         )
     }
 
-    fun toDschEntity(): BdasAdms {
+    private fun toDschEntity(admsSeq: Int): BdasAdms {
         return BdasAdms(
-            id = BdasAdmsId(ptId, bdasSeq),
+            id = BdasAdmsId(ptId = ptId, bdasSeq = bdasSeq, admsSeq),
             hospId = hospId,
             dschDt = StringUtils.getYyyyMmDd(),
             dschTm = StringUtils.getHhMmSs(),
             dschRsnCd = dschRsnCd,
             msg = msg,
-            admsStatCd = "IOST0002",
+            admsStatCd = AdmsStatCd.IOST0002,
         )
     }
 
-    fun toHomeEntity(): BdasAdms {
+    private fun toHomeEntity(admsSeq: Int): BdasAdms {
         return BdasAdms(
-            id = BdasAdmsId(ptId, bdasSeq),
+            id = BdasAdmsId(ptId = ptId, bdasSeq = bdasSeq, admsSeq),
             hospId = hospId,
             msg = msg,
-            admsStatCd = "IOST0003",
+            admsStatCd = AdmsStatCd.IOST0003,
         )
     }
 }

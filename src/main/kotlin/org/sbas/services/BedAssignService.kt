@@ -3,7 +3,6 @@ package org.sbas.services
 import org.jboss.logging.Logger
 import org.sbas.constants.enums.*
 import org.sbas.dtos.bdas.*
-import org.sbas.entities.bdas.BdasAdmsId
 import org.sbas.entities.bdas.BdasReq
 import org.sbas.entities.bdas.BdasReqId
 import org.sbas.handlers.GeocodingHandler
@@ -12,12 +11,15 @@ import org.sbas.responses.CommonResponse
 import org.sbas.responses.patient.DiseaseInfoResponse
 import org.sbas.restclients.FirebaseService
 import org.sbas.restparameters.NaverGeocodingApiParams
+import org.sbas.utils.CustomizedException
 import org.sbas.utils.StringUtils
 import java.util.*
 import javax.enterprise.context.ApplicationScoped
 import javax.inject.Inject
 import javax.transaction.Transactional
+import javax.ws.rs.BadRequestException
 import javax.ws.rs.NotFoundException
+import javax.ws.rs.core.Response
 import kotlin.math.acos
 import kotlin.math.cos
 import kotlin.math.roundToInt
@@ -272,32 +274,19 @@ class BedAssignService {
 
     @Transactional
     fun confirmHosp(dto: BdasAdmsSaveDto): CommonResponse<String> {
-        val findBdasAdms = bdasAdmsRepository.findById(BdasAdmsId(dto.ptId, dto.bdasSeq))
+        val findBdasAdms = bdasAdmsRepository.findByIdOrderByAdmsSeqDesc(dto.ptId, dto.bdasSeq)
 
-        when (dto.admsStatCd) {
-            "IOST0001" -> {
-                if (findBdasAdms != null) {
-                    findBdasAdms.changeToAdms(dto)
-                } else {
-                    bdasAdmsRepository.persist(dto.toAdmsEntity())
-                }
+        val entity = if (findBdasAdms == null) {
+            dto.toEntity(dto.admsStatCd, 1)
+        } else {
+            if (findBdasAdms.isAdmsStatCdDuplicate(dto.admsStatCd)) {
+                throw CustomizedException("입/퇴원 상태(admsStatCd) 중복입니다.", Response.Status.BAD_REQUEST)
             }
-            "IOST0002" -> {
-                if (findBdasAdms != null) {
-                    findBdasAdms.changeToDsch(dto)
-                } else {
-                    bdasAdmsRepository.persist(dto.toDschEntity())
-                }
-            }
-            "IOST0003" -> {
-                if (findBdasAdms != null) {
-                    findBdasAdms.changeToHome(dto)
-                } else {
-                    bdasAdmsRepository.persist(dto.toHomeEntity())
-                }
-            }
+            dto.toEntity(dto.admsStatCd, findBdasAdms.id.admsSeq + 1)
         }
-        return CommonResponse("성공")
+        bdasAdmsRepository.persist(entity)
+
+        return CommonResponse("success ${entity.id}")
     }
 
     @Transactional

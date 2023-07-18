@@ -29,8 +29,7 @@ data class InfoPtDto(
     val bascAddr: String,
     val detlAddr: String?,
     val zip: String?,
-    
-    // 삭제 예정
+
     val addr: String?,
 )
 

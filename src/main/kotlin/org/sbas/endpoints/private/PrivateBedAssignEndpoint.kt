@@ -10,6 +10,7 @@ import org.sbas.dtos.bdas.BdasReqAprvDto
 import org.sbas.dtos.bdas.BdasTrnsSaveDto
 import org.sbas.services.BedAssignService
 import javax.inject.Inject
+import javax.validation.Valid
 import javax.ws.rs.GET
 import javax.ws.rs.POST
 import javax.ws.rs.Path
@@ -56,7 +57,7 @@ class PrivateBedAssignEndpoint {
     @Operation(summary = "입/퇴원/재택회송 처리", description = "")
     @POST
     @Path("confirmhosptlzdiscg")
-    fun confirmhosptlzdiscg(bdasAdmsSaveDto: BdasAdmsSaveDto): Response {
+    fun confirmhosptlzdiscg(@Valid bdasAdmsSaveDto: BdasAdmsSaveDto): Response {
         return Response.ok(bedAssignService.confirmHosp(bdasAdmsSaveDto)).build()
     }
 
