@@ -1,5 +1,6 @@
 package org.sbas.entities.base
 
+import org.sbas.dtos.BaseCodeSaveReq
 import org.sbas.dtos.BaseCodeUpdateReq
 import org.sbas.entities.CommonEntity
 import java.io.Serializable
@@ -44,6 +45,10 @@ class BaseCode(
         this.cdVal = updateReq.cdVal
         this.cdSeq = updateReq.cdSeq
         this.rmk = updateReq.rmk
+    }
+
+    fun isCdGrpNmMatch(saveReq: BaseCodeSaveReq): Boolean {
+        return saveReq.cdGrpNm == this.cdGrpNm
     }
 }
 
