@@ -1,11 +1,16 @@
 package org.sbas.repositories
 
+import com.linecorp.kotlinjdsl.QueryFactory
+import com.linecorp.kotlinjdsl.listQuery
+import com.linecorp.kotlinjdsl.query.spec.ExpressionOrderSpec
+import com.linecorp.kotlinjdsl.querydsl.expression.col
 import io.quarkus.hibernate.orm.panache.kotlin.PanacheRepositoryBase
 import io.quarkus.panache.common.Sort
 import org.sbas.constants.enums.TimeLineStatCd
 import org.sbas.dtos.bdas.BdasListDto
 import org.sbas.dtos.bdas.BdasTimeLineDto
 import org.sbas.entities.bdas.*
+import org.sbas.entities.info.InfoPt
 import javax.enterprise.context.ApplicationScoped
 import javax.inject.Inject
 import javax.persistence.EntityManager
@@ -23,20 +28,56 @@ class BdasReqRepository : PanacheRepositoryBase<BdasReq, BdasReqId> {
     @Inject
     private lateinit var entityManager: EntityManager
 
+    @Inject
+    private lateinit var queryFactory: QueryFactory
+
     fun findByPtIdAndBdasSeq(ptId: String, bdasSeq: Int): BdasReq? {
         return find("pt_id = '${ptId}' and bdas_seq = $bdasSeq", Sort.by("bdas_seq", Sort.Direction.Descending)).firstResult()
     }
 
     fun findBdasList(): MutableList<BdasListDto> {
-        //TODO
-        val query = "select new org.sbas.dtos.bdas.BdasListDto(br.id.ptId, br.id.bdasSeq, pt.ptNm, pt.gndr, fn_get_age(pt.rrno1, pt.rrno2), " +
-                "pt.bascAddr, br.updtDttm, be.diagNm, fn_get_bed_asgn_stat(br.id.ptId, br.id.bdasSeq), '', be.rcptPhc, br.ptTypeCd, br.svrtTypeCd, br.undrDsesCd) " +
-                "from BdasReq br " +
-                "join InfoPt pt on br.id.ptId = pt.ptId " +
-                "join BdasEsvy be on br.id.bdasSeq = be.bdasSeq " +
-                "where br.id.bdasSeq in (select max(id.bdasSeq) as bdasSeq from BdasReq group by id.ptId) " +
-                "order by br.updtDttm desc"
-        return entityManager.createQuery(query, BdasListDto::class.java).resultList
+
+        val query = "select max(id.bdasSeq) as bdasSeq from BdasReq group by id.ptId"
+        @Suppress("UNCHECKED_CAST")
+        val maxBdasSeqList = entityManager.createQuery(query).resultList as MutableList<Int>
+
+//        val subQuery = queryFactory.subquery {
+//            select(max(col(BdasReqId::bdasSeq)))
+//            from(entity(BdasReq::class))
+//            associate(entity(BdasReq::class), BdasReqId::class, on(BdasReq::id))
+//            groupBy(col(BdasReqId::ptId))
+//        }
+
+        val list = queryFactory.listQuery<BdasListDto> {
+            selectMulti(
+                col(BdasReqId::ptId), col(BdasReqId::bdasSeq), col(InfoPt::ptNm), col(InfoPt::gndr),
+                function("fn_get_age", Int::class.java, col(InfoPt::rrno1), col(InfoPt::rrno2)),
+                col(InfoPt::bascAddr), col(BdasReq::updtDttm), col(BdasEsvy::diagNm),
+                function("fn_get_bed_asgn_stat", String::class.java, col(BdasReqId::ptId), col(BdasReqId::bdasSeq)),
+                literal("chrgInstNm"), col(BdasReq::ptTypeCd), col(BdasReq::svrtTypeCd), col(BdasReq::undrDsesCd)
+            )
+            from(entity(BdasReq::class))
+            associate(entity(BdasReq::class), BdasReqId::class, on(BdasReq::id))
+            join(entity(InfoPt::class), on { col(BdasReqId::ptId).equal(col(InfoPt::ptId)) })
+            join(entity(BdasEsvy::class), on { col(BdasReqId::bdasSeq).equal(col(BdasEsvy::bdasSeq)) })
+            whereAnd(
+                col(BdasReqId::bdasSeq).`in`(maxBdasSeqList),
+//                col(BdasReqId::bdasSeq).`in`(subQuery.),
+            )
+            orderBy(
+                ExpressionOrderSpec(col(BdasReqId::bdasSeq), ascending = false)
+            )
+        }
+        return list.toMutableList()
+
+//        val query = "select new org.sbas.dtos.bdas.BdasListDto(br.id.ptId, br.id.bdasSeq, pt.ptNm, pt.gndr, fn_get_age(pt.rrno1, pt.rrno2), " +
+//                "pt.bascAddr, br.updtDttm, be.diagNm, fn_get_bed_asgn_stat(br.id.ptId, br.id.bdasSeq), '', be.rcptPhc, br.ptTypeCd, br.svrtTypeCd, br.undrDsesCd) " +
+//                "from BdasReq br " +
+//                "join InfoPt pt on br.id.ptId = pt.ptId " +
+//                "join BdasEsvy be on br.id.bdasSeq = be.bdasSeq " +
+//                "where br.id.bdasSeq in (select max(id.bdasSeq) as bdasSeq from BdasReq group by id.ptId) " +
+//                "order by br.updtDttm desc"
+//        return entityManager.createQuery(query, BdasListDto::class.java).resultList
     }
 
     fun findTimeLineInfo(ptId: String, bdasSeq: Int): MutableList<BdasTimeLineDto> {

@@ -17,7 +17,6 @@ import java.util.*
 import javax.enterprise.context.ApplicationScoped
 import javax.inject.Inject
 import javax.transaction.Transactional
-import javax.ws.rs.BadRequestException
 import javax.ws.rs.NotFoundException
 import javax.ws.rs.core.Response
 import kotlin.math.acos
@@ -294,42 +293,42 @@ class BedAssignService {
         val bdasReqList = mutableListOf<BdasListDto>()
         val bdasReqAprvList = mutableListOf<BdasListDto>()
         val bdasAprvList = mutableListOf<BdasListDto>()
-        val transferList = mutableListOf<BdasListDto>()
-        val hospitalList = mutableListOf<BdasListDto>()
+        val bdasTrnsList = mutableListOf<BdasListDto>()
+        val bdasAdmsList = mutableListOf<BdasListDto>()
 
         val bdasReqMap = mutableMapOf("count" to 0, "items" to Collections.EMPTY_LIST)
         val bdasReqAprvMap = mutableMapOf("count" to 0, "items" to Collections.EMPTY_LIST)
         val bdasAprvMap = mutableMapOf("count" to 0, "items" to Collections.EMPTY_LIST)
-        val transfer = mutableMapOf("count" to 0, "items" to Collections.EMPTY_LIST)
-        val hospital = mutableMapOf("count" to 0, "items" to Collections.EMPTY_LIST)
+        val bdasTrnsMap = mutableMapOf("count" to 0, "items" to Collections.EMPTY_LIST)
+        val bdasAdmsMap = mutableMapOf("count" to 0, "items" to Collections.EMPTY_LIST)
 
         val findBdasList = bdasReqRepository.findBdasList()
         findBdasList.forEach {
             when (it.bedStatCd) {
                 BedStatCd.BAST0003.name -> {
-                    bdasReqList.add(getTagList(it))
+                    bdasReqList.add(it)
                     makeToResultMap(bdasReqList, bdasReqMap)
                 }
                 BedStatCd.BAST0004.name -> {
-                    bdasReqAprvList.add(getTagList(it))
+                    bdasReqAprvList.add(it)
                     makeToResultMap(bdasReqAprvList, bdasReqAprvMap)
                 }
                 BedStatCd.BAST0005.name -> {
-                    bdasAprvList.add(getTagList(it))
+                    bdasAprvList.add(it)
                     makeToResultMap(bdasAprvList, bdasAprvMap)
                 }
                 BedStatCd.BAST0006.name -> {
-                    transferList.add(getTagList(it))
-                    makeToResultMap(transferList, transfer)
+                    bdasTrnsList.add(it)
+                    makeToResultMap(bdasTrnsList, bdasTrnsMap)
                 }
                 BedStatCd.BAST0007.name -> {
-                    hospitalList.add(getTagList(it))
-                    makeToResultMap(hospitalList, hospital)
+                    bdasAdmsList.add(it)
+                    makeToResultMap(bdasAdmsList, bdasAdmsMap)
                 }
             }
         }
 
-        val res = listOf(bdasReqMap, bdasReqAprvMap, bdasAprvMap, transfer, hospital)
+        val res = listOf(bdasReqMap, bdasReqAprvMap, bdasAprvMap, bdasTrnsMap, bdasAdmsMap)
 
         return CommonResponse(res)
     }
@@ -401,23 +400,6 @@ class BedAssignService {
         map["items"] = list
     }
 
-    private fun getTagList(dto: BdasListDto): BdasListDto {
-        dto.bedStatCdNm = BedStatCd.valueOf(dto.bedStatCd!!).cdNm
-        if (dto.ptTypeCd != null) {
-            val split = dto.ptTypeCd!!.split(";")
-            dto.tagList!!.addAll(split.map { PtTypeCd.valueOf(it).cdNm })
-        }
-        if (dto.svrtTypeCd != null) {
-            val split = dto.svrtTypeCd!!.split(";")
-            dto.tagList!!.addAll(split.map { SvrtTypeCd.valueOf(it).cdNm })
-        }
-        if (dto.undrDsesCd != null) {
-            val split = dto.undrDsesCd!!.split(";")
-            dto.tagList!!.addAll(split.map { UndrDsesCd.valueOf(it).cdNm })
-        }
-        return dto
-    }
-
     private fun convertFromArr(beforeConvert: String?, grpCd: String) : String? {
         var convertArr = beforeConvert?.split(";")?.toMutableList() ?: mutableListOf()
         log.warn(convertArr.size)
@@ -446,9 +428,5 @@ class BedAssignService {
         result < 1.000 -> "${(result * 1000.0).roundToInt()}m"
         result >= 1.000 -> "${(result * 100.0).roundToInt() / 100.0}km"
         else -> ""
-    }
-
-    private fun createDefaultBdasReq(bdasReqId: BdasReqId): BdasReq {
-        return BdasReq.createDefault(bdasReqId)
     }
 }
