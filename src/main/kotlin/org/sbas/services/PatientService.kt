@@ -5,10 +5,7 @@ import org.eclipse.microprofile.jwt.JsonWebToken
 import org.jboss.logging.Logger
 import org.jboss.resteasy.reactive.multipart.FileUpload
 import org.sbas.constants.*
-import org.sbas.constants.enums.BedStatCd
-import org.sbas.constants.enums.PtTypeCd
-import org.sbas.constants.enums.SvrtTypeCd
-import org.sbas.constants.enums.UndrDsesCd
+import org.sbas.constants.enums.*
 import org.sbas.dtos.info.*
 import org.sbas.handlers.FileHandler
 import org.sbas.handlers.NaverApiHandler
@@ -90,15 +87,37 @@ class PatientService {
      * 환자 중복 유효성 검사
      */
     @Transactional
-    fun checkInfoPt(infoPtDto: InfoPtDto): CommonResponse<String> {
+    fun checkInfoPt(dto: InfoPtCheckDto): CommonResponse<*> {
         val findInfoPt = infoPtRepository.findByPtNmAndRrno(
-            ptNm = infoPtDto.ptNm,
-            rrno1 = infoPtDto.rrno1,
-            rrno2 = infoPtDto.rrno2,
+            ptNm = dto.ptNm,
+            rrno1 = dto.rrno1,
+            rrno2 = dto.rrno2,
         )
 
+        val infoPtResponse = findInfoPt?.let {
+            InfoPtCheckDto(
+                ptId = it.ptId!!,
+                ptNm = it.ptNm!!,
+                gndr = it.gndr!!,
+                rrno1 = it.rrno1!!,
+                rrno2 = it.rrno2!!,
+                dstr1Cd = it.dstr1Cd,
+                dstr2Cd = it.dstr2Cd,
+                telno = it.telno,
+                natiCd = it.natiCd,
+                dethYn = it.dethYn,
+                nokNm = it.nokNm,
+                mpno = it.mpno,
+                job = it.job,
+                bascAddr = it.bascAddr,
+                detlAddr = it.detlAddr,
+                zip = it.zip,
+                natiNm = it.natiNm
+            )
+        }
+
         if (findInfoPt != null) { // 등록된 환자 존재
-            return CommonResponse("등록된 환자가 존재합니다.")
+            return CommonResponse(infoPtResponse)
         }
         return CommonResponse("등록된 환자가 존재하지 않습니다.")
     }

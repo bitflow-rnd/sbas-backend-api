@@ -12,6 +12,7 @@ import org.sbas.dtos.bdas.BdasEsvyDto
 import org.sbas.dtos.bdas.BdasReqDprtInfo
 import org.sbas.dtos.bdas.BdasReqSvrInfo
 import org.sbas.dtos.info.InfoPtDto
+import org.sbas.dtos.info.InfoPtCheckDto
 import org.sbas.parameters.NewsScoreParameters
 import org.sbas.parameters.SearchParameters
 import org.sbas.services.BedAssignService
@@ -74,8 +75,8 @@ class PrivatePatientEndpoint {
     @Operation(summary = "환자 중복 유효성 검사", description = "")
     @POST
     @Path("exist")
-    fun exist(infoPtDto: InfoPtDto): Response {
-        return Response.ok(patientService.checkInfoPt(infoPtDto)).build()
+    fun exist(checker: InfoPtCheckDto): Response {
+        return Response.ok(patientService.checkInfoPt(checker)).build()
     }
 
     @Operation(summary = "환자정보 수정", description = "")

@@ -119,3 +119,24 @@ data class BdasHisInfo(
 ) {
     var tagList: MutableList<String>? = mutableListOf()
 }
+
+@NoArg
+data class InfoPtCheckDto(
+    var ptId: String,
+    var ptNm: String,
+    var rrno1: String,
+    var rrno2: String,
+    var gndr: String? = null,
+    var dstr1Cd: String? = null,
+    var dstr2Cd: String? = null,
+    var telno: String? = null,
+    var natiCd: NatiCd? = null,
+    var dethYn: String?,
+    var nokNm: String? = null,
+    var mpno: String? = null,
+    var job: String? = null,
+    var bascAddr: String? = null,
+    var detlAddr: String? = null,
+    var zip: String? = null,
+    var natiNm: String? = null,
+)
