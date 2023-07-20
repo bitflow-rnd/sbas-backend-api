@@ -120,3 +120,11 @@ data class InfoHospListDto(
     val dutyTel3: String?,
     val updtDttm: Instant?,
 )
+
+data class InfoHospWithUser(
+    val hospId: String,
+    val dutyName: String,
+    val instId: String,
+    val instNm: String,
+    val userId: String,
+)

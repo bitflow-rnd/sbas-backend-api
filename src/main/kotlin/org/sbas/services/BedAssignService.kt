@@ -168,6 +168,7 @@ class BedAssignService {
     @Transactional
     fun reqConfirm(dto: BdasReqAprvDto): CommonResponse<String> {
         val findBdasReq = bdasReqRepository.findByPtIdAndBdasSeq(dto.ptId, dto.bdasSeq) ?: throw NotFoundException("bdasReq not found")
+
         // 배정반 승인/거절
         if (dto.aprvYn == "N") { // 거절할 경우 거절 사유 및 메시지 작성
             bdasReqAprvRepository.persist(dto.toRefuseEntity())
@@ -179,16 +180,17 @@ class BedAssignService {
                     log.debug("hospList>>>>>>>>>>> ${infoHosp.hospId}")
                     bdasReqAprvRepository.persist(dto.toEntityWhenNotInHosp(
                         asgnReqSeq = idx + 1,
-                        hospId = infoHosp.hospId!!,
-                        hospNm = infoHosp.dutyName!!,
+                        hospId = infoHosp.hospId,
+                        hospNm = infoHosp.dutyName,
                     ))
+                    firebaseService.sendMessage("jiseongtak", "${dto.msg}", infoHosp.userId)
                 }
-                firebaseService.sendMessage("jiseongtak", "테스트입니다.", "jiseongtak")
             } else if (findBdasReq.inhpAsgnYn == "Y") {
                 // 원내 배정이면 승인
                 bdasReqAprvRepository.persist(dto.toEntityWhenInHosp())
             }
         }
+
         return CommonResponse("성공")
     }
 
@@ -335,9 +337,10 @@ class BedAssignService {
 
     @Transactional
     fun getTimeLine(ptId: String, bdasSeq: Int): CommonResponse<*> {
-        val bedStatCd = bdasReqRepository.findBedStat(ptId, bdasSeq)
+        val bedStatCd = bdasReqRepository.findBedStat(ptId, bdasSeq) ?: throw NotFoundException("병상배정 정보가 없습니다.")
         val timeLineList = mutableListOf<BdasTimeLineDto>()
 
+        log.debug(bedStatCd)
         val closedBdasAprv = BdasTimeLineDto("병상배정", TimeLineStatCd.CLOSED.cdNm)
         val closedBdasTrans = BdasTimeLineDto("이송", TimeLineStatCd.CLOSED.cdNm)
         val closedBdasAdms = BdasTimeLineDto("입원", TimeLineStatCd.CLOSED.cdNm)

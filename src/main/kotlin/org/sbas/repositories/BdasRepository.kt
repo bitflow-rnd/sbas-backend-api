@@ -6,6 +6,7 @@ import com.linecorp.kotlinjdsl.query.spec.ExpressionOrderSpec
 import com.linecorp.kotlinjdsl.querydsl.expression.col
 import io.quarkus.hibernate.orm.panache.kotlin.PanacheRepositoryBase
 import io.quarkus.panache.common.Sort
+import org.sbas.constants.enums.AdmsStatCd
 import org.sbas.constants.enums.TimeLineStatCd
 import org.sbas.dtos.bdas.BdasListDto
 import org.sbas.dtos.bdas.BdasTimeLineDto
@@ -48,6 +49,7 @@ class BdasReqRepository : PanacheRepositoryBase<BdasReq, BdasReqId> {
 //            groupBy(col(BdasReqId::ptId))
 //        }
 
+        // TODO 기관, 검색조건
         val list = queryFactory.listQuery<BdasListDto> {
             selectMulti(
                 col(BdasReqId::ptId), col(BdasReqId::bdasSeq), col(InfoPt::ptNm), col(InfoPt::gndr),
@@ -91,9 +93,14 @@ class BdasReqRepository : PanacheRepositoryBase<BdasReq, BdasReqId> {
         return entityManager.createQuery(query, BdasTimeLineDto::class.java).resultList
     }
 
-    fun findBedStat(ptId: String, bdasSeq: Int): String {
+    fun findBedStat(ptId: String, bdasSeq: Int): String? {
         val query = "select fn_get_bed_asgn_stat('${ptId}', ${bdasSeq}) as test"
-        return entityManager.createNativeQuery(query).singleResult as String
+        val result = entityManager.createNativeQuery(query).singleResult
+        return if (result == "-") {
+            null
+        } else {
+            result as String
+        }
     }
 
     fun findByPtId(ptId: String) = find("from BdasReq where id.ptId='$ptId' order by id.bdasSeq desc").firstResult()
@@ -182,11 +189,14 @@ class BdasAdmsRepository: PanacheRepositoryBase<BdasAdms, BdasAdmsId> {
 
 
     fun findTimeLineInfo(ptId: String, bdasSeq: Int): MutableList<BdasTimeLineDto> {
-        val query = "select new org.sbas.dtos.bdas.BdasTimeLineDto(" +
-                "ba.admsStatCd.cdNm, ) " +
+
+        val query = "select new org.sbas.dtos.bdas.BdasTimeLineDto(case ba.admsStatCd when '${AdmsStatCd.IOST0001}' then '입원완료' " +
+                "when '${AdmsStatCd.IOST0002}' then '퇴원완료' when '${AdmsStatCd.IOST0003}' then '자택회송' end, " +
+                "'${TimeLineStatCd.COMPLETE.cdNm}') " +
                 "from BdasAdms ba " +
                 "join InfoUser iu on iu.id = ba.updtUserId " +
-                "where ba.id.ptId = '$ptId' and ba.id.bdasSeq = $bdasSeq"
+                "where ba.id.ptId = '$ptId' and ba.id.bdasSeq = $bdasSeq " +
+                "order by ba.id.admsSeq "
 
         return getEntityManager().createQuery(query, BdasTimeLineDto::class.java).resultList
     }

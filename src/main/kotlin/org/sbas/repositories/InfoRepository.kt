@@ -7,6 +7,7 @@ import com.linecorp.kotlinjdsl.querydsl.CriteriaQueryDsl
 import com.linecorp.kotlinjdsl.querydsl.expression.col
 import io.quarkus.hibernate.orm.panache.kotlin.PanacheRepositoryBase
 import io.quarkus.panache.common.Sort
+import org.jboss.logging.Logger
 import org.sbas.dtos.info.*
 import org.sbas.entities.info.*
 import javax.enterprise.context.ApplicationScoped
@@ -115,6 +116,9 @@ class InfoCrewRepository : PanacheRepositoryBase<InfoCrew, InfoCrewId> {
 class InfoHospRepository : PanacheRepositoryBase<InfoHosp, String> {
 
     @Inject
+    private lateinit var log:Logger
+
+    @Inject
     private lateinit var queryFactory: QueryFactory
 
     @Inject
@@ -167,13 +171,21 @@ class InfoHospRepository : PanacheRepositoryBase<InfoHosp, String> {
         return InfoHospDetailDto(findHosp, count)
     }
 
-    fun findByHospIdList(hospList: List<String>): List<InfoHosp> {
-        val param = hospList.joinToString(
-            separator = "','",
-            prefix = "'",
-            postfix = "'",
-        )
-        return list("hosp_id in (${param})")
+    fun findByHospIdList(hospList: List<String>): MutableList<InfoHospWithUser> {
+        val infoHospList = queryFactory.listQuery<InfoHospWithUser> {
+            selectMulti(
+                col(InfoHosp::hospId), col(InfoHosp::dutyName),
+                col(InfoUser::instId), col(InfoUser::instNm), col(InfoUser::id)
+            )
+            from(entity(InfoHosp::class))
+            join(entity(InfoUser::class), on { col(InfoHosp::hospId).equal(col(InfoUser::instId)) })
+            whereAnd(
+                col(InfoUser::instId).`in`(hospList),
+                col(InfoUser::jobCd).equal("PMGR0003"),
+            )
+        }
+
+        return infoHospList.toMutableList()
     }
 
     fun findListByDstrCd1AndDstrCd2(dstrCd1: String, dstrCd2: String): List<InfoHosp> {
