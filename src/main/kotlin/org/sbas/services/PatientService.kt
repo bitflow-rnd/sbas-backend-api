@@ -323,29 +323,26 @@ class PatientService {
     fun delEpidReport(attcId: String): CommonResponse<String> {
         val baseAttc = baseAttcRepository.findByAttcId(attcId) ?: throw NotFoundException("$attcId not found")
 
-//        val uri = URI("$serverdomain${baseAttc.uriPath}/${baseAttc.fileNm}")
-//        log.warn("uri>>>>>>>>>$uri")
-//        val file = File(uri)
-//        val file = File("${baseAttc.uriPath}/${baseAttc.fileNm}")
         val file = File("${baseAttc.loclPath}/${baseAttc.fileNm}")
+        log.debug("file path >>>>>>>>> ${file.path}")
 
         if (file.exists()) {
-            log.warn("file path1 >>>>>>>>> ${file.path}")
-        } else {
-            log.warn("file path2 >>>>>>>>> ${file.path}")
-        }
+            val deleteById = baseAttcRepository.deleteByAttcId(attcId)
 
-        val deleteById = baseAttcRepository.deleteByAttcId(attcId)
-
-        if (deleteById == 1L) {
-            return if (file.delete()) {
-                infoPtRepository.updateAttcId(attcId)
-                CommonResponse("삭제 성공")
+            if (deleteById == 1L) {
+                return if (file.delete()) {
+                    infoPtRepository.updateAttcId(attcId)
+                    CommonResponse("삭제 성공")
+                } else {
+                    throw CustomizedException("삭제 실패", Response.Status.INTERNAL_SERVER_ERROR)
+                }
             } else {
-                throw CustomizedException("삭제 실패", Response.Status.INTERNAL_SERVER_ERROR)
+                throw CustomizedException("$attcId 삭제 실패", Response.Status.INTERNAL_SERVER_ERROR)
             }
+
         } else {
-            throw NotFoundException("$attcId delete fail")
+            log.debug("file path2 >>>>>>>>> ${file.path}")
+            throw NotFoundException("file not found")
         }
     }
 }

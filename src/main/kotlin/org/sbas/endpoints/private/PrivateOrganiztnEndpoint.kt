@@ -3,7 +3,9 @@ package org.sbas.endpoints.private
 import org.eclipse.microprofile.openapi.annotations.Operation
 import org.eclipse.microprofile.openapi.annotations.tags.Tag
 import org.jboss.logging.Logger
+import org.jboss.resteasy.reactive.RestForm
 import org.jboss.resteasy.reactive.RestPath
+import org.jboss.resteasy.reactive.multipart.FileUpload
 import org.sbas.dtos.info.InfoCrewSearchParam
 import org.sbas.services.OrganiztnService
 import javax.inject.Inject
@@ -36,9 +38,16 @@ class PrivateOrganiztnEndpoint {
 
     @Operation(summary = "의료기관 프로필 이미지 업로드 (신규/업데이트)", description = "")
     @POST
-    @Path("medinstimg/{param}")
-    fun medinstimg(@RestPath param: String): Response {
-        return Response.ok().build()
+    @Path("medinstimg/{hospId}")
+    fun medinstimg(@RestPath hospId: String, @RestForm fileUpload: FileUpload): Response {
+        return Response.ok(organiztnService.uploadHospImg(hospId, fileUpload)).build()
+    }
+
+    @Operation(summary = "의료기관 프로필 이미지 삭제", description = "")
+    @POST
+    @Path("delete-medinstimg/{hospId}")
+    fun deleteMedinstimg(@RestPath hospId: String): Response {
+        return Response.ok(organiztnService.deleteHospImg()).build()
     }
 
     @Operation(summary = "사용자 기관(조직) 등록", description = "")

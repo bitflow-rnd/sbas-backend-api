@@ -2,18 +2,19 @@ package org.sbas.services
 
 import org.jboss.logging.Logger
 import org.jboss.resteasy.reactive.RestResponse
+import org.jboss.resteasy.reactive.multipart.FileUpload
+import org.sbas.constants.SbasConst
 import org.sbas.dtos.info.*
 import org.sbas.entities.info.InfoCrewId
 import org.sbas.entities.info.InfoInst
+import org.sbas.handlers.FileHandler
 import org.sbas.handlers.GeocodingHandler
-import org.sbas.repositories.BaseCodeRepository
-import org.sbas.repositories.InfoCrewRepository
-import org.sbas.repositories.InfoHospRepository
-import org.sbas.repositories.InfoInstRepository
+import org.sbas.repositories.*
 import org.sbas.responses.CommonResponse
 import org.sbas.restparameters.NaverGeocodingApiParams
 import org.sbas.utils.CustomizedException
 import org.sbas.utils.StringUtils
+import java.io.File
 import javax.enterprise.context.ApplicationScoped
 import javax.inject.Inject
 import javax.transaction.Transactional
@@ -43,7 +44,16 @@ class OrganiztnService {
     private lateinit var baseCodeRepository: BaseCodeRepository
 
     @Inject
+    private lateinit var baseAttcRepository: BaseAttcRepository
+
+    @Inject
     private lateinit var geoHandler: GeocodingHandler
+
+    @Inject
+    private lateinit var fileHandler: FileHandler
+
+    @Inject
+    private lateinit var fileService: FileService
 
     /**
      * 의료기관(병원) 목록 조회
@@ -212,4 +222,48 @@ class OrganiztnService {
         return CommonResponse("${findInfoCrew.crewNm} 구급대원을 삭제했습니다.")
     }
 
+    @Transactional
+    fun uploadHospImg(hospId: String, fileUpload: FileUpload): CommonResponse<String> {
+        val infoHosp = infoHospRepository.findById(hospId) ?: throw NotFoundException("$hospId not found")
+        val attcId = infoHosp.attcId
+
+        if (attcId != null) {
+            val baseAttc = baseAttcRepository.findByAttcId(attcId) ?: throw NotFoundException("$attcId not found")
+            val file = File("${baseAttc.loclPath}/${baseAttc.fileNm}")
+            log.debug("file path >>>>>>>>> ${file.path}")
+
+            if (file.exists()) {
+                val deleteById = baseAttcRepository.deleteByAttcId(attcId)
+
+                if (deleteById == 1L) {
+                    if (file.delete()) {
+                        infoHosp.updateAttcId(null)
+                    } else {
+                        throw CustomizedException("삭제 실패", Response.Status.INTERNAL_SERVER_ERROR)
+                    }
+                } else {
+                    throw CustomizedException("$attcId 삭제 실패", Response.Status.INTERNAL_SERVER_ERROR)
+                }
+
+            } else {
+                log.debug("file path2 >>>>>>>>> ${file.path}")
+                throw NotFoundException("file not found")
+            }
+        }
+
+        val fileDto = fileHandler.createPrivateFile(fileUpload)
+
+        val attcGrpId = baseAttcRepository.getNextValAttcGrpId()
+        val entity = fileDto.toPrivateEntity(attcGrpId = attcGrpId, fileTypeCd = SbasConst.FileTypeCd.IMAGE, "${infoHosp.hospId} 이미지")
+        baseAttcRepository.persist(entity)
+
+        infoHosp.updateAttcId(entity.attcId)
+
+        return CommonResponse("이미지 업로드 성공")
+    }
+
+    @Transactional
+    fun deleteHospImg() {
+
+    }
 }

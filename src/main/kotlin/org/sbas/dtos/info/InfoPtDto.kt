@@ -31,30 +31,34 @@ data class InfoPtDto(
     val zip: String?,
 
     val addr: String?,
-)
-
-fun InfoPtDto.toEntity(dstr1Cd: String, dstr2Cd: String): InfoPt {
-    return InfoPt(
-        ptNm = this.ptNm,
-        gndr = this.gndr,
-        rrno1 = this.rrno1,
-        rrno2 = this.rrno2,
-        dstr1Cd = dstr1Cd,
-        dstr2Cd = dstr2Cd,
-        addr = this.addr,
-        telno = this.telno,
-        natiCd = this.natiCd,
-        picaVer = this.picaVer,
-        dethYn = this.dethYn,
-        nokNm = this.nokNm,
-        mpno = this.mpno,
-        job = this.job,
-        attcId = this.attcId,
-        bascAddr = this.bascAddr,
-        detlAddr = this.detlAddr,
-        zip = this.zip,
-        natiNm = this.natiNm,
-    )
+) {
+    fun toEntity(dstr1Cd: String, dstr2Cd: String): InfoPt {
+        return InfoPt(
+            ptNm = this.ptNm,
+            gndr = this.gndr,
+            rrno1 = this.rrno1,
+            rrno2 = this.rrno2,
+            dstr1Cd = dstr1Cd,
+            dstr2Cd = dstr2Cd,
+            addr = this.addr,
+            telno = this.telno,
+            natiCd = this.natiCd,
+            picaVer = this.picaVer,
+            dethYn = this.dethYn,
+            nokNm = this.nokNm,
+            mpno = this.mpno,
+            job = this.job,
+            attcId = this.attcId,
+            bascAddr = this.bascAddr,
+            detlAddr = this.detlAddr,
+            zip = this.zip,
+            natiNm = if (this.natiCd == NatiCd.NATI0001) {
+                "대한민국"
+            } else {
+                this.natiNm
+            },
+        )
+    }
 }
 
 /**
