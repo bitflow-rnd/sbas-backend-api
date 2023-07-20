@@ -117,9 +117,10 @@ class PatientService {
         }
 
         if (findInfoPt != null) { // 등록된 환자 존재
-            return CommonResponse(infoPtResponse)
+            return CommonResponse(mutableMapOf("isExist" to true, "items" to  infoPtResponse))
         }
-        return CommonResponse("등록된 환자가 존재하지 않습니다.")
+
+        return CommonResponse(mutableMapOf("isExist" to false, "items" to  null))
     }
 
     @Transactional
