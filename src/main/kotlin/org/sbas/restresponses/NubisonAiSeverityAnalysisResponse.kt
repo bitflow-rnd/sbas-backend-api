@@ -2,7 +2,7 @@ package org.sbas.restresponses
 
 import com.fasterxml.jackson.annotation.JsonProperty
 
-data class NubisonAiSeverenityAnalysisResponse(
+data class NubisonAiSeverityAnalysisResponse(
 
     @JsonProperty("model_name")
     var modelName: String,
