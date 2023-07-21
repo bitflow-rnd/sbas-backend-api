@@ -9,8 +9,10 @@ class StringUtils {
 
         private const val DATE_FORMAT = "yyyyMM"
         private const val DATE_FORMAT_DD = "yyyyMMdd"
+        private const val DATE_FORMAT_DD_HYPHEN = "yyyy-MM-dd"
         private const val TIME_FORMAT_HM = "HHmm"
         private const val TIME_FORMAT_HMS = "HHmmss"
+
 
         fun getYyyyMM(): String {
             val date = Date(System.currentTimeMillis())
@@ -34,6 +36,13 @@ class StringUtils {
             val date = Date(System.currentTimeMillis())
             val simpleDateFormat = SimpleDateFormat(TIME_FORMAT_HMS)
             return simpleDateFormat.format(date)
+        }
+
+        fun getYyyyMmDdWithHyphen(date: String): String {
+            val formatter = SimpleDateFormat(DATE_FORMAT_DD)
+            val _date = formatter.parse(date)
+            val simpleDateFormat = SimpleDateFormat(DATE_FORMAT_DD_HYPHEN)
+            return simpleDateFormat.format(_date)
         }
 
         fun getDstrCd1(addr: String): String {
