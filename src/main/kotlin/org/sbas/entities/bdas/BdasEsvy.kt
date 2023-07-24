@@ -27,26 +27,11 @@ class BdasEsvy(
     @Column(name = "rcpt_phc", length = 50)
     var rcptPhc: String? = null, // 수신 보건소
 
-    @Column(name = "telno", length = 11)
-    var telno: String? = null, // 전화번호
-
-    @Column(name = "addr", length = 100)
-    var addr: String? = null, // 주소
-
-    @Column(name = "mpno", length = 11)
-    var mpno: String? = null, // 휴대 전화번호
-
-    @Column(name = "nok_nm", length = 10)
-    var nokNm: String? = null, // 보호자 이름
-
     @Column(name = "diag_nm", length = 100)
     var diagNm: String? = null, // 질병 이름
 
     @Column(name = "diag_grde", length = 10)
     var diagGrde: String? = null, // 질병급
-
-    @Column(name = "job", length = 20)
-    var job: String? = null, // 직업
 
     @Column(name = "cv19_symp", length = 50)
     var cv19Symp: String? = null, // 코로나19 증상
@@ -68,9 +53,6 @@ class BdasEsvy(
 
     @Column(name = "adms_yn", length = 10)
     var admsYn: String? = null, // 입원 여부
-
-    @Column(name = "deth_yn", length = 10)
-    var dethYn: String? = null, // 사망 여부
 
     @Column(name = "rpt_type", length = 10)
     var rptType: String? = null, // 신고 구분

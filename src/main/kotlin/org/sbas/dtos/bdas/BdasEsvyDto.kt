@@ -9,14 +9,6 @@ data class BdasEsvyDto(
     var ptId: String,
     var esvyAttcId: String? = null,
 
-    // InfoPt 에서 가져오는 정보들 -> 역학조사서에도 있음
-    var telno: String?,
-    var addr: String?,
-    var mpno: String?,
-    var nokNm: String?,
-    var job: String?,
-    var dethYn: String?,
-
     // 역학 조사서에서 가져오는 정보들
     var rcptPhc: String?,
     var diagNm: String?,
@@ -43,13 +35,8 @@ data class BdasEsvyDto(
             ptId = this.ptId,
             esvyAttcId = this.esvyAttcId,
             rcptPhc = this.rcptPhc,
-            telno = this.telno,
-            addr = this.addr,
-            mpno = this.mpno,
-            nokNm = this.nokNm,
             diagNm = this.diagNm,
             diagGrde = this.diagGrde,
-            job = this.job,
             cv19Symp = this.cv19Symp,
             occrDt = this.occrDt,
             diagDt = this.diagDt,
@@ -57,7 +44,6 @@ data class BdasEsvyDto(
             dfdgExamRslt = this.dfdgExamRslt,
             ptCatg = this.ptCatg,
             admsYn = this.admsYn,
-            dethYn = this.dethYn,
             rptType = this.rptType,
             rmk = this.rmk,
             instNm = this.instNm,
@@ -71,12 +57,6 @@ data class BdasEsvyDto(
     }
 
     fun saveInfoPt(infoPt: InfoPt) {
-        this.telno = infoPt.telno
-        this.addr = infoPt.addr
-        this.mpno = infoPt.mpno
-        this.nokNm = infoPt.nokNm
-        this.job = infoPt.job
-        this.dethYn = infoPt.dethYn
         this.esvyAttcId = infoPt.attcId
     }
 }
