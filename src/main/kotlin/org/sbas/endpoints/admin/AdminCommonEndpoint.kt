@@ -23,10 +23,10 @@ import javax.ws.rs.core.Response
 class AdminCommonEndpoint {
 
     @Inject
-    lateinit var log: Logger
+    private lateinit var log: Logger
 
     @Inject
-    lateinit var commonService: CommonService
+    private lateinit var commonService: CommonService
 
     @Operation(summary = "공통코드 그룹 등록", description = "공통코드 그룹 등록")
     @POST

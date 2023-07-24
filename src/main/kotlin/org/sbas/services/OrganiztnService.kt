@@ -52,14 +52,21 @@ class OrganiztnService {
     @Inject
     private lateinit var fileHandler: FileHandler
 
-    @Inject
-    private lateinit var fileService: FileService
-
     /**
      * 의료기관(병원) 목록 조회
      */
     @Transactional
     fun findInfoHospList(param: InfoHospSearchParam): CommonResponse<*> {
+        val dutyDivNam = mutableListOf<String>()
+        param.dutyDivNams?.let {
+            dutyDivNam.addAll(it.split(";"))
+        }
+        if (dutyDivNam.isEmpty()) {
+            param.dutyDivNam = null
+        } else {
+            param.dutyDivNam = dutyDivNam
+        }
+
         val findHosp = infoHospRepository.findInfoHosps(param)
         val count = infoHospRepository.countInfoHosps(param)
 
@@ -224,29 +231,24 @@ class OrganiztnService {
 
     @Transactional
     fun uploadHospImg(hospId: String, fileUpload: FileUpload): CommonResponse<String> {
-        val infoHosp = infoHospRepository.findById(hospId) ?: throw NotFoundException("$hospId not found")
+        val infoHosp = infoHospRepository.findInfoHospByHospId(hospId) ?: throw NotFoundException("$hospId not found")
         val attcId = infoHosp.attcId
 
-        if (attcId != null) {
+        if (!attcId.isNullOrEmpty()) {
             val baseAttc = baseAttcRepository.findByAttcId(attcId) ?: throw NotFoundException("$attcId not found")
             val file = File("${baseAttc.loclPath}/${baseAttc.fileNm}")
             log.debug("file path >>>>>>>>> ${file.path}")
 
             if (file.exists()) {
-                val deleteById = baseAttcRepository.deleteByAttcId(attcId)
-
-                if (deleteById == 1L) {
-                    if (file.delete()) {
-                        infoHosp.updateAttcId(null)
-                    } else {
-                        throw CustomizedException("삭제 실패", Response.Status.INTERNAL_SERVER_ERROR)
-                    }
+                baseAttcRepository.deleteByAttcId(attcId)
+                    ?: throw CustomizedException("$attcId 삭제 실패", Response.Status.INTERNAL_SERVER_ERROR)
+                if (file.delete()) {
+                    log.debug("uploadHospImg >>> delete 성공")
                 } else {
-                    throw CustomizedException("$attcId 삭제 실패", Response.Status.INTERNAL_SERVER_ERROR)
+                    throw CustomizedException("삭제 실패", Response.Status.INTERNAL_SERVER_ERROR)
                 }
 
             } else {
-                log.debug("file path2 >>>>>>>>> ${file.path}")
                 throw NotFoundException("file not found")
             }
         }
@@ -263,7 +265,30 @@ class OrganiztnService {
     }
 
     @Transactional
-    fun deleteHospImg() {
+    fun deleteHospImg(hospId: String): CommonResponse<String> {
+        val infoHosp = infoHospRepository.findInfoHospByHospId(hospId) ?: throw NotFoundException("$hospId not found")
+        val attcId = infoHosp.attcId
 
+        if (!attcId.isNullOrEmpty()) {
+            val baseAttc = baseAttcRepository.findByAttcId(attcId) ?: throw NotFoundException("$attcId not found")
+            val file = File("${baseAttc.loclPath}/${baseAttc.fileNm}")
+            log.debug("file path >>>>>>>>> ${file.path}")
+
+            if (file.exists()) {
+                baseAttcRepository.deleteByAttcId(attcId)
+                    ?: throw CustomizedException("$attcId 삭제 실패", Response.Status.INTERNAL_SERVER_ERROR)
+
+                if (file.delete()) {
+                    infoHosp.updateAttcId(null)
+                    log.debug("deleteHospImg >>> delete 성공")
+                } else {
+                    throw CustomizedException("삭제 실패", Response.Status.INTERNAL_SERVER_ERROR)
+                }
+
+            } else {
+                throw NotFoundException("file not found")
+            }
+        }
+        return CommonResponse("이미지 삭제 성공")
     }
 }

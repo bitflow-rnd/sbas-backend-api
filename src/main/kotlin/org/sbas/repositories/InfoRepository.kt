@@ -5,20 +5,31 @@ import com.linecorp.kotlinjdsl.listQuery
 import com.linecorp.kotlinjdsl.query.spec.ExpressionOrderSpec
 import com.linecorp.kotlinjdsl.querydsl.CriteriaQueryDsl
 import com.linecorp.kotlinjdsl.querydsl.expression.col
+import com.linecorp.kotlinjdsl.querydsl.expression.function
+import com.linecorp.kotlinjdsl.querydsl.expression.nullLiteral
+import com.linecorp.kotlinjdsl.selectQuery
+import com.linecorp.kotlinjdsl.subquery
 import io.quarkus.hibernate.orm.panache.kotlin.PanacheRepositoryBase
 import io.quarkus.panache.common.Sort
 import org.jboss.logging.Logger
 import org.sbas.dtos.info.*
+import org.sbas.entities.bdas.BdasReq
+import org.sbas.entities.bdas.BdasReqId
 import org.sbas.entities.info.*
 import javax.enterprise.context.ApplicationScoped
 import javax.inject.Inject
+import javax.persistence.EntityManager
+import javax.persistence.criteria.AbstractQuery
 import javax.ws.rs.NotFoundException
 
 @ApplicationScoped
 class InfoPtRepository : PanacheRepositoryBase<InfoPt, String> {
 
-//    @Inject
-//    private lateinit var queryFactory: QueryFactory
+    @Inject
+    private lateinit var entityManager: EntityManager
+
+    @Inject
+    private lateinit var queryFactory: QueryFactory
 
     fun findByPtNmAndRrno(ptNm: String, rrno1: String, rrno2: String): InfoPt? =
         find("pt_nm = '$ptNm' AND rrno_1 = '$rrno1' AND rrno_2 = '$rrno2'").firstResult()
@@ -28,10 +39,34 @@ class InfoPtRepository : PanacheRepositoryBase<InfoPt, String> {
     }
 
     fun findInfoPtList(): MutableList<InfoPtSearchDto> {
-        //TODO
+//
+//        val query = "select max(id.bdasSeq) as bdasSeq from BdasReq group by id.ptId"
+//        @Suppress("UNCHECKED_CAST")
+//        val maxBdasSeqList = entityManager.createQuery(query).resultList as MutableList<Int>
+//
+//        val list = queryFactory.listQuery<InfoPtSearchDto> {
+//            selectMulti(
+//                col(InfoPt::ptId), col(BdasReqId::bdasSeq), col(InfoPt::ptNm), col(InfoPt::gndr),
+//                col(InfoPt::dstr1Cd), function("fn_get_cd_nm", String::class.java, literal("SIDO"), col(InfoPt::dstr1Cd)),
+//                col(InfoPt::dstr2Cd), function("fn_get_cd_nm", String::class.java, literal("SIDO"+col(InfoPt::dstr1Cd)), col(InfoPt::dstr2Cd)),
+//                literal("hospId"), literal("hospNm"), col(InfoPt::mpno), col(InfoPt::natiCd),
+//                function("fn_get_bed_asgn_stat", String::class.java, col(InfoPt::ptId), col(BdasReqId::bdasSeq)), col(InfoPt::updtDttm)
+//
+//            )
+//            from(entity(InfoPt::class))
+//            join(entity(BdasReq::class), on { col(InfoPt::ptId).equal(col(BdasReqId::ptId))})
+//            associate(entity(BdasReq::class), BdasReqId::class, on(BdasReq::id))
+////            exists(subQuery)
+//            whereOr(
+//                col(BdasReqId::bdasSeq).`in`(maxBdasSeqList),
+//                col(BdasReqId::bdasSeq).equal(nullLiteral()),
+//            )
+//        }
+//        return list.toMutableList()
+        //TODO 기관 이름추가
         val query = "select new org.sbas.dtos.info.InfoPtSearchDto(a.ptId, b.id.bdasSeq, a.ptNm, a.gndr, " +
                 "a.dstr1Cd, fn_get_cd_nm('SIDO', a.dstr1Cd), a.dstr2Cd, fn_get_cd_nm('SIDO'||a.dstr1Cd, a.dstr2Cd), " +
-                "ba.hospId, '', a.mpno, a.natiCd, fn_get_bed_asgn_stat(a.ptId, b.id.bdasSeq), '', a.updtDttm, " +
+                "ba.hospId, '', a.mpno, a.natiCd, fn_get_bed_asgn_stat(a.ptId, b.id.bdasSeq), a.updtDttm, " +
                 "b.ptTypeCd, b.svrtTypeCd, b.undrDsesCd, fn_get_age(a.rrno1, a.rrno2)) " +
                 "from InfoPt a " +
                 "left join BdasReq b on a.ptId = b.id.ptId " +
@@ -124,6 +159,10 @@ class InfoHospRepository : PanacheRepositoryBase<InfoHosp, String> {
     @Inject
     private lateinit var userRepository: InfoUserRepository
 
+    fun findInfoHospByHospId(hospId: String): InfoHosp? {
+        return find("hosp_id = '$hospId'").firstResult()
+    }
+
     fun findInfoHosps(param: InfoHospSearchParam): MutableList<InfoHospListDto> {
         val infoHosps = queryFactory.listQuery<InfoHospListDto> {
             selectMulti(
@@ -131,9 +170,9 @@ class InfoHospRepository : PanacheRepositoryBase<InfoHosp, String> {
                 col(InfoHosp::dstrCd1), col(InfoHosp::dstrCd2), col(InfoHosp::dutyTel1), col(InfoHosp::dutyTel1), col(InfoHosp::updtDttm),
             )
             from(entity(InfoHosp::class))
+            limit(20)
+            param.page?.run { offset(this.minus(1).times(20)) }
             whereAndOrder(param)
-            limit(param.pageSize)
-            param.page?.run { offset(this.minus(1).times(param.pageSize)) }
         }
 
         return infoHosps.toMutableList()

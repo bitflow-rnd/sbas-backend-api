@@ -1,6 +1,7 @@
 package org.sbas.dtos.info
 
 import com.fasterxml.jackson.annotation.JsonIgnore
+import org.sbas.constants.enums.BedStatCd
 import org.sbas.constants.enums.NatiCd
 import org.sbas.entities.info.InfoPt
 import org.sbas.utils.NoArg
@@ -77,14 +78,14 @@ data class InfoPtSearchDto(
     var hospNm: String?,
     var mpno: String?,
     var natiCd: NatiCd?,
-    var statCd: String?,
-    var statCdNm: String?,
+    var bedStatCd: String?,
     var updtDttm: Instant?,
     @JsonIgnore var ptTypeCd: String?,
     @JsonIgnore var svrtTypeCd: String?,
     @JsonIgnore var undrDsesCd: String?,
     var age: Int?,
 ) {
+    var bedStatCdNm: String? = bedStatCd?.let { BedStatCd.valueOf(it).cdNm }
     var tagList: MutableList<String>? = mutableListOf()
 }
 

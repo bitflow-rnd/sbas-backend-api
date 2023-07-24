@@ -200,7 +200,6 @@ class PatientService {
     fun findInfoPtList(searchParam: SearchParameters): CommonResponse<*> {
         val list = infoPtRepository.findInfoPtList()
         list.forEach { dto ->
-            dto.statCdNm = BedStatCd.valueOf(dto.statCd!!).cdNm
             if (dto.ptTypeCd != null) {
                 val splitList = dto.ptTypeCd!!.split(";")
                 dto.tagList!!.addAll(splitList.map { PtTypeCd.valueOf(it).cdNm })

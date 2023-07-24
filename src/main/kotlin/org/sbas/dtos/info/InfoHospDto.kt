@@ -106,7 +106,7 @@ data class InfoHospSearchParam(
     @field: QueryParam("dutyDivNams") var dutyDivNams: String?,
 ) {
     val pageSize: Int = 10
-    var dutyDivNam: String? = null
+    var dutyDivNam: MutableList<String>? = mutableListOf()
 }
 
 data class InfoHospListDto(

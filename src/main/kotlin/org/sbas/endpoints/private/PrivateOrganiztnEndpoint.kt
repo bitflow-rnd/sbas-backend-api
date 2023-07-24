@@ -47,7 +47,7 @@ class PrivateOrganiztnEndpoint {
     @POST
     @Path("delete-medinstimg/{hospId}")
     fun deleteMedinstimg(@RestPath hospId: String): Response {
-        return Response.ok(organiztnService.deleteHospImg()).build()
+        return Response.ok(organiztnService.deleteHospImg(hospId)).build()
     }
 
     @Operation(summary = "사용자 기관(조직) 등록", description = "")
