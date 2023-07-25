@@ -5,6 +5,7 @@ import org.sbas.entities.info.InfoUser
 import org.sbas.utils.NoArg
 import java.time.Instant
 import javax.validation.constraints.NotBlank
+import javax.validation.constraints.Pattern
 import javax.ws.rs.QueryParam
 
 /**
@@ -43,7 +44,7 @@ data class InfoUserSearchParam(
  */
 @NoArg
 data class InfoUserSaveDto(
-    @field: NotBlank
+    @field: [NotBlank Pattern(regexp = "^[a-zA-Z0-9@._-]+\$", message = "영소문자, 영대문자, 숫자, @.-_ 만 가능합니다")]
     val id: String,
     @field: NotBlank
     val pw: String?,

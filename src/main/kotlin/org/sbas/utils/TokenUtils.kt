@@ -38,7 +38,7 @@ class TokenUtils {
         }
 
         fun generateUserToken(userId: String, userNm: String): String {
-            return Jwt.issuer("https://sbas-test.bitflow.ai")
+            return Jwt.issuer("http://dev.smartbas.org")
                     .upn(userId)
                     .subject(userNm)
                     .claim("userNm", userNm)
@@ -48,7 +48,7 @@ class TokenUtils {
         }
 
         fun generateAdminToken(userId: String, userNm: String): String {
-            return Jwt.issuer("https://sbas-test.bitflow.ai")
+            return Jwt.issuer("http://dev.smartbas.org")
                     .upn(userId)
                     .subject(userNm)
 //                    .claim("userNm", userNm)
