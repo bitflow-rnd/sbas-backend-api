@@ -105,19 +105,19 @@ class SvrtColl(
 @Embeddable
 data class SvrtCollId(
     @Column(name = "pt_id", nullable = false, length = 10)
-    var ptId: String? = null, // 환자 ID
+    var ptId: String, // 환자 ID
 
     @Column(name = "hosp_id", nullable = false, length = 10)
-    var hospId: String? = null, // 병원 ID
+    var hospId: String, // 병원 ID
 
     @Column(name = "rgst_seq", nullable = false)
-    var rgstSeq: Int? = null, // 등록 순번
+    var rgstSeq: Int, // 등록 순번
 
     @Column(name = "msre_dt", nullable = false, length = 8)
-    var msreDt: String? = null, // 측정 날짜
+    var msreDt: String, // 측정 날짜
 
     @Column(name = "coll_seq", nullable = false)
-    var collSeq: Int? = null, // 수집 순번
+    var collSeq: Int, // 수집 순번
 ) : Serializable {
     companion object {
         private const val serialVersionUID = 4678885072574623613L

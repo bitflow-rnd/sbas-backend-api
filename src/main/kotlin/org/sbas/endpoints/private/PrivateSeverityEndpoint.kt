@@ -7,9 +7,10 @@ import org.sbas.handlers.NubisonAiSeverityAnalysisHandler
 import javax.inject.Inject
 import javax.ws.rs.GET
 import javax.ws.rs.Path
+import javax.ws.rs.core.Response
 
 
-@Tag(name = "", description = "")
+@Tag(name = "Managing severity", description = "Severity analysis")
 @Path("v1/private/severity")
 class PrivateSeverityEndpoint {
 
@@ -19,9 +20,9 @@ class PrivateSeverityEndpoint {
     @Operation(summary = "Get severity analysis from inference.nubison.ai", description = "")
     @GET
     @Path("analysis/{pid}")
-    fun severityAnalysis(@RestPath pid: String) : String {
+    fun severityAnalysis(@RestPath pid: String) : Response {
         val result = nubisonAiSeverityAnalysisHandler.analyse(pid)
-        return result
+        return Response.ok(result).build()
     }
 
 }

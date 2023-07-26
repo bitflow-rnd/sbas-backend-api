@@ -1,5 +1,6 @@
 package org.sbas.services
 
+import com.fasterxml.jackson.databind.ObjectMapper
 import org.json.JSONObject
 import org.sbas.entities.svrt.SvrtAnly
 import org.sbas.entities.svrt.SvrtAnlyId
@@ -11,6 +12,7 @@ import org.sbas.repositories.SvrtPtRepository
 import org.sbas.utils.StringUtils.Companion.getYyyyMmDdWithHyphen
 import javax.enterprise.context.ApplicationScoped
 import javax.inject.Inject
+import javax.transaction.Transactional
 
 @ApplicationScoped
 class SvrtService {
@@ -29,6 +31,7 @@ class SvrtService {
         return svrtAnlyRepository.findById(id)
     }
 
+    @Transactional
     fun saveSvrtAnly(anly: SvrtAnly) {
         svrtAnlyRepository.persist(anly)
     }
@@ -47,9 +50,10 @@ class SvrtService {
         return svrtCollRepository.findByPtIdAndMsreDt(pid)
     }
 
-    fun getSvrtRequestData(pid: String): String {
-        val svrtCollList = getSvrtCollByPidAndMsreDt(pid)
-
+    /**
+     * Converts data from DB to request data format
+     */
+    fun getSvrtRequestData(svrtCollList: List<SvrtColl>): String {
         val requestMap = mapOf(
             "ALT" to mutableMapOf<String, Float>(),
             "AST" to mutableMapOf(),
@@ -72,8 +76,8 @@ class SvrtService {
             "SPO2" to mutableMapOf()
         )
         var msreDt: String
-        svrtCollList?.forEach {
-            msreDt = getYyyyMmDdWithHyphen(it.id!!.msreDt!!)
+        svrtCollList.forEach {
+            msreDt = getYyyyMmDdWithHyphen(it.id!!.msreDt)
             (requestMap["ALT"] as HashMap<String, Float>)[msreDt] = it.alt!!.toFloat()
             (requestMap["AST"] as HashMap<String, Float>)[msreDt] = it.ast!!.toFloat()
             (requestMap["BUN"] as HashMap<String, Float>)[msreDt] = it.bun!!.toFloat()
@@ -93,11 +97,15 @@ class SvrtService {
             (requestMap["PULSE"] as HashMap<String, Float>)[msreDt] = it.hr!!.toFloat()
             (requestMap["SBP"] as HashMap<String, Float>)[msreDt] = it.sbp!!.toFloat()
             (requestMap["SPO2"] as HashMap<String, Float>)[msreDt] = it.spo2!!.toFloat()
-            
+
         }
-        val json = JSONObject(requestMap)
+        val json = ObjectMapper().writeValueAsString(requestMap)
 
         return JSONObject.quote(json.toString())
+    }
+
+    fun getLastAnlySeqValue(): Int? {
+        return svrtAnlyRepository.getLastAnlySeqValue()
     }
 
     fun saveSvrtColl(coll: SvrtColl) {

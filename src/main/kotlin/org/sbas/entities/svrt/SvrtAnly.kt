@@ -31,9 +31,6 @@ class SvrtAnly(
     @Column(name = "svrt_prob", length = 6)
     var svrtProb: String? = null, // 중증 확률
 
-    @Column(name = "rslt_lbl", length = 100)
-    var rsltLbl: String? = null, // 결과 라벨
-
 
 ) : CommonEntity()
 
