@@ -40,7 +40,7 @@ class AdminUserEndpoint {
     @Operation(summary = "관리자 사용자 등록", description = "관리자 화면에서 사용자 등록")
     @POST
     @Path("reg")
-    fun reg(infoUserSaveDto: InfoUserSaveDto): Response {
+    fun reg(@Valid infoUserSaveDto: InfoUserSaveDto): Response {
         return Response.ok(userService.reg(infoUserSaveDto)).build()
     }
 

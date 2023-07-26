@@ -132,7 +132,7 @@ class BdasReq(
         }
     }
 
-    fun saveSvrInfoFrom(bdasReqSvrInfo: BdasReqSvrInfo) {
+    fun updateSvrInfoFrom(bdasReqSvrInfo: BdasReqSvrInfo) {
         this.ptTypeCd = bdasReqSvrInfo.ptTypeCd
         this.undrDsesCd = bdasReqSvrInfo.undrDsesCd
         this.undrDsesEtc = bdasReqSvrInfo.undrDsesEtc
@@ -140,10 +140,6 @@ class BdasReq(
         this.svrtTypeCd = bdasReqSvrInfo.svrtTypeCd
         this.reqBedTypeCd = bdasReqSvrInfo.reqBedTypeCd
         this.dnrAgreYn = bdasReqSvrInfo.dnrAgreYn
-    }
-
-    fun saveBioInfoFrom(bdasReqSvrInfo: BdasReqSvrInfo) {
-        this.svrtIptTypeCd = bdasReqSvrInfo.svrtIptTypeCd
         this.avpuCd = bdasReqSvrInfo.avpuCd
         this.oxyYn = bdasReqSvrInfo.oxyYn
         this.bdtp = bdasReqSvrInfo.bdtp
@@ -152,7 +148,6 @@ class BdasReq(
         this.spo2 = bdasReqSvrInfo.spo2
         this.sbp = bdasReqSvrInfo.sbp
         this.newsScore = bdasReqSvrInfo.newsScore
-        this.svrtTypeCd = bdasReqSvrInfo.svrtTypeCd
     }
 
     fun saveDprtInfoFrom(bdasReqDprtInfo: BdasReqDprtInfo) {

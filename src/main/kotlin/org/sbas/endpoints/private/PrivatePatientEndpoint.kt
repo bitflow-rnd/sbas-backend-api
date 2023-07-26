@@ -139,14 +139,14 @@ class PrivatePatientEndpoint {
     @Operation(summary = "생체정보입력 분석 정보 등록", description = "")
     @POST
     @Path("regbioinfo")
-    fun regbioinfo(bdasReqSvrInfo: BdasReqSvrInfo): Response {
+    fun regbioinfo(@Valid bdasReqSvrInfo: BdasReqSvrInfo): Response {
         return Response.ok(bedAssignService.regBioInfo(bdasReqSvrInfo)).build()
     }
 
     @Operation(summary = "중증정보 등록", description = "")
     @POST
     @Path("regsevrinfo")
-    fun regsevrinfo(bdasReqSvrInfo: BdasReqSvrInfo): Response? {
+    fun regsevrinfo(@Valid bdasReqSvrInfo: BdasReqSvrInfo): Response? {
         return Response.ok(bedAssignService.regServInfo(bdasReqSvrInfo)).build()
     }
 

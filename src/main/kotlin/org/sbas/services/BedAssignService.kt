@@ -55,17 +55,6 @@ class BedAssignService {
         bdasEsvyDto.saveInfoPt(findInfoPt)
 
         log. debug("regDisesInfo >>>>> ${bdasEsvyDto.ptId}")
-//        val findBdasEsvy = bdasEsvyRepository.findByPtIdWithLatestBdasSeq(findInfoPt.id!!)
-//        if (findBdasEsvy != null) { // 수정하는 경우
-//            findBdasEsvy.bdasSeq
-//        } else { // 처음 등록일 경우
-//            log.debug(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>")
-//            val bdasEsvy = bdasEsvyDto.toEntity()
-//            bdasEsvyRepository.persist(bdasEsvy)
-//            log.debug(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>")
-//            res["bdasSeq"] = bdasEsvy.bdasSeq!!
-//        }
-
         val bdasEsvy = bdasEsvyDto.toEntity()
         bdasEsvyRepository.persist(bdasEsvy)
         
@@ -78,7 +67,7 @@ class BedAssignService {
     @Transactional
     fun regBioInfo(bdasReqSvrInfo: BdasReqSvrInfo): CommonResponse<String> {
         // bdasEsvy 에서 bdasSeq 가져오기
-        val bdasEsvy = bdasEsvyRepository.findByPtIdWithLatestBdasSeq(bdasReqSvrInfo.ptId) ?: throw NotFoundException("${bdasReqSvrInfo.ptId} not found")
+//        val bdasEsvy = bdasEsvyRepository.findByPtIdWithLatestBdasSeq(bdasReqSvrInfo.ptId) ?: throw NotFoundException("${bdasReqSvrInfo.ptId} not found")
 
 //        val findBdasReq = bdasReqRepository.findByPtIdAndBdasSeq(bdasEsvy.ptId, bdasEsvy.bdasSeq!!)
 //        if (findBdasReq != null) { // 수정하는 경우
@@ -86,13 +75,13 @@ class BedAssignService {
 //        }
 
         // 엔티티 새로 생성 후 persist
-        val bdasReqId = BdasReqId(bdasEsvy.ptId, bdasEsvy.bdasSeq)
-        val bdasReq = BdasReq.createDefault(bdasReqId)
-
-        bdasReqRepository.persist(bdasReq)
-        
-        // 중증도 분류 정보 저장
-        bdasReq.saveBioInfoFrom(bdasReqSvrInfo)
+//        val bdasReqId = BdasReqId(bdasEsvy.ptId, bdasEsvy.bdasSeq)
+//        val bdasReq = BdasReq.createDefault(bdasReqId)
+//
+//        bdasReqRepository.persist(bdasReq)
+//
+//        // 중증도 분류 정보 저장
+//        bdasReq.saveBioInfoFrom(bdasReqSvrInfo)
 
         return CommonResponse("등록 성공")
     }
@@ -108,16 +97,13 @@ class BedAssignService {
         val findBdasReq = bdasReqRepository.findByPtIdAndBdasSeq(bdasReqSvrInfo.ptId, bdasEsvy.bdasSeq!!)
         if (findBdasReq != null) { // 중증도 분류 정보 등록 후 넘어오는 경우
             // 기존 bdasReq 엔티티에 SvrInfo 저장
-            findBdasReq.saveSvrInfoFrom(bdasReqSvrInfo)
+            findBdasReq.updateSvrInfoFrom(bdasReqSvrInfo)
         } else { // 새로 저장
             // 엔티티 새로 생성 후 persist
             val bdasReqId = BdasReqId(bdasReqSvrInfo.ptId, bdasEsvy.bdasSeq!!)
-            val bdasReq = BdasReq.createDefault(bdasReqId)
+            val bdasReq = bdasReqSvrInfo.toEntity(bdasReqId)
 
             bdasReqRepository.persist(bdasReq)
-            
-            // 중증 정보 저장
-            bdasReq.saveSvrInfoFrom(bdasReqSvrInfo)
         }
 
         return CommonResponse("등록 성공")

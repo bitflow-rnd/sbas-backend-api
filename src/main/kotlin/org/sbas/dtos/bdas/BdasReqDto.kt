@@ -1,5 +1,7 @@
 package org.sbas.dtos.bdas
 
+import org.sbas.entities.bdas.BdasReq
+import org.sbas.entities.bdas.BdasReqId
 import org.sbas.utils.NoArg
 import javax.validation.constraints.NotBlank
 
@@ -20,6 +22,8 @@ data class BdasReqSvrInfo(
     var dnrAgreYn: String?,
     @field: NotBlank
     var svrtIptTypeCd: String?,
+    @field: NotBlank
+    var svrtTypeCd: String?,
 
     var avpuCd: String?,
     var oxyYn: String?,
@@ -29,9 +33,33 @@ data class BdasReqSvrInfo(
     var spo2: Int?,
     var sbp: Int?,
     var newsScore: Int?,
-
-    var svrtTypeCd: String?,
-)
+) {
+    fun toEntity(bdasReqId: BdasReqId): BdasReq {
+        return BdasReq(
+            id = bdasReqId,
+            reqDt = "",
+            reqTm = "",
+            ptTypeCd = this.ptTypeCd,
+            reqDstr1Cd = "",
+            dprtDstrTypeCd = "",
+            inhpAsgnYn = "",
+            undrDsesCd = this.undrDsesCd,
+            undrDsesEtc = this.undrDsesEtc,
+            reqBedTypeCd = this.reqBedTypeCd,
+            dnrAgreYn = this.dnrAgreYn,
+            svrtTypeCd = this.svrtTypeCd,
+            svrtIptTypeCd = this.svrtIptTypeCd,
+            avpuCd = this.avpuCd,
+            oxyYn = this.oxyYn,
+            bdtp = this.bdtp,
+            hr = this.hr,
+            resp = this.resp,
+            spo2 = this.spo2,
+            sbp = this.sbp,
+            newsScore = this.newsScore,
+        )
+    }
+}
 
 /**
  * 출발지 정보
