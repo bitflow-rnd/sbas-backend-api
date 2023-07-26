@@ -21,7 +21,7 @@ class BaseCodeRepository : PanacheRepositoryBase<BaseCode, BaseCodeId> {
     }
 
     fun findBaseCodeByCdGrpId(cdGrpId: String): MutableList<BaseCode> {
-        return find("cd_grp_id = '$cdGrpId' and cd_seq != 0", Sort.by("cd_id", "cd_seq")).list().toMutableList()
+        return find("cd_grp_id = '$cdGrpId' and cd_seq != 0", Sort.by("cd_seq", "cd_id")).list().toMutableList()
     }
 
     fun findBaseCodeByCdId(cdId: String): BaseCode? {
