@@ -159,6 +159,7 @@ class BedAssignService {
         val bdasReqId = BdasReqId(ptId, bdasEsvy.bdasSeq!!)
 
         val bdasReq = bdasReqSaveDto.toEntity(bdasReqId)
+        log.debug("registerBedRequestInfo >>>>>>>>>>>>${bdasReq}")
 
         // 출발지 위도, 경도 설정
         val geocoding = geoHandler.getGeocoding(NaverGeocodingApiParams(query = bdasReqDprtInfo.dprtDstrBascAddr!!))

@@ -16,10 +16,8 @@ data class BdasReqSaveDto(
     val dprtInfo: BdasReqDprtInfo,
 ) {
 
-    private val bdasReqSvrInfo = svrInfo
-
     fun toEntity(bdasReqId: BdasReqId): BdasReq {
-        val entity = bdasReqSvrInfo.toEntity(bdasReqId)
+        val entity = svrInfo.toEntity(bdasReqId)
 
         // 요청 시간 설정
         dprtInfo.reqDt = StringUtils.getYyyyMmDd()

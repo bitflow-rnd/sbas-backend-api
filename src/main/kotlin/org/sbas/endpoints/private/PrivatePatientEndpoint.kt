@@ -154,7 +154,7 @@ class PrivatePatientEndpoint {
     @Operation(summary = "출발지정보 등록 (병상 요청 완료)", description = "")
     @POST
     @Path("regstrtpoint")
-    fun regstrtpoint(bdasReqDprtInfo: BdasReqDprtInfo): Response? {
+    fun regstrtpoint(@Valid bdasReqDprtInfo: BdasReqDprtInfo): Response? {
         val res = bedAssignService.regstrtpoint(bdasReqDprtInfo)
         return Response.ok(res).build()
     }
