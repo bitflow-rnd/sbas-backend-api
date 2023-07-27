@@ -4,6 +4,7 @@ import org.sbas.entities.bdas.BdasReq
 import org.sbas.entities.bdas.BdasReqId
 import org.sbas.utils.NoArg
 import org.sbas.utils.StringUtils
+import javax.validation.Valid
 import javax.validation.constraints.NotBlank
 import javax.validation.constraints.Pattern
 
@@ -12,7 +13,9 @@ import javax.validation.constraints.Pattern
  */
 @NoArg
 data class BdasReqSaveDto(
+    @field: Valid
     val svrInfo: BdasReqSvrInfo,
+    @field: Valid
     val dprtInfo: BdasReqDprtInfo,
 ) {
 
@@ -23,6 +26,7 @@ data class BdasReqSaveDto(
         dprtInfo.reqDt = StringUtils.getYyyyMmDd()
         dprtInfo.reqTm = StringUtils.getHhMmSs()
 
+        // 출발지 정보 저장
         entity.saveDprtInfoFrom(dprtInfo)
 
         return entity
@@ -94,10 +98,12 @@ data class BdasReqSvrInfo(
 data class BdasReqDprtInfo (
     var ptId: String,
 
+    @field: NotBlank
     var reqDstr1Cd: String? = null,
     var reqDstr2Cd: String? = null,
     
     // 출발지 정보
+    @field: NotBlank
     var dprtDstrTypeCd: String? = null,
     var dprtDstrBascAddr: String? = null,
     var dprtDstrDetlAddr: String? = null,

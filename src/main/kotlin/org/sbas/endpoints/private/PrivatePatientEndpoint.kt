@@ -159,10 +159,10 @@ class PrivatePatientEndpoint {
         return Response.ok(res).build()
     }
 
-    @Operation(summary = "", description = "")
+    @Operation(summary = "병상 배정 요청", description = "병상 배정 요청 (중증 정보 + 출발지 정보)")
     @POST
     @Path("bedassignreq")
-    fun bedassignreq(bdasReqSaveDto: BdasReqSaveDto): Response? {
+    fun bedassignreq(@Valid bdasReqSaveDto: BdasReqSaveDto): Response? {
         val res = bedAssignService.registerBedRequestInfo(bdasReqSaveDto)
         return Response.ok(res).build()
     }

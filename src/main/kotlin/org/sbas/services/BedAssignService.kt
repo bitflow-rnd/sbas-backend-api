@@ -158,17 +158,24 @@ class BedAssignService {
         log.debug(">>>>>>>>>>>>${bdasEsvy.bdasSeq}")
         val bdasReqId = BdasReqId(ptId, bdasEsvy.bdasSeq!!)
 
-        val bdasReq = bdasReqSaveDto.toEntity(bdasReqId)
-        log.debug("registerBedRequestInfo >>>>>>>>>>>>${bdasReq}")
-
         // 출발지 위도, 경도 설정
         val geocoding = geoHandler.getGeocoding(NaverGeocodingApiParams(query = bdasReqDprtInfo.dprtDstrBascAddr!!))
         bdasReqDprtInfo.dprtDstrLat = geocoding.addresses!![0].y // 위도
         bdasReqDprtInfo.dprtDstrLon = geocoding.addresses!![0].x // 경도
 
+        val bdasReq = bdasReqSaveDto.toEntity(bdasReqId)
         bdasReqRepository.persist(bdasReq)
 
-        return CommonResponse("저장 성공")
+        // 지역코드로 병상배정반 찾기
+        val bdasUsers =
+            infoUserRepository.findBdasUserByReqDstrCd(bdasReq.reqDstr1Cd, bdasReq.reqDstr2Cd)
+
+        // 푸쉬 알람 보내기
+        bdasUsers.forEach {
+            firebaseService.sendMessage(bdasReq.updtUserId!!, "${bdasReqDprtInfo.msg}", it.id!!)
+        }
+
+        return CommonResponse("병상 요청 성공")
     }
 
     /**
