@@ -319,27 +319,27 @@ class BedAssignService {
         findBdasList.forEach {
             when (it.bedStatCd) {
                 BedStatCd.BAST0003.name -> {
-                    it.chrgInstNm = bdasReqRepository.findChrgInst(BedStatCd.BAST0003, it.ptId, it.bdasSeq)
+//                    it.chrgInstNm = bdasReqRepository.findChrgInst(BedStatCd.BAST0003, it.ptId, it.bdasSeq)
                     bdasReqList.add(it)
                     makeToResultMap(bdasReqList, bdasReqMap)
                 }
                 BedStatCd.BAST0004.name -> {
-                    it.chrgInstNm = bdasReqRepository.findChrgInst(BedStatCd.BAST0004, it.ptId, it.bdasSeq)
+//                    it.chrgInstNm = bdasReqRepository.findChrgInst(BedStatCd.BAST0004, it.ptId, it.bdasSeq)
                     bdasReqAprvList.add(it)
                     makeToResultMap(bdasReqAprvList, bdasReqAprvMap)
                 }
                 BedStatCd.BAST0005.name -> {
-                    it.chrgInstNm = bdasReqRepository.findChrgInst(BedStatCd.BAST0005, it.ptId, it.bdasSeq)
+//                    it.chrgInstNm = bdasReqRepository.findChrgInst(BedStatCd.BAST0005, it.ptId, it.bdasSeq)
                     bdasAprvList.add(it)
                     makeToResultMap(bdasAprvList, bdasAprvMap)
                 }
                 BedStatCd.BAST0006.name -> {
-                    it.chrgInstNm = bdasReqRepository.findChrgInst(BedStatCd.BAST0006, it.ptId, it.bdasSeq)
+//                    it.chrgInstNm = bdasReqRepository.findChrgInst(BedStatCd.BAST0006, it.ptId, it.bdasSeq)
                     bdasTrnsList.add(it)
                     makeToResultMap(bdasTrnsList, bdasTrnsMap)
                 }
                 BedStatCd.BAST0007.name -> {
-                    it.chrgInstNm = bdasReqRepository.findChrgInst(BedStatCd.BAST0007, it.ptId, it.bdasSeq)
+//                    it.chrgInstNm = bdasReqRepository.findChrgInst(BedStatCd.BAST0007, it.ptId, it.bdasSeq)
                     bdasAdmsList.add(it)
                     makeToResultMap(bdasAdmsList, bdasAdmsMap)
                 }
