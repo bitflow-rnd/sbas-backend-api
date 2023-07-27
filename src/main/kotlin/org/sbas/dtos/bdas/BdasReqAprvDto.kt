@@ -7,11 +7,17 @@ import org.sbas.entities.bdas.BdasReqAprv
 import org.sbas.entities.bdas.BdasReqAprvId
 import org.sbas.utils.NoArg
 import org.sbas.utils.StringUtils
+import javax.validation.constraints.NotBlank
+import javax.validation.constraints.NotNull
+import javax.validation.constraints.Pattern
 
 @NoArg
 data class BdasReqAprvDto(
+    @field: NotBlank
     val ptId: String,
+    @field: NotNull
     val bdasSeq: Int,
+    @field: [NotBlank Pattern(regexp = "^[YN]\$", message = "Y/N 값만 가능합니다.")]
     val aprvYn: String,
     val negCd: String?,
     val msg: String?,
@@ -59,10 +65,15 @@ data class BdasReqAprvDto(
 
 @NoArg
 data class BdasAprvDto(
+    @field: NotBlank
     val ptId: String,
+    @field: NotNull
     val bdasSeq: Int,
+    @field: NotNull
     val asgnReqSeq: Int,
+    @field: NotBlank
     val hospId: String?,
+    @field: [NotBlank Pattern(regexp = "^[YN]\$", message = "Y/N 값만 가능합니다.")]
     val aprvYn: String,
     val negCd: String?,
     val msg: String?,

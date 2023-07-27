@@ -12,12 +12,12 @@ import javax.validation.constraints.NotNull
 
 @NoArg
 data class InfoPtDto(
-    @field:NotBlank val ptNm: String,
-    @field:NotBlank val gndr: String,
-    @field:NotBlank val rrno1: String,
-    @field:NotBlank val rrno2: String,
-    @field:NotBlank val dethYn: String?,
-    @field:NotNull val natiCd: NatiCd?,
+    @field: NotBlank val ptNm: String,
+    @field: NotBlank val gndr: String,
+    @field: NotBlank val rrno1: String,
+    @field: NotBlank val rrno2: String,
+    @field: NotBlank val dethYn: String?,
+    @field: NotNull val natiCd: NatiCd?,
     val natiNm: String?,
     var dstr1Cd: String?,
     var dstr2Cd: String?,

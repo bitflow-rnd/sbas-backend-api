@@ -3,7 +3,34 @@ package org.sbas.dtos.bdas
 import org.sbas.entities.bdas.BdasReq
 import org.sbas.entities.bdas.BdasReqId
 import org.sbas.utils.NoArg
+import org.sbas.utils.StringUtils
 import javax.validation.constraints.NotBlank
+import javax.validation.constraints.Pattern
+
+/**
+ * 병상 요청 DTO
+ */
+@NoArg
+data class BdasReqSaveDto(
+    val svrInfo: BdasReqSvrInfo,
+    val dprtInfo: BdasReqDprtInfo,
+) {
+
+    private val bdasReqSvrInfo = svrInfo
+
+    fun toEntity(bdasReqId: BdasReqId): BdasReq {
+        val entity = bdasReqSvrInfo.toEntity(bdasReqId)
+
+        // 요청 시간 설정
+        dprtInfo.reqDt = StringUtils.getYyyyMmDd()
+        dprtInfo.reqTm = StringUtils.getHhMmSs()
+
+        entity.saveDprtInfoFrom(dprtInfo)
+
+        return entity
+    }
+}
+
 
 /**
  * 중증 정보
@@ -16,15 +43,16 @@ data class BdasReqSvrInfo(
     var ptTypeCd: String?,
     @field: NotBlank
     var undrDsesCd: String?,
-    var undrDsesEtc: String?,
     @field: NotBlank
     var reqBedTypeCd: String?,
+    @field: NotBlank
     var dnrAgreYn: String?,
     @field: NotBlank
     var svrtIptTypeCd: String?,
     @field: NotBlank
     var svrtTypeCd: String?,
 
+    var undrDsesEtc: String?,
     var avpuCd: String?,
     var oxyYn: String?,
     var bdtp: Float?,
@@ -67,8 +95,6 @@ data class BdasReqSvrInfo(
 @NoArg
 data class BdasReqDprtInfo (
     var ptId: String,
-    var reqDt: String? = null,
-    var reqTm: String? = null,
 
     var reqDstr1Cd: String? = null,
     var reqDstr2Cd: String? = null,
@@ -86,9 +112,13 @@ data class BdasReqDprtInfo (
     var nok2Telno: String? = null,
     
     // 담당 병원 정보
+    @field: [NotBlank Pattern(regexp = "^[YN]\$", message = "Y/N 값만 가능합니다.")]
     var inhpAsgnYn: String? = null,
     var deptNm: String? = null,
     var spclNm: String? = null,
     var chrgTelno: String? = null,
     var msg: String? = null,
-)
+) {
+    var reqDt: String? = null
+    var reqTm: String? = null
+}

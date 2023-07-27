@@ -114,24 +114,6 @@ class BdasReq(
     var msg: String? = null, // 메시지
 ) : CommonEntity() {
 
-    companion object {
-        fun createDefault(bdasReqId: BdasReqId): BdasReq {
-            return BdasReq(
-                id = bdasReqId,
-                reqDt = "",
-                reqTm = "",
-                ptTypeCd = "",
-                reqBedTypeCd = "",
-                dnrAgreYn = "",
-                svrtIptTypeCd = "",
-                svrtTypeCd = "",
-                reqDstr1Cd = "",
-                dprtDstrTypeCd = "",
-                inhpAsgnYn = "",
-            )
-        }
-    }
-
     fun updateSvrInfoFrom(bdasReqSvrInfo: BdasReqSvrInfo) {
         this.ptTypeCd = bdasReqSvrInfo.ptTypeCd
         this.undrDsesCd = bdasReqSvrInfo.undrDsesCd

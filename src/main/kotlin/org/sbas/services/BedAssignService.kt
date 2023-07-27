@@ -3,8 +3,7 @@ package org.sbas.services
 import org.jboss.logging.Logger
 import org.sbas.constants.enums.*
 import org.sbas.dtos.bdas.*
-import org.sbas.entities.bdas.BdasReq
-import org.sbas.entities.bdas.BdasReqId
+import org.sbas.entities.bdas.*
 import org.sbas.handlers.GeocodingHandler
 import org.sbas.repositories.*
 import org.sbas.responses.CommonResponse
@@ -137,15 +136,38 @@ class BedAssignService {
         val infoPt = infoPtRepository.findById(bdasReqDprtInfo.ptId)
         infoPt!!.changeBedStatAfterBdasReq()
 
+        // 지역코드로 병상배정반 찾기
         val bdasUsers =
             infoUserRepository.findBdasUserByReqDstrCd(findBdasReq.reqDstr1Cd, findBdasReq.reqDstr2Cd)
 
         // 푸쉬 알람 보내기
         bdasUsers.forEach {
-            firebaseService.sendMessage(findBdasReq.rgstUserId!!, "새로운 병상배정 요청이 도착했습니다.", it.id!!)
+            firebaseService.sendMessage(findBdasReq.updtUserId!!, "${bdasReqDprtInfo.msg}", it.id!!)
         }
 
         return CommonResponse("등록 성공")
+    }
+
+    @Transactional
+    fun registerBedRequestInfo(bdasReqSaveDto: BdasReqSaveDto): Any {
+        val ptId = bdasReqSaveDto.svrInfo.ptId
+        val bdasReqDprtInfo = bdasReqSaveDto.dprtInfo
+
+        // bdasEsvy 에서 bdasSeq 가져오기
+        val bdasEsvy = bdasEsvyRepository.findByPtIdWithLatestBdasSeq(ptId) ?: throw NotFoundException("$ptId not found")
+        log.debug(">>>>>>>>>>>>${bdasEsvy.bdasSeq}")
+        val bdasReqId = BdasReqId(ptId, bdasEsvy.bdasSeq!!)
+
+        val bdasReq = bdasReqSaveDto.toEntity(bdasReqId)
+
+        // 출발지 위도, 경도 설정
+        val geocoding = geoHandler.getGeocoding(NaverGeocodingApiParams(query = bdasReqDprtInfo.dprtDstrBascAddr!!))
+        bdasReqDprtInfo.dprtDstrLat = geocoding.addresses!![0].y // 위도
+        bdasReqDprtInfo.dprtDstrLon = geocoding.addresses!![0].x // 경도
+
+        bdasReqRepository.persist(bdasReq)
+
+        return CommonResponse("저장 성공")
     }
 
     /**
@@ -175,6 +197,8 @@ class BedAssignService {
                 // 원내 배정이면 승인
                 bdasReqAprvRepository.persist(dto.toEntityWhenInHosp())
             }
+        } else {
+            throw CustomizedException("aprvYn 값이 올바", Response.Status.INTERNAL_SERVER_ERROR)
         }
 
         return CommonResponse("성공")
@@ -290,26 +314,32 @@ class BedAssignService {
         val bdasTrnsMap = mutableMapOf("count" to 0, "items" to Collections.EMPTY_LIST)
         val bdasAdmsMap = mutableMapOf("count" to 0, "items" to Collections.EMPTY_LIST)
 
+
         val findBdasList = bdasReqRepository.findBdasList()
         findBdasList.forEach {
             when (it.bedStatCd) {
                 BedStatCd.BAST0003.name -> {
+                    it.chrgInstNm = bdasReqRepository.findChrgInst(BedStatCd.BAST0003, it.ptId, it.bdasSeq)
                     bdasReqList.add(it)
                     makeToResultMap(bdasReqList, bdasReqMap)
                 }
                 BedStatCd.BAST0004.name -> {
+                    it.chrgInstNm = bdasReqRepository.findChrgInst(BedStatCd.BAST0004, it.ptId, it.bdasSeq)
                     bdasReqAprvList.add(it)
                     makeToResultMap(bdasReqAprvList, bdasReqAprvMap)
                 }
                 BedStatCd.BAST0005.name -> {
+                    it.chrgInstNm = bdasReqRepository.findChrgInst(BedStatCd.BAST0005, it.ptId, it.bdasSeq)
                     bdasAprvList.add(it)
                     makeToResultMap(bdasAprvList, bdasAprvMap)
                 }
                 BedStatCd.BAST0006.name -> {
+                    it.chrgInstNm = bdasReqRepository.findChrgInst(BedStatCd.BAST0006, it.ptId, it.bdasSeq)
                     bdasTrnsList.add(it)
                     makeToResultMap(bdasTrnsList, bdasTrnsMap)
                 }
                 BedStatCd.BAST0007.name -> {
+                    it.chrgInstNm = bdasReqRepository.findChrgInst(BedStatCd.BAST0007, it.ptId, it.bdasSeq)
                     bdasAdmsList.add(it)
                     makeToResultMap(bdasAdmsList, bdasAdmsMap)
                 }

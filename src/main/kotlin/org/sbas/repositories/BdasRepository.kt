@@ -7,6 +7,7 @@ import com.linecorp.kotlinjdsl.querydsl.expression.col
 import io.quarkus.hibernate.orm.panache.kotlin.PanacheRepositoryBase
 import io.quarkus.panache.common.Sort
 import org.sbas.constants.enums.AdmsStatCd
+import org.sbas.constants.enums.BedStatCd
 import org.sbas.constants.enums.TimeLineStatCd
 import org.sbas.dtos.bdas.BdasListDto
 import org.sbas.dtos.bdas.BdasTimeLineDto
@@ -105,7 +106,10 @@ class BdasReqRepository : PanacheRepositoryBase<BdasReq, BdasReqId> {
 
     fun findByPtId(ptId: String) = find("from BdasReq where id.ptId='$ptId' order by id.bdasSeq desc").firstResult()
 
-    // 요청 지역에 해당하는 기관들 중 배정반 찾기
+    fun findChrgInst(bedStatCd: BedStatCd, ptId: String?, bdasSeq: Int?): String {
+        val nativeQuery = "select fn_get_chrg_inst('${bedStatCd}', '${ptId}', ${bdasSeq}) as test"
+        return entityManager.createNativeQuery(nativeQuery).singleResult as String
+    }
 }
 
 @ApplicationScoped

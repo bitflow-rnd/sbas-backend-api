@@ -29,7 +29,7 @@ class PrivateBedAssignEndpoint {
     @Operation(summary = "병상승인/불가 (병상배정반)", description = "")
     @POST
     @Path("reqconfirm")
-    fun reqconfirm(bdasReqAprvDto: BdasReqAprvDto): Response {
+    fun reqconfirm(@Valid bdasReqAprvDto: BdasReqAprvDto): Response {
         return Response.ok(bedAssignService.reqConfirm(bdasReqAprvDto)).build()
     }
 

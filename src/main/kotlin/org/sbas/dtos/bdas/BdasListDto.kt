@@ -17,7 +17,7 @@ data class BdasListDto(
     val updtDttm: Instant?,
     val diagNm: String?,
     val bedStatCd: String?,
-    val chrgInstNm: String?,
+    var chrgInstNm: String?,
     var ptTypeCd: String,
     var svrtTypeCd: String?,
     var undrDsesCd: String?

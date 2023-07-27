@@ -3,16 +3,26 @@ package org.sbas.dtos.bdas
 import org.sbas.entities.bdas.BdasTrns
 import org.sbas.entities.bdas.BdasTrnsId
 import org.sbas.utils.NoArg
+import org.sbas.utils.StringUtils
+import javax.validation.constraints.NotBlank
+import javax.validation.constraints.NotNull
 
 @NoArg
 data class BdasTrnsSaveDto(
+    @field: NotBlank
     val ptId: String,
+    @field: NotNull
     val bdasSeq: Int,
+    @field: NotBlank
     val instId: String?,
+    @field: NotBlank
     val ambsNm: String?,
     val crew1Id: String?,
+    @field: NotBlank
     val crew1Pstn: String?,
+    @field: NotBlank
     val crew1Nm: String?,
+    @field: NotBlank
     val crew1Telno: String?,
     val crew2Id: String?,
     val crew2Pstn: String?,
@@ -22,7 +32,9 @@ data class BdasTrnsSaveDto(
     val crew3Pstn: String?,
     val crew3Nm: String?,
     val crew3Telno: String?,
+    @field: NotBlank
     val chfTelno: String?,
+    @field: NotBlank
     val vecno: String?,
     val msg: String?,
 ) {
@@ -46,6 +58,8 @@ data class BdasTrnsSaveDto(
             chfTelno = chfTelno,
             vecno = vecno,
             msg = msg,
+            dprtDt = StringUtils.getYyyyMmDd(),
+            dprtTm = StringUtils.getHhMmSs(),
         )
     }
 }

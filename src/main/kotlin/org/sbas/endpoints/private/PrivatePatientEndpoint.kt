@@ -10,6 +10,7 @@ import org.jboss.resteasy.reactive.multipart.FileUpload
 import org.sbas.dtos.*
 import org.sbas.dtos.bdas.BdasEsvyDto
 import org.sbas.dtos.bdas.BdasReqDprtInfo
+import org.sbas.dtos.bdas.BdasReqSaveDto
 import org.sbas.dtos.bdas.BdasReqSvrInfo
 import org.sbas.dtos.info.InfoPtDto
 import org.sbas.dtos.info.InfoPtCheckDto
@@ -155,6 +156,14 @@ class PrivatePatientEndpoint {
     @Path("regstrtpoint")
     fun regstrtpoint(bdasReqDprtInfo: BdasReqDprtInfo): Response? {
         val res = bedAssignService.regstrtpoint(bdasReqDprtInfo)
+        return Response.ok(res).build()
+    }
+
+    @Operation(summary = "", description = "")
+    @POST
+    @Path("bedassignreq")
+    fun bedassignreq(bdasReqSaveDto: BdasReqSaveDto): Response? {
+        val res = bedAssignService.registerBedRequestInfo(bdasReqSaveDto)
         return Response.ok(res).build()
     }
 
