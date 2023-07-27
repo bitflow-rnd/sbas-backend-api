@@ -14,8 +14,19 @@ class SvrtPtRepository : PanacheRepositoryBase<SvrtPt, SvrtPtId> {
 class SvrtAnlyRepository : PanacheRepositoryBase<SvrtAnly, SvrtAnlyId> {
 
     fun getLastAnlySeqValue(): Int? {
-        val query = "select MAX(anly_seq) from svrt_anly"
-        return getEntityManager().createNativeQuery(query).singleResult as Int?
+        val query = "select MAX(sa.id.anlySeq) from SvrtAnly sa"
+        return getEntityManager().createQuery(query).singleResult as Int?
+    }
+
+    /**
+     * Get data from last analysis of severity for current patient by his pt_id
+     */
+    fun getLastSvrtAnlyByPtId(ptId: String): MutableList<Any?> {
+        val query = "select new map(sa.id.ptId as ptId, sa.id.hospId as hospId, sa.id.anlyDt as anlyDt, " +
+                    "sa.id.msreDt as msreDt, sa.prdtDt as prdtDt, sa.svrtProb as svrtProb) " +
+                    "from SvrtAnly sa " +
+                    "where sa.id.anlySeq = (select max(sq.id.anlySeq) from SvrtAnly sq) and sa.id.ptId = '$ptId'"
+        return getEntityManager().createQuery(query).resultList
     }
 }
 
@@ -30,10 +41,3 @@ class SvrtCollRepository : PanacheRepositoryBase<SvrtColl, SvrtCollId> {
     }
 
 }
-
-
-
-
-
-
-

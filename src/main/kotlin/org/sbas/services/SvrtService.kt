@@ -9,6 +9,7 @@ import org.sbas.entities.svrt.SvrtCollId
 import org.sbas.repositories.SvrtAnlyRepository
 import org.sbas.repositories.SvrtCollRepository
 import org.sbas.repositories.SvrtPtRepository
+import org.sbas.responses.CommonResponse
 import org.sbas.utils.StringUtils.Companion.getYyyyMmDdWithHyphen
 import javax.enterprise.context.ApplicationScoped
 import javax.inject.Inject
@@ -29,6 +30,10 @@ class SvrtService {
 
     fun getSvrtAnlyById(id: SvrtAnlyId): SvrtAnly? {
         return svrtAnlyRepository.findById(id)
+    }
+
+    fun getLastSvrtAnlyByPtId(ptId: String): CommonResponse<*> {
+        return CommonResponse(svrtAnlyRepository.getLastSvrtAnlyByPtId(ptId))
     }
 
     @Transactional
