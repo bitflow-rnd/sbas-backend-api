@@ -72,7 +72,7 @@ data class BdasAprvDto(
     @field: NotNull
     val asgnReqSeq: Int,
     @field: NotBlank
-    val hospId: String?,
+    val hospId: String,
     @field: [NotBlank Pattern(regexp = "^[YN]\$", message = "Y/N 값만 가능합니다.")]
     val aprvYn: String,
     val negCd: String?,

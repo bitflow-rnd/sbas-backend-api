@@ -52,12 +52,18 @@ class BdasReqRepository : PanacheRepositoryBase<BdasReq, BdasReqId> {
 
         // TODO 기관, 검색조건
         val list = queryFactory.listQuery<BdasListDto> {
+            val getBedAsgnStat =
+                function("fn_get_bed_asgn_stat", String::class.java, col(BdasReqId::ptId), col(BdasReqId::bdasSeq))
             selectMulti(
                 col(BdasReqId::ptId), col(BdasReqId::bdasSeq), col(InfoPt::ptNm), col(InfoPt::gndr),
                 function("fn_get_age", Int::class.java, col(InfoPt::rrno1), col(InfoPt::rrno2)),
                 col(InfoPt::bascAddr), col(BdasReq::updtDttm), col(BdasEsvy::diagNm),
-                function("fn_get_bed_asgn_stat", String::class.java, col(BdasReqId::ptId), col(BdasReqId::bdasSeq)),
-                literal("chrgInstNm"), col(BdasReq::ptTypeCd), col(BdasReq::svrtTypeCd), col(BdasReq::undrDsesCd)
+                getBedAsgnStat,
+                function("fn_get_chrg_inst", String::class.java,
+                    getBedAsgnStat, col(BdasReqId::ptId), col(BdasReqId::bdasSeq)
+                ),
+//                literal("chrgInstNm"),
+                col(BdasReq::ptTypeCd), col(BdasReq::svrtTypeCd), col(BdasReq::undrDsesCd)
             )
             from(entity(BdasReq::class))
             associate(entity(BdasReq::class), BdasReqId::class, on(BdasReq::id))
