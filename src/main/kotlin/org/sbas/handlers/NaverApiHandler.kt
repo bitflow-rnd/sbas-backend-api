@@ -119,8 +119,10 @@ class NaverApiHandler {
 
     private fun splitAddress(address: String): List<String?> {
         val addr = address.replace("\n()", "") // \n() 삭제
-        val fullAddr = addr.replace(Regex("\\s*\\([^)]*\\)"), "") // (...) 부분 삭제
+            .replace(Regex("\\s*\\([^)]*\\)"), "") // (...) 부분 삭제
+        val fullAddr = removeLeadingSpace(addr)
         log.debug("NaverApiHandler splitAddress >>>>> $fullAddr")
+
         val list = mutableListOf<String?>()
         val splitedAddr = fullAddr.split(" ").toMutableList()
 
@@ -204,5 +206,12 @@ class NaverApiHandler {
             rrno.toInt() >= 5 -> NatiCd.NATI0002
             else -> NatiCd.NATI0001
         }
+    }
+
+    fun removeLeadingSpace(input: String): String {
+        if (input.startsWith(" ")) {
+            return input.substring(1)
+        }
+        return input
     }
 }

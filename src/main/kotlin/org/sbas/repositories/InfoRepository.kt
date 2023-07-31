@@ -73,7 +73,7 @@ class InfoPtRepository : PanacheRepositoryBase<InfoPt, String> {
                 "left join BdasAdms ba on b.id.bdasSeq = ba.id.bdasSeq " +
                 "where b.id.bdasSeq in ((select max(id.bdasSeq) as bdasSeq from BdasReq group by id.ptId)) or b.id.bdasSeq is null " +
                 "order by a.updtDttm desc"
-        return getEntityManager().createQuery(query, InfoPtSearchDto::class.java).resultList
+        return entityManager.createQuery(query, InfoPtSearchDto::class.java).resultList
     }
 
     fun updateAttcId(attcId: String): Int {
@@ -82,12 +82,12 @@ class InfoPtRepository : PanacheRepositoryBase<InfoPt, String> {
 
     fun getAge(rrno1: String?, rrno2: String?): Int {
         val query = "select fn_get_age('${rrno1}', '${rrno2}') as test"
-        return getEntityManager().createNativeQuery(query).singleResult as Int
+        return entityManager.createNativeQuery(query).singleResult as Int
     }
 
     fun findBedStat(ptId: String, bdasSeq: Int): String {
         val query = "select fn_get_bed_asgn_stat('${ptId}', ${bdasSeq}) as test"
-        return getEntityManager().createNativeQuery(query).singleResult as String
+        return entityManager.createNativeQuery(query).singleResult as String
     }
 
     fun findBdasHisInfo(ptId: String): MutableList<BdasHisInfo> {
@@ -100,7 +100,7 @@ class InfoPtRepository : PanacheRepositoryBase<InfoPt, String> {
                 "where be.ptId = '${ptId}' " +
                 "order by ba.id.bdasSeq desc"
 
-        return getEntityManager().createQuery(query, BdasHisInfo::class.java).resultList.toMutableList()
+        return entityManager.createQuery(query, BdasHisInfo::class.java).resultList.toMutableList()
     }
 }
 
@@ -227,8 +227,28 @@ class InfoHospRepository : PanacheRepositoryBase<InfoHosp, String> {
         return infoHospList.toMutableList()
     }
 
-    fun findListByDstrCd1AndDstrCd2(dstrCd1: String, dstrCd2: String): List<InfoHosp> {
-        return find("dstrCd1 = '$dstrCd1' and dstrCd2 = '$dstrCd2'").list()
+    fun findListByDstrCd1AndDstrCd2(dstrCd1: String, dstrCd2: String?): List<InfoHosp> {
+        val list = queryFactory.listQuery<InfoHosp> {
+            select(
+                entity(InfoHosp::class)
+            )
+            from(entity(InfoHosp::class))
+            join(entity(InfoUser::class), on { col(InfoHosp::hospId).equal(col(InfoUser::instId)) })
+            whereAnd(
+                col(InfoHosp::dstrCd1).equal(dstrCd1),
+                dstrCd2?.run { col(InfoHosp::dstrCd1).equal(this) },
+            )
+        }
+
+        return list
+
+//        val query = if (dstrCd2 != null) {
+//            "dstrCd1 = '$dstrCd1' and dstrCd2 = '$dstrCd2' and (job_cd = 'PMGR0002' OR job_cd like '병상승인%')"
+//        } else {
+//            "dstrCd1 = '$dstrCd1' and (job_cd = 'PMGR0002' OR job_cd like '병상승인%')"
+//        }
+//
+//        return find("dstrCd1 = '$dstrCd1' and dstrCd2 = '$dstrCd2'").list()
     }
 }
 
