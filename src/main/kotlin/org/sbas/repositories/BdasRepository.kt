@@ -7,7 +7,6 @@ import com.linecorp.kotlinjdsl.querydsl.expression.col
 import io.quarkus.hibernate.orm.panache.kotlin.PanacheRepositoryBase
 import io.quarkus.panache.common.Sort
 import org.sbas.constants.enums.AdmsStatCd
-import org.sbas.constants.enums.BedStatCd
 import org.sbas.constants.enums.TimeLineStatCd
 import org.sbas.dtos.bdas.BdasListDto
 import org.sbas.dtos.bdas.BdasTimeLineDto
@@ -111,11 +110,6 @@ class BdasReqRepository : PanacheRepositoryBase<BdasReq, BdasReqId> {
     }
 
     fun findByPtId(ptId: String) = find("from BdasReq where id.ptId='$ptId' order by id.bdasSeq desc").firstResult()
-
-    fun findChrgInst(bedStatCd: BedStatCd, ptId: String?, bdasSeq: Int?): String {
-        val nativeQuery = "select fn_get_chrg_inst('${bedStatCd}', '${ptId}', ${bdasSeq}) as test"
-        return entityManager.createNativeQuery(nativeQuery).singleResult as String
-    }
 }
 
 @ApplicationScoped
@@ -139,6 +133,9 @@ class BdasReqAprvRepository : PanacheRepositoryBase<BdasReqAprv, BdasReqAprvId> 
 @ApplicationScoped
 class BdasAprvRepository: PanacheRepositoryBase<BdasAprv, BdasAprvId> {
 
+    @Inject
+    private lateinit var entityManager: EntityManager
+
     fun findApprovedEntity(ptId: String, bdasSeq: Int): BdasAprv? {
         return find("id.ptId = '$ptId' and id.bdasSeq = $bdasSeq and aprvYn = 'Y'").firstResult()
     }
@@ -151,8 +148,8 @@ class BdasAprvRepository: PanacheRepositoryBase<BdasAprv, BdasAprvId> {
         val subQuery = " select bra.id.asgnReqSeq " +
                 "from BdasReqAprv bra " +
                 "left join BdasAprv ba on bra.id.ptId = ba.id.ptId and bra.id.bdasSeq = ba.id.bdasSeq and bra.id.asgnReqSeq = ba.id.asgnReqSeq " +
-                "where ba.id.ptId is null and ba.id.bdasSeq is null "
-
+                "where bra.id.ptId = '$ptId' and bra.id.bdasSeq = $bdasSeq and ba.id.ptId is null and ba.id.bdasSeq is null "
+        // TODO
         val query = "select new org.sbas.dtos.bdas.BdasTimeLineDto(case ba.aprvYn when 'Y' then '배정완료' when 'N' then '배정거절' end, " +
                 "iu.instNm || ' / ' || iu.userNm, ba.updtDttm, ba.msg, '${TimeLineStatCd.COMPLETE.cdNm}') " +
                 "from BdasAprv ba " +
@@ -169,10 +166,14 @@ class BdasAprvRepository: PanacheRepositoryBase<BdasAprv, BdasAprvId> {
                 "and iu.jobCd = 'PMGR0003' "+
                 "order by bra.id.asgnReqSeq "
 
-        val resultList = getEntityManager().createQuery(query, BdasTimeLineDto::class.java).resultList
-        resultList.addAll(getEntityManager().createQuery(query2, BdasTimeLineDto::class.java).resultList)
+        val resultList = entityManager.createQuery(query, BdasTimeLineDto::class.java).resultList
+        resultList.addAll(entityManager.createQuery(query2, BdasTimeLineDto::class.java).resultList)
 
         return resultList
+    }
+
+    fun findBdasAprvList(ptId: String, bdasSeq: Int): List<BdasAprv> {
+        return find("select ba from BdasAprv ba where exists (select 1 from BdasAprv ba where ba.id.ptId = '$ptId' and ba.id.bdasSeq = $bdasSeq)").list()
     }
 }
 

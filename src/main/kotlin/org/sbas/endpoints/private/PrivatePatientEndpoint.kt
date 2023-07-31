@@ -137,13 +137,6 @@ class PrivatePatientEndpoint {
         return Response.ok(patientService.calculateNewsScore(param)).build()
     }
 
-    @Operation(summary = "생체정보입력 분석 정보 등록", description = "")
-    @POST
-    @Path("regbioinfo")
-    fun regbioinfo(@Valid bdasReqSvrInfo: BdasReqSvrInfo): Response {
-        return Response.ok(bedAssignService.regBioInfo(bdasReqSvrInfo)).build()
-    }
-
     @Operation(summary = "중증정보 등록", description = "")
     @POST
     @Path("regsevrinfo")
@@ -163,6 +156,7 @@ class PrivatePatientEndpoint {
     @POST
     @Path("bedassignreq")
     fun bedassignreq(@Valid bdasReqSaveDto: BdasReqSaveDto): Response? {
+        log.debug("bedassignreq >>> $bdasReqSaveDto")
         val res = bedAssignService.registerBedRequestInfo(bdasReqSaveDto)
         return Response.ok(res).build()
     }

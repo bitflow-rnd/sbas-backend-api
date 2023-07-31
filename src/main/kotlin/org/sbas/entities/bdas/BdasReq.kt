@@ -112,6 +112,9 @@ class BdasReq(
 
     @Column(name = "msg", nullable = true, length = 500)
     var msg: String? = null, // 메시지
+
+    @Column(name = "bed_stat_cd", nullable = false, length = 8)
+    var bedStatCd: String,
 ) : CommonEntity() {
 
     fun updateSvrInfoFrom(bdasReqSvrInfo: BdasReqSvrInfo) {
@@ -150,6 +153,10 @@ class BdasReq(
         this.spclNm = bdasReqDprtInfo.spclNm
         this.chrgTelno = bdasReqDprtInfo.chrgTelno
         this.msg = bdasReqDprtInfo.msg
+    }
+
+    fun changeBedStatTo(bedStatCd: String) {
+        this.bedStatCd = bedStatCd
     }
 }
 

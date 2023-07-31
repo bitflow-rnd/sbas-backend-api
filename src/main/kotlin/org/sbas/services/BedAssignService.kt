@@ -57,32 +57,7 @@ class BedAssignService {
         val bdasEsvy = bdasEsvyDto.toEntity()
         bdasEsvyRepository.persist(bdasEsvy)
         
-        return CommonResponse("등록 성공")
-    }
-
-    /**
-     * 중증도 분류 정보 등록
-     */
-    @Transactional
-    fun regBioInfo(bdasReqSvrInfo: BdasReqSvrInfo): CommonResponse<String> {
-        // bdasEsvy 에서 bdasSeq 가져오기
-//        val bdasEsvy = bdasEsvyRepository.findByPtIdWithLatestBdasSeq(bdasReqSvrInfo.ptId) ?: throw NotFoundException("${bdasReqSvrInfo.ptId} not found")
-
-//        val findBdasReq = bdasReqRepository.findByPtIdAndBdasSeq(bdasEsvy.ptId, bdasEsvy.bdasSeq!!)
-//        if (findBdasReq != null) { // 수정하는 경우
-//        } else { // 새로 저장
-//        }
-
-        // 엔티티 새로 생성 후 persist
-//        val bdasReqId = BdasReqId(bdasEsvy.ptId, bdasEsvy.bdasSeq)
-//        val bdasReq = BdasReq.createDefault(bdasReqId)
-//
-//        bdasReqRepository.persist(bdasReq)
-//
-//        // 중증도 분류 정보 저장
-//        bdasReq.saveBioInfoFrom(bdasReqSvrInfo)
-
-        return CommonResponse("등록 성공")
+        return CommonResponse("감염병 정보 등록 성공")
     }
 
     /**
@@ -105,7 +80,7 @@ class BedAssignService {
             bdasReqRepository.persist(bdasReq)
         }
 
-        return CommonResponse("등록 성공")
+        return CommonResponse("중증 정보 등록 성공")
     }
 
     /**
@@ -148,8 +123,15 @@ class BedAssignService {
         return CommonResponse("등록 성공")
     }
 
+    /**
+     * 병상 요청
+     */
     @Transactional
-    fun registerBedRequestInfo(bdasReqSaveDto: BdasReqSaveDto): Any {
+    fun registerBedRequestInfo(bdasReqSaveDto: BdasReqSaveDto): CommonResponse<String> {
+        if (!bdasReqSaveDto.isPtIdEqual()) {
+            throw CustomizedException("check ptId", Response.Status.BAD_REQUEST)
+        }
+
         val ptId = bdasReqSaveDto.svrInfo.ptId
         val bdasReqDprtInfo = bdasReqSaveDto.dprtInfo
 
@@ -170,10 +152,14 @@ class BedAssignService {
         val bdasUsers =
             infoUserRepository.findBdasUserByReqDstrCd(bdasReq.reqDstr1Cd, bdasReq.reqDstr2Cd)
 
+        // TODO
         // 푸쉬 알람 보내기
-        bdasUsers.forEach {
-            firebaseService.sendMessage(bdasReq.updtUserId!!, "${bdasReqDprtInfo.msg}", it.id!!)
-        }
+        val msg = bdasReqDprtInfo.msg
+//        bdasUsers.forEach {
+//            val toId = it.id ?: ""
+//            log.debug("registerBedRequestInfo bdasUsers >>> ${it.id}")
+//            firebaseService.sendMessage(bdasReq.updtUserId!!, msg, toId)
+//        }
 
         return CommonResponse("병상 요청 성공")
     }
@@ -206,7 +192,7 @@ class BedAssignService {
                 bdasReqAprvRepository.persist(dto.toEntityWhenInHosp())
             }
         } else {
-            throw CustomizedException("aprvYn 값이 올바", Response.Status.INTERNAL_SERVER_ERROR)
+            throw CustomizedException("aprvYn 값이 올바르지 않습니다.", Response.Status.INTERNAL_SERVER_ERROR)
         }
 
         return CommonResponse("성공")
@@ -219,16 +205,11 @@ class BedAssignService {
     fun getAvalHospList(ptId: String, bdasSeq: Int): CommonResponse<*> {
         val findBdasReq = bdasReqRepository.findByPtIdAndBdasSeq(ptId, bdasSeq) ?: throw NotFoundException("bdasReq not found")
 
-        // dstrCd1, dstrCd2 구하기
-        val splitAddress = findBdasReq.dprtDstrBascAddr!!.split(" ")
-        val sido = splitAddress[0]
-        val siGunGu = splitAddress[1]
+        val dstrCd1 = findBdasReq.reqDstr1Cd!!
+        val dstrCd2 = findBdasReq.reqDstr2Cd
 
-        val dstrCd1 = StringUtils.getDstrCd1(sido)
-        val findBaseCode = baseCodeRepository.findByDstr1CdAndCdNm(dstrCd1, siGunGu) ?: throw NotFoundException("baseCode not found")
-        
         // dstrCd1, dstrCd2에 해당하는 infoHosp 목록
-        val infoHospList = infoHospRepository.findListByDstrCd1AndDstrCd2(dstrCd1, findBaseCode.id.cdId)
+        val infoHospList = infoHospRepository.findListByDstrCd1AndDstrCd2(dstrCd1, dstrCd2)
         log.debug("getAvalHospList >>>>>>>>>>>>>> ${infoHospList.size}")
         val list = infoHospList.map {
             val distance = calculateDistance(
@@ -246,7 +227,11 @@ class BedAssignService {
             )
         }
         // TODO 페이징 처리??
-        val sortedList = list.subList(0, 10).sortedBy { it.doubleDistance }
+        if (list.size > 10) {
+            val sortedList = list.subList(0, 10).sortedBy { it.doubleDistance }.distinctBy { it.hospId }
+            return CommonResponse(mutableMapOf("count" to sortedList.size, "items" to sortedList))
+        }
+        val sortedList = list.sortedBy { it.doubleDistance }.distinctBy { it.hospId }
         return CommonResponse(mutableMapOf("count" to sortedList.size, "items" to sortedList))
     }
 
@@ -257,6 +242,9 @@ class BedAssignService {
     fun asgnConfirm(dto: BdasAprvDto): CommonResponse<BdasAprvResponse> {
         // TODO 몇가지 다른 경우 고려
         val bdasReqAprvList = bdasReqAprvRepository.findReqAprvList(dto.ptId, dto.bdasSeq)
+        if (bdasReqAprvList.isEmpty()) {
+            throw CustomizedException("배정 승인 정보가 없습니다.", Response.Status.BAD_REQUEST)
+        }
         val bdasAprvList = bdasAprvRepository.findBdasAprv(dto.ptId, dto.bdasSeq)
         val approvedBdasAprv = bdasAprvList?.filter { it.aprvYn == "Y" }
         val asgnReqSeqList = mutableListOf(dto.asgnReqSeq)
@@ -287,7 +275,13 @@ class BedAssignService {
 
     @Transactional
     fun confirmTrans(dto: BdasTrnsSaveDto): CommonResponse<String> {
+        val bdasAprvList = bdasAprvRepository.findBdasAprvList(dto.ptId, dto.bdasSeq)
+        if (bdasAprvList.isEmpty()) {
+            throw CustomizedException("의료진 승인 정보가 없습니다.", Response.Status.BAD_REQUEST)
+        }
+
         bdasTrnsRepository.persist(dto.toEntity())
+
         return CommonResponse("등록 성공")
     }
 
@@ -322,32 +316,26 @@ class BedAssignService {
         val bdasTrnsMap = mutableMapOf("count" to 0, "items" to Collections.EMPTY_LIST)
         val bdasAdmsMap = mutableMapOf("count" to 0, "items" to Collections.EMPTY_LIST)
 
-
         val findBdasList = bdasReqRepository.findBdasList()
         findBdasList.forEach {
             when (it.bedStatCd) {
                 BedStatCd.BAST0003.name -> {
-//                    it.chrgInstNm = bdasReqRepository.findChrgInst(BedStatCd.BAST0003, it.ptId, it.bdasSeq)
                     bdasReqList.add(it)
                     makeToResultMap(bdasReqList, bdasReqMap)
                 }
                 BedStatCd.BAST0004.name -> {
-//                    it.chrgInstNm = bdasReqRepository.findChrgInst(BedStatCd.BAST0004, it.ptId, it.bdasSeq)
                     bdasReqAprvList.add(it)
                     makeToResultMap(bdasReqAprvList, bdasReqAprvMap)
                 }
                 BedStatCd.BAST0005.name -> {
-//                    it.chrgInstNm = bdasReqRepository.findChrgInst(BedStatCd.BAST0005, it.ptId, it.bdasSeq)
                     bdasAprvList.add(it)
                     makeToResultMap(bdasAprvList, bdasAprvMap)
                 }
                 BedStatCd.BAST0006.name -> {
-//                    it.chrgInstNm = bdasReqRepository.findChrgInst(BedStatCd.BAST0006, it.ptId, it.bdasSeq)
                     bdasTrnsList.add(it)
                     makeToResultMap(bdasTrnsList, bdasTrnsMap)
                 }
                 BedStatCd.BAST0007.name -> {
-//                    it.chrgInstNm = bdasReqRepository.findChrgInst(BedStatCd.BAST0007, it.ptId, it.bdasSeq)
                     bdasAdmsList.add(it)
                     makeToResultMap(bdasAdmsList, bdasAdmsMap)
                 }

@@ -1,5 +1,6 @@
 package org.sbas.dtos.bdas
 
+import org.sbas.constants.enums.BedStatCd
 import org.sbas.entities.bdas.BdasReq
 import org.sbas.entities.bdas.BdasReqId
 import org.sbas.utils.NoArg
@@ -30,6 +31,10 @@ data class BdasReqSaveDto(
         entity.saveDprtInfoFrom(dprtInfo)
 
         return entity
+    }
+
+    fun isPtIdEqual(): Boolean {
+        return svrInfo.ptId == dprtInfo.ptId
     }
 }
 
@@ -87,6 +92,7 @@ data class BdasReqSvrInfo(
             spo2 = this.spo2,
             sbp = this.sbp,
             newsScore = this.newsScore,
+            bedStatCd = BedStatCd.BAST0003.name
         )
     }
 }
