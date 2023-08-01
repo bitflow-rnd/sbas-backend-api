@@ -11,25 +11,25 @@ import javax.persistence.*
 @Table(name = "bdas_trns")
 class BdasTrns(
     @EmbeddedId
-    var id: BdasTrnsId? = null,
+    var id: BdasTrnsId,
 
     @Column(name = "inst_id", nullable = false, length = 10)
-    var instId: String? = null, // 기관 ID
+    var instId: String, // 기관 ID
 
     @Column(name = "ambs_nm", nullable = false, length = 100)
-    var ambsNm: String? = null,
+    var ambsNm: String, // 구급대 이름
 
     @Column(name = "crew_1_id", length = 15)
-    var crew1Id : String? = null,
+    var crew1Id : String? = null, // 구급대원1 ID
 
     @Column(name = "crew_1_pstn", nullable = false, length = 15)
-    var crew1Pstn : String? = null,
+    var crew1Pstn : String, // 구급대원1 직급
 
     @Column(name = "crew_1_nm", nullable = false, length = 10)
-    var crew1Nm : String? = null,
+    var crew1Nm : String, // 구급대원1 이름
 
     @Column(name = "crew_1_telno", nullable = false, length = 12)
-    var crew1Telno : String? = null,
+    var crew1Telno : String, // 구급대원1 전화번호
 
     @Column(name = "crew_2_id", length = 15)
     var crew2Id : String? = null,
@@ -56,10 +56,10 @@ class BdasTrns(
     var crew3Telno : String? = null,
 
     @Column(name = "chf_telno", nullable = false, length = 12)
-    var chfTelno : String? = null,
+    var chfTelno : String,
 
     @Column(name = "vecno", nullable = false, length = 8)
-    var vecno : String? = null,
+    var vecno : String,
 
     @Column(name = "msg", length = 500)
     var msg : String? = null,
@@ -83,10 +83,10 @@ class BdasTrns(
 @Embeddable
 data class BdasTrnsId(
     @Column(name = "pt_id", nullable = false, length = 10)
-    var ptId: String? = null, // 환자 ID
+    var ptId: String, // 환자 ID
 
     @Column(name = "bdas_seq", nullable = false)
-    var bdasSeq: Int? = null, // 병상 배정 순번
+    var bdasSeq: Int, // 병상 배정 순번
 ) : Serializable {
 
     companion object {

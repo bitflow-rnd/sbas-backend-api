@@ -17,31 +17,17 @@ import javax.persistence.*
 @Entity
 @Table(name = "info_pt")
 class InfoPt(
-
-    @Id
-    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "pt_seq")
-    @GenericGenerator(
-        name = "pt_seq",
-        strategy = "org.sbas.entities.StringPrefixedSequenceIdGenerator",
-        parameters = [
-            Parameter(name = StringPrefixedSequenceIdGenerator.VALUE_PREFIX_PARAMETER, value = "PT"),
-            Parameter(name = StringPrefixedSequenceIdGenerator.NUMBER_FORMAT_PARAMETER, value = "%08d"),
-            Parameter(name = StringPrefixedSequenceIdGenerator.incrementSize, value = "1")
-        ]) // PT00000000
-    @Column(name = "pt_id", nullable = false, length = 10)
-    var ptId: String? = null, // 환자 ID
-
     @Column(name = "pt_nm", nullable = false, length = 10)
-    var ptNm: String? = null, // 이름
+    var ptNm: String, // 이름
 
     @Column(name = "gndr", nullable = false, length = 1)
-    var gndr: String? = null, // 성별
+    var gndr: String, // 성별
 
     @Column(name = "rrno_1", nullable = false, length = 6)
-    var rrno1: String? = null, // 주민번호1
+    var rrno1: String, // 주민번호1
 
     @Column(name = "rrno_2", nullable = false, length = 7)
-    var rrno2: String? = null, // 주민번호2
+    var rrno2: String, // 주민번호2
 
     @Column(name = "dstr_1_cd", length = 8)
     var dstr1Cd: String? = null, // 지역 코드 (시도)
@@ -57,13 +43,13 @@ class InfoPt(
 
     @Column(name = "nati_cd", nullable = false, length = 8)
     @Enumerated(EnumType.STRING)
-    var natiCd: NatiCd? = null, // 국적 코드
+    var natiCd: NatiCd, // 국적 코드
 
     @Column(name = "pica_ver", length = 10)
     var picaVer: String? = null, // 개인정보수집동의 버전
 
     @Column(name = "deth_yn", nullable = false, length = 1)
-    var dethYn: String?, // 사망여부
+    var dethYn: String, // 사망여부
 
     @Column(name = "nok_nm", length = 10)
     var nokNm: String? = null, // 보호자 이름
@@ -83,8 +69,8 @@ class InfoPt(
     @Column(name = "bed_stat_nm", length = 8)
     var bedStatNm: String = BedStatCd.BAST0001.cdNm,
 
-    @Column(name = "basc_addr", length = 100)
-    var bascAddr: String? = null, // 기본 주소
+    @Column(name = "basc_addr", nullable = false, length = 100)
+    var bascAddr: String, // 기본 주소
 
     @Column(name = "detl_addr", length = 100)
     var detlAddr: String? = null, // 상세 주소
@@ -95,6 +81,20 @@ class InfoPt(
     @Column(name = "nati_nm", length = 20)
     var natiNm: String? = null, // 국적 이름
 ) : CommonEntity(), Serializable {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "pt_seq")
+    @GenericGenerator(
+        name = "pt_seq",
+        strategy = "org.sbas.entities.StringPrefixedSequenceIdGenerator",
+        parameters = [
+            Parameter(name = StringPrefixedSequenceIdGenerator.VALUE_PREFIX_PARAMETER, value = "PT"),
+            Parameter(name = StringPrefixedSequenceIdGenerator.NUMBER_FORMAT_PARAMETER, value = "%08d"),
+            Parameter(name = StringPrefixedSequenceIdGenerator.incrementSize, value = "1")
+        ]) // PT00000000
+    @Column(name = "pt_id", nullable = false, length = 10)
+    var ptId: String = ""// 환자 ID
+        protected set
 
     fun updateEntity(infoPtDto: InfoPtDto) {
         this.ptNm = infoPtDto.ptNm
@@ -116,11 +116,6 @@ class InfoPt(
         this.detlAddr = infoPtDto.detlAddr
         this.zip = infoPtDto.zip
         this.natiNm = infoPtDto.natiNm
-    }
-
-    fun changeBedStatAfterBdasReq() {
-        this.bedStatCd = BedStatCd.BAST0003.name
-        this.bedStatNm = BedStatCd.BAST0003.cdNm
     }
 
     companion object {

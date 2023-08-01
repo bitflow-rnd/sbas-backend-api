@@ -18,13 +18,13 @@ class BdasReq(
     var id: BdasReqId,
 
     @Column(name = "req_dt", nullable = false, length = 8)
-    var reqDt: String? = null, // 요청 날짜
+    var reqDt: String, // 요청 날짜
 
     @Column(name = "req_tm", nullable = false, length = 6)
-    var reqTm: String? = null, // 요청 시간
+    var reqTm: String, // 요청 시간
 
     @Column(name = "pt_type_cd", nullable = false, length = 256)
-    var ptTypeCd: String? = null, // 환자 유형 코드
+    var ptTypeCd: String, // 환자 유형 코드
 
     @Column(name = "undr_dses_cd", nullable = true, length = 512)
     var undrDsesCd: String? = null, // 기저 질환 코드
@@ -33,13 +33,13 @@ class BdasReq(
     var undrDsesEtc: String? = null, // 기저 질환 기타
 
     @Column(name = "req_bed_type_cd", nullable = false, length = 8)
-    var reqBedTypeCd: String? = null, // 요청 병상 유형 코드
+    var reqBedTypeCd: String, // 요청 병상 유형 코드
 
     @Column(name = "dnr_agre_yn", nullable = false, length = 8)
-    var dnrAgreYn: String? = null, // DNR 동의 여부
+    var dnrAgreYn: String, // DNR 동의 여부
 
     @Column(name = "svrt_ipt_type_cd", nullable = false, length = 8)
-    var svrtIptTypeCd: String? = null, // 중증도 입력 형식 코드
+    var svrtIptTypeCd: String, // 중증도 입력 형식 코드
 
     @Column(name = "svrt_type_cd", nullable = false, length = 8)
     var svrtTypeCd: String? = null, // 중증 유형 코드
@@ -69,13 +69,13 @@ class BdasReq(
     var newsScore: Int? = null, // NEWS Score
 
     @Column(name = "req_dstr_1_cd", nullable = false, length = 8)
-    var reqDstr1Cd: String? = null, // 요청 지역 코드 (시도)
+    var reqDstr1Cd: String, // 요청 지역 코드 (시도)
 
     @Column(name = "req_dstr_2_cd", nullable = true, length = 8)
     var reqDstr2Cd: String? = null, // 요청 지역 코드 (시군구)
 
     @Column(name = "dprt_dstr_type_cd", nullable = false, length = 8)
-    var dprtDstrTypeCd: String? = null, // 출발 지역 유형 코드
+    var dprtDstrTypeCd: String, // 출발 지역 유형 코드
 
     @Column(name = "dprt_dstr_basc_addr", nullable = true, length = 100)
     var dprtDstrBascAddr: String? = null, // 출발 지역 기본 주소
@@ -99,7 +99,7 @@ class BdasReq(
     var nok2Telno: String? = null, // 보호자2 전화번호
 
     @Column(name = "inhp_asgn_yn", nullable = false, length = 8)
-    var inhpAsgnYn: String? = null, // 원내 배정 여부
+    var inhpAsgnYn: String, // 원내 배정 여부
 
     @Column(name = "dept_nm", nullable = true, length = 20)
     var deptNm: String? = null, // 진료과 이름
@@ -116,24 +116,6 @@ class BdasReq(
     @Column(name = "bed_stat_cd", nullable = false, length = 8)
     var bedStatCd: String,
 ) : CommonEntity() {
-
-    fun updateSvrInfoFrom(bdasReqSvrInfo: BdasReqSvrInfo) {
-        this.ptTypeCd = bdasReqSvrInfo.ptTypeCd
-        this.undrDsesCd = bdasReqSvrInfo.undrDsesCd
-        this.undrDsesEtc = bdasReqSvrInfo.undrDsesEtc
-        this.svrtIptTypeCd = bdasReqSvrInfo.svrtIptTypeCd
-        this.svrtTypeCd = bdasReqSvrInfo.svrtTypeCd
-        this.reqBedTypeCd = bdasReqSvrInfo.reqBedTypeCd
-        this.dnrAgreYn = bdasReqSvrInfo.dnrAgreYn
-        this.avpuCd = bdasReqSvrInfo.avpuCd
-        this.oxyYn = bdasReqSvrInfo.oxyYn
-        this.bdtp = bdasReqSvrInfo.bdtp
-        this.hr = bdasReqSvrInfo.hr
-        this.resp = bdasReqSvrInfo.resp
-        this.spo2 = bdasReqSvrInfo.spo2
-        this.sbp = bdasReqSvrInfo.sbp
-        this.newsScore = bdasReqSvrInfo.newsScore
-    }
 
     fun saveDprtInfoFrom(bdasReqDprtInfo: BdasReqDprtInfo) {
         this.reqDt = bdasReqDprtInfo.reqDt
@@ -163,10 +145,10 @@ class BdasReq(
 @Embeddable
 data class BdasReqId(
     @Column(name = "pt_id", nullable = false, length = 10)
-    var ptId: String? = null, // 환자 ID
+    var ptId: String, // 환자 ID
 
     @Column(name = "bdas_seq", nullable = false)
-    var bdasSeq: Int? = null, // 병상 배정 순번
+    var bdasSeq: Int, // 병상 배정 순번
 ) : Serializable {
 
     companion object {

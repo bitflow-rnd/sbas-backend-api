@@ -96,11 +96,11 @@ class PatientService {
 
         val infoPtResponse = findInfoPt?.let {
             InfoPtCheckDto(
-                ptId = it.ptId!!,
-                ptNm = it.ptNm!!,
-                gndr = it.gndr!!,
-                rrno1 = it.rrno1!!,
-                rrno2 = it.rrno2!!,
+                ptId = it.ptId,
+                ptNm = it.ptNm,
+                gndr = it.gndr,
+                rrno1 = it.rrno1,
+                rrno2 = it.rrno2,
                 dstr1Cd = it.dstr1Cd,
                 dstr2Cd = it.dstr2Cd,
                 telno = it.telno,
@@ -157,7 +157,7 @@ class PatientService {
     fun findInfoPt(ptId: String): CommonResponse<*> {
         val infoPt = infoPtRepository.findById(ptId) ?: throw NotFoundException("$ptId not found")
         val bdasSeq = bdasEsvyRepository.findByPtIdWithLatestBdasSeq(ptId)?.bdasSeq ?: -1
-        val bedStatCd = infoPtRepository.findBedStat(infoPt.ptId!!, bdasSeq)
+        val bedStatCd = infoPtRepository.findBedStat(infoPt.ptId, bdasSeq)
         val bdasReq = bdasReqRepository.findByPtIdAndBdasSeq(ptId, bdasSeq)
 
         val infoPtBasicInfo = InfoPtBasicInfo(
@@ -311,7 +311,7 @@ class PatientService {
             val inputStream = url.openStream()
             inputStream.close()
 
-            val res = naverApiHandler.recognizeImage("private${baseAttc.uriPath!!}", baseAttc.fileNm!!, baseAttc.attcId)
+            val res = naverApiHandler.recognizeImage("private${baseAttc.uriPath}", baseAttc.fileNm, baseAttc.attcId)
             CommonResponse(res)
         } catch (e: IOException) {
             throw NotFoundException("역학조사서 파일이 존재하지 않습니다.")

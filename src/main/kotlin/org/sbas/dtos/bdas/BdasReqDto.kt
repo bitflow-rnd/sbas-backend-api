@@ -47,17 +47,17 @@ data class BdasReqSvrInfo(
     @field: NotBlank
     var ptId: String,
     @field: NotBlank
-    var ptTypeCd: String?,
+    var ptTypeCd: String,
     @field: NotBlank
-    var undrDsesCd: String?,
+    var undrDsesCd: String,
     @field: NotBlank
-    var reqBedTypeCd: String?,
+    var reqBedTypeCd: String,
     @field: NotBlank
-    var dnrAgreYn: String?,
+    var dnrAgreYn: String,
     @field: NotBlank
-    var svrtIptTypeCd: String?,
+    var svrtIptTypeCd: String,
     @field: NotBlank
-    var svrtTypeCd: String?,
+    var svrtTypeCd: String,
 
     var undrDsesEtc: String?,
     var avpuCd: String?,
@@ -105,12 +105,12 @@ data class BdasReqDprtInfo (
     var ptId: String,
 
     @field: NotBlank
-    var reqDstr1Cd: String? = null,
+    var reqDstr1Cd: String,
     var reqDstr2Cd: String? = null,
     
     // 출발지 정보
     @field: NotBlank
-    var dprtDstrTypeCd: String? = null,
+    var dprtDstrTypeCd: String,
     var dprtDstrBascAddr: String? = null,
     var dprtDstrDetlAddr: String? = null,
     var dprtDstrZip: String? = null,
@@ -123,12 +123,12 @@ data class BdasReqDprtInfo (
     
     // 담당 병원 정보
     @field: [NotBlank Pattern(regexp = "^[YN]\$", message = "Y/N 값만 가능합니다.")]
-    var inhpAsgnYn: String? = null,
+    var inhpAsgnYn: String,
     var deptNm: String? = null,
     var spclNm: String? = null,
     var chrgTelno: String? = null,
     var msg: String? = null,
 ) {
-    var reqDt: String? = null
-    var reqTm: String? = null
+    var reqDt: String = ""
+    var reqTm: String = ""
 }

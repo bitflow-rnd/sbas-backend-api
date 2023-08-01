@@ -13,7 +13,7 @@ import javax.persistence.*
 class InfoUser(
     @Id
     @Column(name = "user_id", nullable = false, length = 15)
-    var id: String? = null,  // 사용자 ID
+    var id: String,  // 사용자 ID
 
     @Column(name = "pw", nullable = false, length = 100)
     var pw: String? = null, // 비밀번호

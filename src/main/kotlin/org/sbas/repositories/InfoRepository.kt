@@ -226,29 +226,30 @@ class InfoHospRepository : PanacheRepositoryBase<InfoHosp, String> {
 
         return infoHospList.toMutableList()
     }
+    fun findListByDstrCd1AndDstrCd2(dstrCd1: String, dstrCd2: String?): MutableList<InfoHosp> {
+//        val list = queryFactory.listQuery<InfoHosp> {
+//            select(
+//                entity(InfoHosp::class)
+//            )
+//            from(entity(InfoHosp::class))
+//            join(entity(InfoUser::class), on { col(InfoHosp::hospId).equal(col(InfoUser::instId)) })
+//            whereAnd(
+//                col(InfoHosp::dstrCd1).equal(dstrCd1),
+//                dstrCd2?.run { col(InfoHosp::dstrCd1).equal(this) },
+//            )
+//        }
+//        return list
 
-    fun findListByDstrCd1AndDstrCd2(dstrCd1: String, dstrCd2: String?): List<InfoHosp> {
-        val list = queryFactory.listQuery<InfoHosp> {
-            select(
-                entity(InfoHosp::class)
-            )
-            from(entity(InfoHosp::class))
-            join(entity(InfoUser::class), on { col(InfoHosp::hospId).equal(col(InfoUser::instId)) })
-            whereAnd(
-                col(InfoHosp::dstrCd1).equal(dstrCd1),
-                dstrCd2?.run { col(InfoHosp::dstrCd1).equal(this) },
-            )
+        val query = "select ih.* from info_hosp ih join info_user iu on ih.hosp_id = iu.inst_id"
+
+        val where = if (dstrCd2 != null) {
+            " where ih.dstr_cd1 = '$dstrCd1' and ih.dstr_cd2 = '$dstrCd2' and (iu.job_cd = 'PMGR0003' OR iu.job_cd like '병상배정%') "
+        } else {
+            " where ih.dstr_cd1 = '$dstrCd1' and (iu.job_cd = 'PMGR0003' OR iu.job_cd like '병상배정%') "
         }
 
-        return list
-
-//        val query = if (dstrCd2 != null) {
-//            "dstrCd1 = '$dstrCd1' and dstrCd2 = '$dstrCd2' and (job_cd = 'PMGR0002' OR job_cd like '병상승인%')"
-//        } else {
-//            "dstrCd1 = '$dstrCd1' and (job_cd = 'PMGR0002' OR job_cd like '병상승인%')"
-//        }
-//
-//        return find("dstrCd1 = '$dstrCd1' and dstrCd2 = '$dstrCd2'").list()
+        @Suppress("UNCHECKED_CAST")
+        return getEntityManager().createNativeQuery(query + where, InfoHosp::class.java).resultList.toMutableList() as MutableList<InfoHosp>
     }
 }
 

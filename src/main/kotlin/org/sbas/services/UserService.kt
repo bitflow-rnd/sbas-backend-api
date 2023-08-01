@@ -118,7 +118,7 @@ class UserService {
 
         val now = Instant.now()
 
-        var findCert = certRepository.find("phone_no", smsSendRequest.to!!).firstResult()
+        val findCert = certRepository.find("phone_no", smsSendRequest.to!!).firstResult()
 
         if(findCert == null) {
             val insertCertNo = InfoCert(smsSendRequest.to!!, rand, now, now.plusSeconds(180))
@@ -209,7 +209,7 @@ class UserService {
             }
             findUser.pw.equals(loginRequest.pw) -> {
                 findUser.pwErrCnt = 0
-                CommonResponse(TokenUtils.generateUserToken(findUser.id!!, findUser.userNm!!))
+                CommonResponse(TokenUtils.generateUserToken(findUser.id, findUser.userNm!!))
             }
             else -> {
                 findUser.pwErrCnt = findUser.pwErrCnt!! + 1
@@ -249,9 +249,9 @@ class UserService {
 
     @Transactional
     fun modifyInfo(infoUser: InfoUser) : CommonResponse<String> {
-        if(jwt.name != infoUser.id!!) return CommonResponse("token id와 id가 일치하지 않습니다.")
+        if(jwt.name != infoUser.id) return CommonResponse("token id와 id가 일치하지 않습니다.")
 
-        var findUser = userRepository.findByUserId(infoUser.id!!)
+        var findUser = userRepository.findByUserId(infoUser.id)
             ?: throw CustomizedException("등록된 ID가 없습니다.", Response.Status.NOT_FOUND)
 
         findUser.jobCd = infoUser.jobCd

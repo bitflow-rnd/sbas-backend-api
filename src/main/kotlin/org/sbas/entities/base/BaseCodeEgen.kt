@@ -27,7 +27,7 @@ class BaseCodeEgen(
 ) : CommonEntity()
 
 @Embeddable
-class BaseCodeEgenId(
+data class BaseCodeEgenId(
     @Size(max = 10)
     @NotNull
     @Column(name = "cm_mid", nullable = false, length = 10)

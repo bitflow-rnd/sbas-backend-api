@@ -14,16 +14,16 @@ data class BdasTrnsSaveDto(
     @field: NotNull
     val bdasSeq: Int,
     @field: NotBlank
-    val instId: String?,
+    val instId: String,
     @field: NotBlank
-    val ambsNm: String?,
+    val ambsNm: String,
     val crew1Id: String?,
     @field: NotBlank
-    val crew1Pstn: String?,
+    val crew1Pstn: String,
     @field: NotBlank
-    val crew1Nm: String?,
+    val crew1Nm: String,
     @field: NotBlank
-    val crew1Telno: String?,
+    val crew1Telno: String,
     val crew2Id: String?,
     val crew2Pstn: String?,
     val crew2Nm: String?,
@@ -33,9 +33,9 @@ data class BdasTrnsSaveDto(
     val crew3Nm: String?,
     val crew3Telno: String?,
     @field: NotBlank
-    val chfTelno: String?,
+    val chfTelno: String,
     @field: NotBlank
-    val vecno: String?,
+    val vecno: String,
     val msg: String?,
 ) {
     fun toEntity(): BdasTrns {

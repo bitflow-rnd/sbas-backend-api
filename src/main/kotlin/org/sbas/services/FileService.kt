@@ -14,7 +14,6 @@ import java.io.File
 import java.io.FileInputStream
 import java.io.IOException
 import java.io.InputStream
-import java.util.*
 import javax.enterprise.context.ApplicationScoped
 import javax.inject.Inject
 import javax.transaction.Transactional
@@ -49,8 +48,8 @@ class FileService {
      * 전체 공개 권한 파일 업로드
      */
     @Transactional
-    fun publicFileUpload(param1: String?, param2: MutableList<FileUpload>): CommonResponse<MutableMap<String, Any>> {
-        if (Objects.isNull(param2)) {
+    fun publicFileUpload(param1: String?, param2: MutableList<FileUpload>?): CommonResponse<MutableMap<String, Any>> {
+        if (param2.isNullOrEmpty()) {
             throw CustomizedException("파일을 등록하세요.", Response.Status.BAD_REQUEST)
         }
 
@@ -70,15 +69,15 @@ class FileService {
 
             baseAttcRepository.persist(baseAttc)
 
-            result.add(baseAttc.attcId!!)
+            result.add(baseAttc.attcId)
         }
 
         return CommonResponse(mutableMapOf("count" to result.size, "items" to result))
     }
 
     @Transactional
-    fun privateFileUpload(param1: String?, param2: MutableList<FileUpload>): CommonResponse<MutableMap<String, Any>> {
-        if (Objects.isNull(param2)) {
+    fun privateFileUpload(param1: String?, param2: MutableList<FileUpload>?): CommonResponse<MutableMap<String, Any>> {
+        if (param2.isNullOrEmpty()) {
             throw CustomizedException("파일을 등록하세요.", Response.Status.BAD_REQUEST)
         }
 
@@ -98,7 +97,7 @@ class FileService {
 
             baseAttcRepository.persist(baseAttc)
 
-            result.add(baseAttc.attcId!!)
+            result.add(baseAttc.attcId)
         }
 
         return CommonResponse(mutableMapOf("count" to result.size, "items" to result))

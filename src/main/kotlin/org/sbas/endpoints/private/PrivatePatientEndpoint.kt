@@ -9,23 +9,16 @@ import org.jboss.resteasy.reactive.RestPath
 import org.jboss.resteasy.reactive.multipart.FileUpload
 import org.sbas.dtos.*
 import org.sbas.dtos.bdas.BdasEsvyDto
-import org.sbas.dtos.bdas.BdasReqDprtInfo
 import org.sbas.dtos.bdas.BdasReqSaveDto
-import org.sbas.dtos.bdas.BdasReqSvrInfo
-import org.sbas.dtos.info.InfoPtDto
 import org.sbas.dtos.info.InfoPtCheckDto
+import org.sbas.dtos.info.InfoPtDto
 import org.sbas.parameters.NewsScoreParameters
 import org.sbas.parameters.SearchParameters
 import org.sbas.services.BedAssignService
-import org.sbas.services.CommonService
 import org.sbas.services.PatientService
 import javax.inject.Inject
 import javax.validation.Valid
-import javax.ws.rs.BeanParam
-import javax.ws.rs.GET
-import javax.ws.rs.POST
-import javax.ws.rs.Path
-import javax.ws.rs.QueryParam
+import javax.ws.rs.*
 import javax.ws.rs.core.Response
 
 @Tag(name = "환자 관리(사용자 권한용)", description = "로그인 된 사용자(세부권한별 분기) - 환자 등록 및 조회 등")
@@ -37,9 +30,6 @@ class PrivatePatientEndpoint {
 
     @Inject
     lateinit var patientService: PatientService
-
-    @Inject
-    lateinit var commonService: CommonService
 
     @Inject
     lateinit var bedAssignService: BedAssignService
@@ -137,26 +127,10 @@ class PrivatePatientEndpoint {
         return Response.ok(patientService.calculateNewsScore(param)).build()
     }
 
-    @Operation(summary = "중증정보 등록", description = "")
-    @POST
-    @Path("regsevrinfo")
-    fun regsevrinfo(@Valid bdasReqSvrInfo: BdasReqSvrInfo): Response? {
-        return Response.ok(bedAssignService.regServInfo(bdasReqSvrInfo)).build()
-    }
-
-    @Operation(summary = "출발지정보 등록 (병상 요청 완료)", description = "")
-    @POST
-    @Path("regstrtpoint")
-    fun regstrtpoint(@Valid bdasReqDprtInfo: BdasReqDprtInfo): Response? {
-        val res = bedAssignService.regstrtpoint(bdasReqDprtInfo)
-        return Response.ok(res).build()
-    }
-
     @Operation(summary = "병상 배정 요청", description = "병상 배정 요청 (중증 정보 + 출발지 정보)")
     @POST
     @Path("bedassignreq")
     fun bedassignreq(@Valid bdasReqSaveDto: BdasReqSaveDto): Response? {
-        log.debug("bedassignreq >>> $bdasReqSaveDto")
         val res = bedAssignService.registerBedRequestInfo(bdasReqSaveDto)
         return Response.ok(res).build()
     }
