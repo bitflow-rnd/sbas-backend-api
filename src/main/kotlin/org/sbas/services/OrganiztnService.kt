@@ -11,6 +11,7 @@ import org.sbas.handlers.FileHandler
 import org.sbas.handlers.GeocodingHandler
 import org.sbas.repositories.*
 import org.sbas.responses.CommonResponse
+import org.sbas.responses.CommonListResponse
 import org.sbas.restparameters.NaverGeocodingApiParams
 import org.sbas.utils.CustomizedException
 import org.sbas.utils.StringUtils
@@ -70,7 +71,7 @@ class OrganiztnService {
         val findHosp = infoHospRepository.findInfoHosps(param)
         val count = infoHospRepository.countInfoHosps(param)
 
-        return CommonResponse(mutableMapOf("count" to count, "items" to findHosp))
+        return CommonListResponse(findHosp, count)
     }
 
     /**
@@ -157,7 +158,7 @@ class OrganiztnService {
             }
         }
 
-        return CommonResponse(mutableMapOf("count" to fireStatnList.size, "items" to fireStatnList))
+        return CommonListResponse(fireStatnList)
     }
 
     /**
@@ -174,10 +175,10 @@ class OrganiztnService {
      * 구급대원 목록 조회
      */
     @Transactional
-    fun findFiremen(param: InfoCrewSearchParam): CommonResponse<MutableMap<String, Any>> {
+    fun findFiremen(param: InfoCrewSearchParam): CommonListResponse<InfoCrewDto> {
         log.debug("findFiremen >>>>>> instId: ${param.instId}")
         val infoCrewList = infoCrewRepository.findInfoCrews(param)
-        return CommonResponse(mutableMapOf("count" to infoCrewList.size, "items" to infoCrewList))
+        return CommonListResponse(infoCrewList)
     }
 
     /**

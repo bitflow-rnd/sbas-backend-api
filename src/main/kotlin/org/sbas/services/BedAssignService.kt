@@ -8,6 +8,7 @@ import org.sbas.entities.bdas.BdasReqId
 import org.sbas.handlers.GeocodingHandler
 import org.sbas.repositories.*
 import org.sbas.responses.CommonResponse
+import org.sbas.responses.CommonListResponse
 import org.sbas.responses.patient.DiseaseInfoResponse
 import org.sbas.restclients.FirebaseService
 import org.sbas.restparameters.NaverGeocodingApiParams
@@ -108,6 +109,7 @@ class BedAssignService {
         // 배정반 승인/거절
         if (dto.aprvYn == "N") { // 거절할 경우 거절 사유 및 메시지 작성
             bdasReqAprvRepository.persist(dto.toRefuseEntity())
+            findBdasReq.changeBedStatTo(BedStatCd.BAST0007.name)
         } else if (dto.aprvYn == "Y") { // 승인할 경우 원내 배정 여부 체크
             if (findBdasReq.inhpAsgnYn == "N") {
                 // 전원 요청시 병원 정보 저장
@@ -128,6 +130,7 @@ class BedAssignService {
             } else if (findBdasReq.inhpAsgnYn == "Y") {
                 // 원내 배정이면 승인
                 bdasReqAprvRepository.persist(dto.toEntityWhenInHosp())
+                findBdasReq.changeBedStatTo(BedStatCd.BAST0007.name)
             }
         } else {
             throw CustomizedException("aprvYn 값이 올바르지 않습니다.", Response.Status.INTERNAL_SERVER_ERROR)
@@ -167,10 +170,10 @@ class BedAssignService {
         // TODO 페이징 처리??
         if (list.size > 10) {
             val sortedList = list.subList(0, 10).sortedBy { it.doubleDistance }.distinctBy { it.hospId }
-            return CommonResponse(mutableMapOf("count" to sortedList.size, "items" to sortedList))
+            return CommonListResponse(sortedList)
         }
         val sortedList = list.sortedBy { it.doubleDistance }.distinctBy { it.hospId }
-        return CommonResponse(mutableMapOf("count" to sortedList.size, "items" to sortedList))
+        return CommonListResponse(sortedList)
     }
 
     /**
@@ -178,7 +181,7 @@ class BedAssignService {
      */
     @Transactional
     fun asgnConfirm(dto: BdasAprvDto): CommonResponse<BdasAprvResponse> {
-        // TODO 몇가지 다른 경우 고려
+        // TODO 모든 병원에서 거절했을 경우 재요청?
         val bdasReqAprvList = bdasReqAprvRepository.findReqAprvList(dto.ptId, dto.bdasSeq)
         if (bdasReqAprvList.isEmpty()) {
             throw CustomizedException("배정 승인 정보가 없습니다.", Response.Status.BAD_REQUEST)
@@ -205,7 +208,7 @@ class BedAssignService {
         // 승인한 병원의 정보 저장 및 나머지 병원 거절 + push 알림?
         bdasAprvRepository.persist(dto.toApproveEntity())
         bdasReqAprvList.filter { it.id.asgnReqSeq !in asgnReqSeqList }.forEach {
-            bdasAprvRepository.persist(it.convertToBdasAprv())
+            bdasAprvRepository.persist(it.convertToRefuseBdasAprv())
         }
 
         return CommonResponse(BdasAprvResponse(false, "배정 승인되었습니다."))
@@ -220,7 +223,7 @@ class BedAssignService {
 
         bdasTrnsRepository.persist(dto.toEntity())
 
-        return CommonResponse("등록 성공")
+        return CommonResponse("이송 정보 등록 성공")
     }
 
     @Transactional
@@ -237,7 +240,7 @@ class BedAssignService {
         }
         bdasAdmsRepository.persist(entity)
 
-        return CommonResponse("${entity.id} 성공")
+        return CommonResponse("입퇴원 정보 등록 성공")
     }
 
     @Transactional

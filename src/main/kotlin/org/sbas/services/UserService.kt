@@ -7,10 +7,7 @@ import org.jboss.logging.Logger
 import org.sbas.constants.SbasConst
 import org.sbas.constants.enums.UserStatCd
 import org.sbas.dtos.*
-import org.sbas.dtos.info.InfoCntcDto
-import org.sbas.dtos.info.InfoUserSaveDto
-import org.sbas.dtos.info.InfoUserSearchParam
-import org.sbas.dtos.info.toEntity
+import org.sbas.dtos.info.*
 import org.sbas.entities.info.InfoCert
 import org.sbas.entities.info.InfoCntc
 import org.sbas.entities.info.InfoUser
@@ -19,6 +16,7 @@ import org.sbas.repositories.InfoCertRepository
 import org.sbas.repositories.InfoCntcRepository
 import org.sbas.repositories.InfoUserRepository
 import org.sbas.responses.CommonResponse
+import org.sbas.responses.CommonListResponse
 import org.sbas.restclients.NaverSensRestClient
 import org.sbas.restparameters.NaverSmsMsgApiParams
 import org.sbas.restparameters.NaverSmsReqMsgs
@@ -90,13 +88,11 @@ class UserService {
      * 관리자 사용자 정보 관리 화면에서 사용자 목록 조회
      */
     @Transactional
-    fun getUsers(param: InfoUserSearchParam): CommonResponse<*> {
+    fun getUsers(param: InfoUserSearchParam): CommonListResponse<InfoUserListDto> {
         val list = userRepository.findInfoUserList(param)
         list.forEach { it.userStatCdNm = it.userStatCd!!.cdNm }
 
-        val result = mutableMapOf("count" to list.size, "items" to list)
-
-        return CommonResponse(result)
+        return CommonListResponse(list)
     }
 
     /**

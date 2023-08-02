@@ -49,7 +49,7 @@ class BdasReqRepository : PanacheRepositoryBase<BdasReq, BdasReqId> {
 //            groupBy(col(BdasReqId::ptId))
 //        }
 
-        // TODO 기관, 검색조건
+        // TODO 검색조건
         val list = queryFactory.listQuery<BdasListDto> {
             val getBedAsgnStat =
                 function("fn_get_bed_asgn_stat", String::class.java, col(BdasReqId::ptId), col(BdasReqId::bdasSeq))
@@ -61,8 +61,9 @@ class BdasReqRepository : PanacheRepositoryBase<BdasReq, BdasReqId> {
                 function("fn_get_chrg_inst", String::class.java,
                     getBedAsgnStat, col(BdasReqId::ptId), col(BdasReqId::bdasSeq)
                 ),
+                col(BdasReq::inhpAsgnYn),
 //                literal("chrgInstNm"),
-                col(BdasReq::ptTypeCd), col(BdasReq::svrtTypeCd), col(BdasReq::undrDsesCd)
+                col(BdasReq::ptTypeCd), col(BdasReq::svrtTypeCd), col(BdasReq::undrDsesCd),
             )
             from(entity(BdasReq::class))
             associate(entity(BdasReq::class), BdasReqId::class, on(BdasReq::id))

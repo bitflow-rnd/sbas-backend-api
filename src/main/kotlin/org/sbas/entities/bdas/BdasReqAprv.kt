@@ -26,7 +26,7 @@ class BdasReqAprv(
     var reqHospNm: String? = null,
 ) : CommonEntity() {
 
-    fun convertToBdasAprv(): BdasAprv {
+    fun convertToRefuseBdasAprv(): BdasAprv {
         return BdasAprv(
             id = BdasAprvId(
                 ptId = this.id.ptId,

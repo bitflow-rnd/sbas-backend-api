@@ -8,7 +8,6 @@ import org.json.JSONObject
 import org.sbas.constants.EgenCmMid
 import org.sbas.dtos.BaseCodeEgenSaveReq
 import org.sbas.dtos.info.InfoHospSaveReq
-import org.sbas.dtos.info.toEntity
 import org.sbas.dtos.toEntity
 import org.sbas.entities.info.InfoHosp
 import org.sbas.repositories.BaseCodeEgenRepository

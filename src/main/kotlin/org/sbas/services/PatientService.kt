@@ -4,15 +4,23 @@ import org.eclipse.microprofile.config.inject.ConfigProperty
 import org.eclipse.microprofile.jwt.JsonWebToken
 import org.jboss.logging.Logger
 import org.jboss.resteasy.reactive.multipart.FileUpload
-import org.sbas.constants.*
-import org.sbas.constants.enums.*
-import org.sbas.dtos.info.*
+import org.sbas.constants.SbasConst
+import org.sbas.constants.enums.BedStatCd
+import org.sbas.constants.enums.PtTypeCd
+import org.sbas.constants.enums.SvrtTypeCd
+import org.sbas.constants.enums.UndrDsesCd
+import org.sbas.dtos.info.BdasHisInfo
+import org.sbas.dtos.info.InfoPtBasicInfo
+import org.sbas.dtos.info.InfoPtCheckDto
+import org.sbas.dtos.info.InfoPtDto
+import org.sbas.entities.info.InfoPt
 import org.sbas.handlers.FileHandler
 import org.sbas.handlers.NaverApiHandler
 import org.sbas.parameters.NewsScoreParameters
 import org.sbas.parameters.SearchParameters
 import org.sbas.repositories.*
 import org.sbas.responses.CommonResponse
+import org.sbas.responses.CommonListResponse
 import org.sbas.utils.CustomizedException
 import org.sbas.utils.StringUtils
 import java.io.File
@@ -140,17 +148,13 @@ class PatientService {
     }
 
     @Transactional
-    fun findInfoPtWithMyOrgan(): CommonResponse<*> {
+    fun findInfoPtWithMyOrgan(): CommonListResponse<InfoPt> {
         //TODO
         val infoUser = infoUserRepository.findById(jwt.name) ?: throw NotFoundException("infoUser not found")
         val infoInst = infoInstRepository.findById(infoUser.instId!!) ?: throw NotFoundException("infoInst not found")
         val infoPtList = infoPtRepository.findByDstrCd(infoInst.dstrCd1!!, infoInst.dstrCd2!!)
 
-        val res = mutableMapOf<String, Any>()
-        res["items"] = infoPtList
-        res["count"] = infoPtList.count()
-
-        return CommonResponse(res)
+        return CommonListResponse(infoPtList)
     }
 
     @Transactional
@@ -186,14 +190,14 @@ class PatientService {
     }
 
     @Transactional
-    fun findBdasHistInfo(ptId: String): CommonResponse<MutableMap<String, Any>> {
+    fun findBdasHistInfo(ptId: String): CommonListResponse<BdasHisInfo> {
         val bdasHisInfoList = infoPtRepository.findBdasHisInfo(ptId)
         bdasHisInfoList.forEachIndexed { idx, bdasHisInfo ->
             bdasHisInfo.order = "${bdasHisInfoList.size - idx}차수"
             getTagList(bdasHisInfo)
         }
 
-        return CommonResponse(mutableMapOf("count" to bdasHisInfoList.size, "items" to bdasHisInfoList))
+        return CommonListResponse(bdasHisInfoList)
     }
 
     @Transactional
@@ -214,11 +218,7 @@ class PatientService {
             }
         }
 
-        val res = mutableMapOf<String, Any>()
-        res["count"] = list.size
-        res["items"] = list
-
-        return CommonResponse(res)
+        return CommonListResponse(list)
     }
 
     private fun getTagList(dto: BdasHisInfo) {

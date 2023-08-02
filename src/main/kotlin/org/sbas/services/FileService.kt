@@ -8,6 +8,7 @@ import org.sbas.entities.base.BaseAttc
 import org.sbas.handlers.FileHandler
 import org.sbas.repositories.BaseAttcRepository
 import org.sbas.responses.CommonResponse
+import org.sbas.responses.CommonListResponse
 import org.sbas.responses.messages.FileResponse
 import org.sbas.utils.CustomizedException
 import java.io.File
@@ -48,7 +49,7 @@ class FileService {
      * 전체 공개 권한 파일 업로드
      */
     @Transactional
-    fun publicFileUpload(param1: String?, param2: MutableList<FileUpload>?): CommonResponse<MutableMap<String, Any>> {
+    fun publicFileUpload(param1: String?, param2: MutableList<FileUpload>?): CommonListResponse<String> {
         if (param2.isNullOrEmpty()) {
             throw CustomizedException("파일을 등록하세요.", Response.Status.BAD_REQUEST)
         }
@@ -72,11 +73,11 @@ class FileService {
             result.add(baseAttc.attcId)
         }
 
-        return CommonResponse(mutableMapOf("count" to result.size, "items" to result))
+        return CommonListResponse(result)
     }
 
     @Transactional
-    fun privateFileUpload(param1: String?, param2: MutableList<FileUpload>?): CommonResponse<MutableMap<String, Any>> {
+    fun privateFileUpload(param1: String?, param2: MutableList<FileUpload>?): CommonListResponse<String> {
         if (param2.isNullOrEmpty()) {
             throw CustomizedException("파일을 등록하세요.", Response.Status.BAD_REQUEST)
         }
@@ -100,7 +101,7 @@ class FileService {
             result.add(baseAttc.attcId)
         }
 
-        return CommonResponse(mutableMapOf("count" to result.size, "items" to result))
+        return CommonListResponse(result)
     }
 
     private fun getFileTypeCd(fileExt: String): String {

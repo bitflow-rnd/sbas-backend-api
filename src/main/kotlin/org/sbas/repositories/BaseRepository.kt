@@ -68,7 +68,7 @@ class BaseCodeEgenRepository : PanacheRepositoryBase<BaseCodeEgen, BaseCodeEgenI
 
 @ApplicationScoped
 class BaseAttcRepository : PanacheRepositoryBase<BaseAttc, String> {
-    fun deleteByAttcId(attcId: String): Long {
+    fun deleteByAttcId(attcId: String): Long? {
         return delete("attc_id = '$attcId'")
     }
 

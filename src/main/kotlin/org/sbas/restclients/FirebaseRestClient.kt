@@ -18,12 +18,9 @@ import java.io.FileInputStream
 import javax.enterprise.context.ApplicationScoped
 import javax.enterprise.event.Observes
 import javax.inject.Inject
-import javax.ws.rs.Consumes
 import javax.ws.rs.NotFoundException
 import javax.ws.rs.POST
 import javax.ws.rs.Path
-import javax.ws.rs.Produces
-import javax.ws.rs.core.MediaType
 
 @ApplicationScoped
 class FirebaseService {
