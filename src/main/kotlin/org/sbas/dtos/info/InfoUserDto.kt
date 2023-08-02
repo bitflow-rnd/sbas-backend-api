@@ -2,7 +2,7 @@ package org.sbas.dtos.info
 
 import org.sbas.constants.enums.UserStatCd
 import org.sbas.entities.info.InfoUser
-import org.sbas.utils.NoArg
+import org.sbas.utils.annotation.NoArg
 import java.time.Instant
 import javax.validation.constraints.NotBlank
 import javax.validation.constraints.Pattern
@@ -42,8 +42,7 @@ data class InfoUserSearchParam(
 /**
  * 사용자 등록 DTO
  */
-@NoArg
-data class InfoUserSaveDto(
+data class InfoUserSaveRequest(
     @field: [NotBlank Pattern(regexp = "^[a-zA-Z0-9@._-]+\$", message = "영소문자, 영대문자, 숫자, @.-_ 만 가능합니다")]
     val id: String,
     @field: NotBlank

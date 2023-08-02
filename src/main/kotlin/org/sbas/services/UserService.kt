@@ -57,20 +57,20 @@ class UserService {
      * 사용자 등록 요청
      */
     @Transactional
-    fun reqUserReg(infoUserSaveDto: InfoUserSaveDto): CommonResponse<String> {
-        val infoUser = infoUserSaveDto.toEntity(UserStatCd.URST0001)
-        infoUser.setRgstAndUpdtUserIdTo(infoUserSaveDto.id)
+    fun reqUserReg(infoUserSaveRequest: InfoUserSaveRequest): CommonResponse<String> {
+        val infoUser = infoUserSaveRequest.toEntity(UserStatCd.URST0001)
+        infoUser.setRgstAndUpdtUserIdTo(infoUserSaveRequest.id)
         userRepository.persist(infoUser)
-        return CommonResponse("${infoUserSaveDto.userNm}님 사용자 등록을 요청하였습니다.")
+        return CommonResponse("${infoUserSaveRequest.userNm}님 사용자 등록을 요청하였습니다.")
     }
 
     /**
      * 관리자 사용자 등록
      */
     @Transactional
-    fun reg(infoUserSaveDto: InfoUserSaveDto): CommonResponse<String> {
-        val infoUser = infoUserSaveDto.toEntity(UserStatCd.URST0002)
-        infoUser.setRgstAndUpdtUserIdTo(infoUserSaveDto.id)
+    fun reg(infoUserSaveRequest: InfoUserSaveRequest): CommonResponse<String> {
+        val infoUser = infoUserSaveRequest.toEntity(UserStatCd.URST0002)
+        infoUser.setRgstAndUpdtUserIdTo(infoUserSaveRequest.id)
         userRepository.persist(infoUser)
         return CommonResponse("등록 성공")
     }
