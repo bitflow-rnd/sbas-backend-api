@@ -1,10 +1,12 @@
 package org.sbas.dtos.bdas
 
 import org.sbas.constants.enums.BedStatCd
+import org.sbas.constants.enums.SvrtTypeCd
 import org.sbas.entities.bdas.BdasReq
 import org.sbas.entities.bdas.BdasReqId
 import org.sbas.utils.NoArg
 import org.sbas.utils.StringUtils
+import org.sbas.utils.annotation.ValidEnum
 import javax.validation.Valid
 import javax.validation.constraints.NotBlank
 import javax.validation.constraints.Pattern
@@ -54,7 +56,7 @@ data class BdasReqSvrInfo(
     var reqBedTypeCd: String,
     @field: NotBlank
     var dnrAgreYn: String,
-    @field: NotBlank
+    @field: [NotBlank ValidEnum(enumClass = SvrtTypeCd::class)]
     var svrtIptTypeCd: String,
     @field: NotBlank
     var svrtTypeCd: String,

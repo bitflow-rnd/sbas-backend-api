@@ -3,9 +3,11 @@ package org.sbas.dtos.bdas
 import org.sbas.entities.bdas.BdasEsvy
 import org.sbas.entities.info.InfoPt
 import org.sbas.utils.NoArg
+import javax.validation.constraints.NotBlank
 
 @NoArg
 data class BdasEsvyDto(
+    @field: NotBlank
     var ptId: String,
     var esvyAttcId: String? = null,
 
