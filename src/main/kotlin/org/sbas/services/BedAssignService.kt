@@ -7,8 +7,8 @@ import org.sbas.dtos.bdas.*
 import org.sbas.entities.bdas.BdasReqId
 import org.sbas.handlers.GeocodingHandler
 import org.sbas.repositories.*
-import org.sbas.responses.CommonResponse
 import org.sbas.responses.CommonListResponse
+import org.sbas.responses.CommonResponse
 import org.sbas.responses.patient.DiseaseInfoResponse
 import org.sbas.restclients.FirebaseService
 import org.sbas.restparameters.NaverGeocodingApiParams
@@ -49,13 +49,13 @@ class BedAssignService {
      * 질병 정보 등록
      */
     @Transactional
-    fun regDisesInfo(bdasEsvyDto: BdasEsvyDto): CommonResponse<String> {
+    fun regDisesInfo(saveRequest: BdasEsvySaveRequest): CommonResponse<String> {
         // 환자 정보 저장
-        val findInfoPt = infoPtRepository.findById(bdasEsvyDto.ptId) ?: throw NotFoundException("${bdasEsvyDto.ptId} not found")
-        bdasEsvyDto.saveInfoPt(findInfoPt)
+        val findInfoPt = infoPtRepository.findById(saveRequest.ptId) ?: throw NotFoundException("${saveRequest.ptId} not found")
+        saveRequest.saveInfoPt(findInfoPt)
 
-        log. debug("regDisesInfo >>>>> ${bdasEsvyDto.ptId}")
-        val bdasEsvy = bdasEsvyDto.toEntity()
+        log. debug("regDisesInfo >>>>> ${saveRequest.ptId}")
+        val bdasEsvy = saveRequest.toEntity()
         bdasEsvyRepository.persist(bdasEsvy)
         
         return CommonResponse("감염병 정보 등록 성공")
@@ -65,13 +65,13 @@ class BedAssignService {
      * 병상 요청
      */
     @Transactional
-    fun registerBedRequestInfo(bdasReqSaveDto: BdasReqSaveDto): CommonResponse<String> {
-        if (!bdasReqSaveDto.isPtIdEqual()) {
+    fun registerBedRequestInfo(saveRequest: BdasReqSaveRequest): CommonResponse<String> {
+        if (!saveRequest.isPtIdEqual()) {
             throw CustomizedException("check ptId", Response.Status.BAD_REQUEST)
         }
 
-        val ptId = bdasReqSaveDto.svrInfo.ptId
-        val bdasReqDprtInfo = bdasReqSaveDto.dprtInfo
+        val ptId = saveRequest.svrInfo.ptId
+        val bdasReqDprtInfo = saveRequest.dprtInfo
 
         // bdasEsvy 에서 bdasSeq 가져오기
         val bdasEsvy = bdasEsvyRepository.findByPtIdWithLatestBdasSeq(ptId) ?: throw NotFoundException("$ptId not found")
@@ -82,7 +82,7 @@ class BedAssignService {
         bdasReqDprtInfo.dprtDstrLat = geocoding.addresses!![0].y // 위도
         bdasReqDprtInfo.dprtDstrLon = geocoding.addresses!![0].x // 경도
 
-        val bdasReq = bdasReqSaveDto.toEntity(bdasReqId)
+        val bdasReq = saveRequest.toEntity(bdasReqId)
         bdasReqRepository.persist(bdasReq)
 
         // 지역코드로 병상배정반 찾기
@@ -103,33 +103,33 @@ class BedAssignService {
      * 배정반 승인
      */
     @Transactional
-    fun reqConfirm(dto: BdasReqAprvDto): CommonResponse<String> {
-        val findBdasReq = bdasReqRepository.findByPtIdAndBdasSeq(dto.ptId, dto.bdasSeq) ?: throw NotFoundException("bdasReq not found")
+    fun reqConfirm(saveRequest: BdasReqAprvSaveRequest): CommonResponse<String> {
+        val findBdasReq = bdasReqRepository.findByPtIdAndBdasSeq(saveRequest.ptId, saveRequest.bdasSeq) ?: throw NotFoundException("bdasReq not found")
 
         // 배정반 승인/거절
-        if (dto.aprvYn == "N") { // 거절할 경우 거절 사유 및 메시지 작성
-            bdasReqAprvRepository.persist(dto.toRefuseEntity())
+        if (saveRequest.aprvYn == "N") { // 거절할 경우 거절 사유 및 메시지 작성
+            bdasReqAprvRepository.persist(saveRequest.toRefuseEntity())
             findBdasReq.changeBedStatTo(BedStatCd.BAST0007.name)
-        } else if (dto.aprvYn == "Y") { // 승인할 경우 원내 배정 여부 체크
+        } else if (saveRequest.aprvYn == "Y") { // 승인할 경우 원내 배정 여부 체크
             if (findBdasReq.inhpAsgnYn == "N") {
                 // 전원 요청시 병원 정보 저장
-                val hospList = infoHospRepository.findByHospIdList(dto.reqHospIdList)
+                val hospList = infoHospRepository.findByHospIdList(saveRequest.reqHospIdList)
 
                 hospList.forEachIndexed { idx, infoHosp ->
                     log.debug("hospList>>>>>>>>>>> ${infoHosp.hospId}")
-                    val entity = dto.toEntityWhenNotInHosp(
+                    val entity = saveRequest.toEntityWhenNotInHosp(
                         asgnReqSeq = idx + 1,
                         hospId = infoHosp.hospId,
                         hospNm = infoHosp.dutyName,
                     )
                     bdasReqAprvRepository.persist(entity)
 //                    firebaseService.sendMessage("jiseongtak", "${dto.msg}", infoHosp.userId)
-                    firebaseService.sendMessage(entity.rgstUserId!!, "${dto.msg}", "TEST-APR-1")
+                    firebaseService.sendMessage(entity.rgstUserId!!, "${saveRequest.msg}", "TEST-APR-1")
                 }
 
             } else if (findBdasReq.inhpAsgnYn == "Y") {
                 // 원내 배정이면 승인
-                bdasReqAprvRepository.persist(dto.toEntityWhenInHosp())
+                bdasReqAprvRepository.persist(saveRequest.toEntityWhenInHosp())
                 findBdasReq.changeBedStatTo(BedStatCd.BAST0007.name)
             }
         } else {
@@ -180,23 +180,23 @@ class BedAssignService {
      * 의료진 승인
      */
     @Transactional
-    fun asgnConfirm(dto: BdasAprvDto): CommonResponse<BdasAprvResponse> {
+    fun asgnConfirm(saveRequest: BdasAprvSaveRequest): CommonResponse<BdasAprvResponse> {
         // TODO 모든 병원에서 거절했을 경우 재요청?
-        val bdasReqAprvList = bdasReqAprvRepository.findReqAprvList(dto.ptId, dto.bdasSeq)
+        val bdasReqAprvList = bdasReqAprvRepository.findReqAprvList(saveRequest.ptId, saveRequest.bdasSeq)
         if (bdasReqAprvList.isEmpty()) {
             throw CustomizedException("배정 승인 정보가 없습니다.", Response.Status.BAD_REQUEST)
         }
-        val bdasAprvList = bdasAprvRepository.findBdasAprv(dto.ptId, dto.bdasSeq)
+        val bdasAprvList = bdasAprvRepository.findBdasAprv(saveRequest.ptId, saveRequest.bdasSeq)
         val approvedBdasAprv = bdasAprvList?.filter { it.aprvYn == "Y" }
-        val asgnReqSeqList = mutableListOf(dto.asgnReqSeq)
+        val asgnReqSeqList = mutableListOf(saveRequest.asgnReqSeq)
 
         bdasAprvList?.let {
             asgnReqSeqList.addAll(it.map { bdasAprv -> bdasAprv.id.asgnReqSeq })
         }
 
         // 거절한 병원의 정보 저장
-        if (dto.aprvYn == "N") {
-            bdasAprvRepository.getEntityManager().merge(dto.toRefuseEntity(null, null))
+        if (saveRequest.aprvYn == "N") {
+            bdasAprvRepository.getEntityManager().merge(saveRequest.toRefuseEntity(null, null))
             return CommonResponse(BdasAprvResponse(false, "배정 불가 처리되었습니다."))
         }
 
@@ -206,7 +206,7 @@ class BedAssignService {
         }
 
         // 승인한 병원의 정보 저장 및 나머지 병원 거절 + push 알림?
-        bdasAprvRepository.persist(dto.toApproveEntity())
+        bdasAprvRepository.persist(saveRequest.toApproveEntity())
         bdasReqAprvList.filter { it.id.asgnReqSeq !in asgnReqSeqList }.forEach {
             bdasAprvRepository.persist(it.convertToRefuseBdasAprv())
         }
@@ -215,28 +215,28 @@ class BedAssignService {
     }
 
     @Transactional
-    fun confirmTrans(dto: BdasTrnsSaveDto): CommonResponse<String> {
-        val bdasAprvList = bdasAprvRepository.findBdasAprvList(dto.ptId, dto.bdasSeq)
+    fun confirmTrans(saveRequest: BdasTrnsSaveRequest): CommonResponse<String> {
+        val bdasAprvList = bdasAprvRepository.findBdasAprvList(saveRequest.ptId, saveRequest.bdasSeq)
         if (bdasAprvList.isEmpty()) {
             throw CustomizedException("의료진 승인 정보가 없습니다.", Response.Status.BAD_REQUEST)
         }
 
-        bdasTrnsRepository.persist(dto.toEntity())
+        bdasTrnsRepository.persist(saveRequest.toEntity())
 
         return CommonResponse("이송 정보 등록 성공")
     }
 
     @Transactional
-    fun confirmHosp(dto: BdasAdmsSaveDto): CommonResponse<String> {
-        val findBdasAdms = bdasAdmsRepository.findByIdOrderByAdmsSeqDesc(dto.ptId, dto.bdasSeq)
+    fun confirmHosp(saveRequest: BdasAdmsSaveRequest): CommonResponse<String> {
+        val findBdasAdms = bdasAdmsRepository.findByIdOrderByAdmsSeqDesc(saveRequest.ptId, saveRequest.bdasSeq)
 
         val entity = if (findBdasAdms == null) {
-            dto.toEntity(dto.admsStatCd, 1)
+            saveRequest.toEntity(saveRequest.admsStatCd, 1)
         } else {
-            if (findBdasAdms.isAdmsStatCdDuplicate(dto.admsStatCd)) {
+            if (findBdasAdms.isAdmsStatCdDuplicate(saveRequest.admsStatCd)) {
                 throw CustomizedException("입/퇴원 상태(admsStatCd) 중복입니다.", Response.Status.BAD_REQUEST)
             }
-            dto.toEntity(dto.admsStatCd, findBdasAdms.id.admsSeq + 1)
+            saveRequest.toEntity(saveRequest.admsStatCd, findBdasAdms.id.admsSeq + 1)
         }
         bdasAdmsRepository.persist(entity)
 

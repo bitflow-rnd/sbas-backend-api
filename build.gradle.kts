@@ -40,6 +40,7 @@ dependencies {
     implementation("io.quarkus:quarkus-smallrye-reactive-messaging")
 //    implementation("io.quarkus:quarkus-scheduler")
 
+    implementation("com.fasterxml.jackson.module:jackson-module-kotlin:2.14.3")
     implementation("com.google.firebase:firebase-admin:9.1.1")
     implementation("com.linecorp.kotlin-jdsl:hibernate-kotlin-jdsl:2.2.1.RELEASE")
     testImplementation("io.quarkus:quarkus-junit5")
@@ -58,7 +59,7 @@ noArg {
     annotation("javax.persistence.Entity")
     annotation("javax.persistence.Embeddable")
     annotation("javax.persistence.MappedSuperclass")
-    annotation("org.sbas.utils.NoArg")
+    annotation("org.sbas.utils.annotation.NoArg")
 }
 
 allOpen {

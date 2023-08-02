@@ -202,8 +202,8 @@ class BdasAdmsRepository: PanacheRepositoryBase<BdasAdms, BdasAdmsId> {
 
     fun findTimeLineInfo(ptId: String, bdasSeq: Int): MutableList<BdasTimeLineDto> {
 
-        val query = "select new org.sbas.dtos.bdas.BdasTimeLineDto(case ba.admsStatCd when '${AdmsStatCd.IOST0001}' then '입원완료' " +
-                "when '${AdmsStatCd.IOST0002}' then '퇴원완료' when '${AdmsStatCd.IOST0003}' then '자택회송' end, " +
+        val query = "select new org.sbas.dtos.bdas.BdasTimeLineDto(case ba.admsStatCd when '${AdmsStatCd.IOST0001.name}' then '입원완료' " +
+                "when '${AdmsStatCd.IOST0002.name}' then '퇴원완료' when '${AdmsStatCd.IOST0003}' then '자택회송' end, " +
                 "'${TimeLineStatCd.COMPLETE.cdNm}') " +
                 "from BdasAdms ba " +
                 "join InfoUser iu on iu.id = ba.updtUserId " +

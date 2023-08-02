@@ -3,14 +3,12 @@ package org.sbas.dtos
 import org.hibernate.validator.constraints.Length
 import org.sbas.entities.base.BaseCode
 import org.sbas.entities.base.BaseCodeId
-import org.sbas.utils.NoArg
 import javax.validation.constraints.Min
 import javax.validation.constraints.NotBlank
 
 /**
  * 공통코드 그룹 등록 Dto
  */
-@NoArg
 data class BaseCodeGrpSaveReq(
     @field: [NotBlank(message = "코드 그룹 번호는 필수 값입니다.") Length(max = 4, message = "최대 4자리입니다.")]
     val cdGrpId: String,
@@ -30,7 +28,6 @@ data class BaseCodeGrpSaveReq(
 /**
  * 공통코드 등록 Dto
  */
-@NoArg
 data class BaseCodeSaveReq(
     @field: [NotBlank(message = "코드 그룹 번호는 필수 값입니다.") Length(max = 4, message = "최대 4자리입니다.")]
     val cdGrpId: String,
@@ -59,7 +56,6 @@ data class BaseCodeSaveReq(
 /**
  * 공통코드 그룹 수정 Dto
  */
-@NoArg
 data class BaseCodeGrpUpdateReq(
     @field: [NotBlank(message = "코드 그룹 번호는 필수 값입니다.") Length(max = 4, message = "최대 4자리입니다.")]
     var cdGrpId: String,
@@ -70,7 +66,6 @@ data class BaseCodeGrpUpdateReq(
 /**
  * 공통코드 수정 Dto
  */
-@NoArg
 data class BaseCodeUpdateReq(
     @field: [NotBlank(message = "코드 그룹 번호는 필수 값입니다.") Length(max = 4, message = "최대 4자리입니다.")]
     var cdGrpId: String,
@@ -88,7 +83,6 @@ data class BaseCodeUpdateReq(
     }
 }
 
-@NoArg
 data class SidoSiGunGuDto(
     var siDoCd: String? = null,
     var siGunGuCd: String? = null,

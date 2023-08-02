@@ -50,13 +50,12 @@ class BdasAdms(
     @Column(name = "msg", length = 500)
     var msg: String? = null, // 퇴원 사유 상세
     
-    @Column(name = "adms_stat_cd", nullable = false)
-    @Enumerated(EnumType.STRING)
-    var admsStatCd: AdmsStatCd, // 입퇴원상태 코드
+    @Column(name = "adms_stat_cd", nullable = false, length = 8)
+    var admsStatCd: String, // 입퇴원상태 코드
 ) : CommonEntity() {
 
     fun isAdmsStatCdDuplicate(admsStatCd: AdmsStatCd): Boolean {
-        return this.admsStatCd == admsStatCd
+        return this.admsStatCd == admsStatCd.name
     }
 }
 

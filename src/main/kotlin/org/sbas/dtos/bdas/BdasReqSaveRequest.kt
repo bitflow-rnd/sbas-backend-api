@@ -4,7 +4,7 @@ import org.sbas.constants.enums.BedStatCd
 import org.sbas.constants.enums.SvrtTypeCd
 import org.sbas.entities.bdas.BdasReq
 import org.sbas.entities.bdas.BdasReqId
-import org.sbas.utils.NoArg
+import org.sbas.utils.annotation.NoArg
 import org.sbas.utils.StringUtils
 import org.sbas.utils.annotation.ValidEnum
 import javax.validation.Valid
@@ -14,8 +14,7 @@ import javax.validation.constraints.Pattern
 /**
  * 병상 요청 DTO
  */
-@NoArg
-data class BdasReqSaveDto(
+data class BdasReqSaveRequest(
     @field: Valid
     val svrInfo: BdasReqSvrInfo,
     @field: Valid
@@ -44,7 +43,6 @@ data class BdasReqSaveDto(
 /**
  * 중증 정보
  */
-@NoArg
 data class BdasReqSvrInfo(
     @field: NotBlank
     var ptId: String,
@@ -56,9 +54,9 @@ data class BdasReqSvrInfo(
     var reqBedTypeCd: String,
     @field: NotBlank
     var dnrAgreYn: String,
-    @field: [NotBlank ValidEnum(enumClass = SvrtTypeCd::class)]
-    var svrtIptTypeCd: String,
     @field: NotBlank
+    var svrtIptTypeCd: String,
+    @field: [NotBlank ValidEnum(enumClass = SvrtTypeCd::class)]
     var svrtTypeCd: String,
 
     var undrDsesEtc: String?,
@@ -102,7 +100,6 @@ data class BdasReqSvrInfo(
 /**
  * 출발지 정보
  */
-@NoArg
 data class BdasReqDprtInfo (
     var ptId: String,
 

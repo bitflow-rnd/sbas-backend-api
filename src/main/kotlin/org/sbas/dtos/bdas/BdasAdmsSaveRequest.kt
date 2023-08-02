@@ -3,14 +3,13 @@ package org.sbas.dtos.bdas
 import org.sbas.constants.enums.AdmsStatCd
 import org.sbas.entities.bdas.BdasAdms
 import org.sbas.entities.bdas.BdasAdmsId
-import org.sbas.utils.NoArg
+import org.sbas.utils.annotation.NoArg
 import org.sbas.utils.StringUtils
+import org.sbas.utils.annotation.ValidEnum
 import javax.validation.constraints.NotBlank
-import javax.validation.constraints.NotEmpty
 import javax.validation.constraints.NotNull
 
-@NoArg
-data class BdasAdmsSaveDto(
+data class BdasAdmsSaveRequest(
     @field: NotBlank val ptId: String,
     @field: NotNull val bdasSeq: Int,
     @field: NotBlank val hospId: String,
@@ -22,7 +21,8 @@ data class BdasAdmsSaveDto(
     val chrgTelno: String?,
     val dschRsnCd: String?,
     val msg: String?,
-    @field: NotNull val admsStatCd: AdmsStatCd,
+    @field: [NotNull ValidEnum(enumClass = AdmsStatCd::class)]
+    val admsStatCd: AdmsStatCd,
 ) {
 
     fun toEntity(admsStatCd: AdmsStatCd, admsSeq: Int): BdasAdms {
@@ -45,7 +45,7 @@ data class BdasAdmsSaveDto(
             admsDt = StringUtils.getYyyyMmDd(),
             admsTm = StringUtils.getHhMmSs(),
             msg = msg,
-            admsStatCd = AdmsStatCd.IOST0001,
+            admsStatCd = AdmsStatCd.IOST0001.name,
         )
     }
 
@@ -57,7 +57,7 @@ data class BdasAdmsSaveDto(
             dschTm = StringUtils.getHhMmSs(),
             dschRsnCd = dschRsnCd,
             msg = msg,
-            admsStatCd = AdmsStatCd.IOST0002,
+            admsStatCd = AdmsStatCd.IOST0002.name,
         )
     }
 
@@ -66,7 +66,7 @@ data class BdasAdmsSaveDto(
             id = BdasAdmsId(ptId = ptId, bdasSeq = bdasSeq, admsSeq),
             hospId = hospId,
             msg = msg,
-            admsStatCd = AdmsStatCd.IOST0003,
+            admsStatCd = AdmsStatCd.IOST0003.name,
         )
     }
 }
