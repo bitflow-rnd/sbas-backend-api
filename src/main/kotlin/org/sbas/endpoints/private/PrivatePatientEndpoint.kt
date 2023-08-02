@@ -8,8 +8,8 @@ import org.jboss.resteasy.reactive.RestForm
 import org.jboss.resteasy.reactive.RestPath
 import org.jboss.resteasy.reactive.multipart.FileUpload
 import org.sbas.dtos.*
-import org.sbas.dtos.bdas.BdasEsvyDto
-import org.sbas.dtos.bdas.BdasReqSaveDto
+import org.sbas.dtos.bdas.BdasEsvySaveRequest
+import org.sbas.dtos.bdas.BdasReqSaveRequest
 import org.sbas.dtos.info.InfoPtCheckDto
 import org.sbas.dtos.info.InfoPtDto
 import org.sbas.parameters.NewsScoreParameters
@@ -116,8 +116,8 @@ class PrivatePatientEndpoint {
     @Operation(summary = "질병(감염병) 정보 등록", description = "")
     @POST
     @Path("regdisesinfo")
-    fun regdisesinfo(bdasEsvyDto: BdasEsvyDto): Response? {
-        return Response.ok(bedAssignService.regDisesInfo(bdasEsvyDto)).build()
+    fun regdisesinfo(bdasEsvySaveRequest: BdasEsvySaveRequest): Response? {
+        return Response.ok(bedAssignService.regDisesInfo(bdasEsvySaveRequest)).build()
     }
 
     @Operation(summary = "생체정보입력 분석", description = "생체정보 입력 시 경북대학교 로직(NEWS Score)에 따른 중증분류 값 리턴")
@@ -130,8 +130,9 @@ class PrivatePatientEndpoint {
     @Operation(summary = "병상 배정 요청", description = "병상 배정 요청 (중증 정보 + 출발지 정보)")
     @POST
     @Path("bedassignreq")
-    fun bedassignreq(@Valid bdasReqSaveDto: BdasReqSaveDto): Response? {
-        val res = bedAssignService.registerBedRequestInfo(bdasReqSaveDto)
+    fun bedassignreq(@Valid bdasReqSaveRequest: BdasReqSaveRequest): Response? {
+        log.debug(bdasReqSaveRequest)
+        val res = bedAssignService.registerBedRequestInfo(bdasReqSaveRequest)
         return Response.ok(res).build()
     }
 

@@ -12,7 +12,7 @@ class EnumValidator : ConstraintValidator<ValidEnum, String> {
     }
 
     override fun isValid(value: String, context: ConstraintValidatorContext): Boolean {
-        val enumValues = this.annotation.enumClass::class.java.enumConstants
+        val enumValues = this.annotation.enumClass.java.enumConstants
         if (!enumValues.isNullOrEmpty()) {
             for (enumValue in enumValues) {
                 if (value == enumValue.toString()) {

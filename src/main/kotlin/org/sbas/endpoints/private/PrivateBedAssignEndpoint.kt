@@ -4,10 +4,10 @@ import org.eclipse.microprofile.openapi.annotations.Operation
 import org.eclipse.microprofile.openapi.annotations.tags.Tag
 import org.jboss.logging.Logger
 import org.jboss.resteasy.reactive.RestPath
-import org.sbas.dtos.bdas.BdasAdmsSaveDto
-import org.sbas.dtos.bdas.BdasAprvDto
-import org.sbas.dtos.bdas.BdasReqAprvDto
-import org.sbas.dtos.bdas.BdasTrnsSaveDto
+import org.sbas.dtos.bdas.BdasAdmsSaveRequest
+import org.sbas.dtos.bdas.BdasAprvSaveRequest
+import org.sbas.dtos.bdas.BdasReqAprvSaveRequest
+import org.sbas.dtos.bdas.BdasTrnsSaveRequest
 import org.sbas.services.BedAssignService
 import javax.inject.Inject
 import javax.validation.Valid
@@ -29,8 +29,8 @@ class PrivateBedAssignEndpoint {
     @Operation(summary = "병상승인/불가 (병상배정반)", description = "")
     @POST
     @Path("reqconfirm")
-    fun reqconfirm(@Valid bdasReqAprvDto: BdasReqAprvDto): Response {
-        return Response.ok(bedAssignService.reqConfirm(bdasReqAprvDto)).build()
+    fun reqconfirm(@Valid bdasReqAprvSaveRequest: BdasReqAprvSaveRequest): Response {
+        return Response.ok(bedAssignService.reqConfirm(bdasReqAprvSaveRequest)).build()
     }
 
     @Operation(summary = "가용 병원 목록 조회", description = "")
@@ -43,22 +43,22 @@ class PrivateBedAssignEndpoint {
     @Operation(summary = "배정승인/불가 (의료진)", description = "")
     @POST
     @Path("asgnconfirm")
-    fun asgnconfirm(@Valid bdasAprvDto: BdasAprvDto): Response {
-        return Response.ok(bedAssignService.asgnConfirm(bdasAprvDto)).build()
+    fun asgnconfirm(@Valid bdasAprvSaveRequest: BdasAprvSaveRequest): Response {
+        return Response.ok(bedAssignService.asgnConfirm(bdasAprvSaveRequest)).build()
     }
 
     @Operation(summary = "이송/배차 처리 (+구급대, 구급대원 및 차량번호 등록)", description = "")
     @POST
     @Path("confirmtransf")
-    fun confirmtransf(bdasTrnsSaveDto: BdasTrnsSaveDto): Response {
-        return Response.ok(bedAssignService.confirmTrans(bdasTrnsSaveDto)).build()
+    fun confirmtransf(bdasTrnsSaveRequest: BdasTrnsSaveRequest): Response {
+        return Response.ok(bedAssignService.confirmTrans(bdasTrnsSaveRequest)).build()
     }
 
     @Operation(summary = "입/퇴원/재택회송 처리", description = "")
     @POST
     @Path("confirmhosptlzdiscg")
-    fun confirmhosptlzdiscg(@Valid bdasAdmsSaveDto: BdasAdmsSaveDto): Response {
-        return Response.ok(bedAssignService.confirmHosp(bdasAdmsSaveDto)).build()
+    fun confirmhosptlzdiscg(@Valid bdasAdmsSaveRequest: BdasAdmsSaveRequest): Response {
+        return Response.ok(bedAssignService.confirmHosp(bdasAdmsSaveRequest)).build()
     }
 
     @Operation(summary = "병상배정 목록 (상태별)", description = "")

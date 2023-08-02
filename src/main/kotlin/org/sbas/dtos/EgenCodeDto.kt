@@ -2,9 +2,7 @@ package org.sbas.dtos
 
 import org.sbas.entities.base.BaseCodeEgen
 import org.sbas.entities.base.BaseCodeEgenId
-import org.sbas.utils.NoArg
 
-@NoArg
 data class BaseCodeEgenSaveReq (
     var cmMid: String,
     var cmMnm: String,

@@ -9,7 +9,7 @@ data class NaverGeocodingApiResponse (
     var errorMessage: String?,
     @JsonProperty("meta")
     var meta: Meta?,
-    @JsonProperty("addressses")
+    @JsonProperty("addresses")
     var addresses: List<Address>?
 )
 data class Meta(
