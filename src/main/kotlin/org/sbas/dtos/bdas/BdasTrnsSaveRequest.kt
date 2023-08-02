@@ -2,7 +2,6 @@ package org.sbas.dtos.bdas
 
 import org.sbas.entities.bdas.BdasTrns
 import org.sbas.entities.bdas.BdasTrnsId
-import org.sbas.utils.annotation.NoArg
 import org.sbas.utils.StringUtils
 import javax.validation.constraints.NotBlank
 import javax.validation.constraints.NotNull

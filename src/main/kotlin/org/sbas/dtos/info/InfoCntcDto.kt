@@ -2,9 +2,7 @@ package org.sbas.dtos.info
 
 import org.sbas.entities.info.InfoCntc
 import org.sbas.entities.info.InfoCntcId
-import org.sbas.utils.NoArg
 
-@NoArg
 data class InfoCntcDto (
     var id: String,
     var cntcType: String,

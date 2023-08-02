@@ -1,8 +1,5 @@
 package org.sbas.parameters
 
-import org.sbas.utils.NoArg
-
-@NoArg
 data class NewsScoreParameters(
     var breath: Int,  // 분당호흡수
     var spo2: Double,    // 산소포화도

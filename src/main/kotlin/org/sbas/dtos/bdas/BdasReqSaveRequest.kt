@@ -4,7 +4,6 @@ import org.sbas.constants.enums.BedStatCd
 import org.sbas.constants.enums.SvrtTypeCd
 import org.sbas.entities.bdas.BdasReq
 import org.sbas.entities.bdas.BdasReqId
-import org.sbas.utils.annotation.NoArg
 import org.sbas.utils.StringUtils
 import org.sbas.utils.annotation.ValidEnum
 import javax.validation.Valid

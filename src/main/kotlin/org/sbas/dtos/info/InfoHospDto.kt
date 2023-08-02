@@ -1,11 +1,10 @@
 package org.sbas.dtos.info
 
 import org.sbas.entities.info.InfoHosp
-import org.sbas.utils.NoArg
+import org.sbas.utils.annotation.NoArg
 import java.time.Instant
 import javax.ws.rs.QueryParam
 
-@NoArg
 data class InfoHospSaveReq(
     var hospId: String?,
     var hpid: String, // 기관 ID

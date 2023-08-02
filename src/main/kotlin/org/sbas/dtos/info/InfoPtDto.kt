@@ -4,13 +4,10 @@ import com.fasterxml.jackson.annotation.JsonIgnore
 import org.sbas.constants.enums.BedStatCd
 import org.sbas.constants.enums.NatiCd
 import org.sbas.entities.info.InfoPt
-import org.sbas.utils.NoArg
 import java.time.Instant
 import javax.validation.constraints.NotBlank
 import javax.validation.constraints.NotNull
 
-
-@NoArg
 data class InfoPtDto(
     @field: NotBlank val ptNm: String,
     @field: NotBlank val gndr: String,
@@ -89,6 +86,9 @@ data class InfoPtSearchDto(
     var tagList: MutableList<String>? = mutableListOf()
 }
 
+/**
+ * 환자 기본 정보
+ */
 data class InfoPtBasicInfo(
     val ptId: String?,
     val ptNm: String?,
@@ -111,6 +111,9 @@ data class InfoPtBasicInfo(
     val undrDsesCd: List<String>?,
 )
 
+/**
+ * 환자 병상 배정 이력
+ */
 data class BdasHisInfo(
     val ptId: String?,
     val bdasSeq: Int?,
@@ -125,7 +128,9 @@ data class BdasHisInfo(
     var tagList: MutableList<String>? = mutableListOf()
 }
 
-@NoArg
+/**
+ * 환자 중복 검사
+ */
 data class InfoPtCheckDto(
     var ptId: String,
     var ptNm: String,

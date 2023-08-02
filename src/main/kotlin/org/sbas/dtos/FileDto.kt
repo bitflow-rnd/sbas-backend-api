@@ -1,10 +1,8 @@
 package org.sbas.dtos
 
 import org.sbas.entities.base.BaseAttc
-import org.sbas.utils.NoArg
 import org.sbas.utils.StringUtils
 
-@NoArg
 data class FileDto(
     val fileName: String,
     val localPath: String,

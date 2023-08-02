@@ -3,7 +3,6 @@ package org.sbas.dtos.bdas
 import org.sbas.constants.enums.AdmsStatCd
 import org.sbas.entities.bdas.BdasAdms
 import org.sbas.entities.bdas.BdasAdmsId
-import org.sbas.utils.annotation.NoArg
 import org.sbas.utils.StringUtils
 import org.sbas.utils.annotation.ValidEnum
 import javax.validation.constraints.NotBlank

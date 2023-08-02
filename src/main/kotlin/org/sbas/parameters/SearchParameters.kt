@@ -1,6 +1,6 @@
 package org.sbas.parameters
 
-import org.sbas.utils.NoArg
+import org.sbas.utils.annotation.NoArg
 import javax.ws.rs.QueryParam
 
 @NoArg
