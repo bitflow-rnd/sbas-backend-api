@@ -21,12 +21,30 @@ class SvrtAnlyRepository : PanacheRepositoryBase<SvrtAnly, SvrtAnlyId> {
     /**
      * Get data from last analysis of severity for current patient by his pt_id
      */
-    fun getLastSvrtAnlyByPtId(ptId: String): MutableList<Any?> {
-        val query = "select new map(sa.id.ptId as ptId, sa.id.hospId as hospId, sa.id.anlyDt as anlyDt, " +
-                    "sa.id.msreDt as msreDt, sa.prdtDt as prdtDt, sa.svrtProb as svrtProb) " +
-                    "from SvrtAnly sa " +
-                    "where sa.id.anlySeq = (select max(sq.id.anlySeq) from SvrtAnly sq) and sa.id.ptId = '$ptId'"
-        return getEntityManager().createQuery(query).resultList
+    fun getLastSvrtAnlyByPtId(ptId: String): MutableList<*> {
+
+        val query = "select pt_id, hosp_id, anly_dt, msre_dt, prdt_dt, svrt_prob " +
+                "from (select distinct on (sa.rgst_seq) sa.* " +
+                "from svrt_anly as sa order by sa.rgst_seq, sa.anly_seq desc, sa.coll_seq) as first " +
+                "where pt_id = '$ptId' " +
+                "union " +
+                "select pt_id, hosp_id, anly_dt, msre_dt, prdt_dt, svrt_prob " +
+                "from svrt_anly as second " +
+                "where second.msre_dt = (select max(msre_dt) from svrt_anly) and pt_id = '$ptId' " +
+                "order by prdt_dt"
+
+        val result = getEntityManager().createNativeQuery(query).resultList as MutableList<*>
+
+        return result.stream().map { row ->
+            row as Array<*>; mapOf<String, String>(
+            "ptId" to row[0].toString(),
+            "hospId" to row[1].toString(),
+            "anlyDt" to row[2].toString(),
+            "msreDt" to row[3].toString(),
+            "prdtDt" to row[4].toString(),
+            "svrtProb" to row[5].toString()
+        )
+        }.toList()
     }
 }
 
@@ -37,7 +55,7 @@ class SvrtCollRepository : PanacheRepositoryBase<SvrtColl, SvrtCollId> {
      * Get list of rows from svrt_coll table for last 4 days by fields msre_dt and pid
      */
     fun findByPtIdAndMsreDt(pid: String, date: String = Date(System.currentTimeMillis()).toString()): List<SvrtColl>? {
-        return find("select sc from SvrtColl sc where sc.pid = '$pid' and (date(sc.id.msreDt) <= date('$date') and date(sc.id.msreDt) > (date('$date') - 4))").list()
+        return find("select sc from SvrtColl sc where sc.pid = '$pid' and (date(sc.id.msreDt) < date('$date') and date(sc.id.msreDt) >= (date('$date') - 4))").list()
     }
 
 }
