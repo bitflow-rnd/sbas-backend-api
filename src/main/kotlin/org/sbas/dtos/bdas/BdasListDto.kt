@@ -24,7 +24,13 @@ data class BdasListDto(
     var undrDsesCd: String?
 ) {
     @JsonProperty("bedStatCdNm")
-    private val bedStatCdNm: String? = bedStatCd?.let { BedStatCd.valueOf(it).cdNm }
+    private val bedStatCdNm: String? = bedStatCd?.let {
+        if (inhpAsgnYn == "Y") {
+            "원내배정"
+        } else {
+            BedStatCd.valueOf(it).cdNm
+        }
+    }
 
     @JsonProperty("svrtTypeCdNm")
     private val svrtTypeCdNm = svrtTypeCd?.let { SvrtTypeCd.valueOf(it).cdNm }

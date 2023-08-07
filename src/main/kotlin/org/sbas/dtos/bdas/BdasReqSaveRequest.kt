@@ -1,6 +1,7 @@
 package org.sbas.dtos.bdas
 
 import org.sbas.constants.enums.BedStatCd
+import org.sbas.constants.enums.ReqBedTypeCd
 import org.sbas.constants.enums.SvrtTypeCd
 import org.sbas.entities.bdas.BdasReq
 import org.sbas.entities.bdas.BdasReqId
@@ -49,7 +50,7 @@ data class BdasReqSvrInfo(
     var ptTypeCd: String,
     @field: NotBlank
     var undrDsesCd: String,
-    @field: NotBlank
+    @field: [NotBlank ValidEnum(enumClass = ReqBedTypeCd::class)]
     var reqBedTypeCd: String,
     @field: NotBlank
     var dnrAgreYn: String,

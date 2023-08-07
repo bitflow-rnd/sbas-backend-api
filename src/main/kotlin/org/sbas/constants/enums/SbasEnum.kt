@@ -14,7 +14,7 @@ enum class UserStatCd(val cdNm: String) {
 enum class BedStatCd(val cdNm: String) {
     BAST0001("배정없음"), BAST0002("역학조사"), BAST0003("승인대기"),
     BAST0004("배정대기"), BAST0005("이송대기"), BAST0006("이송중"),
-    BAST0007("완료"),
+    BAST0007("완료"), BAST0008("배정불가"),
 }
 
 /**
@@ -60,4 +60,14 @@ enum class UndrDsesCd(val cdNm: String) {
 
 enum class TimeLineStatCd(val cdNm: String) {
     COMPLETE("complete"), SUSPEND("suspend"), CLOSED("closed")
+}
+
+enum class ReqBedTypeCd(val cdNm: String) {
+    BDTP0001("미분류"),
+    BDTP0002("일반격리"),
+    BDTP0003("음압격리"),
+    BDTP0004("소아일반격리"),
+    BDTP0005("소아음압격리"),
+    BDTP0006("일반"),
+    BDTP0007("소아"),
 }

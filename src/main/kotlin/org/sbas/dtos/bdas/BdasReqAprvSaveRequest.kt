@@ -1,6 +1,7 @@
 package org.sbas.dtos.bdas
 
 import com.fasterxml.jackson.annotation.JsonIgnore
+import com.fasterxml.jackson.annotation.JsonProperty
 import org.sbas.entities.bdas.BdasReqAprv
 import org.sbas.entities.bdas.BdasReqAprvId
 import javax.validation.constraints.NotBlank
@@ -59,6 +60,7 @@ data class BdasReqAprvSaveRequest(
 }
 
 data class BdasAprvResponse(
+    @JsonProperty("isAlreadyApproved")
     val isAlreadyApproved: Boolean,
     val message: String?,
 )

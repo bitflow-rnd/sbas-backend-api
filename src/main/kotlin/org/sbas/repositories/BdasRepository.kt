@@ -51,15 +51,13 @@ class BdasReqRepository : PanacheRepositoryBase<BdasReq, BdasReqId> {
 
         // TODO 검색조건
         val list = queryFactory.listQuery<BdasListDto> {
-            val getBedAsgnStat =
-                function("fn_get_bed_asgn_stat", String::class.java, col(BdasReqId::ptId), col(BdasReqId::bdasSeq))
             selectMulti(
                 col(BdasReqId::ptId), col(BdasReqId::bdasSeq), col(InfoPt::ptNm), col(InfoPt::gndr),
                 function("fn_get_age", Int::class.java, col(InfoPt::rrno1), col(InfoPt::rrno2)),
                 col(InfoPt::bascAddr), col(BdasReq::updtDttm), col(BdasEsvy::diagNm),
-                getBedAsgnStat,
+                col(BdasReq::bedStatCd),
                 function("fn_get_chrg_inst", String::class.java,
-                    getBedAsgnStat, col(BdasReqId::ptId), col(BdasReqId::bdasSeq)
+                    col(BdasReq::bedStatCd), col(BdasReqId::ptId), col(BdasReqId::bdasSeq)
                 ),
                 col(BdasReq::inhpAsgnYn),
 //                literal("chrgInstNm"),
@@ -71,7 +69,6 @@ class BdasReqRepository : PanacheRepositoryBase<BdasReq, BdasReqId> {
             join(entity(BdasEsvy::class), on { col(BdasReqId::bdasSeq).equal(col(BdasEsvy::bdasSeq)) })
             whereAnd(
                 col(BdasReqId::bdasSeq).`in`(maxBdasSeqList),
-//                col(BdasReqId::bdasSeq).`in`(subQuery.),
             )
             orderBy(
                 ExpressionOrderSpec(col(BdasReqId::bdasSeq), ascending = false)
@@ -137,8 +134,8 @@ class BdasAprvRepository: PanacheRepositoryBase<BdasAprv, BdasAprvId> {
     @Inject
     private lateinit var entityManager: EntityManager
 
-    fun findApprovedEntity(ptId: String, bdasSeq: Int): BdasAprv? {
-        return find("id.ptId = '$ptId' and id.bdasSeq = $bdasSeq and aprvYn = 'Y'").firstResult()
+    fun findRefusedBdasAprv(ptId: String, bdasSeq: Int): MutableList<BdasAprv> {
+        return find("id.ptId = '$ptId' and id.bdasSeq = $bdasSeq and aprvYn = 'N'").list().toMutableList()
     }
 
     fun findBdasAprv(ptId: String, bdasSeq: Int): MutableList<BdasAprv>? {
