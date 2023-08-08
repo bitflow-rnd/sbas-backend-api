@@ -222,7 +222,7 @@ class BedAssignService {
         }
         findBdasReq.changeBedStatTo(BedStatCd.BAST0005.name)
 
-        // TODO
+        // TODO 재요청?
         // 모든 병원이 배정불가인 경우
         val refusedBdasAprv = bdasAprvRepository.findRefusedBdasAprv(saveRequest.ptId, saveRequest.bdasSeq)
         if (bdasReqAprvList.size == refusedBdasAprv.size) {
@@ -268,57 +268,50 @@ class BedAssignService {
     }
 
     @Transactional
-    fun getBedAsgnList(): CommonResponse<*> {
-        val bdasReqList = mutableListOf<BdasListDto>()
-        val bdasReqAprvList = mutableListOf<BdasListDto>()
-        val bdasAprvList = mutableListOf<BdasListDto>()
-        val bdasTrnsList = mutableListOf<BdasListDto>()
-        val bdasAdmsList = mutableListOf<BdasListDto>()
-
-        val bdasReqMap = mutableMapOf("count" to 0, "items" to Collections.EMPTY_LIST)
-        val bdasReqAprvMap = mutableMapOf("count" to 0, "items" to Collections.EMPTY_LIST)
-        val bdasAprvMap = mutableMapOf("count" to 0, "items" to Collections.EMPTY_LIST)
-        val bdasTrnsMap = mutableMapOf("count" to 0, "items" to Collections.EMPTY_LIST)
-        val bdasAdmsMap = mutableMapOf("count" to 0, "items" to Collections.EMPTY_LIST)
+    fun findBedAsgnList(): CommonResponse<*> {
+        val bdasReqList = BdasList(title = "병상요청", count = 0, items = mutableListOf())
+        val bdasReqAprvList = BdasList(title = "병상배정", count = 0, items = mutableListOf())
+        val bdasAprvList = BdasList(title = "이송/배차", count = 0, items = mutableListOf())
+        val bdasTrnsList = BdasList(title = "입/퇴원", count = 0, items = mutableListOf())
+        val bdasAdmsList = BdasList(title = "완료", count = 0, items = mutableListOf())
 
         val findBdasList = bdasReqRepository.findBdasList()
         findBdasList.forEach {
+            it.chrgInstNm = bdasReqRepository.findChrgInst(it.bedStatCd, it.ptId, it.bdasSeq)
             when (it.bedStatCd) {
                 BedStatCd.BAST0003.name -> {
-                    bdasReqList.add(it)
-                    makeToResultMap(bdasReqList, bdasReqMap)
+                    bdasReqList.items.add(it)
                 }
                 BedStatCd.BAST0004.name -> {
-                    bdasReqAprvList.add(it)
-                    makeToResultMap(bdasReqAprvList, bdasReqAprvMap)
+                    bdasReqAprvList.items.add(it)
                 }
                 BedStatCd.BAST0005.name -> {
-                    bdasAprvList.add(it)
-                    makeToResultMap(bdasAprvList, bdasAprvMap)
+                    bdasAprvList.items.add(it)
                 }
                 BedStatCd.BAST0006.name -> {
-                    bdasTrnsList.add(it)
-                    makeToResultMap(bdasTrnsList, bdasTrnsMap)
+                    bdasTrnsList.items.add(it)
                 }
-                BedStatCd.BAST0007.name -> {
-                    bdasAdmsList.add(it)
-                    makeToResultMap(bdasAdmsList, bdasAdmsMap)
-                }
-                BedStatCd.BAST0008.name -> {
-                    bdasAdmsList.add(it)
-                    makeToResultMap(bdasAdmsList, bdasAdmsMap)
+                BedStatCd.BAST0007.name, BedStatCd.BAST0008.name -> {
+                    bdasAdmsList.items.add(it)
                 }
             }
         }
 
-        val res = listOf(bdasReqMap, bdasReqAprvMap, bdasAprvMap, bdasTrnsMap, bdasAdmsMap)
+        bdasReqList.count = bdasReqList.items.size
+        bdasReqAprvList.count = bdasReqAprvList.items.size
+        bdasAprvList.count = bdasAprvList.items.size
+        bdasTrnsList.count = bdasTrnsList.items.size
+        bdasAdmsList.count = bdasAdmsList.items.size
+
+        val res = listOf(bdasReqList, bdasReqAprvList, bdasAprvList, bdasTrnsList, bdasAdmsList)
 
         return CommonResponse(res)
     }
 
     @Transactional
     fun getTimeLine(ptId: String, bdasSeq: Int): CommonResponse<*> {
-        val bedStatCd = bdasReqRepository.findBedStat(ptId, bdasSeq) ?: throw NotFoundException("병상배정 정보가 없습니다.")
+        val findBdasReq = bdasReqRepository.findByPtIdAndBdasSeq(ptId, bdasSeq) ?: throw NotFoundException("병상배정 정보가 없습니다.")
+        val bedStatCd = findBdasReq.bedStatCd
         val timeLineList = mutableListOf<BdasTimeLineDto>()
 
         log.debug(bedStatCd)
@@ -377,11 +370,6 @@ class BedAssignService {
         findReq.reqBedTypeCd = baseCodeRepository.getCdNm("BDTP", findReq.reqBedTypeCd)
 
         return CommonResponse(DiseaseInfoResponse(findEsvy, findReq))
-    }
-
-    private fun makeToResultMap(list: MutableList<BdasListDto>, map: MutableMap<String, Any>) {
-        map["count"] = list.size
-        map["items"] = list
     }
 
     private fun convertFromArr(beforeConvert: String?, grpCd: String) : String {

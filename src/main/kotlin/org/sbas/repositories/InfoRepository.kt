@@ -50,7 +50,7 @@ class InfoPtRepository : PanacheRepositoryBase<InfoPt, String> {
 //                col(InfoPt::dstr1Cd), function("fn_get_cd_nm", String::class.java, literal("SIDO"), col(InfoPt::dstr1Cd)),
 //                col(InfoPt::dstr2Cd), function("fn_get_cd_nm", String::class.java, literal("SIDO"+col(InfoPt::dstr1Cd)), col(InfoPt::dstr2Cd)),
 //                literal("hospId"), literal("hospNm"), col(InfoPt::mpno), col(InfoPt::natiCd),
-//                function("fn_get_bed_asgn_stat", String::class.java, col(InfoPt::ptId), col(BdasReqId::bdasSeq)), col(InfoPt::updtDttm)
+//                col(BdasReq::bedStatCd), col(InfoPt::updtDttm)
 //
 //            )
 //            from(entity(InfoPt::class))
@@ -66,7 +66,7 @@ class InfoPtRepository : PanacheRepositoryBase<InfoPt, String> {
         //TODO 기관 이름추가
         val query = "select new org.sbas.dtos.info.InfoPtSearchDto(a.ptId, b.id.bdasSeq, a.ptNm, a.gndr, " +
                 "a.dstr1Cd, fn_get_cd_nm('SIDO', a.dstr1Cd), a.dstr2Cd, fn_get_cd_nm('SIDO'||a.dstr1Cd, a.dstr2Cd), " +
-                "ba.hospId, '', a.mpno, a.natiCd, fn_get_bed_asgn_stat(a.ptId, b.id.bdasSeq), a.updtDttm, " +
+                "ba.hospId, '', a.mpno, a.natiCd, b.bedStatCd, a.updtDttm, " +
                 "b.ptTypeCd, b.svrtTypeCd, b.undrDsesCd, fn_get_age(a.rrno1, a.rrno2)) " +
                 "from InfoPt a " +
                 "left join BdasReq b on a.ptId = b.id.ptId " +
@@ -83,11 +83,6 @@ class InfoPtRepository : PanacheRepositoryBase<InfoPt, String> {
     fun getAge(rrno1: String?, rrno2: String?): Int {
         val query = "select fn_get_age('${rrno1}', '${rrno2}') as test"
         return entityManager.createNativeQuery(query).singleResult as Int
-    }
-
-    fun findBedStat(ptId: String, bdasSeq: Int): String {
-        val query = "select fn_get_bed_asgn_stat('${ptId}', ${bdasSeq}) as test"
-        return entityManager.createNativeQuery(query).singleResult as String
     }
 
     fun findBdasHisInfo(ptId: String): MutableList<BdasHisInfo> {

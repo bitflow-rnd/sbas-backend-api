@@ -65,6 +65,6 @@ class PrivateBedAssignEndpoint {
     @GET
     @Path("list")
     fun list(): Response {
-        return Response.ok(bedAssignService.getBedAsgnList()).build()
+        return Response.ok(bedAssignService.findBedAsgnList()).build()
     }
 }

@@ -7,6 +7,7 @@ import com.linecorp.kotlinjdsl.querydsl.expression.col
 import io.quarkus.hibernate.orm.panache.kotlin.PanacheRepositoryBase
 import io.quarkus.panache.common.Sort
 import org.sbas.constants.enums.AdmsStatCd
+import org.sbas.constants.enums.BedStatCd
 import org.sbas.constants.enums.TimeLineStatCd
 import org.sbas.dtos.bdas.BdasListDto
 import org.sbas.dtos.bdas.BdasTimeLineDto
@@ -56,11 +57,11 @@ class BdasReqRepository : PanacheRepositoryBase<BdasReq, BdasReqId> {
                 function("fn_get_age", Int::class.java, col(InfoPt::rrno1), col(InfoPt::rrno2)),
                 col(InfoPt::bascAddr), col(BdasReq::updtDttm), col(BdasEsvy::diagNm),
                 col(BdasReq::bedStatCd),
-                function("fn_get_chrg_inst", String::class.java,
-                    col(BdasReq::bedStatCd), col(BdasReqId::ptId), col(BdasReqId::bdasSeq)
-                ),
+//                function("fn_get_chrg_inst", String::class.java,
+//                    col(BdasReq::bedStatCd), col(BdasReqId::ptId), col(BdasReqId::bdasSeq)
+//                ),
+                literal("chrgInstNm"),
                 col(BdasReq::inhpAsgnYn),
-//                literal("chrgInstNm"),
                 col(BdasReq::ptTypeCd), col(BdasReq::svrtTypeCd), col(BdasReq::undrDsesCd),
             )
             from(entity(BdasReq::class))
@@ -74,37 +75,37 @@ class BdasReqRepository : PanacheRepositoryBase<BdasReq, BdasReqId> {
                 ExpressionOrderSpec(col(BdasReqId::bdasSeq), ascending = false)
             )
         }
-        return list.toMutableList()
 
-//        val query = "select new org.sbas.dtos.bdas.BdasListDto(br.id.ptId, br.id.bdasSeq, pt.ptNm, pt.gndr, fn_get_age(pt.rrno1, pt.rrno2), " +
-//                "pt.bascAddr, br.updtDttm, be.diagNm, fn_get_bed_asgn_stat(br.id.ptId, br.id.bdasSeq), '', be.rcptPhc, br.ptTypeCd, br.svrtTypeCd, br.undrDsesCd) " +
-//                "from BdasReq br " +
-//                "join InfoPt pt on br.id.ptId = pt.ptId " +
-//                "join BdasEsvy be on br.id.bdasSeq = be.bdasSeq " +
-//                "where br.id.bdasSeq in (select max(id.bdasSeq) as bdasSeq from BdasReq group by id.ptId) " +
-//                "order by br.updtDttm desc"
-//        return entityManager.createQuery(query, BdasListDto::class.java).resultList
+        return list.toMutableList()
+    }
+
+    fun findChrgInst(bedStatCd: String, ptId: String, bdasSeq: Int): String {
+        val subQuery = when (bedStatCd) {
+            "BAST0003" -> "SELECT a.updtUserId FROM BdasReq a WHERE a.id.ptId = '$ptId' AND a.id.bdasSeq = $bdasSeq"
+            "BAST0004" -> "SELECT a.updtUserId FROM BdasReqAprv a WHERE a.id.ptId = '$ptId' AND a.id.bdasSeq = $bdasSeq AND a.id.asgnReqSeq = 1"
+            "BAST0005" -> "SELECT a.updtUserId FROM BdasAprv a WHERE a.id.ptId = '$ptId' AND a.id.bdasSeq = $bdasSeq AND (a.aprvYn = 'Y' OR (a.aprvYn = 'N' AND a.id.asgnReqSeq = 1))"
+            "BAST0006" -> "SELECT a.updtUserId FROM BdasTrns a WHERE a.id.ptId = '$ptId' AND a.id.bdasSeq = $bdasSeq"
+            "BAST0007", "BAST0008" -> "SELECT a.updtUserId FROM BdasAdms a WHERE a.id.ptId = '$ptId' AND a.id.bdasSeq = $bdasSeq"
+            else -> "''"
+        }
+
+        return try {
+            val query = "SELECT iu.instNm from InfoUser iu where iu.id in ($subQuery)"
+            entityManager.createQuery(query).singleResult as String
+        } catch (ex: javax.persistence.NoResultException) {
+            // 예외 처리: 결과가 없을 때 빈 문자열을 반환
+            ""
+        }
     }
 
     fun findTimeLineInfo(ptId: String, bdasSeq: Int): MutableList<BdasTimeLineDto> {
-        val query = "select new org.sbas.dtos.bdas.BdasTimeLineDto('병상요청(' || (case br.inhpAsgnYn when 'Y' then '원내배정' when 'N' then '전원요청' end) || ')', " +
+        val query = "select new org.sbas.dtos.bdas.BdasTimeLineDto('병상요청 (' || (case br.inhpAsgnYn when 'Y' then '원내배정' when 'N' then '전원요청' end) || ')', " +
                 "iu.instNm || ' / ' || iu.userNm, br.updtDttm, br.msg, '${TimeLineStatCd.COMPLETE.cdNm}', " +
-                "br.inhpAsgnYn, iu.jobCd, iu.ocpCd, " +
-                "(select instNm from InfoInst where id = 'LG00000001')) " +
+                "br.inhpAsgnYn, iu.jobCd, iu.ocpCd, iu.instNm) " +
                 "from BdasReq br " +
-                "join InfoUser iu on iu.id = br.rgstUserId " +
+                "join InfoUser iu on iu.id = br.updtUserId " +
                 "where br.id.ptId = '$ptId' and br.id.bdasSeq = $bdasSeq"
         return entityManager.createQuery(query, BdasTimeLineDto::class.java).resultList
-    }
-
-    fun findBedStat(ptId: String, bdasSeq: Int): String? {
-        val query = "select fn_get_bed_asgn_stat('${ptId}', ${bdasSeq}) as test"
-        val result = entityManager.createNativeQuery(query).singleResult
-        return if (result == "-") {
-            null
-        } else {
-            result as String
-        }
     }
 
     fun findByPtId(ptId: String) = find("from BdasReq where id.ptId='$ptId' order by id.bdasSeq desc").firstResult()
@@ -199,7 +200,8 @@ class BdasAdmsRepository: PanacheRepositoryBase<BdasAdms, BdasAdmsId> {
 
     fun findTimeLineInfo(ptId: String, bdasSeq: Int): MutableList<BdasTimeLineDto> {
 
-        val query = "select new org.sbas.dtos.bdas.BdasTimeLineDto(case ba.admsStatCd when '${AdmsStatCd.IOST0001.name}' then '입원완료' " +
+        val query = "select new org.sbas.dtos.bdas.BdasTimeLineDto(" +
+                "case ba.admsStatCd when '${AdmsStatCd.IOST0001.name}' then '입원완료' " +
                 "when '${AdmsStatCd.IOST0002.name}' then '퇴원완료' when '${AdmsStatCd.IOST0003}' then '자택회송' end, " +
                 "'${TimeLineStatCd.COMPLETE.cdNm}') " +
                 "from BdasAdms ba " +

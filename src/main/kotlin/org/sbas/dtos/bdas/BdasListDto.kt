@@ -8,15 +8,15 @@ import org.sbas.constants.enums.UndrDsesCd
 import java.time.Instant
 
 data class BdasListDto(
-    val ptId: String?,
-    val bdasSeq: Int?,
+    val ptId: String,
+    val bdasSeq: Int,
     val ptNm: String?,
     val gndr: String?,
     val age: Int?,
     val bascAddr: String?,
     val updtDttm: Instant?,
     val diagNm: String?,
-    val bedStatCd: String?,
+    val bedStatCd: String,
     var chrgInstNm: String?,
     val inhpAsgnYn: String?,
     var ptTypeCd: String,
@@ -24,7 +24,7 @@ data class BdasListDto(
     var undrDsesCd: String?
 ) {
     @JsonProperty("bedStatCdNm")
-    private val bedStatCdNm: String? = bedStatCd?.let {
+    private val bedStatCdNm: String = bedStatCd.let {
         if (inhpAsgnYn == "Y") {
             "원내배정"
         } else {
@@ -58,3 +58,9 @@ data class BdasListDto(
         ptTypeCdNmTagList.addAll(ptTypeCdNm)
     }
 }
+
+data class BdasList(
+    val title: String,
+    var count: Int,
+    val items: MutableList<BdasListDto>,
+)
