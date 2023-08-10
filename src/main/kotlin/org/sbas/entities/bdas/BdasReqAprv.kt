@@ -39,6 +39,10 @@ class BdasReqAprv(
             msg = "이미 배정 승인된 병원이 존재하여 불가 처리되었습니다.",
         )
     }
+
+    fun isEqualAsgnReqSeqAndHospId(asgnReqSeq: Int, reqHospId: String): Boolean {
+        return this.id.asgnReqSeq == asgnReqSeq && this.reqHospId == reqHospId
+    }
 }
 
 @Embeddable

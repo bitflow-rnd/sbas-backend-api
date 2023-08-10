@@ -41,6 +41,8 @@ data class BdasReqAprvSaveRequest(
             ),
             aprvYn = "Y",
             msg = this.msg,
+            reqHospId = null,
+            reqHospNm = null,
         )
     }
 

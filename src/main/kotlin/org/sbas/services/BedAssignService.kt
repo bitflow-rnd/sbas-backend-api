@@ -13,7 +13,6 @@ import org.sbas.responses.patient.DiseaseInfoResponse
 import org.sbas.restclients.FirebaseService
 import org.sbas.restparameters.NaverGeocodingApiParams
 import org.sbas.utils.CustomizedException
-import java.util.*
 import javax.enterprise.context.ApplicationScoped
 import javax.inject.Inject
 import javax.transaction.Transactional
@@ -110,6 +109,7 @@ class BedAssignService {
         if (saveRequest.aprvYn == "N") { // 거절할 경우 거절 사유 및 메시지 작성
             bdasReqAprvRepository.persist(saveRequest.toRefuseEntity())
             findBdasReq.changeBedStatTo(BedStatCd.BAST0008.name)
+            return CommonResponse("배정 불가 처리 완료")
         } else if (saveRequest.aprvYn == "Y") { // 승인할 경우 원내 배정 여부 체크
             if (findBdasReq.inhpAsgnYn == "N") {
                 // 전원 요청시 병원 정보 저장
@@ -132,7 +132,7 @@ class BedAssignService {
             } else if (findBdasReq.inhpAsgnYn == "Y") {
                 // 원내 배정이면 승인, 의료진 승인 건너뜀
                 bdasReqAprvRepository.persist(saveRequest.toEntityWhenInHosp())
-                findBdasReq.changeBedStatTo(BedStatCd.BAST0006.name)
+                findBdasReq.changeBedStatTo(BedStatCd.BAST0004.name)
             }
         } else {
             throw CustomizedException("aprvYn 값이 올바르지 않습니다.", Response.Status.INTERNAL_SERVER_ERROR)
@@ -184,29 +184,38 @@ class BedAssignService {
      * 의료진 승인
      */
     @Transactional
-    fun asgnConfirm(saveRequest: BdasAprvSaveRequest): CommonResponse<BdasAprvResponse> {
+    fun asgnConfirm(saveRequest: BdasAprvSaveRequest): CommonResponse<*> {
         val findBdasReq = bdasReqRepository.findByPtIdAndBdasSeq(saveRequest.ptId, saveRequest.bdasSeq) ?: throw NotFoundException("bdasReq not found")
 
         if (findBdasReq.inhpAsgnYn == "Y") {
-            throw CustomizedException("원내배정 입니다.", Response.Status.BAD_REQUEST)
+//            throw CustomizedException("원내배정입니다.", Response.Status.BAD_REQUEST)
+            bdasAprvRepository.persist(saveRequest.toApproveEntity())
+            findBdasReq.changeBedStatTo(BedStatCd.BAST0006.name)
+            return CommonResponse("원내배정 승인")
         }
 
-        val bdasReqAprvList = bdasReqAprvRepository.findReqAprvList(saveRequest.ptId, saveRequest.bdasSeq)
+        val bdasReqAprvList = bdasReqAprvRepository.findReqAprvListByPtIdAndBdasSeq(saveRequest.ptId, saveRequest.bdasSeq)
         if (bdasReqAprvList.isEmpty()) {
             throw CustomizedException("배정 승인 정보가 없습니다.", Response.Status.BAD_REQUEST)
         }
 
+        bdasReqAprvList.filter { it.id.asgnReqSeq == saveRequest.asgnReqSeq }.forEach {
+            if (!it.isEqualAsgnReqSeqAndHospId(saveRequest.asgnReqSeq, saveRequest.hospId)) {
+                throw CustomizedException("배정 요청 순번(asgnReqSeq) 및 병원 ID(hospId)가 일치하지 않습니다.", Response.Status.BAD_REQUEST)
+            }
+        }
+
         val bdasAprvList = bdasAprvRepository.findBdasAprv(saveRequest.ptId, saveRequest.bdasSeq)
         val approvedBdasAprv = bdasAprvList?.filter { it.aprvYn == "Y" }
-        val asgnReqSeqList = mutableListOf(saveRequest.asgnReqSeq)
 
+        val asgnReqSeqList = mutableListOf(saveRequest.asgnReqSeq)
         bdasAprvList?.let {
             asgnReqSeqList.addAll(it.map { bdasAprv -> bdasAprv.id.asgnReqSeq })
         }
 
         // 거절한 병원의 정보 저장
         if (saveRequest.aprvYn == "N") {
-            bdasAprvRepository.getEntityManager().merge(saveRequest.toRefuseEntity(null, null))
+            bdasAprvRepository.persist(saveRequest.toRefuseEntity(saveRequest.msg, saveRequest.negCd))
             return CommonResponse(BdasAprvResponse(false, "배정 불가 처리되었습니다."))
         }
 
@@ -337,22 +346,35 @@ class BedAssignService {
                 timeLineList.addAll(bdasReqRepository.findTimeLineInfo(ptId, bdasSeq))
                 timeLineList.addAll(bdasReqAprvRepository.findTimeLineInfo(ptId, bdasSeq))
                 timeLineList.addAll(bdasAprvRepository.findTimeLineInfo(ptId, bdasSeq))
-                timeLineList.add(BdasTimeLineDto("이송대기", TimeLineStatCd.SUSPEND.cdNm))
+                timeLineList.add(BdasTimeLineDto("이송대기", TimeLineStatCd.CLOSED.cdNm))
                 timeLineList.add(closedBdasAdms)
             }
             BedStatCd.BAST0006.name -> {
                 timeLineList.addAll(bdasReqRepository.findTimeLineInfo(ptId, bdasSeq))
                 timeLineList.addAll(bdasReqAprvRepository.findTimeLineInfo(ptId, bdasSeq))
                 timeLineList.addAll(bdasAprvRepository.findTimeLineInfo(ptId, bdasSeq))
-                timeLineList.addAll(bdasTrnsRepository.findTimeLineInfo(ptId, bdasSeq))
-                timeLineList.add(closedBdasAdms)
+                timeLineList.addAll(bdasTrnsRepository.findSuspendTimeLineInfo(ptId, bdasSeq))
+                timeLineList.addAll(bdasAdmsRepository.findSuspendTimeLineInfo(ptId, bdasSeq))
             }
             BedStatCd.BAST0007.name -> {
                 timeLineList.addAll(bdasReqRepository.findTimeLineInfo(ptId, bdasSeq))
                 timeLineList.addAll(bdasReqAprvRepository.findTimeLineInfo(ptId, bdasSeq))
                 timeLineList.addAll(bdasAprvRepository.findTimeLineInfo(ptId, bdasSeq))
-                timeLineList.addAll(bdasTrnsRepository.findTimeLineInfo(ptId, bdasSeq))
-                timeLineList.addAll(bdasAdmsRepository.findTimeLineInfo(ptId, bdasSeq))
+                timeLineList.addAll(bdasTrnsRepository.findCompleteTimeLineInfo(ptId, bdasSeq))
+                timeLineList.addAll(bdasAdmsRepository.findCompleteTimeLineInfo(ptId, bdasSeq))
+            }
+            BedStatCd.BAST0008.name -> {
+                timeLineList.addAll(bdasReqRepository.findTimeLineInfo(ptId, bdasSeq))
+                val bdasReqAprvTimeLine = bdasReqAprvRepository.findTimeLineInfo(ptId, bdasSeq)
+
+                timeLineList.addAll(bdasReqAprvTimeLine)
+                if (bdasReqAprvTimeLine[0].title == "배정불가") {
+                    timeLineList.add(closedBdasAprv)
+                } else { timeLineList.addAll(bdasAprvRepository.findTimeLineInfo(ptId, bdasSeq))
+                }
+
+                timeLineList.add(closedBdasTrans)
+                timeLineList.add(closedBdasAdms)
             }
         }
         return CommonResponse(TimeLineDtoList(timeLineList.size, timeLineList))
