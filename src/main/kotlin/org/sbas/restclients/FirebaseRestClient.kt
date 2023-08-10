@@ -33,8 +33,7 @@ class FirebaseService {
     fun onStart(@Observes ev: StartupEvent) {
         if (FirebaseApp.getApps().isEmpty()) {
             val serviceAccount =
-                FileInputStream("C:\\sbas\\www\\public\\firebase\\serviceAccountKey.json")
-
+                FileInputStream("C:\\www\\dev.smartbas.org\\public\\firebase\\serviceAccountKey.json")
             val options = FirebaseOptions.builder()
                 .setCredentials(GoogleCredentials.fromStream(serviceAccount))
                 .setStorageBucket("sbas-4c928.appspot.com")
