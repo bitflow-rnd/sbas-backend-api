@@ -170,6 +170,18 @@ class BdasAprvRepository: PanacheRepositoryBase<BdasAprv, BdasAprvId> {
         return resultList
     }
 
+    fun findRefuseTimeLineInfo(ptId: String, bdasSeq: Int): MutableList<BdasTimeLineDto> {
+        val query = "select new org.sbas.dtos.bdas.BdasTimeLineDto(case ba.aprvYn when 'Y' then '배정완료' when 'N' then '배정불가' end, " +
+                "iu.instNm || ' / ' || iu.userNm, ba.updtDttm, ba.msg, '${TimeLineStatCd.COMPLETE.cdNm}') " +
+                "from BdasAprv ba " +
+                "inner join InfoUser iu on iu.id = ba.updtUserId " +
+                "where ba.id.ptId = '$ptId' and ba.id.bdasSeq = $bdasSeq and ba.aprvYn = 'N' " +
+                "and iu.jobCd = 'PMGR0003' "+
+                "order by ba.aprvYn "
+
+        return entityManager.createQuery(query, BdasTimeLineDto::class.java).resultList
+    }
+
     fun findBdasAprvList(ptId: String, bdasSeq: Int): List<BdasAprv> {
         return find("select ba from BdasAprv ba where exists (select 1 from BdasAprv ba where ba.id.ptId = '$ptId' and ba.id.bdasSeq = $bdasSeq)").list()
     }

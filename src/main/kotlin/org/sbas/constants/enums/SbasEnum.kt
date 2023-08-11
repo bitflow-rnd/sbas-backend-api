@@ -71,3 +71,13 @@ enum class ReqBedTypeCd(val cdNm: String) {
     BDTP0006("일반"),
     BDTP0007("소아"),
 }
+
+enum class BnrnTypeCd(val cdNm: String) {
+    BNRN0001("중환자실 부족"),
+    BNRN0002("일반병실 부족"),
+    BNRN0003("응급수술 불가"),
+    BNRN0004("의료인 부족"),
+    BNRN0005("응급실 과밀화3"),
+    BNRN0006("장비 부족"),
+    BNRN0007("기타"),
+}

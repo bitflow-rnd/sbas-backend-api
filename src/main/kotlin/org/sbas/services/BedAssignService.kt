@@ -1,5 +1,6 @@
 package org.sbas.services
 
+import org.eclipse.microprofile.jwt.JsonWebToken
 import org.jboss.logging.Logger
 import org.sbas.constants.enums.BedStatCd
 import org.sbas.constants.enums.TimeLineStatCd
@@ -43,6 +44,7 @@ class BedAssignService {
     @Inject private lateinit var baseCodeRepository: BaseCodeRepository
     @Inject private lateinit var geoHandler: GeocodingHandler
     @Inject private lateinit var firebaseService: FirebaseService
+    @Inject private lateinit var jwt : JsonWebToken
 
     /**
      * 질병 정보 등록
@@ -186,13 +188,7 @@ class BedAssignService {
     @Transactional
     fun asgnConfirm(saveRequest: BdasAprvSaveRequest): CommonResponse<*> {
         val findBdasReq = bdasReqRepository.findByPtIdAndBdasSeq(saveRequest.ptId, saveRequest.bdasSeq) ?: throw NotFoundException("bdasReq not found")
-
-        if (findBdasReq.inhpAsgnYn == "Y") {
-//            throw CustomizedException("원내배정입니다.", Response.Status.BAD_REQUEST)
-            bdasAprvRepository.persist(saveRequest.toApproveEntity())
-            findBdasReq.changeBedStatTo(BedStatCd.BAST0006.name)
-            return CommonResponse("원내배정 승인")
-        }
+        val findInfoUser = infoUserRepository.findByUserId(jwt.name) ?: throw NotFoundException("user not found")
 
         val bdasReqAprvList = bdasReqAprvRepository.findReqAprvListByPtIdAndBdasSeq(saveRequest.ptId, saveRequest.bdasSeq)
         if (bdasReqAprvList.isEmpty()) {
@@ -205,12 +201,11 @@ class BedAssignService {
             }
         }
 
-        val bdasAprvList = bdasAprvRepository.findBdasAprv(saveRequest.ptId, saveRequest.bdasSeq)
-        val approvedBdasAprv = bdasAprvList?.filter { it.aprvYn == "Y" }
-
-        val asgnReqSeqList = mutableListOf(saveRequest.asgnReqSeq)
-        bdasAprvList?.let {
-            asgnReqSeqList.addAll(it.map { bdasAprv -> bdasAprv.id.asgnReqSeq })
+        // 원내배정
+        if (findBdasReq.inhpAsgnYn == "Y") {
+            bdasAprvRepository.persist(saveRequest.toApproveEntity(findInfoUser.instId))
+            findBdasReq.changeBedStatTo(BedStatCd.BAST0006.name)
+            return CommonResponse("원내배정 승인")
         }
 
         // 거절한 병원의 정보 저장
@@ -218,14 +213,24 @@ class BedAssignService {
             bdasAprvRepository.persist(saveRequest.toRefuseEntity(saveRequest.msg, saveRequest.negCd))
             return CommonResponse(BdasAprvResponse(false, "배정 불가 처리되었습니다."))
         }
+        
+        val bdasAprvList = bdasAprvRepository.findBdasAprv(saveRequest.ptId, saveRequest.bdasSeq)
+        val approvedBdasAprv = bdasAprvList?.filter { it.aprvYn == "Y" }
 
         // 이미 승인한 병원이 있는지 확인
         if (!approvedBdasAprv.isNullOrEmpty()) {
             return CommonResponse(BdasAprvResponse(true, "이미 승인한 병원이 존재합니다. 자동으로 배정 불가 처리되었습니다."))
         }
 
-        // 승인한 병원의 정보 저장 및 나머지 병원 거절 + push 알림?
-        bdasAprvRepository.persist(saveRequest.toApproveEntity())
+        // 승인한 병원의 정보 저장
+        bdasAprvRepository.persist(saveRequest.toApproveEntity(null))
+
+        val asgnReqSeqList = mutableListOf(saveRequest.asgnReqSeq)
+        bdasAprvList?.let {
+            asgnReqSeqList.addAll(it.map { bdasAprv -> bdasAprv.id.asgnReqSeq })
+        }
+
+        // 나머지 병원 거절 + push 알림?
         bdasReqAprvList.filter { it.id.asgnReqSeq !in asgnReqSeqList }.forEach {
             bdasAprvRepository.persist(it.convertToRefuseBdasAprv())
         }
@@ -366,11 +371,12 @@ class BedAssignService {
             BedStatCd.BAST0008.name -> {
                 timeLineList.addAll(bdasReqRepository.findTimeLineInfo(ptId, bdasSeq))
                 val bdasReqAprvTimeLine = bdasReqAprvRepository.findTimeLineInfo(ptId, bdasSeq)
-
                 timeLineList.addAll(bdasReqAprvTimeLine)
+
                 if (bdasReqAprvTimeLine[0].title == "배정불가") {
                     timeLineList.add(closedBdasAprv)
-                } else { timeLineList.addAll(bdasAprvRepository.findTimeLineInfo(ptId, bdasSeq))
+                } else {
+                    timeLineList.addAll(bdasAprvRepository.findRefuseTimeLineInfo(ptId, bdasSeq))
                 }
 
                 timeLineList.add(closedBdasTrans)

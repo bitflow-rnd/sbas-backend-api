@@ -1,8 +1,10 @@
 package org.sbas.dtos.bdas
 
+import org.sbas.constants.enums.BnrnTypeCd
 import org.sbas.entities.bdas.BdasAprv
 import org.sbas.entities.bdas.BdasAprvId
 import org.sbas.utils.StringUtils
+import org.sbas.utils.annotation.ValidEnum
 import javax.validation.constraints.NotBlank
 import javax.validation.constraints.NotNull
 import javax.validation.constraints.Pattern
@@ -18,6 +20,7 @@ data class BdasAprvSaveRequest(
     val hospId: String,
     @field: [NotBlank Pattern(regexp = "^[YN]\$", message = "Y/N 값만 가능합니다.")]
     val aprvYn: String,
+    @field: ValidEnum(enumClass = BnrnTypeCd::class)
     val negCd: String?,
     val msg: String?,
     val roomNm: String?,
@@ -40,14 +43,14 @@ data class BdasAprvSaveRequest(
         )
     }
 
-    fun toApproveEntity(): BdasAprv {
+    fun toApproveEntity(hospId: String?): BdasAprv {
         return BdasAprv(
             id = BdasAprvId(
                 ptId = this.ptId,
                 bdasSeq = this.bdasSeq,
                 asgnReqSeq = this.asgnReqSeq,
             ),
-            hospId = this.hospId,
+            hospId = hospId ?: this.hospId,
             aprvDt = StringUtils.getYyyyMmDd(),
             aprvTm = StringUtils.getHhMmSs(),
             aprvYn = this.aprvYn,
