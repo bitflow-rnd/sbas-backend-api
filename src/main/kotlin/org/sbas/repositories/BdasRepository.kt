@@ -233,7 +233,7 @@ class BdasAdmsRepository: PanacheRepositoryBase<BdasAdms, BdasAdmsId> {
                 "from BdasAprv ba " +
                 "join InfoUser iu on iu.id = ba.updtUserId " +
                 "where ba.id.ptId = '$ptId' and ba.id.bdasSeq = $bdasSeq " +
-                "order by ba.aprvYn = 'Y' "
+                "and ba.aprvYn = 'Y' "
 
         return getEntityManager().createQuery(query, BdasTimeLineDto::class.java).resultList
     }
