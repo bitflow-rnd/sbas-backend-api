@@ -1,5 +1,6 @@
 package org.sbas.services
 
+import io.quarkus.cache.*
 import org.eclipse.microprofile.config.inject.ConfigProperty
 import org.eclipse.microprofile.jwt.JsonWebToken
 import org.eclipse.microprofile.rest.client.inject.RestClient
@@ -8,26 +9,25 @@ import org.sbas.constants.SbasConst
 import org.sbas.constants.enums.UserStatCd
 import org.sbas.dtos.*
 import org.sbas.dtos.info.*
-import org.sbas.entities.info.InfoCert
 import org.sbas.entities.info.InfoCntc
 import org.sbas.entities.info.InfoUser
 import org.sbas.parameters.*
 import org.sbas.repositories.InfoCertRepository
 import org.sbas.repositories.InfoCntcRepository
 import org.sbas.repositories.InfoUserRepository
-import org.sbas.responses.CommonResponse
 import org.sbas.responses.CommonListResponse
+import org.sbas.responses.CommonResponse
 import org.sbas.restclients.NaverSensRestClient
 import org.sbas.restparameters.NaverSmsMsgApiParams
 import org.sbas.restparameters.NaverSmsReqMsgs
 import org.sbas.utils.CustomizedException
 import org.sbas.utils.TokenUtils
-import java.time.Instant
 import javax.enterprise.context.ApplicationScoped
 import javax.inject.Inject
 import javax.transaction.Transactional
 import javax.ws.rs.NotFoundException
 import javax.ws.rs.core.Response
+
 
 @ApplicationScoped
 class UserService {
@@ -52,6 +52,9 @@ class UserService {
 
     @ConfigProperty(name = "restclient.naversens.serviceid")
     private lateinit var naversensserviceid: String
+
+    @CacheName("smsCache")
+    private lateinit var smsCache: Cache
 
     /**
      * 사용자 등록 요청
@@ -98,35 +101,55 @@ class UserService {
     /**
      * 본인인증 SMS/MMS 메시지 발송
      */
-    @Transactional
     fun sendIdentifySms(smsSendRequest: SmsSendRequest): CommonResponse<String> {
-        var rand = ""
-        for(i: Int in 0..5){
-            rand += ('0'..'9').random()
+        val completableFuture =
+            smsCache.`as`(CaffeineCache::class.java).getIfPresent<String>(smsSendRequest.to)
+
+        if (completableFuture != null) {
+            smsCache.`as`(CaffeineCache::class.java).invalidate(smsSendRequest.to).await().indefinitely()
         }
 
-        val smsTo = NaverSmsReqMsgs("", "", smsSendRequest.to!!)
+        val rand = getSmsNumber(smsSendRequest.to)
+
+        val smsTo = NaverSmsReqMsgs("", "", smsSendRequest.to)
 
         naverSensClient.messages(naversensserviceid, NaverSmsMsgApiParams(
             SbasConst.MsgType.SMS, null, SbasConst.MSG_SEND_NO, null, "COMM",
             "안녕하세요. SBAS 인증번호는 [ $rand ]입니다. 감사합니다.", null, null, null, mutableListOf(smsTo), null)
         )
 
-        val now = Instant.now()
+        return CommonResponse(rand)
+    }
 
-        val findCert = certRepository.find("phone_no", smsSendRequest.to!!).firstResult()
-
-        if(findCert == null) {
-            val insertCertNo = InfoCert(smsSendRequest.to!!, rand, now, now.plusSeconds(180))
-
-            certRepository.persist(insertCertNo)
-        }else {
-            findCert.certNo = rand
-            findCert.createdDttm = now
-            findCert.expiresDttm = now.plusSeconds(180)
+    @CacheResult(cacheName = "smsCache")
+    fun getSmsNumber(@CacheKey phoneNumber: String): String {
+        var rand = ""
+        for(i: Int in 0..5){
+            rand += ('0'..'9').random()
         }
 
-        return CommonResponse(rand)
+        return rand
+    }
+
+    /**
+     * 인증번호 확인
+     */
+    @Transactional
+    fun checkCertNo(checkCertNoRequest: CheckCertNoRequest): CommonResponse<String> {
+        val completableFuture =
+            smsCache.`as`(CaffeineCache::class.java).getIfPresent<String>(checkCertNoRequest.phoneNo)
+                ?: throw CustomizedException("인증 시간 초과", Response.Status.BAD_REQUEST)
+
+        val number = completableFuture.get()
+
+        return when {
+            number == checkCertNoRequest.certNo -> {
+                CommonResponse("인증 성공")
+            }
+            else -> {
+                throw CustomizedException("유효하지 않은 인증번호입니다.", Response.Status.NOT_ACCEPTABLE)
+            }
+        }
     }
 
     @Transactional
@@ -223,24 +246,6 @@ class UserService {
             ?: throw CustomizedException("등록된 ID가 없습니다.", Response.Status.NOT_FOUND)
 
         return CommonResponse(findUser.id)
-    }
-
-    /**
-     * 인증번호 확인
-     */
-    @Transactional
-    fun checkCertNo(checkCertNoRequest: CheckCertNoRequest): CommonResponse<String> {
-        val findCert = certRepository.findById(checkCertNoRequest.phoneNo) ?: throw NotFoundException("FAIL")
-
-        return when {
-            findCert.expiresDttm.isAfter(Instant.now()) && findCert.certNo == checkCertNoRequest.certNo -> {
-                certRepository.delete(findCert)
-                CommonResponse("SUCCESS")
-            }
-            else -> {
-                throw CustomizedException("유효하지 않은 인증번호입니다.", Response.Status.NOT_ACCEPTABLE)
-            }
-        }
     }
 
     @Transactional

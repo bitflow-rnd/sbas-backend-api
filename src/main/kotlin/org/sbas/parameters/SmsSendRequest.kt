@@ -1,10 +1,16 @@
 package org.sbas.parameters
 
+import javax.validation.constraints.NotBlank
+import javax.validation.constraints.NotNull
+
 data class SmsSendRequest (
-    var to: String? = null,
+    @field: NotBlank
+    val to: String,
 )
 
 data class CheckCertNoRequest (
-    var phoneNo: String,
-    var certNo: String,
+    @field: NotBlank
+    val phoneNo: String,
+    @field: NotBlank
+    val certNo: String,
 )
