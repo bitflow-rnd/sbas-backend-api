@@ -93,7 +93,7 @@ class InfoPt(
             Parameter(name = StringPrefixedSequenceIdGenerator.incrementSize, value = "1")
         ]) // PT00000000
     @Column(name = "pt_id", nullable = false, length = 10)
-    var ptId: String = ""// 환자 ID
+    lateinit var ptId: String // 환자 ID
         protected set
 
     fun updateEntity(infoPtDto: InfoPtDto) {
