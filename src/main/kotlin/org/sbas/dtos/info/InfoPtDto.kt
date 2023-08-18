@@ -132,7 +132,7 @@ data class BdasHisInfo(
  * 환자 중복 검사
  */
 data class InfoPtCheckDto(
-    var ptId: String,
+    var ptId: String? = null,
     var ptNm: String,
     var rrno1: String,
     var rrno2: String,
