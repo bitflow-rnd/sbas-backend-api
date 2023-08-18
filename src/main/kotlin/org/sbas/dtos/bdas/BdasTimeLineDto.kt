@@ -5,20 +5,27 @@ import java.time.Instant
 
 data class BdasTimeLineDto(
     val title: String?,
-    val by: String?, // instNm + ocpCdNm + jobCdNm + userNm
+    val by: String?, // instNm + ocpCdNm + userNm
     val updtDttm: Instant?,
     val msg: String?,
     val timeLineStatus: String?,
-    @JsonIgnore var inhpAsgnYn: String?,
+    val hospId: String?,
+    val chrgId: String?,
     @JsonIgnore var jobCd: String?,
     @JsonIgnore var ocpCd: String?,
-    @JsonIgnore var assignInstNm: String?,
 ) {
+    constructor(
+        title: String?,
+        timeLineStatus: String?,
+    ) : this(title, null, null, null, timeLineStatus, null, null, null, null)
+
     constructor(
         title: String?,
         by: String?,
         timeLineStatus: String?,
-    ) : this(title, by, null, null, timeLineStatus, null, null, null, null)
+        hospId: String?,
+        chrgId: String?,
+    ) : this(title, by, null, null, timeLineStatus, hospId, chrgId, null, null)
 
     constructor(
         title: String?,
@@ -30,8 +37,13 @@ data class BdasTimeLineDto(
 
     constructor(
         title: String?,
+        by: String?,
+        updtDttm: Instant?,
+        msg: String?,
         timeLineStatus: String?,
-    ) : this(title, null, null, null, timeLineStatus, null, null, null, null)
+        hospId: String?,
+        chrgId: String?,
+    ) : this(title, by, updtDttm, msg, timeLineStatus, hospId, chrgId, null, null)
 }
 
 data class TimeLineDtoList(
