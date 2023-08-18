@@ -31,34 +31,45 @@ import kotlin.math.sin
 class BedAssignService {
     @Inject
     private lateinit var log: Logger
+
     @Inject
     private lateinit var bdasEsvyRepository: BdasEsvyRepository
+
     @Inject
     private lateinit var bdasReqRepository: BdasReqRepository
+
     @Inject
     private lateinit var bdasReqAprvRepository: BdasReqAprvRepository
+
     @Inject
     private lateinit var bdasAprvRepository: BdasAprvRepository
+
     @Inject
     private lateinit var bdasTrnsRepository: BdasTrnsRepository
+
     @Inject
     private lateinit var bdasAdmsRepository: BdasAdmsRepository
 
     @Inject
     private lateinit var infoPtRepository: InfoPtRepository
+
     @Inject
     private lateinit var infoHospRepository: InfoHospRepository
+
     @Inject
     private lateinit var infoUserRepository: InfoUserRepository
 
     @Inject
     private lateinit var baseCodeRepository: BaseCodeRepository
+
     @Inject
     private lateinit var geoHandler: GeocodingHandler
+
     @Inject
     private lateinit var firebaseService: FirebaseService
+
     @Inject
-    private lateinit var jwt : JsonWebToken
+    private lateinit var jwt: JsonWebToken
 
     /**
      * 질병 정보 등록
@@ -66,8 +77,8 @@ class BedAssignService {
     @Transactional
     fun regDisesInfo(saveRequest: BdasEsvySaveRequest): CommonResponse<String> {
         // 환자 정보 저장
-        val findInfoPt = infoPtRepository.findById(saveRequest.ptId)
-                ?: throw NotFoundException("${saveRequest.ptId} not found")
+        val findInfoPt =
+            infoPtRepository.findById(saveRequest.ptId) ?: throw NotFoundException("${saveRequest.ptId} not found")
         saveRequest.saveInfoPt(findInfoPt)
 
         log.debug("regDisesInfo >>>>> ${saveRequest.ptId}")
@@ -90,8 +101,8 @@ class BedAssignService {
         val bdasReqDprtInfo = saveRequest.dprtInfo
 
         // bdasEsvy 에서 bdasSeq 가져오기
-        val bdasEsvy = bdasEsvyRepository.findByPtIdWithLatestBdasSeq(ptId)
-                ?: throw NotFoundException("$ptId not found")
+        val bdasEsvy =
+            bdasEsvyRepository.findByPtIdWithLatestBdasSeq(ptId) ?: throw NotFoundException("$ptId not found")
         val bdasReqId = BdasReqId(ptId, bdasEsvy.bdasSeq)
 
         // 출발지 위도, 경도 설정
@@ -103,8 +114,7 @@ class BedAssignService {
         bdasReqRepository.persist(bdasReq)
 
         // 지역코드로 병상배정반 찾기
-        val bdasUsers =
-                infoUserRepository.findBdasUserByReqDstrCd(bdasReq.reqDstr1Cd, bdasReq.reqDstr2Cd)
+        val bdasUsers = infoUserRepository.findBdasUserByReqDstrCd(bdasReq.reqDstr1Cd, bdasReq.reqDstr2Cd)
 
         // 푸쉬 알람 보내기
         bdasUsers.forEach {
@@ -122,7 +132,7 @@ class BedAssignService {
     @Transactional
     fun reqConfirm(saveRequest: BdasReqAprvSaveRequest): CommonResponse<String> {
         val findBdasReq = bdasReqRepository.findByPtIdAndBdasSeq(saveRequest.ptId, saveRequest.bdasSeq)
-                ?: throw NotFoundException("bdasReq not found")
+            ?: throw NotFoundException("bdasReq not found")
 
         // 배정반 승인/거절
         if (saveRequest.aprvYn == "N") { // 거절할 경우 거절 사유 및 메시지 작성
@@ -137,9 +147,9 @@ class BedAssignService {
                 hospList.forEachIndexed { idx, infoHosp ->
                     log.debug("hospList>>>>>>>>>>> ${infoHosp.hospId}")
                     val entity = saveRequest.toEntityWhenNotInHosp(
-                            asgnReqSeq = idx + 1,
-                            hospId = infoHosp.hospId,
-                            hospNm = infoHosp.dutyName,
+                        asgnReqSeq = idx + 1,
+                        hospId = infoHosp.hospId,
+                        hospNm = infoHosp.dutyName,
                     )
                     bdasReqAprvRepository.persist(entity)
                     findBdasReq.changeBedStatTo(BedStatCd.BAST0004.name)
@@ -165,8 +175,8 @@ class BedAssignService {
      */
     @Transactional
     fun getAvalHospList(ptId: String, bdasSeq: Int): CommonResponse<*> {
-        val findBdasReq = bdasReqRepository.findByPtIdAndBdasSeq(ptId, bdasSeq)
-                ?: throw NotFoundException("bdasReq not found")
+        val findBdasReq =
+            bdasReqRepository.findByPtIdAndBdasSeq(ptId, bdasSeq) ?: throw NotFoundException("bdasReq not found")
 
         val dstrCd1 = findBdasReq.reqDstr1Cd
         val dstrCd2 = findBdasReq.reqDstr2Cd
@@ -176,17 +186,17 @@ class BedAssignService {
         log.debug("getAvalHospList >>>>>>>>>>>>>> ${infoHospList.size}")
         val list = infoHospList.map {
             val distance = calculateDistance(
-                    lat1 = findBdasReq.dprtDstrLat!!.toDouble(),
-                    lon1 = findBdasReq.dprtDstrLon!!.toDouble(),
-                    lat2 = it.wgs84Lat!!.toDouble(),
-                    lon2 = it.wgs84Lon!!.toDouble(),
+                lat1 = findBdasReq.dprtDstrLat!!.toDouble(),
+                lon1 = findBdasReq.dprtDstrLon!!.toDouble(),
+                lat2 = it.wgs84Lat!!.toDouble(),
+                lon2 = it.wgs84Lon!!.toDouble(),
             )
             AvalHospListResponse(
-                    hospId = it.hospId!!,
-                    hospNm = it.dutyName!!,
-                    doubleDistance = distance,
-                    distance = convertToStringDistance(distance),
-                    addr = it.dutyAddr!!,
+                hospId = it.hospId!!,
+                hospNm = it.dutyName!!,
+                doubleDistance = distance,
+                distance = convertToStringDistance(distance),
+                addr = it.dutyAddr!!,
             )
         }
 
@@ -209,14 +219,17 @@ class BedAssignService {
             ?: throw NotFoundException("bdasReq not found")
         val findInfoUser = infoUserRepository.findByUserId(jwt.name) ?: throw NotFoundException("user not found")
 
-        val bdasReqAprvList = bdasReqAprvRepository.findReqAprvListByPtIdAndBdasSeq(saveRequest.ptId, saveRequest.bdasSeq)
+        val bdasReqAprvList =
+            bdasReqAprvRepository.findReqAprvListByPtIdAndBdasSeq(saveRequest.ptId, saveRequest.bdasSeq)
         if (bdasReqAprvList.isEmpty()) {
             throw CustomizedException("배정 승인 정보가 없습니다.", Response.Status.BAD_REQUEST)
         }
 
         bdasReqAprvList.filter { it.id.asgnReqSeq == saveRequest.asgnReqSeq }.forEach {
             if (!it.isEqualAsgnReqSeqAndHospId(saveRequest.asgnReqSeq, saveRequest.hospId)) {
-                throw CustomizedException("배정 요청 순번(asgnReqSeq) 및 병원 ID(hospId)가 일치하지 않습니다.", Response.Status.BAD_REQUEST)
+                throw CustomizedException(
+                    "배정 요청 순번(asgnReqSeq) 및 병원 ID(hospId)가 일치하지 않습니다.", Response.Status.BAD_REQUEST
+                )
             }
         }
 
@@ -269,7 +282,7 @@ class BedAssignService {
     @Transactional
     fun confirmTrans(saveRequest: BdasTrnsSaveRequest): CommonResponse<String> {
         val findBdasReq = bdasReqRepository.findByPtIdAndBdasSeq(saveRequest.ptId, saveRequest.bdasSeq)
-                ?: throw NotFoundException("bdasReq not found")
+            ?: throw NotFoundException("bdasReq not found")
         val bdasAprvList = bdasAprvRepository.findBdasAprvList(saveRequest.ptId, saveRequest.bdasSeq)
         if (bdasAprvList.isEmpty()) {
             throw CustomizedException("의료진 승인 정보가 없습니다.", Response.Status.BAD_REQUEST)
@@ -284,7 +297,7 @@ class BedAssignService {
     @Transactional
     fun confirmHosp(saveRequest: BdasAdmsSaveRequest): CommonResponse<String> {
         val findBdasReq = bdasReqRepository.findByPtIdAndBdasSeq(saveRequest.ptId, saveRequest.bdasSeq)
-                ?: throw NotFoundException("bdasReq not found")
+            ?: throw NotFoundException("bdasReq not found")
         val findBdasAdms = bdasAdmsRepository.findByIdOrderByAdmsSeqDesc(saveRequest.ptId, saveRequest.bdasSeq)
 
         val entity = if (findBdasAdms == null) {
@@ -317,15 +330,19 @@ class BedAssignService {
                 BedStatCd.BAST0003.name -> {
                     bdasReqList.items.add(it)
                 }
+
                 BedStatCd.BAST0004.name -> {
                     bdasReqAprvList.items.add(it)
                 }
+
                 BedStatCd.BAST0005.name -> {
                     bdasAprvList.items.add(it)
                 }
+
                 BedStatCd.BAST0006.name -> {
                     bdasTrnsList.items.add(it)
                 }
+
                 BedStatCd.BAST0007.name, BedStatCd.BAST0008.name -> {
                     bdasAdmsList.items.add(it)
                 }
@@ -345,8 +362,8 @@ class BedAssignService {
 
     @Transactional
     fun getTimeLine(ptId: String, bdasSeq: Int): CommonResponse<*> {
-        val findBdasReq = bdasReqRepository.findByPtIdAndBdasSeq(ptId, bdasSeq)
-                ?: throw NotFoundException("병상배정 정보가 없습니다.")
+        val findBdasReq =
+            bdasReqRepository.findByPtIdAndBdasSeq(ptId, bdasSeq) ?: throw NotFoundException("병상배정 정보가 없습니다.")
         val bedStatCd = findBdasReq.bedStatCd
         val timeLineList = mutableListOf<BdasTimeLineDto>()
 
@@ -357,11 +374,11 @@ class BedAssignService {
 
         when (bedStatCd) {
             BedStatCd.BAST0003.name -> {
-                val list = bdasReqRepository.findTimeLineInfo(ptId, bdasSeq)
-                timeLineList.addAll(list)
-                timeLineList.add(BdasTimeLineDto("승인대기", list[0].assignInstNm, TimeLineStatCd.SUSPEND.cdNm))
+                timeLineList.addAll(bdasReqRepository.findTimeLineInfo(ptId, bdasSeq))
+                timeLineList.addAll(bdasReqRepository.findSuspendTimeLineInfo(ptId, bdasSeq))
                 timeLineList.addAll(mutableListOf(closedBdasAprv, closedBdasTrans, closedBdasAdms))
             }
+
             BedStatCd.BAST0004.name -> {
                 timeLineList.addAll(bdasReqRepository.findTimeLineInfo(ptId, bdasSeq))
                 timeLineList.addAll(bdasReqAprvRepository.findTimeLineInfo(ptId, bdasSeq))
@@ -369,6 +386,7 @@ class BedAssignService {
                 timeLineList.add(closedBdasTrans)
                 timeLineList.add(closedBdasAdms)
             }
+
             BedStatCd.BAST0005.name -> {
                 timeLineList.addAll(bdasReqRepository.findTimeLineInfo(ptId, bdasSeq))
                 timeLineList.addAll(bdasReqAprvRepository.findTimeLineInfo(ptId, bdasSeq))
@@ -376,6 +394,7 @@ class BedAssignService {
                 timeLineList.add(BdasTimeLineDto("이송대기", TimeLineStatCd.CLOSED.cdNm))
                 timeLineList.add(closedBdasAdms)
             }
+
             BedStatCd.BAST0006.name -> {
                 timeLineList.addAll(bdasReqRepository.findTimeLineInfo(ptId, bdasSeq))
                 timeLineList.addAll(bdasReqAprvRepository.findTimeLineInfo(ptId, bdasSeq))
@@ -383,6 +402,7 @@ class BedAssignService {
                 timeLineList.addAll(bdasTrnsRepository.findSuspendTimeLineInfo(ptId, bdasSeq))
                 timeLineList.addAll(bdasAdmsRepository.findSuspendTimeLineInfo(ptId, bdasSeq))
             }
+
             BedStatCd.BAST0007.name -> {
                 timeLineList.addAll(bdasReqRepository.findTimeLineInfo(ptId, bdasSeq))
                 timeLineList.addAll(bdasReqAprvRepository.findTimeLineInfo(ptId, bdasSeq))
@@ -390,6 +410,7 @@ class BedAssignService {
                 timeLineList.addAll(bdasTrnsRepository.findCompleteTimeLineInfo(ptId, bdasSeq))
                 timeLineList.addAll(bdasAdmsRepository.findCompleteTimeLineInfo(ptId, bdasSeq))
             }
+
             BedStatCd.BAST0008.name -> {
                 timeLineList.addAll(bdasReqRepository.findTimeLineInfo(ptId, bdasSeq))
                 val bdasReqAprvTimeLine = bdasReqAprvRepository.findTimeLineInfo(ptId, bdasSeq)
@@ -410,8 +431,8 @@ class BedAssignService {
 
     @Transactional
     fun getDiseaseInfo(ptId: String): CommonResponse<*> {
-        val findEsvy = bdasEsvyRepository.findByPtIdWithLatestBdasSeq(ptId)
-                ?: throw NotFoundException("$ptId not found")
+        val findEsvy =
+            bdasEsvyRepository.findByPtIdWithLatestBdasSeq(ptId) ?: throw NotFoundException("$ptId not found")
         val findReq = bdasReqRepository.findByPtId(ptId) ?: throw NotFoundException("$ptId request not found")
         bdasReqRepository.getEntityManager().detach(findReq)
         findReq?.ptTypeCd = convertFromArr(findReq?.ptTypeCd, "PTTP")
