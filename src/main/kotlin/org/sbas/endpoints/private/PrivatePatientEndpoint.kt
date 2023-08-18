@@ -10,7 +10,7 @@ import org.jboss.resteasy.reactive.multipart.FileUpload
 import org.sbas.dtos.*
 import org.sbas.dtos.bdas.BdasEsvySaveRequest
 import org.sbas.dtos.bdas.BdasReqSaveRequest
-import org.sbas.dtos.info.InfoPtCheckDto
+import org.sbas.dtos.info.InfoPtCheckRequest
 import org.sbas.dtos.info.InfoPtDto
 import org.sbas.parameters.NewsScoreParameters
 import org.sbas.parameters.SearchParameters
@@ -19,7 +19,9 @@ import org.sbas.services.PatientService
 import javax.inject.Inject
 import javax.validation.Valid
 import javax.ws.rs.*
+import javax.ws.rs.core.MediaType
 import javax.ws.rs.core.Response
+
 
 @Tag(name = "환자 관리(사용자 권한용)", description = "로그인 된 사용자(세부권한별 분기) - 환자 등록 및 조회 등")
 @Path("v1/private/patient")
@@ -33,6 +35,13 @@ class PrivatePatientEndpoint {
 
     @Inject
     lateinit var bedAssignService: BedAssignService
+
+    @GET
+    @Produces(MediaType.TEXT_PLAIN)
+    @Path("hello")
+    fun hello(): String {
+        return "hello"
+    }
 
     @Operation(summary = "역학조사서 업로드/업데이트", description = "")
     @POST
@@ -66,7 +75,7 @@ class PrivatePatientEndpoint {
     @Operation(summary = "환자 중복 유효성 검사", description = "")
     @POST
     @Path("exist")
-    fun exist(checker: InfoPtCheckDto): Response {
+    fun exist(checker: InfoPtCheckRequest): Response {
         return Response.ok(patientService.checkInfoPt(checker)).build()
     }
 
@@ -82,7 +91,7 @@ class PrivatePatientEndpoint {
     @GET
     @Path("basicinfo")
     fun basicinfo(@QueryParam("ptId") ptId: String): Response {
-        return Response.ok(patientService.findInfoPt(ptId)).build()
+        return Response.ok(patientService.findBasicInfo(ptId)).build()
     }
 
     @Operation(summary = "병상배정 이력 목록 조회", description = "")

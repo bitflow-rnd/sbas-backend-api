@@ -9,10 +9,7 @@ import org.sbas.constants.enums.BedStatCd
 import org.sbas.constants.enums.PtTypeCd
 import org.sbas.constants.enums.SvrtTypeCd
 import org.sbas.constants.enums.UndrDsesCd
-import org.sbas.dtos.info.BdasHisInfo
-import org.sbas.dtos.info.InfoPtBasicInfo
-import org.sbas.dtos.info.InfoPtCheckDto
-import org.sbas.dtos.info.InfoPtDto
+import org.sbas.dtos.info.*
 import org.sbas.entities.info.InfoPt
 import org.sbas.handlers.FileHandler
 import org.sbas.handlers.NaverApiHandler
@@ -95,7 +92,7 @@ class PatientService {
      * 환자 중복 유효성 검사
      */
     @Transactional
-    fun checkInfoPt(dto: InfoPtCheckDto): CommonResponse<*> {
+    fun checkInfoPt(dto: InfoPtCheckRequest): CommonResponse<*> {
         val findInfoPt = infoPtRepository.findByPtNmAndRrno(
             ptNm = dto.ptNm,
             rrno1 = dto.rrno1,
@@ -103,7 +100,7 @@ class PatientService {
         )
 
         val infoPtResponse = findInfoPt?.let {
-            InfoPtCheckDto(
+            InfoPtCheckResponse(
                 ptId = it.ptId,
                 ptNm = it.ptNm,
                 gndr = it.gndr,
@@ -158,7 +155,7 @@ class PatientService {
     }
 
     @Transactional
-    fun findInfoPt(ptId: String): CommonResponse<*> {
+    fun findBasicInfo(ptId: String): CommonResponse<*> {
         val infoPt = infoPtRepository.findById(ptId) ?: throw NotFoundException("$ptId not found")
         val bdasSeq = bdasEsvyRepository.findByPtIdWithLatestBdasSeq(ptId)?.bdasSeq ?: -1
         val bdasReq = bdasReqRepository.findByPtIdAndBdasSeq(ptId, bdasSeq)
