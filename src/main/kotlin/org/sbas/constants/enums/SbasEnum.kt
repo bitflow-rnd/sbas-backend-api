@@ -22,7 +22,7 @@ enum class BedStatCd(val cdNm: String) {
  */
 enum class PtTypeCd(val cdNm: String) {
     PTTP0001("일반"), PTTP0002("소아"), PTTP0003("투석"), PTTP0004("산모"),
-    PTTP0005("수술"), PTTP0006("중환자"),
+    PTTP0005("수술"), PTTP0006("인공호흡기 사용"), PTTP0007("적극적 치료요청"), PTTP0008("신생아")
 }
 
 /**
