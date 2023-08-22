@@ -3,6 +3,7 @@ package org.sbas.dtos.info
 import com.fasterxml.jackson.annotation.JsonIgnore
 import org.sbas.constants.enums.BedStatCd
 import org.sbas.constants.enums.NatiCd
+import org.sbas.constants.enums.UndrDsesCd
 import org.sbas.entities.info.InfoPt
 import java.time.Instant
 import javax.validation.constraints.NotBlank
@@ -109,7 +110,9 @@ data class InfoPtBasicInfo(
     val bedStatCd: String?,
     val bedStatNm: String?,
     val undrDsesCd: List<String>?,
-)
+) {
+    val undrDsesCdNm: List<String>? = undrDsesCd?.map { UndrDsesCd.valueOf(it).cdNm }
+}
 
 /**
  * 환자 병상 배정 이력

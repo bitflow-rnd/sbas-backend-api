@@ -12,7 +12,6 @@ import org.sbas.dtos.info.*
 import org.sbas.entities.info.InfoCntc
 import org.sbas.entities.info.InfoUser
 import org.sbas.parameters.*
-import org.sbas.repositories.InfoCertRepository
 import org.sbas.repositories.InfoCntcRepository
 import org.sbas.repositories.InfoUserRepository
 import org.sbas.responses.CommonListResponse
@@ -37,9 +36,6 @@ class UserService {
 
     @Inject
     private lateinit var userRepository : InfoUserRepository
-
-    @Inject
-    private lateinit var certRepository : InfoCertRepository
 
     @Inject
     private lateinit var cntcRepository : InfoCntcRepository

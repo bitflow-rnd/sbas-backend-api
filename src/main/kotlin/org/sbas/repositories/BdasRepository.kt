@@ -40,46 +40,15 @@ class BdasReqRepository : PanacheRepositoryBase<BdasReq, BdasReqId> {
     }
 
     fun findBdasList(): MutableList<BdasListDto> {
-
-        val query = "select max(id.bdasSeq) as bdasSeq from BdasReq group by id.ptId"
-
-        @Suppress("UNCHECKED_CAST")
-        val maxBdasSeqList = entityManager.createQuery(query).resultList as MutableList<Int>
-
-//        val subQuery = queryFactory.subquery {
-//            select(max(col(BdasReqId::bdasSeq)))
-//            from(entity(BdasReq::class))
-//            associate(entity(BdasReq::class), BdasReqId::class, on(BdasReq::id))
-//            groupBy(col(BdasReqId::ptId))
-//        }
-
-        // TODO 검색조건
-        val list = queryFactory.listQuery<BdasListDto> {
-            selectMulti(
-                col(BdasReqId::ptId), col(BdasReqId::bdasSeq), col(InfoPt::ptNm), col(InfoPt::gndr),
-                function("fn_get_age", Int::class.java, col(InfoPt::rrno1), col(InfoPt::rrno2)),
-                col(InfoPt::bascAddr), col(BdasReq::updtDttm), col(BdasEsvy::diagNm),
-                col(BdasReq::bedStatCd),
-//                function("fn_get_chrg_inst", String::class.java,
-//                    col(BdasReq::bedStatCd), col(BdasReqId::ptId), col(BdasReqId::bdasSeq)
-//                ),
-                literal("chrgInstNm"),
-                col(BdasReq::inhpAsgnYn),
-                col(BdasReq::ptTypeCd), col(BdasReq::svrtTypeCd), col(BdasReq::undrDsesCd),
-            )
-            from(entity(BdasReq::class))
-            associate(entity(BdasReq::class), BdasReqId::class, on(BdasReq::id))
-            join(entity(InfoPt::class), on { col(BdasReqId::ptId).equal(col(InfoPt::ptId)) })
-            join(entity(BdasEsvy::class), on { col(BdasReqId::bdasSeq).equal(col(BdasEsvy::bdasSeq)) })
-            whereAnd(
-                col(BdasReqId::bdasSeq).`in`(maxBdasSeqList),
-            )
-            orderBy(
-                ExpressionOrderSpec(col(BdasReqId::bdasSeq), ascending = false)
-            )
-        }
-
-        return list.toMutableList()
+        val query2 = "select new org.sbas.dtos.bdas.BdasListDto(br.id.ptId, br.id.bdasSeq, pt.ptNm, pt.gndr, fn_get_age(pt.rrno1, pt.rrno2), " +
+                "pt.bascAddr, br.updtDttm, be.diagNm, br.bedStatCd, 'chrgInstNm', br.inhpAsgnYn, br.ptTypeCd, br.svrtTypeCd, br.undrDsesCd, ba.admsStatCd) " +
+                "from BdasReq br " +
+                "join InfoPt pt on br.id.ptId = pt.ptId " +
+                "join BdasEsvy be on br.id.bdasSeq = be.bdasSeq " +
+                "left join BdasAdms ba on br.id.bdasSeq = ba.id.bdasSeq " +
+                "where br.id.bdasSeq in (select max(id.bdasSeq) as bdasSeq from BdasReq group by id.ptId) " +
+                "order by br.id.bdasSeq desc"
+        return entityManager.createQuery(query2, BdasListDto::class.java).resultList
     }
 
     fun findChrgInst(bedStatCd: String, ptId: String, bdasSeq: Int): String {

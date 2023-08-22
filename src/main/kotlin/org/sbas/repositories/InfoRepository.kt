@@ -300,9 +300,6 @@ class InfoInstRepository : PanacheRepositoryBase<InfoInst, String> {
 }
 
 @ApplicationScoped
-class InfoCertRepository : PanacheRepositoryBase<InfoCert, String>
-
-@ApplicationScoped
 class InfoCntcRepository : PanacheRepositoryBase<InfoCntc, InfoCntcId> {
 
     fun getHistSeq(userId: String): Int? = find("from InfoCntc where id.userId = '$userId' order by id.histSeq desc").firstResult()?.id?.histSeq

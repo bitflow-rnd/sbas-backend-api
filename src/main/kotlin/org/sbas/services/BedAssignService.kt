@@ -158,8 +158,7 @@ class BedAssignService {
                     firebaseService.sendMessage(entity.rgstUserId!!, "${saveRequest.msg}", "TEST-APR-1")
                 }
 
-            } else if (findBdasReq.inhpAsgnYn == "Y") {
-                // 원내 배정이면 승인, 의료진 승인 건너뜀
+            } else if (findBdasReq.inhpAsgnYn == "Y") { // 원내 배정이면 승인
                 bdasReqAprvRepository.persist(saveRequest.toEntityWhenInHosp())
                 findBdasReq.changeBedStatTo(BedStatCd.BAST0004.name)
             }
@@ -242,7 +241,21 @@ class BedAssignService {
 
         // 거절한 병원의 정보 저장
         if (saveRequest.aprvYn == "N") {
-            bdasAprvRepository.persist(saveRequest.toRefuseEntity(saveRequest.msg, saveRequest.negCd))
+            val entity = saveRequest.toRefuseEntity(saveRequest.msg, saveRequest.negCd)
+            bdasAprvRepository.persist(entity)
+
+            // TODO 재요청?
+            // 모든 병원이 배정불가인 경우
+            val refusedBdasAprv = bdasAprvRepository.findRefusedBdasAprv(saveRequest.ptId, saveRequest.bdasSeq)
+            if (bdasReqAprvList.size == refusedBdasAprv.size) {
+                firebaseService.sendMessage(
+                    entity.rgstUserId!!,
+                    "모든 병원이 배정 불가 처리되었습니다. 재요청 바랍니다.",
+                    bdasReqAprvList[0].rgstUserId!!
+                )
+                //            findBdasReq.changeBedStatTo(BedStatCd.BAST0008.name)
+            }
+
             return CommonResponse(BdasAprvResponse(false, "배정 불가 처리되었습니다."))
         }
 
@@ -267,14 +280,6 @@ class BedAssignService {
             bdasAprvRepository.persist(it.convertToRefuseBdasAprv())
         }
         findBdasReq.changeBedStatTo(BedStatCd.BAST0005.name)
-
-        // TODO 재요청?
-        // 모든 병원이 배정불가인 경우
-        val refusedBdasAprv = bdasAprvRepository.findRefusedBdasAprv(saveRequest.ptId, saveRequest.bdasSeq)
-        if (bdasReqAprvList.size == refusedBdasAprv.size) {
-            findBdasReq.changeBedStatTo(BedStatCd.BAST0008.name)
-//            firebaseService.sendMessage(entity.rgstUserId!!, "${saveRequest.msg}", "TEST-APR-1")
-        }
 
         return CommonResponse(BdasAprvResponse(false, "배정 승인되었습니다."))
     }

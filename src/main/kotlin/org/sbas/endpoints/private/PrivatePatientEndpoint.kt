@@ -19,7 +19,6 @@ import org.sbas.services.PatientService
 import javax.inject.Inject
 import javax.validation.Valid
 import javax.ws.rs.*
-import javax.ws.rs.core.MediaType
 import javax.ws.rs.core.Response
 
 
@@ -35,13 +34,6 @@ class PrivatePatientEndpoint {
 
     @Inject
     lateinit var bedAssignService: BedAssignService
-
-    @GET
-    @Produces(MediaType.TEXT_PLAIN)
-    @Path("hello")
-    fun hello(): String {
-        return "hello"
-    }
 
     @Operation(summary = "역학조사서 업로드/업데이트", description = "")
     @POST
@@ -89,15 +81,15 @@ class PrivatePatientEndpoint {
 
     @Operation(summary = "환자 기본정보 조회", description = "")
     @GET
-    @Path("basicinfo")
-    fun basicinfo(@QueryParam("ptId") ptId: String): Response {
+    @Path("basicinfo/{ptId}")
+    fun basicinfo(@RestPath("ptId") ptId: String): Response {
         return Response.ok(patientService.findBasicInfo(ptId)).build()
     }
 
     @Operation(summary = "병상배정 이력 목록 조회", description = "")
     @GET
-    @Path("bdasHisinfos")
-    fun bdasHisinfos(@QueryParam("ptId") ptId: String): Response {
+    @Path("bdasHisinfos/{ptId}")
+    fun bdasHisinfos(@RestPath("ptId") ptId: String): Response {
         return Response.ok(patientService.findBdasHistInfo(ptId)).build()
     }
 
