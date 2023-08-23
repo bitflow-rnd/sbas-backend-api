@@ -1,10 +1,8 @@
 package org.sbas.dtos.bdas
 
+import com.fasterxml.jackson.annotation.JsonIgnore
 import com.fasterxml.jackson.annotation.JsonProperty
-import org.sbas.constants.enums.BedStatCd
-import org.sbas.constants.enums.PtTypeCd
-import org.sbas.constants.enums.SvrtTypeCd
-import org.sbas.constants.enums.UndrDsesCd
+import org.sbas.constants.enums.*
 import java.time.Instant
 
 data class BdasListDto(
@@ -21,12 +19,14 @@ data class BdasListDto(
     val inhpAsgnYn: String?,
     var ptTypeCd: String,
     var svrtTypeCd: String?,
-    var undrDsesCd: String?
+    var undrDsesCd: String?,
+    @JsonIgnore
+    val admsStatCd: String?,
 ) {
     @JsonProperty("bedStatCdNm")
     private val bedStatCdNm: String = bedStatCd.let {
-        if (inhpAsgnYn == "Y") {
-            "원내배정"
+        if (!admsStatCd.isNullOrEmpty()) {
+            AdmsStatCd.valueOf(admsStatCd).cdNm
         } else {
             BedStatCd.valueOf(it).cdNm
         }
