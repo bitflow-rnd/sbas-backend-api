@@ -13,6 +13,8 @@ data class BdasListDto(
     val ptNm: String?,
     val gndr: String?,
     val age: Int?,
+    val rrno1: String?,
+    val mpno: String?,
     val bascAddr: String?,
     val updtDttm: Instant?,
     val diagNm: String?,

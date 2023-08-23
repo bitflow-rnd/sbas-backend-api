@@ -12,6 +12,7 @@ import org.sbas.parameters.PageRequest
 import org.sbas.services.UserService
 import javax.inject.Inject
 import javax.validation.Valid
+import javax.ws.rs.BeanParam
 import javax.ws.rs.GET
 import javax.ws.rs.POST
 import javax.ws.rs.Path
@@ -118,7 +119,7 @@ class PrivateUserEndpoint {
     @Operation(summary = "전국 사용자 검색 목록", description = "전국 사용자 검색 목록 API(filter X)")
     @GET
     @Path("all-users")
-    fun getAllUsers(@Valid pageRequest: PageRequest): Response {
+    fun getAllUsers(@BeanParam pageRequest: PageRequest): Response {
         return Response.ok(userService.getAllUsers(pageRequest)).build()
     }
 
