@@ -112,31 +112,31 @@ class NaverApiHandler {
             instAddr = nullHandledMap[nameList[24]],
             diagDrNm = nullHandledMap[nameList[25]],
             rptChfNm = nullHandledMap[nameList[26]],
-            natiCd = getNatiCd(rrno?.split("-")?.get(1)),
+            natiCd = getNatiCd( rrno2 = rrno?.split("-")?.get(1) ),
             attcId = attcId,
         )
     }
 
     private fun splitAddress(address: String): List<String?> {
-        val addr = address.replace("\n()", "") // \n() 삭제
+        val addr = address.replace("\n()", "").replace("\n", "")
             .replace(Regex("\\s*\\([^)]*\\)"), "") // (...) 부분 삭제
         val fullAddr = removeLeadingSpace(addr)
         log.debug("NaverApiHandler splitAddress >>>>> $fullAddr")
 
         val list = mutableListOf<String?>()
-        val splitedAddr = fullAddr.split(" ").toMutableList()
+        val splitAddr = fullAddr.split(" ").toMutableList()
 
-        val dstrCd1 = StringUtils.getDstrCd1(splitedAddr[0])
-        splitedAddr[0] = StringUtils.getKakaoSidoName(splitedAddr[0])
-        val baseCode = baseCodeRepository.findByDstr1CdAndCdNm(dstrCd1,splitedAddr[1]) ?: throw NotFoundException("baseCode not found")
+        val dstrCd1 = StringUtils.getDstrCd1(splitAddr[0])
+        splitAddr[0] = StringUtils.getKakaoSidoName(splitAddr[0])
+        val baseCode = baseCodeRepository.findByDstr1CdAndCdNm(dstrCd1, splitAddr[1]) ?: throw NotFoundException("baseCode not found")
 
         list.add(dstrCd1) // dstr1Cd
         list.add(baseCode.id.cdId) // dstr2Cd
-        list.add(splitedAddr.subList(0, 4).joinToString(" ")) // baseAddr
+        list.add(splitAddr.subList(0, 4).joinToString(" ")) // baseAddr
 
         // dtlAddr 상세주소가 있는 경우, 없으면 null
-        if (splitedAddr.size > 4) {
-            list.add(splitedAddr[4])
+        if (splitAddr.size > 4) {
+            list.add(splitAddr[4])
         } else {
             list.add(null)
         }

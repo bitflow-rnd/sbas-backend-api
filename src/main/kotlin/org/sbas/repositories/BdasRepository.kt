@@ -1,17 +1,17 @@
 package org.sbas.repositories
 
 import com.linecorp.kotlinjdsl.QueryFactory
-import com.linecorp.kotlinjdsl.listQuery
-import com.linecorp.kotlinjdsl.query.spec.ExpressionOrderSpec
-import com.linecorp.kotlinjdsl.querydsl.expression.col
 import io.quarkus.hibernate.orm.panache.kotlin.PanacheRepositoryBase
 import io.quarkus.panache.common.Sort
 import org.sbas.constants.enums.AdmsStatCd
 import org.sbas.constants.enums.TimeLineStatCd
 import org.sbas.dtos.bdas.BdasListDto
+import org.sbas.dtos.bdas.BdasListSearchParam
 import org.sbas.dtos.bdas.BdasTimeLineDto
 import org.sbas.entities.bdas.*
-import org.sbas.entities.info.InfoPt
+import java.time.Instant
+import java.time.temporal.Temporal
+import java.time.temporal.TemporalUnit
 import javax.enterprise.context.ApplicationScoped
 import javax.inject.Inject
 import javax.persistence.EntityManager
@@ -39,7 +39,14 @@ class BdasReqRepository : PanacheRepositoryBase<BdasReq, BdasReqId> {
         ).firstResult()
     }
 
-    fun findBdasList(): MutableList<BdasListDto> {
+    fun findBdasList(param: BdasListSearchParam): MutableList<BdasListDto> {
+
+        var cond = param.ptNm?.run { " and pt.ptNm like '%$this%' " } ?: ""
+        cond += param.rrno1?.run { " and pt.rrno1 like '%$this%' " } ?: ""
+        cond += param.mpno?.run { " and pt.mpno like '%$this%' " } ?: ""
+        // TODO
+        cond += param.period?.run { " and pt.updtDttm > '${Instant.now().minusSeconds(60 * 60 * 24 * this)}' " } ?: ""
+
         val query2 = "select new org.sbas.dtos.bdas.BdasListDto(br.id.ptId, br.id.bdasSeq, pt.ptNm, pt.gndr, fn_get_age(pt.rrno1, pt.rrno2), " +
                 "pt.bascAddr, br.updtDttm, be.diagNm, br.bedStatCd, 'chrgInstNm', br.inhpAsgnYn, br.ptTypeCd, br.svrtTypeCd, br.undrDsesCd, ba.admsStatCd) " +
                 "from BdasReq br " +
@@ -47,6 +54,7 @@ class BdasReqRepository : PanacheRepositoryBase<BdasReq, BdasReqId> {
                 "join BdasEsvy be on br.id.bdasSeq = be.bdasSeq " +
                 "left join BdasAdms ba on br.id.bdasSeq = ba.id.bdasSeq " +
                 "where br.id.bdasSeq in (select max(id.bdasSeq) as bdasSeq from BdasReq group by id.ptId) " +
+                "$cond " +
                 "order by br.id.bdasSeq desc"
         return entityManager.createQuery(query2, BdasListDto::class.java).resultList
     }
