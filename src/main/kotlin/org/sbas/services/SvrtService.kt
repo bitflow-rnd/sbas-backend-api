@@ -33,7 +33,8 @@ class SvrtService {
     }
 
     fun getLastSvrtAnlyByPtId(ptId: String): CommonResponse<*> {
-        return CommonResponse(svrtAnlyRepository.getLastSvrtAnlyByPtId(ptId))
+//        return CommonResponse(svrtAnlyRepository.getLastSvrtAnlyByPtId(ptId))
+        return CommonResponse(svrtAnlyRepository.getSvrtAnlyByPtId(ptId))
     }
 
     @Transactional
