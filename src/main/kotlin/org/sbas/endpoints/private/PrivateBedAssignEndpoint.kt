@@ -4,13 +4,11 @@ import org.eclipse.microprofile.openapi.annotations.Operation
 import org.eclipse.microprofile.openapi.annotations.tags.Tag
 import org.jboss.logging.Logger
 import org.jboss.resteasy.reactive.RestPath
-import org.sbas.dtos.bdas.BdasAdmsSaveRequest
-import org.sbas.dtos.bdas.BdasAprvSaveRequest
-import org.sbas.dtos.bdas.BdasReqAprvSaveRequest
-import org.sbas.dtos.bdas.BdasTrnsSaveRequest
+import org.sbas.dtos.bdas.*
 import org.sbas.services.BedAssignService
 import javax.inject.Inject
 import javax.validation.Valid
+import javax.ws.rs.BeanParam
 import javax.ws.rs.GET
 import javax.ws.rs.POST
 import javax.ws.rs.Path
@@ -64,7 +62,7 @@ class PrivateBedAssignEndpoint {
     @Operation(summary = "병상배정 목록 (상태별)", description = "")
     @GET
     @Path("list")
-    fun list(): Response {
-        return Response.ok(bedAssignService.findBedAsgnList()).build()
+    fun list(@BeanParam param: BdasListSearchParam): Response {
+        return Response.ok(bedAssignService.findBedAsgnList(param)).build()
     }
 }

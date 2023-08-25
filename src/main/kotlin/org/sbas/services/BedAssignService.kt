@@ -321,14 +321,14 @@ class BedAssignService {
     }
 
     @Transactional
-    fun findBedAsgnList(): CommonResponse<*> {
+    fun findBedAsgnList(param: BdasListSearchParam): CommonResponse<*> {
         val bdasReqList = BdasList(title = "병상요청", count = 0, items = mutableListOf())
         val bdasReqAprvList = BdasList(title = "병상배정", count = 0, items = mutableListOf())
         val bdasAprvList = BdasList(title = "이송/배차", count = 0, items = mutableListOf())
         val bdasTrnsList = BdasList(title = "입/퇴원", count = 0, items = mutableListOf())
         val bdasAdmsList = BdasList(title = "완료", count = 0, items = mutableListOf())
 
-        val findBdasList = bdasReqRepository.findBdasList()
+        val findBdasList = bdasReqRepository.findBdasList(param)
         findBdasList.forEach {
             it.chrgInstNm = bdasReqRepository.findChrgInst(it.bedStatCd, it.ptId, it.bdasSeq)
             when (it.bedStatCd) {
@@ -440,10 +440,10 @@ class BedAssignService {
             bdasEsvyRepository.findByPtIdWithLatestBdasSeq(ptId) ?: throw NotFoundException("$ptId not found")
         val findReq = bdasReqRepository.findByPtId(ptId) ?: throw NotFoundException("$ptId request not found")
         bdasReqRepository.getEntityManager().detach(findReq)
-        findReq?.ptTypeCd = convertFromArr(findReq?.ptTypeCd, "PTTP")
-        findReq?.undrDsesCd = convertFromArr(findReq?.undrDsesCd, "UDDS")
-        findReq?.svrtTypeCd = convertFromArr(findReq?.svrtTypeCd, "SVTP")
-        findReq?.dnrAgreYn = baseCodeRepository.getCdNm("DNRA", findReq?.dnrAgreYn!!)
+        findReq.ptTypeCd = convertFromArr(findReq.ptTypeCd, "PTTP")
+        findReq.undrDsesCd = convertFromArr(findReq.undrDsesCd, "UDDS")
+        findReq.svrtTypeCd = convertFromArr(findReq.svrtTypeCd, "SVTP")
+        findReq.dnrAgreYn = baseCodeRepository.getCdNm("DNRA", findReq.dnrAgreYn)
         findReq.reqBedTypeCd = baseCodeRepository.getCdNm("BDTP", findReq.reqBedTypeCd)
 
         return CommonResponse(DiseaseInfoResponse(findEsvy, findReq))

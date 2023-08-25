@@ -9,6 +9,7 @@ import org.sbas.constants.enums.NatiCd
 import org.sbas.repositories.BaseCodeRepository
 import org.sbas.responses.patient.EpidResult
 import org.sbas.restclients.NaverOcrRestClient
+import org.sbas.restparameters.NaverGeocodingApiParams
 import org.sbas.restparameters.NaverOcrApiParams
 import org.sbas.restparameters.OcrApiImagesParam
 import org.sbas.restresponses.FieldName
@@ -52,9 +53,11 @@ class NaverApiHandler {
             null,
             "$serverdomain/$uri/$filename"
         )
+
         val now = System.currentTimeMillis()
         val images = mutableListOf<OcrApiImagesParam>()
         images.add(image)
+
         val reqparam = NaverOcrApiParams(
             images,
             NaverApiConst.ClovaOcr.VERSION,
@@ -62,6 +65,7 @@ class NaverApiHandler {
             now,
             NaverApiConst.ClovaOcr.LANG
         )
+
         val res = naverOcrClient.recognize(reqparam)
         val fields = res.images[0].fields
 
@@ -86,11 +90,12 @@ class NaverApiHandler {
             nokNm = nullHandledMap["보호자명"],
             telno = nullHandledMap["전화번호"]?.replace("-", ""),
 
-            dstr1Cd = splitAddress[0],
-            dstr2Cd = splitAddress[1],
-            baseAddr = splitAddress[2],
-            dtlAddr = splitAddress[3],
-            fullAddr = splitAddress[4],
+            dstr1Cd = splitAddress.dstr1Cd,
+            dstr2Cd = splitAddress.dstr2Cd,
+            baseAddr = splitAddress.baseAddr,
+            dtlAddr = splitAddress.dtlAddr,
+            fullAddr = splitAddress.fullAddr,
+            zip = splitAddress.zip,
 
             mpno = nullHandledMap["휴대전화번호"]?.replace("-", ""),
             diagNm = nullHandledMap["질병명"],
@@ -112,70 +117,50 @@ class NaverApiHandler {
             instAddr = nullHandledMap[nameList[24]],
             diagDrNm = nullHandledMap[nameList[25]],
             rptChfNm = nullHandledMap[nameList[26]],
-            natiCd = getNatiCd(rrno?.split("-")?.get(1)),
+            natiCd = getNatiCd(rrno2 = rrno?.split("-")?.get(1)),
             attcId = attcId,
         )
     }
 
-    private fun splitAddress(address: String): List<String?> {
-        val addr = address.replace("\n()", "") // \n() 삭제
-            .replace(Regex("\\s*\\([^)]*\\)"), "") // (...) 부분 삭제
-        val fullAddr = removeLeadingSpace(addr)
+    private fun splitAddress(address: String): AddressMap {
+        // 역학조사서 주소 가공
+        val fullAddr = address.replace("\n()", "")
+            .replace("\n", "")
+            .replace(Regex("\\s*\\([^)]*\\)"), "") // 괄호 부분 삭제
+            .replace(",", "")
+            .trimIndent()
         log.debug("NaverApiHandler splitAddress >>>>> $fullAddr")
 
-        val list = mutableListOf<String?>()
-        val splitedAddr = fullAddr.split(" ").toMutableList()
+        // 기본 주소, 세부 주소로 나누기
+        val addrList = fullAddr.split(" ").toMutableList()
+        addrList[0] = StringUtils.getKakaoSidoName(addrList[0])
 
-        val dstrCd1 = StringUtils.getDstrCd1(splitedAddr[0])
-        splitedAddr[0] = StringUtils.getKakaoSidoName(splitedAddr[0])
-        val baseCode = baseCodeRepository.findByDstr1CdAndCdNm(dstrCd1,splitedAddr[1]) ?: throw NotFoundException("baseCode not found")
+        val roadNameIdx = addrList.indexOfFirst { it.endsWith("길") || it.endsWith("로") }
+        val baseAddr = addrList.subList(0, roadNameIdx + 2).joinToString(" ")
+        val dtlAddr = addrList.subList(roadNameIdx + 2, addrList.size).joinToString(" ")
 
-        list.add(dstrCd1) // dstr1Cd
-        list.add(baseCode.id.cdId) // dstr2Cd
-        list.add(splitedAddr.subList(0, 4).joinToString(" ")) // baseAddr
+        // 기본 주소로 네이버 주소 검색 api 이용
+        val geocoding = geocodingHandler.getGeocoding(NaverGeocodingApiParams(query = baseAddr))
+        val addressElements = geocoding.addresses!![0].addressElements
 
-        // dtlAddr 상세주소가 있는 경우, 없으면 null
-        if (splitedAddr.size > 4) {
-            list.add(splitedAddr[4])
-        } else {
-            list.add(null)
-        }
+        // 우편번호
+        val zip = addressElements?.first { it.types!![0] == "POSTAL_CODE" }?.longName
 
-        list.add(fullAddr) // fullAddr
+        // 코드
+        val dstrCd1 = StringUtils.getDstrCd1(addrList[0])
+        val baseCode = baseCodeRepository.findByDstr1CdAndCdNm(dstrCd1, addrList[1])
+            ?: throw NotFoundException("baseCode not found")
+        val dstr2Cd = baseCode.id.cdId
 
-        return list
+        return AddressMap(
+            dstr1Cd = dstrCd1,
+            dstr2Cd = dstr2Cd,
+            baseAddr = baseAddr,
+            dtlAddr = dtlAddr,
+            fullAddr = fullAddr,
+            zip = zip,
+        )
     }
-
-//    private fun splitAddress(address: String): List<String?> {
-//
-//        val addr = address.replace("\n()", "") // \n() 삭제
-//        val fullAddr = addr.replace(Regex("\\s*\\([^)]*\\)"), "") // (...) 부분
-//
-//        val siDoMap = StringUtils.siDoMap
-//        val siDo = siDoMap.keys.filter { fullAddr.contains(it) }[0]
-//        val dstrCd1 = StringUtils.getDstrCd1(siDo)
-//        val siGunGu = address.substringAfter(siDo).split(" ")[1]
-//
-//        val list = mutableListOf<String?>()
-////        val splitedAddr = fullAddr.split(" ").toMutableList()
-////
-//        val baseCode = baseCodeRepository.findByDstr1CdAndCdNm(dstrCd1, siGunGu) ?: throw NotFoundException("baseCode not found")
-////
-//        list.add(dstrCd1) // dstr1Cd
-//        list.add(baseCode.id.cdId) // dstr2Cd
-////        list.add(splitedAddr.subList(0, 4).joinToString(" ")) // baseAddr
-////
-////        // dtlAddr 상세주소가 있는 경우, 없으면 null
-////        if (splitedAddr.size > 4) {
-////            list.add(splitedAddr[4])
-////        } else {
-////            list.add(null)
-////        }
-////
-////        list.add(fullAddr) // fullAddr
-//
-//        return list
-//    }
 
     private fun getRrnoAndGndr(rrno: String?): MutableMap<String, String>? {
         if (rrno.isNullOrBlank()) {
@@ -207,11 +192,13 @@ class NaverApiHandler {
             else -> NatiCd.NATI0001
         }
     }
-
-    fun removeLeadingSpace(input: String): String {
-        if (input.startsWith(" ")) {
-            return input.substring(1)
-        }
-        return input
-    }
 }
+
+data class AddressMap(
+    val dstr1Cd: String?,
+    val dstr2Cd: String?,
+    val baseAddr: String?,
+    val dtlAddr: String?,
+    val fullAddr: String?,
+    val zip: String?,
+)

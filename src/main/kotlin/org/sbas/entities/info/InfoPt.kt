@@ -63,12 +63,6 @@ class InfoPt(
     @Column(name = "attc_id", length = 12)
     var attcId: String? = null, // 첨부 ID
 
-    @Column(name = "bed_stat_cd", length = 8)
-    var bedStatCd: String = BedStatCd.BAST0001.name,
-
-    @Column(name = "bed_stat_nm", length = 8)
-    var bedStatNm: String = BedStatCd.BAST0001.cdNm,
-
     @Column(name = "basc_addr", nullable = false, length = 100)
     var bascAddr: String, // 기본 주소
 

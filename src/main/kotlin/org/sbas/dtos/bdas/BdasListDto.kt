@@ -3,7 +3,9 @@ package org.sbas.dtos.bdas
 import com.fasterxml.jackson.annotation.JsonIgnore
 import com.fasterxml.jackson.annotation.JsonProperty
 import org.sbas.constants.enums.*
+import org.sbas.utils.annotation.NoArg
 import java.time.Instant
+import javax.ws.rs.QueryParam
 
 data class BdasListDto(
     val ptId: String,
@@ -11,6 +13,8 @@ data class BdasListDto(
     val ptNm: String?,
     val gndr: String?,
     val age: Int?,
+    val rrno1: String?,
+    val mpno: String?,
     val bascAddr: String?,
     val updtDttm: Instant?,
     val diagNm: String?,
@@ -63,4 +67,12 @@ data class BdasList(
     val title: String,
     var count: Int,
     val items: MutableList<BdasListDto>,
+)
+
+@NoArg
+data class BdasListSearchParam(
+    @field: QueryParam("ptNm") var ptNm: String?,
+    @field: QueryParam("rrno1") var rrno1: String?,
+    @field: QueryParam("mpno") var mpno: String?,
+    @field: QueryParam("period") var period: Long?,
 )

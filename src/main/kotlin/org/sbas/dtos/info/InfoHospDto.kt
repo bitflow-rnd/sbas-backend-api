@@ -97,10 +97,10 @@ data class InfoHospDetailDto(
 
 @NoArg
 data class InfoHospSearchParam(
-    @field: QueryParam("hospId")var hospId: String?,
+    @field: QueryParam("hospId") var hospId: String?,
     @field: QueryParam("dutyName") var dutyName: String?,
-    @field: QueryParam("dstrCd1")var dstrCd1: String?,
-    @field: QueryParam("dstrCd2")var dstrCd2: String?,
+    @field: QueryParam("dstrCd1") var dstrCd1: String?,
+    @field: QueryParam("dstrCd2") var dstrCd2: String?,
     @field: QueryParam("page") var page: Int? = 0,
     @field: QueryParam("dutyDivNams") var dutyDivNams: String?,
 ) {
