@@ -126,7 +126,7 @@ class NaverApiHandler {
         // 역학조사서 주소 가공
         val fullAddr = address.replace("\n()", "")
             .replace("\n", "")
-            .replace(Regex("\\s*\\([^)]*\\)"), "") // 괄호 부분 삭제
+            .replace(Regex("\\([^)]*\\)"), "") // 괄호 부분 삭제
             .replace(",", "")
             .trimIndent()
         log.debug("NaverApiHandler splitAddress >>>>> $fullAddr")
@@ -141,10 +141,14 @@ class NaverApiHandler {
 
         // 기본 주소로 네이버 주소 검색 api 이용
         val geocoding = geocodingHandler.getGeocoding(NaverGeocodingApiParams(query = baseAddr))
-        val addressElements = geocoding.addresses!![0].addressElements
 
         // 우편번호
-        val zip = addressElements?.first { it.types!![0] == "POSTAL_CODE" }?.longName
+        val zip = if (geocoding.addresses.isNullOrEmpty()) {
+            null
+        } else {
+            val addressElements = geocoding.addresses!![0].addressElements
+            addressElements?.first { it.types!![0] == "POSTAL_CODE" }?.longName
+        }
 
         // 코드
         val dstrCd1 = StringUtils.getDstrCd1(addrList[0])
@@ -156,7 +160,7 @@ class NaverApiHandler {
             dstr1Cd = dstrCd1,
             dstr2Cd = dstr2Cd,
             baseAddr = baseAddr,
-            dtlAddr = dtlAddr,
+            dtlAddr = dtlAddr.ifBlank { null },
             fullAddr = fullAddr,
             zip = zip,
         )
