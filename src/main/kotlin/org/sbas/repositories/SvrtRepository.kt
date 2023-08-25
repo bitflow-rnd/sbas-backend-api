@@ -19,15 +19,14 @@ class SvrtAnlyRepository : PanacheRepositoryBase<SvrtAnly, SvrtAnlyId> {
         return getEntityManager().createQuery(query).singleResult as Int?
     }
 
+    /**
+     * Get data from last analysis by ptId
+     */
     fun getSvrtAnlyByPtId(ptId: String): MutableList<*> {
         val query = "select pt_id, hosp_id, anly_dt, msre_dt, prdt_dt, svrt_prob " +
-                "from svrt_anly " +
-                "where coll_seq in (1, 2, 3, 4) and pt_id = '$ptId' " +
-                "union " +
-                "select pt_id, hosp_id, anly_dt, msre_dt, prdt_dt, svrt_prob " +
-                "from svrt_anly as second " +
-                "where second.anly_seq = (select max(anly_seq) from svrt_anly) and pt_id = '$ptId' " +
-                "order by prdt_dt"
+                "from svrt_anly as sa " +
+                "where sa.anly_seq = (select max(anly_seq) from svrt_anly) and pt_id = '$ptId' " +
+                "order by sa.prdt_dt"
         val result = getEntityManager().createNativeQuery(query).resultList as MutableList<*>
 
         return result.stream().map { row ->
@@ -76,10 +75,10 @@ class SvrtAnlyRepository : PanacheRepositoryBase<SvrtAnly, SvrtAnlyId> {
 class SvrtCollRepository : PanacheRepositoryBase<SvrtColl, SvrtCollId> {
 
     /**
-     * Get list of rows from svrt_coll table for last 4 days by fields msre_dt and pid
+     * Get list of rows from svrt_coll table by fields msre_dt and pid
      */
-    fun findByPtIdAndMsreDt(pid: String, date: String = Date(System.currentTimeMillis()).toString()): List<SvrtColl>? {
-        return find("select sc from SvrtColl sc where sc.pid = '$pid' and (date(sc.id.msreDt) < date('$date') and date(sc.id.msreDt) >= (date('$date') - 4))").list()
+    fun findByPtIdAndMsreDt(pid: String): List<SvrtColl>? {
+        return find("select sc from SvrtColl sc where sc.pid = '$pid'").list()
     }
 
 }
