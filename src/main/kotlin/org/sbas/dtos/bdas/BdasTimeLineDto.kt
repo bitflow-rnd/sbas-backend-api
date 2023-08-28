@@ -23,6 +23,14 @@ data class BdasTimeLineDto(
         timeLineStatus: String?,
         hospId: String?,
         chrgId: String?,
+    ) : this(title, by, null, null, timeLineStatus, hospId, chrgId, null)
+
+    constructor(
+        title: String?,
+        by: String?,
+        timeLineStatus: String?,
+        hospId: String?,
+        chrgId: String?,
         asgnReqSeq: Int?,
     ) : this(title, by, null, null, timeLineStatus, hospId, chrgId, asgnReqSeq)
 
