@@ -431,7 +431,7 @@ class BedAssignService {
                 timeLineList.add(closedBdasAdms)
             }
         }
-        return CommonResponse(TimeLineDtoList(timeLineList.size, timeLineList))
+        return CommonResponse(TimeLineDtoList(ptId, bdasSeq, timeLineList.size, timeLineList))
     }
 
     @Transactional
