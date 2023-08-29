@@ -134,6 +134,9 @@ class BedAssignService {
         val findBdasReq = bdasReqRepository.findByPtIdAndBdasSeq(saveRequest.ptId, saveRequest.bdasSeq)
             ?: throw NotFoundException("bdasReq not found")
 
+        val bdasReqAprvs =
+            bdasReqAprvRepository.findReqAprvListByPtIdAndBdasSeq(saveRequest.ptId, saveRequest.bdasSeq)
+
         // 배정반 승인/거절
         if (saveRequest.aprvYn == "N") { // 거절할 경우 거절 사유 및 메시지 작성
             bdasReqAprvRepository.persist(saveRequest.toRefuseEntity())
@@ -144,10 +147,11 @@ class BedAssignService {
                 // 전원 요청시 병원 정보 저장
                 val hospList = infoHospRepository.findByHospIdList(saveRequest.reqHospIdList)
 
+                val oldAsgnReqSeq = bdasReqAprvs.size
                 hospList.forEachIndexed { idx, infoHosp ->
                     log.debug("hospList>>>>>>>>>>> ${infoHosp.hospId}")
                     val entity = saveRequest.toEntityWhenNotInHosp(
-                        asgnReqSeq = idx + 1,
+                        asgnReqSeq = idx + 1 + oldAsgnReqSeq,
                         hospId = infoHosp.hospId,
                         hospNm = infoHosp.dutyName,
                     )
@@ -180,7 +184,7 @@ class BedAssignService {
         val dstrCd1 = findBdasReq.reqDstr1Cd
         val dstrCd2 = findBdasReq.reqDstr2Cd
 
-        // dstrCd1, dstrCd2에 해당하는 infoHosp 목록
+        // 병상 배정 요청시 선택한 dstrCd1, dstrCd2에 해당하는 infoHosp 목록
         val infoHospList = infoHospRepository.findListByDstrCd1AndDstrCd2(dstrCd1, dstrCd2)
         log.debug("getAvalHospList >>>>>>>>>>>>>> ${infoHospList.size}")
         val list = infoHospList.map {
@@ -254,8 +258,8 @@ class BedAssignService {
                     bdasReqAprvList[0].rgstUserId!!
                 )
                 //            findBdasReq.changeBedStatTo(BedStatCd.BAST0008.name)
+                findBdasReq.changeBedStatTo(BedStatCd.BAST0003.name)
             }
-
             return CommonResponse(BdasAprvResponse(false, "배정 불가 처리되었습니다."))
         }
 

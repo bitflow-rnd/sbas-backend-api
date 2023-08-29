@@ -10,8 +10,6 @@ import org.sbas.dtos.bdas.BdasListSearchParam
 import org.sbas.dtos.bdas.BdasTimeLineDto
 import org.sbas.entities.bdas.*
 import java.time.Instant
-import java.time.temporal.Temporal
-import java.time.temporal.TemporalUnit
 import javax.enterprise.context.ApplicationScoped
 import javax.inject.Inject
 import javax.persistence.EntityManager
@@ -61,7 +59,7 @@ class BdasReqRepository : PanacheRepositoryBase<BdasReq, BdasReqId> {
 
     fun findChrgInst(bedStatCd: String, ptId: String, bdasSeq: Int): String {
         val subQuery = when (bedStatCd) {
-            "BAST0003" -> "SELECT a.updtUserId FROM BdasReq a WHERE a.id.ptId = '$ptId' AND a.id.bdasSeq = $bdasSeq"
+            "BAST0003" -> "SELECT a.rgstUserId FROM BdasReq a WHERE a.id.ptId = '$ptId' AND a.id.bdasSeq = $bdasSeq"
             "BAST0004" -> "SELECT a.updtUserId FROM BdasReqAprv a WHERE a.id.ptId = '$ptId' AND a.id.bdasSeq = $bdasSeq AND a.id.asgnReqSeq = 1"
             "BAST0005" -> "SELECT a.updtUserId FROM BdasAprv a WHERE a.id.ptId = '$ptId' AND a.id.bdasSeq = $bdasSeq AND a.aprvYn = 'Y'"
             "BAST0006" -> "SELECT a.updtUserId FROM BdasTrns a WHERE a.id.ptId = '$ptId' AND a.id.bdasSeq = $bdasSeq"
@@ -84,7 +82,7 @@ class BdasReqRepository : PanacheRepositoryBase<BdasReq, BdasReqId> {
                     "iu.instNm, '${TimeLineStatCd.SUSPEND.cdNm}', " +
                     "iu.instId, iu.id) " +
                     "from BdasReq br " +
-                    "join InfoUser iu on iu.id = br.updtUserId " +
+                    "join InfoUser iu on iu.id = br.rgstUserId " +
                     "where br.id.ptId = '$ptId' and br.id.bdasSeq = $bdasSeq "
         return entityManager.createQuery(query, BdasTimeLineDto::class.java).resultList
     }
@@ -96,7 +94,7 @@ class BdasReqRepository : PanacheRepositoryBase<BdasReq, BdasReqId> {
                     "iu.instNm || ' / ' || iu.userNm, br.updtDttm, br.msg, '${TimeLineStatCd.COMPLETE.cdNm}', " +
                     "iu.instId, iu.id) " +
                     "from BdasReq br " +
-                    "join InfoUser iu on iu.id = br.updtUserId " +
+                    "join InfoUser iu on iu.id = br.rgstUserId " +
                     "where br.id.ptId = '$ptId' and br.id.bdasSeq = $bdasSeq"
         return entityManager.createQuery(query, BdasTimeLineDto::class.java).resultList
     }
