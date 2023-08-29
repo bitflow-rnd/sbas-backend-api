@@ -374,12 +374,13 @@ class BedAssignService {
         val findBdasReq =
             bdasReqRepository.findByPtIdAndBdasSeq(ptId, bdasSeq) ?: throw NotFoundException("병상배정 정보가 없습니다.")
         val bedStatCd = findBdasReq.bedStatCd
-        val timeLineList = mutableListOf<BdasTimeLineDto>()
+        val timeLineList = mutableListOf<TimeLine>()
 
         log.debug(bedStatCd)
-        val closedBdasAprv = BdasTimeLineDto("병상배정", TimeLineStatCd.CLOSED.cdNm)
-        val closedBdasTrans = BdasTimeLineDto("이송", TimeLineStatCd.CLOSED.cdNm)
-        val closedBdasAdms = BdasTimeLineDto("입원", TimeLineStatCd.CLOSED.cdNm)
+        val closedBdasAprv = ClosedTimeLine("병상배정", TimeLineStatCd.CLOSED.cdNm)
+        val closedBdasTrans = ClosedTimeLine("이송", TimeLineStatCd.CLOSED.cdNm)
+        val closedBdasAdms = ClosedTimeLine("입원", TimeLineStatCd.CLOSED.cdNm)
+        val bdasTransWait = ClosedTimeLine("이송대기", TimeLineStatCd.CLOSED.cdNm)
 
         when (bedStatCd) {
             BedStatCd.BAST0003.name -> {
@@ -400,7 +401,7 @@ class BedAssignService {
                 timeLineList.addAll(bdasReqRepository.findTimeLineInfo(ptId, bdasSeq))
                 timeLineList.addAll(bdasReqAprvRepository.findTimeLineInfo(ptId, bdasSeq))
                 timeLineList.addAll(bdasAprvRepository.findTimeLineInfo(ptId, bdasSeq))
-                timeLineList.add(BdasTimeLineDto("이송대기", TimeLineStatCd.CLOSED.cdNm))
+                timeLineList.add(bdasTransWait)
                 timeLineList.add(closedBdasAdms)
             }
 
@@ -422,20 +423,19 @@ class BedAssignService {
 
             BedStatCd.BAST0008.name -> {
                 timeLineList.addAll(bdasReqRepository.findTimeLineInfo(ptId, bdasSeq))
-                val bdasReqAprvTimeLine = bdasReqAprvRepository.findTimeLineInfo(ptId, bdasSeq)
-                timeLineList.addAll(bdasReqAprvTimeLine)
+                timeLineList.addAll(bdasReqAprvRepository.findTimeLineInfo(ptId, bdasSeq))
 
-                if (bdasReqAprvTimeLine[0].title == "배정불가") {
-                    timeLineList.add(closedBdasAprv)
-                } else {
-                    timeLineList.addAll(bdasAprvRepository.findRefuseTimeLineInfo(ptId, bdasSeq))
-                }
+//                if (bdasReqAprvTimeLine[0].title == "배정불가") {
+//                    timeLineList.add(closedBdasAprv)
+//                } else {
+//                    timeLineList.addAll(bdasAprvRepository.findRefuseTimeLineInfo(ptId, bdasSeq))
+//                }
 
                 timeLineList.add(closedBdasTrans)
                 timeLineList.add(closedBdasAdms)
             }
         }
-        return CommonResponse(TimeLineDtoList(ptId, bdasSeq, timeLineList.size, timeLineList))
+        return CommonResponse(TimeLineList(ptId, bdasSeq, timeLineList.size, timeLineList))
     }
 
     @Transactional

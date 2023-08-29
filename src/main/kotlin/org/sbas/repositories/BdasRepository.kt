@@ -5,9 +5,7 @@ import io.quarkus.hibernate.orm.panache.kotlin.PanacheRepositoryBase
 import io.quarkus.panache.common.Sort
 import org.sbas.constants.enums.AdmsStatCd
 import org.sbas.constants.enums.TimeLineStatCd
-import org.sbas.dtos.bdas.BdasListDto
-import org.sbas.dtos.bdas.BdasListSearchParam
-import org.sbas.dtos.bdas.BdasTimeLineDto
+import org.sbas.dtos.bdas.*
 import org.sbas.entities.bdas.*
 import java.time.Instant
 import javax.enterprise.context.ApplicationScoped
@@ -76,27 +74,28 @@ class BdasReqRepository : PanacheRepositoryBase<BdasReq, BdasReqId> {
         }
     }
 
-    fun findSuspendTimeLineInfo(ptId: String, bdasSeq: Int): MutableList<BdasTimeLineDto> {
+    fun findSuspendTimeLineInfo(ptId: String, bdasSeq: Int): MutableList<SuspendTimeLine> {
         val query =
-            "select new org.sbas.dtos.bdas.BdasTimeLineDto('승인대기', " +
-                    "iu.instNm, '${TimeLineStatCd.SUSPEND.cdNm}', " +
-                    "iu.instId, iu.id) " +
+            "select new org.sbas.dtos.bdas.SuspendTimeLine(" +
+                    "'승인대기', " +
+                    "iu.instNm, " +
+                    "'${TimeLineStatCd.SUSPEND.cdNm}', " +
+                    "iu.instId, iu.instNm, iu.id) " +
                     "from BdasReq br " +
                     "join InfoUser iu on iu.id = br.rgstUserId " +
                     "where br.id.ptId = '$ptId' and br.id.bdasSeq = $bdasSeq "
-        return entityManager.createQuery(query, BdasTimeLineDto::class.java).resultList
+        return entityManager.createQuery(query, SuspendTimeLine::class.java).resultList
     }
 
-    fun findTimeLineInfo(ptId: String, bdasSeq: Int): MutableList<BdasTimeLineDto> {
-
+    fun findTimeLineInfo(ptId: String, bdasSeq: Int): MutableList<CompleteTimeLine> {
         val query =
-            "select new org.sbas.dtos.bdas.BdasTimeLineDto('병상요청 (' || (case br.inhpAsgnYn when 'Y' then '원내배정' when 'N' then '전원요청' end) || ')', " +
+            "select new org.sbas.dtos.bdas.CompleteTimeLine('병상요청 (' || (case br.inhpAsgnYn when 'Y' then '원내배정' when 'N' then '전원요청' end) || ')', " +
                     "iu.instNm || ' / ' || iu.userNm, br.updtDttm, br.msg, '${TimeLineStatCd.COMPLETE.cdNm}', " +
-                    "iu.instId, iu.id) " +
+                    "iu.instId, iu.instNm, iu.id) " +
                     "from BdasReq br " +
                     "join InfoUser iu on iu.id = br.rgstUserId " +
                     "where br.id.ptId = '$ptId' and br.id.bdasSeq = $bdasSeq"
-        return entityManager.createQuery(query, BdasTimeLineDto::class.java).resultList
+        return entityManager.createQuery(query, CompleteTimeLine::class.java).resultList
     }
 
     fun findByPtId(ptId: String) = find("from BdasReq where id.ptId='$ptId' order by id.bdasSeq desc").firstResult()
@@ -105,15 +104,15 @@ class BdasReqRepository : PanacheRepositoryBase<BdasReq, BdasReqId> {
 @ApplicationScoped
 class BdasReqAprvRepository : PanacheRepositoryBase<BdasReqAprv, BdasReqAprvId> {
 
-    fun findTimeLineInfo(ptId: String, bdasSeq: Int): MutableList<BdasTimeLineDto> {
+    fun findTimeLineInfo(ptId: String, bdasSeq: Int): MutableList<CompleteTimeLine> {
         val query =
-            "select new org.sbas.dtos.bdas.BdasTimeLineDto(case bra.aprvYn when 'Y' then '승인' when 'N' then '배정불가' end, " +
+            "select new org.sbas.dtos.bdas.CompleteTimeLine(case bra.aprvYn when 'Y' then '승인' when 'N' then '배정불가' end, " +
                     "iu.instNm || ' / ' || iu.userNm, bra.updtDttm, bra.msg, '${TimeLineStatCd.COMPLETE.cdNm}', " +
-                    "iu.instId, iu.id) " +
+                    "iu.instId, iu.instNm, iu.id) " +
                     "from BdasReqAprv bra " +
                     "join InfoUser iu on iu.id = bra.updtUserId " +
                     "where bra.id.ptId = '$ptId' and bra.id.bdasSeq = $bdasSeq and bra.id.asgnReqSeq = 1 "
-        return getEntityManager().createQuery(query, BdasTimeLineDto::class.java).resultList
+        return getEntityManager().createQuery(query, CompleteTimeLine::class.java).resultList
     }
 
     fun findReqAprvListByPtIdAndBdasSeq(ptId: String, bdasSeq: Int): List<BdasReqAprv> {
@@ -136,49 +135,50 @@ class BdasAprvRepository : PanacheRepositoryBase<BdasAprv, BdasAprvId> {
         return find("id.ptId = '$ptId' and id.bdasSeq = $bdasSeq").list().toMutableList()
     }
 
-    fun findTimeLineInfo(ptId: String, bdasSeq: Int): MutableList<BdasTimeLineDto> {
+    fun findTimeLineInfo(ptId: String, bdasSeq: Int): MutableList<TimeLine> {
         val subQuery = " select bra.id.asgnReqSeq " +
                 "from BdasReqAprv bra " +
                 "left join BdasAprv ba on bra.id.ptId = ba.id.ptId and bra.id.bdasSeq = ba.id.bdasSeq and bra.id.asgnReqSeq = ba.id.asgnReqSeq " +
                 "where bra.id.ptId = '$ptId' and bra.id.bdasSeq = $bdasSeq and ba.id.ptId is null and ba.id.bdasSeq is null "
         // TODO
         val query =
-            "select new org.sbas.dtos.bdas.BdasTimeLineDto(case ba.aprvYn when 'Y' then '배정완료' when 'N' then '배정불가' end, " +
+            "select new org.sbas.dtos.bdas.BdasAprvCompleteTimeLine(case ba.aprvYn when 'Y' then '배정완료' when 'N' then '배정불가' end, " +
                     "iu.instNm || ' / ' || iu.userNm, ba.updtDttm, ba.msg, '${TimeLineStatCd.COMPLETE.cdNm}', " +
-                    "iu.instId, iu.id, ba.id.asgnReqSeq) " +
+                    "iu.instId, iu.instNm, iu.id, ba.id.asgnReqSeq) " +
                     "from BdasAprv ba " +
                     "inner join InfoUser iu on iu.id = ba.updtUserId " +
                     "where ba.id.ptId = '$ptId' and ba.id.bdasSeq = $bdasSeq and ba.id.asgnReqSeq not in (${subQuery}) " +
                     "and iu.jobCd = 'PMGR0003' " +
                     "order by ba.aprvYn "
 
-        val query2 = "select new org.sbas.dtos.bdas.BdasTimeLineDto('배정대기', " +
+        val query2 = "select new org.sbas.dtos.bdas.BdasAprvSuspendTimeLine('배정대기', " +
                 "iu.instNm || ' / ' || iu.userNm, '${TimeLineStatCd.SUSPEND.cdNm}', " +
-                "iu.instId, iu.id, bra.id.asgnReqSeq) " +
+                "bra.reqHospId, bra.reqHospNm, iu.id, bra.id.asgnReqSeq) " +
                 "from BdasReqAprv bra " +
                 "inner join InfoUser iu on iu.instId = bra.reqHospId " +
                 "where bra.id.ptId = '$ptId' and bra.id.bdasSeq = $bdasSeq and bra.id.asgnReqSeq in (${subQuery}) " +
                 "and iu.jobCd = 'PMGR0003' " +
                 "order by bra.id.asgnReqSeq "
 
-        val resultList = entityManager.createQuery(query, BdasTimeLineDto::class.java).resultList
-        resultList.addAll(entityManager.createQuery(query2, BdasTimeLineDto::class.java).resultList)
+        val resultList: MutableList<TimeLine> = emptyList<TimeLine>().toMutableList()
+        resultList.addAll(entityManager.createQuery(query, BdasAprvCompleteTimeLine::class.java).resultList)
+        resultList.addAll(entityManager.createQuery(query2, BdasAprvSuspendTimeLine::class.java).resultList)
 
         return resultList
     }
 
-    fun findRefuseTimeLineInfo(ptId: String, bdasSeq: Int): MutableList<BdasTimeLineDto> {
+    fun findRefuseTimeLineInfo(ptId: String, bdasSeq: Int): MutableList<BdasAprvCompleteTimeLine> {
         val query =
-            "select new org.sbas.dtos.bdas.BdasTimeLineDto(case ba.aprvYn when 'Y' then '배정완료' when 'N' then '배정불가' end, " +
+            "select new org.sbas.dtos.bdas.BdasAprvCompleteTimeLine(case ba.aprvYn when 'Y' then '배정완료' when 'N' then '배정불가' end, " +
                     "iu.instNm || ' / ' || iu.userNm, ba.updtDttm, ba.msg, '${TimeLineStatCd.COMPLETE.cdNm}', " +
-                    "iu.instId, iu.id, ba.id.asgnReqSeq) " +
+                    "iu.instId, iu.instNm, iu.id, ba.id.asgnReqSeq) " +
                     "from BdasAprv ba " +
                     "inner join InfoUser iu on iu.id = ba.updtUserId " +
                     "where ba.id.ptId = '$ptId' and ba.id.bdasSeq = $bdasSeq and ba.aprvYn = 'N' " +
                     "and iu.jobCd = 'PMGR0003' " +
                     "order by ba.aprvYn "
 
-        return entityManager.createQuery(query, BdasTimeLineDto::class.java).resultList
+        return entityManager.createQuery(query, BdasAprvCompleteTimeLine::class.java).resultList
     }
 
     fun findBdasAprvList(ptId: String, bdasSeq: Int): List<BdasAprv> {
@@ -189,33 +189,33 @@ class BdasAprvRepository : PanacheRepositoryBase<BdasAprv, BdasAprvId> {
 @ApplicationScoped
 class BdasTrnsRepository : PanacheRepositoryBase<BdasTrns, BdasTrnsId> {
 
-    fun findSuspendTimeLineInfo(ptId: String, bdasSeq: Int): MutableList<BdasTimeLineDto> {
-        val query = "select new org.sbas.dtos.bdas.BdasTimeLineDto('이송중', " +
+    fun findSuspendTimeLineInfo(ptId: String, bdasSeq: Int): MutableList<CompleteTimeLine> {
+        val query = "select new org.sbas.dtos.bdas.CompleteTimeLine('이송중', " +
                 "iu.instNm || ' / ' || iu.userNm, " +
                 "bt.updtDttm, " +
                 "bt.vecno || chr(10) || bt.msg, " +
                 "'${TimeLineStatCd.COMPLETE.cdNm}', " +
-                "iu.instId, iu.id) " +
+                "iu.instId, iu.instNm, iu.id) " +
                 "from BdasTrns bt " +
                 "join InfoUser iu on iu.id = bt.updtUserId " +
                 "where bt.id.ptId = '$ptId' and bt.id.bdasSeq = $bdasSeq"
 
-        return getEntityManager().createQuery(query, BdasTimeLineDto::class.java).resultList
+        return getEntityManager().createQuery(query, CompleteTimeLine::class.java).resultList
     }
 
-    fun findCompleteTimeLineInfo(ptId: String, bdasSeq: Int): MutableList<BdasTimeLineDto> {
-        val query = "select new org.sbas.dtos.bdas.BdasTimeLineDto(" +
+    fun findCompleteTimeLineInfo(ptId: String, bdasSeq: Int): MutableList<CompleteTimeLine> {
+        val query = "select new org.sbas.dtos.bdas.CompleteTimeLine(" +
                 "'이송완료', " +
                 "iu.instNm || ' / ' || iu.userNm, " +
                 "bt.updtDttm, " +
                 "bt.vecno || chr(10) || bt.msg, " +
                 "'${TimeLineStatCd.COMPLETE.cdNm}', " +
-                "iu.instId, iu.id) " +
+                "iu.instId, iu.instNm, iu.id) " +
                 "from BdasTrns bt " +
                 "join InfoUser iu on iu.id = bt.updtUserId " +
                 "where bt.id.ptId = '$ptId' and bt.id.bdasSeq = $bdasSeq"
 
-        return getEntityManager().createQuery(query, BdasTimeLineDto::class.java).resultList
+        return getEntityManager().createQuery(query, CompleteTimeLine::class.java).resultList
     }
 }
 
@@ -229,34 +229,34 @@ class BdasAdmsRepository : PanacheRepositoryBase<BdasAdms, BdasAdmsId> {
         ).firstResult()
     }
 
-    fun findSuspendTimeLineInfo(ptId: String, bdasSeq: Int): MutableList<BdasTimeLineDto> {
-        val query = "select new org.sbas.dtos.bdas.BdasTimeLineDto(" +
+    fun findSuspendTimeLineInfo(ptId: String, bdasSeq: Int): MutableList<SuspendTimeLine> {
+        val query = "select new org.sbas.dtos.bdas.SuspendTimeLine(" +
                 "'입원', " +
                 "iu.instNm || ' / ' || iu.userNm, " +
                 "'${TimeLineStatCd.SUSPEND.cdNm}', " +
-                "iu.instId, iu.id) " +
+                "iu.instId, iu.instNm, iu.id) " +
                 "from BdasAprv ba " +
                 "join InfoUser iu on iu.id = ba.updtUserId " +
                 "where ba.id.ptId = '$ptId' and ba.id.bdasSeq = $bdasSeq " +
                 "and ba.aprvYn = 'Y' "
 
-        return getEntityManager().createQuery(query, BdasTimeLineDto::class.java).resultList
+        return getEntityManager().createQuery(query, SuspendTimeLine::class.java).resultList
     }
 
-    fun findCompleteTimeLineInfo(ptId: String, bdasSeq: Int): MutableList<BdasTimeLineDto> {
-        val query = "select new org.sbas.dtos.bdas.BdasTimeLineDto(" +
+    fun findCompleteTimeLineInfo(ptId: String, bdasSeq: Int): MutableList<CompleteTimeLine> {
+        val query = "select new org.sbas.dtos.bdas.CompleteTimeLine(" +
                 "case ba.admsStatCd when '${AdmsStatCd.IOST0001.name}' then '입원완료' " +
                 "when '${AdmsStatCd.IOST0002.name}' then '퇴원완료' when '${AdmsStatCd.IOST0003}' then '자택회송' end, " +
                 "iu.instNm || ' / ' || iu.userNm, " +
                 "ba.updtDttm, " +
                 "ba.msg, " +
                 "'${TimeLineStatCd.COMPLETE.cdNm}', " +
-                "iu.instId, iu.id) " +
+                "iu.instId, iu.instNm, iu.id) " +
                 "from BdasAdms ba " +
                 "join InfoUser iu on iu.id = ba.updtUserId " +
                 "where ba.id.ptId = '$ptId' and ba.id.bdasSeq = $bdasSeq " +
                 "order by ba.id.admsSeq "
 
-        return getEntityManager().createQuery(query, BdasTimeLineDto::class.java).resultList
+        return getEntityManager().createQuery(query, CompleteTimeLine::class.java).resultList
     }
 }
