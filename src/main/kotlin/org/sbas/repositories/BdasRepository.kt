@@ -143,21 +143,22 @@ class BdasAprvRepository : PanacheRepositoryBase<BdasAprv, BdasAprvId> {
         // TODO
         val query =
             "select new org.sbas.dtos.bdas.BdasAprvCompleteTimeLine(case ba.aprvYn when 'Y' then '배정완료' when 'N' then '배정불가' end, " +
-                    "iu.instNm || ' / ' || iu.userNm, ba.updtDttm, ba.msg, '${TimeLineStatCd.COMPLETE.cdNm}', " +
-                    "iu.instId, iu.instNm, iu.id, ba.id.asgnReqSeq) " +
+                    "ih.dutyName || ' / ' || iu.userNm, ba.updtDttm, ba.msg, '${TimeLineStatCd.COMPLETE.cdNm}', " +
+                    "ih.hospId, ih.dutyName, iu.id, ba.id.asgnReqSeq) " +
                     "from BdasAprv ba " +
                     "inner join InfoUser iu on iu.id = ba.updtUserId " +
+                    "inner join InfoHosp ih on ba.hospId = ih.hospId " +
                     "where ba.id.ptId = '$ptId' and ba.id.bdasSeq = $bdasSeq and ba.id.asgnReqSeq not in (${subQuery}) " +
-                    "and iu.jobCd = 'PMGR0003' " +
+//                    "and iu.jobCd = 'PMGR0003' " +
                     "order by ba.aprvYn "
 
         val query2 = "select new org.sbas.dtos.bdas.BdasAprvSuspendTimeLine('배정대기', " +
-                "iu.instNm || ' / ' || iu.userNm, '${TimeLineStatCd.SUSPEND.cdNm}', " +
+                "bra.reqHospNm || ' / ' || iu.userNm, '${TimeLineStatCd.SUSPEND.cdNm}', " +
                 "bra.reqHospId, bra.reqHospNm, iu.id, bra.id.asgnReqSeq) " +
                 "from BdasReqAprv bra " +
                 "inner join InfoUser iu on iu.instId = bra.reqHospId " +
                 "where bra.id.ptId = '$ptId' and bra.id.bdasSeq = $bdasSeq and bra.id.asgnReqSeq in (${subQuery}) " +
-                "and iu.jobCd = 'PMGR0003' " +
+//                "and iu.jobCd = 'PMGR0003' " +
                 "order by bra.id.asgnReqSeq "
 
         val resultList: MutableList<TimeLine> = emptyList<TimeLine>().toMutableList()

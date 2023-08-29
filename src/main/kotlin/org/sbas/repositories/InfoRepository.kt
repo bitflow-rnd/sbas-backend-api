@@ -215,7 +215,7 @@ class InfoHospRepository : PanacheRepositoryBase<InfoHosp, String> {
             join(entity(InfoUser::class), on { col(InfoHosp::hospId).equal(col(InfoUser::instId)) })
             whereAnd(
                 col(InfoUser::instId).`in`(hospList),
-                col(InfoUser::jobCd).equal("PMGR0003"),
+//                col(InfoUser::jobCd).equal("PMGR0003"),
             )
         }
 
