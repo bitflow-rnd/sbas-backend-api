@@ -44,7 +44,7 @@ class PublicOrganiztnEndpoint {
     @Path("codes")
     fun getInstCodes(@QueryParam("dstrCd1") @Length(max = 2) dstrCd1: String?,
                      @QueryParam("dstrCd2") @Length(max = 4) dstrCd2: String?,
-                     @QueryParam("instTypeCd") instTypeCd: String?): Response {
+                     @QueryParam("instTypeCd") instTypeCd: String): Response {
         return Response.ok(organiztnService.getInstCodes(dstrCd1, dstrCd2, instTypeCd)).build()
     }
 
@@ -54,11 +54,4 @@ class PublicOrganiztnEndpoint {
     fun getFireStatns(@BeanParam param: FireStatnSearchParam): Response {
         return Response.ok(organiztnService.findFireStatns(param)).build()
     }
-
-//    @Operation(summary = "", description = "")
-//    @GET
-//    @Path("organiztns/{param}")
-//    fun organiztns(@RestPath param: String): Response {
-//        return Response.ok().build()
-//    }
 }

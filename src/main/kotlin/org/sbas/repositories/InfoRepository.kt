@@ -246,6 +246,22 @@ class InfoHospRepository : PanacheRepositoryBase<InfoHosp, String> {
         @Suppress("UNCHECKED_CAST")
         return getEntityManager().createNativeQuery(query + where, InfoHosp::class.java).resultList.toMutableList() as MutableList<InfoHosp>
     }
+
+    fun findPubHealthCenter(dstrCd1: String?, dstrCd2: String?): List<InfoHosp> {
+        val healthCenterList = queryFactory.listQuery<InfoHosp> {
+            selectMulti(
+                entity(InfoHosp::class)
+            )
+            from(entity(InfoHosp::class))
+            whereAnd(
+                col(InfoHosp::dutyDivNam).equal("보건소"),
+                dstrCd1?.run { col(InfoHosp::dstrCd1).equal(this) },
+                dstrCd2?.run { col(InfoHosp::dstrCd2).equal(this) },
+            )
+        }
+
+        return healthCenterList
+    }
 }
 
 @ApplicationScoped

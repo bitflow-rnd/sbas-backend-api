@@ -380,7 +380,7 @@ class BedAssignService {
         val closedBdasAprv = ClosedTimeLine("병상배정", TimeLineStatCd.CLOSED.cdNm)
         val closedBdasTrans = ClosedTimeLine("이송", TimeLineStatCd.CLOSED.cdNm)
         val closedBdasAdms = ClosedTimeLine("입원", TimeLineStatCd.CLOSED.cdNm)
-        val bdasTransWait = ClosedTimeLine("이송대기", TimeLineStatCd.CLOSED.cdNm)
+        val bdasTransWait = ClosedTimeLine("이송대기", TimeLineStatCd.SUSPEND.cdNm)
 
         when (bedStatCd) {
             BedStatCd.BAST0003.name -> {

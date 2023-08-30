@@ -87,8 +87,11 @@ class OrganiztnService {
      * 기관코드 목록 조회
      */
     @Transactional
-    fun getInstCodes(dstrCd1: String?, dstrCd2: String?, instTypeCd: String?): CommonResponse<List<InfoInst>> {
-        return CommonResponse(infoInstRepository.findInstCodeList(dstrCd1 ?: "", dstrCd2 ?: "", instTypeCd ?: ""))
+    fun getInstCodes(dstrCd1: String?, dstrCd2: String?, instTypeCd: String): CommonResponse<*> {
+        return when (instTypeCd) {
+            "ORGN0003" -> CommonResponse(infoHospRepository.findPubHealthCenter(dstrCd1, dstrCd2))
+            else -> CommonResponse(infoInstRepository.findInstCodeList(dstrCd1 ?: "", dstrCd2 ?: "", instTypeCd))
+        }
     }
 
     /**
