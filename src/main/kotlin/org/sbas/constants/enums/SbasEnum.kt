@@ -35,7 +35,7 @@ enum class SvrtTypeCd(val cdNm: String) {
     SVTP0004("준중증"),
     SVTP0005("중증"),
     SVTP0006("위중증"),
-    SVTP0007("사망"),
+    SVTP0007("미분류"),
 }
 
 /**

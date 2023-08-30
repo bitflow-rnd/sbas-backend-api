@@ -1,5 +1,6 @@
 package org.sbas.handlers
 
+import com.google.firebase.messaging.FirebaseMessagingException
 import io.quarkus.arc.Priority
 import io.quarkus.security.AuthenticationFailedException
 import io.quarkus.security.ForbiddenException
@@ -130,6 +131,16 @@ class ForbiddenExceptionMapper : ExceptionMapper<ForbiddenException> {
         return Response.status(Response.Status.FORBIDDEN)
             .type(MediaType.APPLICATION_JSON)
             .entity(CommonResponse(SbasConst.ResCode.FAIL, "권한이 없습니다.", null))
+            .build()
+    }
+}
+
+@Provider
+class FirebaseMessagingExceptionMapper : ExceptionMapper<FirebaseMessagingException> {
+    override fun toResponse(exception: FirebaseMessagingException): Response {
+        return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
+            .type(MediaType.APPLICATION_JSON)
+            .entity(CommonResponse(SbasConst.ResCode.FAIL, "check push token", null))
             .build()
     }
 }
