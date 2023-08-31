@@ -74,17 +74,18 @@ class BdasReqRepository : PanacheRepositoryBase<BdasReq, BdasReqId> {
         }
     }
 
-    fun findSuspendTimeLineInfo(ptId: String, bdasSeq: Int): MutableList<SuspendTimeLine> {
+    fun findSuspendTimeLineInfo(ptId: String, bdasSeq: Int): MutableList<BdasReqAprvSuspendTimeLine> {
         val query =
-            "select new org.sbas.dtos.bdas.SuspendTimeLine(" +
+            "select new org.sbas.dtos.bdas.BdasReqAprvSuspendTimeLine(" +
                     "'승인대기', " +
-                    "iu.instNm, " +
+                    "ii.instNm, " +
                     "'${TimeLineStatCd.SUSPEND.cdNm}', " +
-                    "iu.instId, iu.instNm, iu.id) " +
+                    "ii.id, ii.instNm) " +
                     "from BdasReq br " +
-                    "join InfoUser iu on iu.id = br.rgstUserId " +
-                    "where br.id.ptId = '$ptId' and br.id.bdasSeq = $bdasSeq "
-        return entityManager.createQuery(query, SuspendTimeLine::class.java).resultList
+                    "join InfoInst ii on ii.dstrCd1 = br.reqDstr1Cd " +
+                    "where br.id.ptId = '$ptId' and br.id.bdasSeq = $bdasSeq " +
+                    "and ii.instTypeCd = 'ORGN0001' "
+        return entityManager.createQuery(query, BdasReqAprvSuspendTimeLine::class.java).resultList
     }
 
     fun findTimeLineInfo(ptId: String, bdasSeq: Int): MutableList<CompleteTimeLine> {

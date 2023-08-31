@@ -117,26 +117,6 @@ class BdasReq(
     var bedStatCd: String,
 ) : CommonEntity() {
 
-    fun saveDprtInfoFrom(bdasReqDprtInfo: BdasReqDprtInfo) {
-        this.reqDt = bdasReqDprtInfo.reqDt
-        this.reqTm = bdasReqDprtInfo.reqTm
-        this.reqDstr1Cd = bdasReqDprtInfo.reqDstr1Cd
-        this.reqDstr2Cd = bdasReqDprtInfo.reqDstr2Cd
-        this.dprtDstrTypeCd = bdasReqDprtInfo.dprtDstrTypeCd
-        this.dprtDstrBascAddr = bdasReqDprtInfo.dprtDstrBascAddr
-        this.dprtDstrDetlAddr = bdasReqDprtInfo.dprtDstrDetlAddr
-        this.dprtDstrZip = bdasReqDprtInfo.dprtDstrZip
-        this.dprtDstrLat = bdasReqDprtInfo.dprtDstrLat
-        this.dprtDstrLon = bdasReqDprtInfo.dprtDstrLon
-        this.nok1Telno = bdasReqDprtInfo.nok1Telno
-        this.nok2Telno = bdasReqDprtInfo.nok2Telno
-        this.inhpAsgnYn = bdasReqDprtInfo.inhpAsgnYn
-        this.deptNm = bdasReqDprtInfo.deptNm
-        this.spclNm = bdasReqDprtInfo.spclNm
-        this.chrgTelno = bdasReqDprtInfo.chrgTelno
-        this.msg = bdasReqDprtInfo.msg
-    }
-
     fun changeBedStatTo(bedStatCd: String) {
         this.bedStatCd = bedStatCd
     }

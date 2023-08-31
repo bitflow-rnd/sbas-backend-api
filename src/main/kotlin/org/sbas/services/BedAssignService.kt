@@ -3,6 +3,7 @@ package org.sbas.services
 import org.eclipse.microprofile.jwt.JsonWebToken
 import org.jboss.logging.Logger
 import org.sbas.constants.enums.BedStatCd
+import org.sbas.constants.enums.DprtTypeCd
 import org.sbas.constants.enums.TimeLineStatCd
 import org.sbas.dtos.bdas.*
 import org.sbas.entities.bdas.BdasReqId
@@ -11,9 +12,11 @@ import org.sbas.repositories.*
 import org.sbas.responses.CommonListResponse
 import org.sbas.responses.CommonResponse
 import org.sbas.responses.patient.DiseaseInfoResponse
+import org.sbas.responses.patient.TransInfoResponse
 import org.sbas.restclients.FirebaseService
 import org.sbas.restparameters.NaverGeocodingApiParams
 import org.sbas.utils.CustomizedException
+import org.sbas.utils.StringUtils
 import javax.enterprise.context.ApplicationScoped
 import javax.inject.Inject
 import javax.transaction.Transactional
@@ -106,9 +109,11 @@ class BedAssignService {
         val bdasReqId = BdasReqId(ptId, bdasEsvy.bdasSeq)
 
         // 출발지 위도, 경도 설정
-        val geocoding = geoHandler.getGeocoding(NaverGeocodingApiParams(query = bdasReqDprtInfo.dprtDstrBascAddr!!))
-        bdasReqDprtInfo.dprtDstrLat = geocoding.addresses!![0].y // 위도
-        bdasReqDprtInfo.dprtDstrLon = geocoding.addresses!![0].x // 경도
+        if (bdasReqDprtInfo.dprtDstrBascAddr != null) {
+            val geocoding = geoHandler.getGeocoding(NaverGeocodingApiParams(query = bdasReqDprtInfo.dprtDstrBascAddr))
+            bdasReqDprtInfo.dprtDstrLat = geocoding.addresses!![0].y // 위도
+            bdasReqDprtInfo.dprtDstrLon = geocoding.addresses!![0].x // 경도
+        }
 
         val bdasReq = saveRequest.toEntity(bdasReqId)
         bdasReqRepository.persist(bdasReq)
@@ -121,7 +126,7 @@ class BedAssignService {
             log.debug("registerBedRequestInfo bdasUsers >>> ${it.id}")
 //            firebaseService.sendMessage(bdasReq.updtUserId!!, "${bdasReqDprtInfo.msg}", it.id)
         }
-        firebaseService.sendMessage(bdasReq.updtUserId!!, "${bdasReqDprtInfo.msg}", "TEST-APR-1")
+        firebaseService.sendMessage(bdasReq.rgstUserId!!, "${bdasReqDprtInfo.msg}", "TEST-APR-1")
 
         return CommonResponse("병상 요청 성공")
     }
@@ -435,7 +440,7 @@ class BedAssignService {
                 timeLineList.add(closedBdasAdms)
             }
         }
-        return CommonResponse(TimeLineList(ptId, bdasSeq, timeLineList.size, timeLineList))
+        return CommonResponse(TimeLineList(findBdasReq.id.ptId, findBdasReq.id.bdasSeq, timeLineList.size, timeLineList))
     }
 
     @Transactional
@@ -451,6 +456,32 @@ class BedAssignService {
         findReq.reqBedTypeCd = baseCodeRepository.getCdNm("BDTP", findReq.reqBedTypeCd)
 
         return CommonResponse(DiseaseInfoResponse(findEsvy, findReq))
+    }
+
+    @Transactional
+    fun findTransInfo(ptId: String, bdasSeq: Int): CommonResponse<TransInfoResponse> {
+        val findBdasReq = bdasReqRepository.findByPtIdAndBdasSeq(ptId, bdasSeq)
+            ?: throw NotFoundException("$ptId $bdasSeq not found")
+
+        val transInfoResponse = TransInfoResponse(
+            ptId = findBdasReq.id.ptId,
+            bdasSeq = findBdasReq.id.bdasSeq,
+            reqDstr1Cd = findBdasReq.reqDstr1Cd,
+            reqDstr1CdNm = StringUtils.getDstrCd1(findBdasReq.reqDstr1Cd),
+            dprtDstrTypeCd = findBdasReq.dprtDstrTypeCd,
+            dprtDstrTypeCdNm = DprtTypeCd.valueOf(findBdasReq.dprtDstrTypeCd).cdNm,
+            dprtDstrBascAddr = findBdasReq.dprtDstrBascAddr,
+            dprtDstrDetlAddr = findBdasReq.dprtDstrDetlAddr,
+            nok1Telno = findBdasReq.nok1Telno,
+            nok2Telno = findBdasReq.nok2Telno,
+            inhpAsgnYn = findBdasReq.inhpAsgnYn,
+            deptNm = findBdasReq.deptNm,
+            spclNm = findBdasReq.spclNm,
+            chrgTelno = findBdasReq.chrgTelno,
+            msg = findBdasReq.msg,
+        )
+
+        return CommonResponse(transInfoResponse)
     }
 
     private fun convertFromArr(beforeConvert: String?, grpCd: String): String {

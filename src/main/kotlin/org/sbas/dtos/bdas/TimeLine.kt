@@ -9,6 +9,14 @@ class ClosedTimeLine(
     val timeLineStatus: String?,
 ) : TimeLine()
 
+class BdasReqAprvSuspendTimeLine(
+    val title: String?,
+    val by: String?,
+    val timeLineStatus: String?,
+    val chrgInstId: String?,
+    val chrgInstNm: String?,
+) : TimeLine()
+
 class SuspendTimeLine(
     val title: String?,
     val by: String?,

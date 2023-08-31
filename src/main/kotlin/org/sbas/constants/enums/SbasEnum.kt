@@ -81,3 +81,9 @@ enum class BnrnTypeCd(val cdNm: String) {
     BNRN0006("장비 부족"),
     BNRN0007("기타"),
 }
+
+enum class DprtTypeCd(val cdNm: String) {
+    DPTP0001("자택"),
+    DPTP0002("병원"),
+    DPTP0003("기타"),
+}

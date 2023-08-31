@@ -109,9 +109,16 @@ class PrivatePatientEndpoint {
 
     @Operation(summary = "차수별 중증정보 조회", description = "")
     @GET
-    @Path("sevrinfo/{param1}/{param2}")
-    fun sevrinfo(@RestPath param1: String, @RestPath param2: String): Response? {
+    @Path("sevrinfo/{ptId}/{bdasSeq}")
+    fun sevrinfo(@RestPath ptId: String, @RestPath bdasSeq: String): Response? {
         return Response.ok().build()
+    }
+
+    @Operation(summary = "차수별 이송정보 조회", description = "환자 ID와 배정 순번으로 해당 이송정보 조회")
+    @GET
+    @Path("transinfo/{ptId}/{bdasSeq}")
+    fun transInfo(@RestPath ptId: String, @RestPath bdasSeq: Int): Response {
+        return Response.ok(bedAssignService.findTransInfo(ptId, bdasSeq)).build()
     }
 
     @Operation(summary = "질병(감염병) 정보 등록", description = "")
@@ -132,7 +139,7 @@ class PrivatePatientEndpoint {
     @POST
     @Path("bedassignreq")
     fun bedassignreq(@Valid bdasReqSaveRequest: BdasReqSaveRequest): Response? {
-        log.debug(bdasReqSaveRequest)
+        log.debug("bedassignreq >>> $bdasReqSaveRequest")
         val res = bedAssignService.registerBedRequestInfo(bdasReqSaveRequest)
         return Response.ok(res).build()
     }

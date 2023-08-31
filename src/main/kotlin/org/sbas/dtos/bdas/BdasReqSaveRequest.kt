@@ -22,16 +22,42 @@ data class BdasReqSaveRequest(
 ) {
 
     fun toEntity(bdasReqId: BdasReqId): BdasReq {
-        val entity = svrInfo.toEntity(bdasReqId)
-
-        // 요청 시간 설정
-        dprtInfo.reqDt = StringUtils.getYyyyMmDd()
-        dprtInfo.reqTm = StringUtils.getHhMmSs()
-
-        // 출발지 정보 저장
-        entity.saveDprtInfoFrom(dprtInfo)
-
-        return entity
+        return BdasReq(
+            id = bdasReqId,
+            reqDt = StringUtils.getYyyyMmDd(),
+            reqTm = StringUtils.getHhMmSs(),
+            ptTypeCd = svrInfo.ptTypeCd,
+            undrDsesCd = svrInfo.undrDsesCd,
+            undrDsesEtc = svrInfo.undrDsesEtc,
+            reqBedTypeCd = svrInfo.reqBedTypeCd,
+            dnrAgreYn = svrInfo.dnrAgreYn,
+            svrtIptTypeCd = svrInfo.svrtIptTypeCd,
+            svrtTypeCd = svrInfo.svrtTypeCd,
+            avpuCd = svrInfo.avpuCd,
+            oxyYn = svrInfo.oxyYn,
+            bdtp = svrInfo.bdtp,
+            hr = svrInfo.hr,
+            resp = svrInfo.resp,
+            spo2 = svrInfo.spo2,
+            sbp = svrInfo.sbp,
+            newsScore = svrInfo.newsScore,
+            reqDstr1Cd = dprtInfo.reqDstr1Cd,
+            reqDstr2Cd = dprtInfo.reqDstr2Cd,
+            dprtDstrTypeCd = dprtInfo.dprtDstrTypeCd,
+            dprtDstrBascAddr = dprtInfo.dprtDstrBascAddr,
+            dprtDstrDetlAddr = dprtInfo.dprtDstrDetlAddr,
+            dprtDstrZip = dprtInfo.dprtDstrZip,
+            dprtDstrLat = dprtInfo.dprtDstrLat,
+            dprtDstrLon = dprtInfo.dprtDstrLon,
+            nok1Telno = dprtInfo.nok1Telno,
+            nok2Telno = dprtInfo.nok2Telno,
+            inhpAsgnYn = dprtInfo.inhpAsgnYn,
+            deptNm = dprtInfo.deptNm,
+            spclNm = dprtInfo.spclNm,
+            chrgTelno = dprtInfo.chrgTelno,
+            msg = dprtInfo.msg,
+            bedStatCd = BedStatCd.BAST0003.name,
+        )
     }
 
     fun isPtIdEqual(): Boolean {
@@ -45,89 +71,59 @@ data class BdasReqSaveRequest(
  */
 data class BdasReqSvrInfo(
     @field: NotBlank
-    var ptId: String,
+    val ptId: String,
     @field: NotBlank
-    var ptTypeCd: String,
+    val ptTypeCd: String,
     @field: NotBlank
-    var undrDsesCd: String,
+    val undrDsesCd: String,
     @field: [NotBlank ValidEnum(enumClass = ReqBedTypeCd::class)]
-    var reqBedTypeCd: String,
+    val reqBedTypeCd: String,
     @field: NotBlank
-    var dnrAgreYn: String,
+    val dnrAgreYn: String,
     @field: NotBlank
-    var svrtIptTypeCd: String,
+    val svrtIptTypeCd: String,
     @field: [NotBlank ValidEnum(enumClass = SvrtTypeCd::class)]
-    var svrtTypeCd: String,
+    val svrtTypeCd: String,
 
-    var undrDsesEtc: String?,
-    var avpuCd: String?,
-    var oxyYn: String?,
-    var bdtp: Float?,
-    var hr: Int?,
-    var resp: Int?,
-    var spo2: Int?,
-    var sbp: Int?,
-    var newsScore: Int?,
-) {
-    fun toEntity(bdasReqId: BdasReqId): BdasReq {
-        return BdasReq(
-            id = bdasReqId,
-            reqDt = "",
-            reqTm = "",
-            ptTypeCd = this.ptTypeCd,
-            reqDstr1Cd = "",
-            dprtDstrTypeCd = "",
-            inhpAsgnYn = "",
-            undrDsesCd = this.undrDsesCd,
-            undrDsesEtc = this.undrDsesEtc,
-            reqBedTypeCd = this.reqBedTypeCd,
-            dnrAgreYn = this.dnrAgreYn,
-            svrtTypeCd = this.svrtTypeCd,
-            svrtIptTypeCd = this.svrtIptTypeCd,
-            avpuCd = this.avpuCd,
-            oxyYn = this.oxyYn,
-            bdtp = this.bdtp,
-            hr = this.hr,
-            resp = this.resp,
-            spo2 = this.spo2,
-            sbp = this.sbp,
-            newsScore = this.newsScore,
-            bedStatCd = BedStatCd.BAST0003.name
-        )
-    }
-}
+    val undrDsesEtc: String?,
+    val avpuCd: String?,
+    val oxyYn: String?,
+    val bdtp: Float?,
+    val hr: Int?,
+    val resp: Int?,
+    val spo2: Int?,
+    val sbp: Int?,
+    val newsScore: Int?,
+)
 
 /**
  * 출발지 정보
  */
-data class BdasReqDprtInfo (
-    var ptId: String,
+data class BdasReqDprtInfo(
+    val ptId: String,
 
     @field: NotBlank
-    var reqDstr1Cd: String,
-    var reqDstr2Cd: String? = null,
-    
+    val reqDstr1Cd: String,
+    val reqDstr2Cd: String?,
+
     // 출발지 정보
     @field: NotBlank
-    var dprtDstrTypeCd: String,
-    var dprtDstrBascAddr: String? = null,
-    var dprtDstrDetlAddr: String? = null,
-    var dprtDstrZip: String? = null,
-    var dprtDstrLat: String? = null,
-    var dprtDstrLon: String? = null,
-    
+    val dprtDstrTypeCd: String,
+    val dprtDstrBascAddr: String?,
+    val dprtDstrDetlAddr: String?,
+    val dprtDstrZip: String?,
+    var dprtDstrLat: String?,
+    var dprtDstrLon: String?,
+
     // 보호자 정보
-    var nok1Telno: String? = null,
-    var nok2Telno: String? = null,
-    
+    val nok1Telno: String?,
+    val nok2Telno: String?,
+
     // 담당 병원 정보
     @field: [NotBlank Pattern(regexp = "^[YN]\$", message = "Y/N 값만 가능합니다.")]
-    var inhpAsgnYn: String,
-    var deptNm: String? = null,
-    var spclNm: String? = null,
-    var chrgTelno: String? = null,
-    var msg: String? = null,
-) {
-    var reqDt: String = ""
-    var reqTm: String = ""
-}
+    val inhpAsgnYn: String,
+    val deptNm: String?,
+    val spclNm: String?,
+    val chrgTelno: String?,
+    val msg: String?,
+)
