@@ -52,7 +52,7 @@ data class InfoPtDto(
             detlAddr = this.detlAddr,
             zip = this.zip,
             natiNm = if (this.natiCd == NatiCd.NATI0001) {
-                "대한민국"
+                NatiCd.NATI0001.cdNm
             } else {
                 this.natiNm
             },

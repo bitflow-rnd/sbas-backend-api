@@ -86,3 +86,11 @@ data class FireStatnDto(
     val lat: String?,
     val lon: String?,
 )
+
+data class InfoInstResponse(
+    val instId: String?,
+    val instTypeCd: String?,
+    val instNm: String?,
+    val dstr1Cd: String?,
+    val dstr2Cd: String?,
+)

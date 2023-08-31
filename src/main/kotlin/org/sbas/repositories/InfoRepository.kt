@@ -5,21 +5,14 @@ import com.linecorp.kotlinjdsl.listQuery
 import com.linecorp.kotlinjdsl.query.spec.ExpressionOrderSpec
 import com.linecorp.kotlinjdsl.querydsl.CriteriaQueryDsl
 import com.linecorp.kotlinjdsl.querydsl.expression.col
-import com.linecorp.kotlinjdsl.querydsl.expression.function
-import com.linecorp.kotlinjdsl.querydsl.expression.nullLiteral
-import com.linecorp.kotlinjdsl.selectQuery
-import com.linecorp.kotlinjdsl.subquery
 import io.quarkus.hibernate.orm.panache.kotlin.PanacheRepositoryBase
 import io.quarkus.panache.common.Sort
 import org.jboss.logging.Logger
 import org.sbas.dtos.info.*
-import org.sbas.entities.bdas.BdasReq
-import org.sbas.entities.bdas.BdasReqId
 import org.sbas.entities.info.*
 import javax.enterprise.context.ApplicationScoped
 import javax.inject.Inject
 import javax.persistence.EntityManager
-import javax.persistence.criteria.AbstractQuery
 import javax.ws.rs.NotFoundException
 
 @ApplicationScoped
@@ -247,10 +240,11 @@ class InfoHospRepository : PanacheRepositoryBase<InfoHosp, String> {
         return getEntityManager().createNativeQuery(query + where, InfoHosp::class.java).resultList.toMutableList() as MutableList<InfoHosp>
     }
 
-    fun findPubHealthCenter(dstrCd1: String?, dstrCd2: String?): List<InfoHosp> {
-        val healthCenterList = queryFactory.listQuery<InfoHosp> {
+    fun findPubHealthCenter(dstrCd1: String?, dstrCd2: String?): List<InfoInstResponse> {
+        val healthCenterList = queryFactory.listQuery<InfoInstResponse> {
             selectMulti(
-                entity(InfoHosp::class)
+                col(InfoHosp::hospId), literal("ORGN0003"), col(InfoHosp::dutyName),
+                col(InfoHosp::dstrCd1), col(InfoHosp::dstrCd2),
             )
             from(entity(InfoHosp::class))
             whereAnd(
@@ -278,8 +272,25 @@ class InfoInstRepository : PanacheRepositoryBase<InfoInst, String> {
                 "('$instTypeCd' = '' or i.instTypeCd = '$instTypeCd')"
         ).list()
 
-    fun findFireStatns(param: FireStatnSearchParam): MutableList<FireStatnListDto> {
 
+    fun findInfoInst(dstrCd1: String?, dstrCd2: String?, instTypeCd: String?): List<InfoInstResponse> {
+        val list = queryFactory.listQuery<InfoInstResponse> {
+            selectMulti(
+                col(InfoInst::id), col(InfoInst::instTypeCd), col(InfoInst::instNm),
+                col(InfoInst::dstrCd1), col(InfoInst::dstrCd2),
+            )
+            from(entity(InfoInst::class))
+            whereAnd(
+                instTypeCd?.run { col(InfoInst::instTypeCd).equal(this) },
+                dstrCd1?.run { col(InfoInst::dstrCd1).equal(this) },
+                dstrCd2?.run { col(InfoInst::dstrCd2).equal(this) },
+            )
+        }
+
+        return list
+    }
+
+    fun findFireStatns(param: FireStatnSearchParam): MutableList<FireStatnListDto> {
         val fireStatnList: List<FireStatnListDto> = queryFactory.listQuery {
             selectMulti(
                 col(InfoInst::id), col(InfoInst::instNm),
