@@ -109,11 +109,9 @@ class BedAssignService {
         val bdasReqId = BdasReqId(ptId, bdasEsvy.bdasSeq)
 
         // 출발지 위도, 경도 설정
-        if (bdasReqDprtInfo.dprtDstrBascAddr != null) {
-            val geocoding = geoHandler.getGeocoding(NaverGeocodingApiParams(query = bdasReqDprtInfo.dprtDstrBascAddr))
-            bdasReqDprtInfo.dprtDstrLat = geocoding.addresses!![0].y // 위도
-            bdasReqDprtInfo.dprtDstrLon = geocoding.addresses!![0].x // 경도
-        }
+        val geocoding = geoHandler.getGeocoding(NaverGeocodingApiParams(query = bdasReqDprtInfo.dprtDstrBascAddr))
+        bdasReqDprtInfo.dprtDstrLat = geocoding.addresses!![0].y // 위도
+        bdasReqDprtInfo.dprtDstrLon = geocoding.addresses!![0].x // 경도
 
         val bdasReq = saveRequest.toEntity(bdasReqId)
         bdasReqRepository.persist(bdasReq)
@@ -142,6 +140,9 @@ class BedAssignService {
         val bdasReqAprvs =
             bdasReqAprvRepository.findReqAprvListByPtIdAndBdasSeq(saveRequest.ptId, saveRequest.bdasSeq)
 
+        val requestUser = infoUserRepository.findByUserId(findBdasReq.rgstUserId!!)
+            ?: throw NotFoundException("user not found")
+
         // 배정반 승인/거절
         if (saveRequest.aprvYn == "N") { // 거절할 경우 거절 사유 및 메시지 작성
             bdasReqAprvRepository.persist(saveRequest.toRefuseEntity())
@@ -167,8 +168,9 @@ class BedAssignService {
                     firebaseService.sendMessage(entity.rgstUserId!!, "${saveRequest.msg}", "TEST-APR-1")
                 }
 
-            } else if (findBdasReq.inhpAsgnYn == "Y") { // 원내 배정이면 승인
-                bdasReqAprvRepository.persist(saveRequest.toEntityWhenInHosp())
+            } else if (findBdasReq.inhpAsgnYn == "Y") { // 원내 배정 승인
+                // TODO reqHospId
+                bdasReqAprvRepository.persist(saveRequest.toEntityWhenInHosp(requestUser.instId, requestUser.instNm))
                 findBdasReq.changeBedStatTo(BedStatCd.BAST0004.name)
             }
         } else {
@@ -185,6 +187,9 @@ class BedAssignService {
     fun getAvalHospList(ptId: String, bdasSeq: Int): CommonResponse<*> {
         val findBdasReq =
             bdasReqRepository.findByPtIdAndBdasSeq(ptId, bdasSeq) ?: throw NotFoundException("bdasReq not found")
+
+        val findBdasReqAprv =
+            bdasReqAprvRepository.findReqAprvListByPtIdAndBdasSeq(ptId, bdasSeq)
 
         val dstrCd1 = findBdasReq.reqDstr1Cd
         val dstrCd2 = findBdasReq.reqDstr2Cd
@@ -206,7 +211,7 @@ class BedAssignService {
                 distance = convertToStringDistance(distance),
                 addr = it.dutyAddr!!,
             )
-        }
+        }.filter { response -> response.hospId !in findBdasReqAprv.map { it.reqHospId } }
 
         // TODO 페이징 처리??
         if (list.size > 10) {
@@ -467,7 +472,7 @@ class BedAssignService {
             ptId = findBdasReq.id.ptId,
             bdasSeq = findBdasReq.id.bdasSeq,
             reqDstr1Cd = findBdasReq.reqDstr1Cd,
-            reqDstr1CdNm = StringUtils.getDstrCd1(findBdasReq.reqDstr1Cd),
+            reqDstr1CdNm = baseCodeRepository.findBaseCodeByCdId(findBdasReq.reqDstr1Cd)?.cdNm!!,
             dprtDstrTypeCd = findBdasReq.dprtDstrTypeCd,
             dprtDstrTypeCdNm = DprtTypeCd.valueOf(findBdasReq.dprtDstrTypeCd).cdNm,
             dprtDstrBascAddr = findBdasReq.dprtDstrBascAddr,

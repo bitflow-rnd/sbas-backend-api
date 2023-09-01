@@ -109,7 +109,8 @@ data class BdasReqDprtInfo(
     // 출발지 정보
     @field: NotBlank
     val dprtDstrTypeCd: String,
-    val dprtDstrBascAddr: String?,
+    @field: NotBlank
+    val dprtDstrBascAddr: String,
     val dprtDstrDetlAddr: String?,
     val dprtDstrZip: String?,
     var dprtDstrLat: String?,

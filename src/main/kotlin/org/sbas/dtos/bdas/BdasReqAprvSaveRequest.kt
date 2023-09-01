@@ -32,7 +32,7 @@ data class BdasReqAprvSaveRequest(
         )
     }
 
-    fun toEntityWhenInHosp(): BdasReqAprv {
+    fun toEntityWhenInHosp(hospId: String?, hospNm: String?): BdasReqAprv {
         return BdasReqAprv(
             id = BdasReqAprvId(
                 ptId = this.ptId,
@@ -41,8 +41,8 @@ data class BdasReqAprvSaveRequest(
             ),
             aprvYn = "Y",
             msg = this.msg,
-            reqHospId = null,
-            reqHospNm = null,
+            reqHospId = hospId,
+            reqHospNm = hospNm,
         )
     }
 

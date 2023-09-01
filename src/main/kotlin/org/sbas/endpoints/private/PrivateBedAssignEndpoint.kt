@@ -28,6 +28,7 @@ class PrivateBedAssignEndpoint {
     @POST
     @Path("reqconfirm")
     fun reqconfirm(@Valid bdasReqAprvSaveRequest: BdasReqAprvSaveRequest): Response {
+        log.debug("PrivateBedAssignEndpoint reqconfirm >>> $bdasReqAprvSaveRequest")
         return Response.ok(bedAssignService.reqConfirm(bdasReqAprvSaveRequest)).build()
     }
 
