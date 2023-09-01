@@ -116,15 +116,17 @@ class BedAssignService {
         val bdasReq = saveRequest.toEntity(bdasReqId)
         bdasReqRepository.persist(bdasReq)
 
+        val findInfoPt = infoPtRepository.findById(ptId) ?: throw NotFoundException("$ptId not found")
+
         // 지역코드로 병상배정반 찾기
         val bdasUsers = infoUserRepository.findBdasUserByReqDstrCd(bdasReq.reqDstr1Cd, bdasReq.reqDstr2Cd)
 
         // 푸쉬 알람 보내기
         bdasUsers.forEach {
             log.debug("registerBedRequestInfo bdasUsers >>> ${it.id}")
-//            firebaseService.sendMessage(bdasReq.updtUserId!!, "${bdasReqDprtInfo.msg}", it.id)
+            firebaseService.sendMessage("${findInfoPt.ptNm}님 병상요청", "${bdasReqDprtInfo.msg}", it.id)
         }
-        firebaseService.sendMessage(bdasReq.rgstUserId!!, "${bdasReqDprtInfo.msg}", "TEST-APR-1")
+//        firebaseService.sendMessage("${bdasReq.rgstUserId!!} ${BedStatCd.BAST0003.cdNm}", "${bdasReqDprtInfo.msg}", "TEST-APR-1")
 
         return CommonResponse("병상 요청 성공")
     }
@@ -142,6 +144,8 @@ class BedAssignService {
 
         val requestUser = infoUserRepository.findByUserId(findBdasReq.rgstUserId!!)
             ?: throw NotFoundException("user not found")
+
+        val findInfoPt = infoPtRepository.findById(saveRequest.ptId) ?: throw NotFoundException("${saveRequest.ptId} not found")
 
         // 배정반 승인/거절
         if (saveRequest.aprvYn == "N") { // 거절할 경우 거절 사유 및 메시지 작성
@@ -165,7 +169,7 @@ class BedAssignService {
                     findBdasReq.changeBedStatTo(BedStatCd.BAST0004.name)
 
 //                    firebaseService.sendMessage("jiseongtak", "${dto.msg}", infoHosp.userId)
-                    firebaseService.sendMessage(entity.rgstUserId!!, "${saveRequest.msg}", "TEST-APR-1")
+                    firebaseService.sendMessage("${findInfoPt.ptNm}님 전원요청", "${saveRequest.msg}", infoHosp.userId)
                 }
 
             } else if (findBdasReq.inhpAsgnYn == "Y") { // 원내 배정 승인
@@ -231,6 +235,7 @@ class BedAssignService {
         val findBdasReq = bdasReqRepository.findByPtIdAndBdasSeq(saveRequest.ptId, saveRequest.bdasSeq)
             ?: throw NotFoundException("bdasReq not found")
         val findInfoUser = infoUserRepository.findByUserId(jwt.name) ?: throw NotFoundException("user not found")
+        val findInfoPt = infoPtRepository.findById(saveRequest.ptId) ?: throw NotFoundException("${saveRequest.ptId} not found")
 
         val bdasReqAprvList =
             bdasReqAprvRepository.findReqAprvListByPtIdAndBdasSeq(saveRequest.ptId, saveRequest.bdasSeq)
@@ -293,7 +298,18 @@ class BedAssignService {
         bdasReqAprvList.filter { it.id.asgnReqSeq !in asgnReqSeqList }.forEach {
             bdasAprvRepository.persist(it.convertToRefuseBdasAprv())
         }
+
         findBdasReq.changeBedStatTo(BedStatCd.BAST0005.name)
+
+        // 지역코드로 병상배정반 찾기
+        val bdasUsers = infoUserRepository.findBdasUserByReqDstrCd(findBdasReq.reqDstr1Cd, findBdasReq.reqDstr2Cd)
+
+        // 푸쉬 알람 보내기
+        bdasUsers.forEach {
+            log.debug("asgnConfirm bdasUsers >>> ${it.id}")
+            firebaseService.sendMessage("${findInfoPt.ptNm}님 배정승인", "${saveRequest.msg}", it.id)
+        }
+//        firebaseService.sendMessage("${findInfoPt.ptNm}님 배정승인", "${saveRequest.msg}", "TEST-APR-1")
 
         return CommonResponse(BdasAprvResponse(false, "배정 승인되었습니다."))
     }

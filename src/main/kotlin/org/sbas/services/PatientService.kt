@@ -233,7 +233,7 @@ class PatientService {
         }
     }
 
-    fun calculateNewsScore(param: NewsScoreParameters): CommonResponse<Int> {
+    fun calculateNewsScore(param: NewsScoreParameters): CommonResponse<Map<String, Any>> {
         val list = mutableListOf<Int>()
         when {
             param.breath < 9 -> list.add(0, 3)
@@ -280,7 +280,28 @@ class PatientService {
             param.bdTemp >= 38.1 && param.bdTemp < 39.1 -> list.add(6, 1)
             param.bdTemp >= 39.1 -> list.add(6, 2)
         }
-        return CommonResponse(list.sum())
+
+        val score = list.sum()
+
+        val svrtTypeCd = when {
+            score == 0 -> SvrtTypeCd.SVTP0001.name
+            score in 1..4 -> SvrtTypeCd.SVTP0002.name
+//            list.any { it == 3 } -> SvrtTypeCd.SVTP0003.name
+            score in 5..6 -> SvrtTypeCd.SVTP0004.name
+            score >= 7 -> SvrtTypeCd.SVTP0005.name
+            else -> SvrtTypeCd.SVTP0007.name
+        }
+//        SVTP0001("무증상"),
+//        SVTP0002("경증"),
+//        SVTP0003("중등증"),
+//        SVTP0004("준중증"),
+//        SVTP0005("중증"),
+//        SVTP0006("위중증"),
+//        SVTP0007("미분류"),
+
+        val svrtTypeCdNm = SvrtTypeCd.valueOf(svrtTypeCd).cdNm
+
+        return CommonResponse(mapOf("score" to score, "svrtTypeCd" to svrtTypeCd, "svrtTypeCdNm" to svrtTypeCdNm))
     }
 
     @Transactional
