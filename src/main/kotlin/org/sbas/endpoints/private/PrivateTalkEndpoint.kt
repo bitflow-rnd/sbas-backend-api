@@ -12,7 +12,7 @@ import javax.ws.rs.Path
 import javax.ws.rs.core.Response
 
 @Tag(name = "대화방 관리(사용자 권한용)", description = "로그인 된 사용자(세부권한별 분기) - 대화방 등록 및 조회 등")
-@RolesAllowed("USER")
+//@RolesAllowed("USER")
 @Path("v1/private/talk")
 class PrivateTalkEndpoint {
 
@@ -36,4 +36,9 @@ class PrivateTalkEndpoint {
         return Response.ok(talkService.getMyChat(tkrmId)).build()
     }
 
+    @GET
+    @Path("all-chats")
+    fun getAllChats(): Response {
+        return Response.ok(talkService.getAllChats()).build()
+    }
 }

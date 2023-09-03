@@ -347,7 +347,7 @@ class BedAssignService {
         bdasAdmsRepository.persist(entity)
         findBdasReq.changeBedStatTo(BedStatCd.BAST0007.name)
 
-        return CommonResponse("입퇴원 정보 등록 성공")
+        return CommonResponse("${entity.id.ptId} ${entity.id.bdasSeq} 입퇴원 정보 등록 성공")
     }
 
     @Transactional
@@ -412,23 +412,23 @@ class BedAssignService {
             BedStatCd.BAST0003.name -> {
                 timeLineList.addAll(bdasReqRepository.findTimeLineInfo(ptId, bdasSeq))
                 timeLineList.addAll(bdasReqRepository.findSuspendTimeLineInfo(ptId, bdasSeq))
-                timeLineList.addAll(mutableListOf(closedBdasAprv, closedBdasTrans, closedBdasAdms))
+//                timeLineList.addAll(mutableListOf(closedBdasAprv, closedBdasTrans, closedBdasAdms))
             }
 
             BedStatCd.BAST0004.name -> {
                 timeLineList.addAll(bdasReqRepository.findTimeLineInfo(ptId, bdasSeq))
                 timeLineList.addAll(bdasReqAprvRepository.findTimeLineInfo(ptId, bdasSeq))
                 timeLineList.addAll(bdasAprvRepository.findTimeLineInfo(ptId, bdasSeq))
-                timeLineList.add(closedBdasTrans)
-                timeLineList.add(closedBdasAdms)
+//                timeLineList.add(closedBdasTrans)
+//                timeLineList.add(closedBdasAdms)
             }
 
             BedStatCd.BAST0005.name -> {
                 timeLineList.addAll(bdasReqRepository.findTimeLineInfo(ptId, bdasSeq))
                 timeLineList.addAll(bdasReqAprvRepository.findTimeLineInfo(ptId, bdasSeq))
                 timeLineList.addAll(bdasAprvRepository.findTimeLineInfo(ptId, bdasSeq))
-                timeLineList.add(bdasTransWait)
-                timeLineList.add(closedBdasAdms)
+//                timeLineList.add(bdasTransWait)
+//                timeLineList.add(closedBdasAdms)
             }
 
             BedStatCd.BAST0006.name -> {
@@ -457,8 +457,8 @@ class BedAssignService {
 //                    timeLineList.addAll(bdasAprvRepository.findRefuseTimeLineInfo(ptId, bdasSeq))
 //                }
 
-                timeLineList.add(closedBdasTrans)
-                timeLineList.add(closedBdasAdms)
+//                timeLineList.add(closedBdasTrans)
+//                timeLineList.add(closedBdasAdms)
             }
         }
         return CommonResponse(TimeLineList(findBdasReq.id.ptId, findBdasReq.id.bdasSeq, timeLineList.size, timeLineList))

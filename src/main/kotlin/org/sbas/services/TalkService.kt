@@ -2,6 +2,7 @@ package org.sbas.services
 
 import org.sbas.entities.talk.TalkMsg
 import org.sbas.entities.talk.TalkMsgId
+import org.sbas.entities.talk.TalkRoom
 import org.sbas.repositories.TalkMsgRepository
 import org.sbas.repositories.TalkRoomRepository
 import org.sbas.repositories.TalkUserRepository
@@ -55,4 +56,8 @@ class TalkService {
         talkMsgRepository.persist(addMsg)
     }
 
+    @Transactional
+    fun getAllChats(): CommonResponse<List<TalkRoom>> {
+        return CommonResponse(talkRoomRepository.findAll().list())
+    }
 }

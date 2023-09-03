@@ -34,4 +34,18 @@ class PrivateDashboardEndpoint {
         return ResponseBuilder.ok(CommonResponse(SbasConst.ResCode.SUCCESS,
             null, res)).build()
     }
+
+    @Operation(summary = "중증도별 환자 집계")
+    @GET
+    @Path("severity")
+    fun severity(): Response? {
+        return Response.ok().build()
+    }
+
+    @Operation(summary = "지역별 중증환자 수용 집계")
+    @GET
+    @Path("severity/region")
+    fun region(): Response? {
+        return Response.ok().build()
+    }
 }
