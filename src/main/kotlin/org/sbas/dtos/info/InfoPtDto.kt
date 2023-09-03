@@ -76,6 +76,7 @@ data class InfoPtSearchDto(
     var hospNm: String?,
     var mpno: String?,
     var natiCd: NatiCd?,
+    val natiCdNm: String?,
     var bedStatCd: String?,
     var updtDttm: Instant?,
     @JsonIgnore var ptTypeCd: String?,

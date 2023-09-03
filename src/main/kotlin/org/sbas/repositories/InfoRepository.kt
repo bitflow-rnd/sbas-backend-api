@@ -59,7 +59,7 @@ class InfoPtRepository : PanacheRepositoryBase<InfoPt, String> {
         //TODO 기관 이름추가
         val query = "select new org.sbas.dtos.info.InfoPtSearchDto(a.ptId, b.id.bdasSeq, a.ptNm, a.gndr, " +
                 "a.dstr1Cd, fn_get_cd_nm('SIDO', a.dstr1Cd), a.dstr2Cd, fn_get_cd_nm('SIDO'||a.dstr1Cd, a.dstr2Cd), " +
-                "ba.hospId, '', a.mpno, a.natiCd, b.bedStatCd, a.updtDttm, " +
+                "ba.hospId, '', a.mpno, a.natiCd, a.natiNm, b.bedStatCd, a.updtDttm, " +
                 "b.ptTypeCd, b.svrtTypeCd, b.undrDsesCd, fn_get_age(a.rrno1, a.rrno2)) " +
                 "from InfoPt a " +
                 "left join BdasReq b on a.ptId = b.id.ptId " +

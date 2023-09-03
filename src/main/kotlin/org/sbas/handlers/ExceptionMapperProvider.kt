@@ -138,7 +138,8 @@ class ForbiddenExceptionMapper : ExceptionMapper<ForbiddenException> {
 @Provider
 class FirebaseMessagingExceptionMapper : ExceptionMapper<FirebaseMessagingException> {
     override fun toResponse(exception: FirebaseMessagingException): Response {
-        return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
+        // TODO
+        return Response.status(Response.Status.OK)
             .type(MediaType.APPLICATION_JSON)
             .entity(CommonResponse(SbasConst.ResCode.FAIL, "check push token", null))
             .build()
