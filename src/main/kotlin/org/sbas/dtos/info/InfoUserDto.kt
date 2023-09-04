@@ -14,6 +14,7 @@ import javax.ws.rs.QueryParam
 data class InfoUserListDto(
     var userId: String,
     var dutyDstr1Cd: String?,
+    val dutyDstr1CdNm: String?,
     var instTypeCd: String?,
     var instNm: String?,
     var userNm: String?,

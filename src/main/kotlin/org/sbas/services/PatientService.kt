@@ -190,7 +190,8 @@ class PatientService {
     fun findBdasHistInfo(ptId: String): CommonListResponse<BdasHisInfo> {
         val bdasHisInfoList = infoPtRepository.findBdasHisInfo(ptId)
         bdasHisInfoList.forEachIndexed { idx, bdasHisInfo ->
-            bdasHisInfo.order = "${bdasHisInfoList.size - idx}차수"
+            bdasHisInfo.order = "${bdasHisInfoList.size - idx}"
+            bdasHisInfo.bedStatCdNm = BedStatCd.valueOf(bdasHisInfo.bedStatCd).cdNm
             getTagList(bdasHisInfo)
         }
 

@@ -16,7 +16,6 @@ import org.sbas.responses.patient.TransInfoResponse
 import org.sbas.restclients.FirebaseService
 import org.sbas.restparameters.NaverGeocodingApiParams
 import org.sbas.utils.CustomizedException
-import org.sbas.utils.StringUtils
 import javax.enterprise.context.ApplicationScoped
 import javax.inject.Inject
 import javax.transaction.Transactional
@@ -168,7 +167,6 @@ class BedAssignService {
                     bdasReqAprvRepository.persist(entity)
                     findBdasReq.changeBedStatTo(BedStatCd.BAST0004.name)
 
-//                    firebaseService.sendMessage("jiseongtak", "${dto.msg}", infoHosp.userId)
                     firebaseService.sendMessage("${findInfoPt.ptNm}님 전원요청", "${saveRequest.msg}", infoHosp.userId)
                 }
 

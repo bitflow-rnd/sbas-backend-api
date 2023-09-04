@@ -79,14 +79,24 @@ class InfoPtRepository : PanacheRepositoryBase<InfoPt, String> {
     }
 
     fun findBdasHisInfo(ptId: String): MutableList<BdasHisInfo> {
-        val query = "select new org.sbas.dtos.info.BdasHisInfo(be.ptId, be.bdasSeq, " +
-                "be.diagNm, ih.dutyName, '', ba.updtDttm, br.ptTypeCd, br.svrtTypeCd, br.undrDsesCd) " +
+        val query = "select new org.sbas.dtos.info.BdasHisInfo(be.ptId, be.bdasSeq, br.bedStatCd, " +
+                "be.diagNm, ih.dutyName, ba.updtDttm, br.ptTypeCd, br.svrtTypeCd, br.undrDsesCd) " +
                 "from BdasEsvy be " +
                 "join BdasReq br on be.bdasSeq = br.id.bdasSeq " +
-                "left join BdasAdms ba on be.id.bdasSeq = ba.id.bdasSeq " +
-                "join InfoHosp ih on ba.hospId = ih.hospId " +
+                "left join BdasAprv ba on (be.bdasSeq = ba.id.bdasSeq and ba.aprvYn = 'Y') " +
+                "left join InfoHosp ih on ba.hospId = ih.hospId " +
                 "where be.ptId = '${ptId}' " +
                 "order by ba.id.bdasSeq desc"
+
+//        val query2 = "select new org.sbas.dtos.info.BdasHisInfo(be.ptId, be.bdasSeq, " +
+//                "be.diagNm, ) " +
+//                "from BdasEsvy be " +
+//                "join bdasReq br on be.bdasSeq = br.id.bdasSeq " +
+//                "where be.ptId = '${ptId}' " +
+//                "order by br.id.bdasSeq desc"
+
+//        entityManager.createQuery(query2, BdasHisInfo::class.java).resultList
+
 
         return entityManager.createQuery(query, BdasHisInfo::class.java).resultList.toMutableList()
     }

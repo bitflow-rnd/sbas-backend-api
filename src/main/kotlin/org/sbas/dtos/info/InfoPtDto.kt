@@ -121,15 +121,17 @@ data class InfoPtBasicInfo(
 data class BdasHisInfo(
     val ptId: String?,
     val bdasSeq: Int?,
+    val bedStatCd: String,
     val diagNm: String?,
     val hospNm: String?,
-    var order: String?,
     val updtDttm: Instant?,
     @JsonIgnore val ptTypeCd: String?,
     @JsonIgnore val svrtTypeCd: String?,
     @JsonIgnore val undrDsesCd: String?,
 ) {
     var tagList: MutableList<String>? = mutableListOf()
+    var bedStatCdNm: String = ""
+    var order: String = ""
 }
 
 /**

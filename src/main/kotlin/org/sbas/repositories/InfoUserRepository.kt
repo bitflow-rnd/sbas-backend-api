@@ -3,6 +3,7 @@ package org.sbas.repositories
 import com.linecorp.kotlinjdsl.QueryFactory
 import com.linecorp.kotlinjdsl.listQuery
 import com.linecorp.kotlinjdsl.query.spec.ExpressionOrderSpec
+import com.linecorp.kotlinjdsl.querydsl.expression.col
 import com.linecorp.kotlinjdsl.querydsl.expression.column
 import io.quarkus.hibernate.orm.panache.kotlin.PanacheRepositoryBase
 import kotlinx.coroutines.runBlocking
@@ -28,9 +29,12 @@ class InfoUserRepository : PanacheRepositoryBase<InfoUser, String> {
     fun findInfoUserList(param: InfoUserSearchParam): List<InfoUserListDto> {
         //TODO 페이징 처리?
         val infoUserList: List<InfoUserListDto> = queryFactory.listQuery {
-            select(listOf(column(InfoUser::id), column(InfoUser::dutyDstr1Cd), column(InfoUser::instTypeCd),
+            select(
+                listOf(column(InfoUser::id), column(InfoUser::dutyDstr1Cd),
+                function("fn_get_cd_nm", String::class.java, literal("SIDO"), col(InfoUser::dutyDstr1Cd)),column(InfoUser::instTypeCd),
                 column(InfoUser::instNm), column(InfoUser::userNm), column(InfoUser::jobCd), column(InfoUser::authCd),
-                column(InfoUser::rgstDttm), column(InfoUser::userStatCd), column(InfoUser::rgstUserId)))
+                column(InfoUser::rgstDttm), column(InfoUser::userStatCd), column(InfoUser::rgstUserId))
+            )
             from(entity(InfoUser::class))
             whereAnd(
                 param.dstr1Cd?.run { column(InfoUser::dutyDstr1Cd).equal(this) },
