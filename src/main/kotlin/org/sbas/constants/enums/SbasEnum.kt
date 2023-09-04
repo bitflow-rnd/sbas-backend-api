@@ -87,3 +87,10 @@ enum class DprtTypeCd(val cdNm: String) {
     DPTP0002("병원"),
     DPTP0003("기타"),
 }
+
+enum class PmgrTypeCd(val cdNm: String) {
+    PMGR0001("병상요청"),
+    PMGR0002("병상승인"),
+    PMGR0003("병상배정"),
+    PMGR0004("시스템관리"),
+}

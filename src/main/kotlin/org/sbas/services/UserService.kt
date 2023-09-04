@@ -6,6 +6,8 @@ import org.eclipse.microprofile.jwt.JsonWebToken
 import org.eclipse.microprofile.rest.client.inject.RestClient
 import org.jboss.logging.Logger
 import org.sbas.constants.SbasConst
+import org.sbas.constants.enums.PmgrTypeCd
+import org.sbas.constants.enums.SidoCd
 import org.sbas.constants.enums.UserStatCd
 import org.sbas.dtos.*
 import org.sbas.dtos.info.*
@@ -270,7 +272,12 @@ class UserService {
      */
     @Transactional
     fun getAllUsers(pageRequest: PageRequest): CommonResponse<PagingListDto> {
+        // TODO 응답 수정
         val findUsers = userRepository.findAllUsers(pageRequest)
+        findUsers.forEach {
+            it.jobCd = PmgrTypeCd.valueOf(it.jobCd ?: "").cdNm
+            it.dutyDstr1Cd = SidoCd.valueOf("SIDO${it.dutyDstr1Cd}").cdNm
+        }
         val totalCnt = userRepository.count()
         val response = PagingListDto(totalCnt, findUsers as MutableList<InfoUser>)
         return CommonResponse(response)
