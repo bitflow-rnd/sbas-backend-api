@@ -275,6 +275,7 @@ class UserService {
         // TODO 응답 수정
         val findUsers = userRepository.findAllUsers(pageRequest)
         findUsers.map {
+            userRepository.getEntityManager().detach(it)
             it.jobCd = PmgrTypeCd.valueOf(it.jobCd!!).cdNm
             it.dutyDstr1Cd = SidoCd.valueOf("SIDO${it.dutyDstr1Cd}").cdNm
         }
