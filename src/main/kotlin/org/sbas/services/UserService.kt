@@ -274,8 +274,8 @@ class UserService {
     fun getAllUsers(pageRequest: PageRequest): CommonResponse<PagingListDto> {
         // TODO 응답 수정
         val findUsers = userRepository.findAllUsers(pageRequest)
-        findUsers.forEach {
-            it.jobCd = PmgrTypeCd.valueOf(it.jobCd ?: "").cdNm
+        findUsers.map {
+            it.jobCd = PmgrTypeCd.valueOf(it.jobCd!!).cdNm
             it.dutyDstr1Cd = SidoCd.valueOf("SIDO${it.dutyDstr1Cd}").cdNm
         }
         val totalCnt = userRepository.count()
