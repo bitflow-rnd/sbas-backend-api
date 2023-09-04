@@ -237,16 +237,12 @@ class BedAssignService {
 
         val bdasReqAprvList =
             bdasReqAprvRepository.findReqAprvListByPtIdAndBdasSeq(saveRequest.ptId, saveRequest.bdasSeq)
+
         if (bdasReqAprvList.isEmpty()) {
             throw CustomizedException("배정 승인 정보가 없습니다.", Response.Status.BAD_REQUEST)
-        }
-
-        bdasReqAprvList.filter { it.id.asgnReqSeq == saveRequest.asgnReqSeq }.forEach {
-            if (!it.isEqualAsgnReqSeqAndHospId(saveRequest.asgnReqSeq, saveRequest.hospId)) {
-                throw CustomizedException(
-                    "배정 요청 순번(asgnReqSeq) 및 병원 ID(hospId)가 일치하지 않습니다.", Response.Status.BAD_REQUEST
-                )
-            }
+        } else {
+            bdasReqAprvList.firstOrNull { it.id.asgnReqSeq == saveRequest.asgnReqSeq && it.reqHospId == saveRequest.hospId }
+                ?: throw CustomizedException("배정 요청 순번(asgnReqSeq) 및 병원 ID(hospId)가 일치하지 않습니다.", Response.Status.BAD_REQUEST)
         }
 
         // 원내배정
@@ -447,9 +443,10 @@ class BedAssignService {
 
             BedStatCd.BAST0008.name -> {
                 timeLineList.addAll(bdasReqRepository.findTimeLineInfo(ptId, bdasSeq))
-                timeLineList.addAll(bdasReqAprvRepository.findTimeLineInfo(ptId, bdasSeq))
+                val elements = bdasReqAprvRepository.findTimeLineInfo(ptId, bdasSeq)
+                timeLineList.addAll(elements)
 
-//                if (bdasReqAprvTimeLine[0].title == "배정불가") {
+//                if (elements[0].title == "배정불가") {
 //                    timeLineList.add(closedBdasAprv)
 //                } else {
 //                    timeLineList.addAll(bdasAprvRepository.findRefuseTimeLineInfo(ptId, bdasSeq))
