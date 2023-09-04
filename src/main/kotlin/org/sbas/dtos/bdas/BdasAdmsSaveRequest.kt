@@ -21,14 +21,15 @@ data class BdasAdmsSaveRequest(
     val dschRsnCd: String?,
     val msg: String?,
     @field: [NotNull ValidEnum(enumClass = AdmsStatCd::class)]
-    val admsStatCd: AdmsStatCd,
+    val admsStatCd: String,
 ) {
 
-    fun toEntity(admsStatCd: AdmsStatCd, admsSeq: Int): BdasAdms {
+    fun toEntity(admsStatCd: String, admsSeq: Int): BdasAdms {
         return when (admsStatCd) {
-            AdmsStatCd.IOST0001 -> toAdmsEntity(admsSeq)
-            AdmsStatCd.IOST0002 -> toDschEntity(admsSeq)
-            AdmsStatCd.IOST0003 -> toHomeEntity(admsSeq)
+            AdmsStatCd.IOST0001.name -> toAdmsEntity(admsSeq)
+            AdmsStatCd.IOST0002.name -> toDschEntity(admsSeq)
+            AdmsStatCd.IOST0003.name -> toHomeEntity(admsSeq)
+            else -> toAdmsEntity(admsSeq)
         }
     }
 

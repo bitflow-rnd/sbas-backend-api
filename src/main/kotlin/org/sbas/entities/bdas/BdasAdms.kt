@@ -54,8 +54,8 @@ class BdasAdms(
     var admsStatCd: String, // 입퇴원상태 코드
 ) : CommonEntity() {
 
-    fun isAdmsStatCdDuplicate(admsStatCd: AdmsStatCd): Boolean {
-        return this.admsStatCd == admsStatCd.name
+    fun isAdmsStatCdDuplicate(admsStatCd: String): Boolean {
+        return this.admsStatCd == admsStatCd
     }
 }
 

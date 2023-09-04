@@ -43,6 +43,7 @@ class PrivateBedAssignEndpoint {
     @POST
     @Path("asgnconfirm")
     fun asgnconfirm(@Valid bdasAprvSaveRequest: BdasAprvSaveRequest): Response {
+        log.debug("PrivateBedAssignEndpoint asgnconfirm >>> $bdasAprvSaveRequest")
         return Response.ok(bedAssignService.asgnConfirm(bdasAprvSaveRequest)).build()
     }
 
@@ -50,6 +51,7 @@ class PrivateBedAssignEndpoint {
     @POST
     @Path("confirmtransf")
     fun confirmtransf(bdasTrnsSaveRequest: BdasTrnsSaveRequest): Response {
+        log.debug("PrivateBedAssignEndpoint confirmtransf >>> $bdasTrnsSaveRequest")
         return Response.ok(bedAssignService.confirmTrans(bdasTrnsSaveRequest)).build()
     }
 
@@ -57,6 +59,7 @@ class PrivateBedAssignEndpoint {
     @POST
     @Path("confirmhosptlzdiscg")
     fun confirmhosptlzdiscg(@Valid bdasAdmsSaveRequest: BdasAdmsSaveRequest): Response {
+        log.debug("PrivateBedAssignEndpoint confirmhosptlzdiscg >>> $bdasAdmsSaveRequest")
         return Response.ok(bedAssignService.confirmHosp(bdasAdmsSaveRequest)).build()
     }
 
