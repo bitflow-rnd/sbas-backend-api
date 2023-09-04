@@ -66,4 +66,10 @@ class PrivateBedAssignEndpoint {
     fun list(@BeanParam param: BdasListSearchParam): Response {
         return Response.ok(bedAssignService.findBedAsgnList(param)).build()
     }
+
+    @GET
+    @Path("remove/{ptId}")
+    fun remove(@RestPath ptId: String?): Response {
+        return Response.ok(bedAssignService.removeData(ptId)).build()
+    }
 }

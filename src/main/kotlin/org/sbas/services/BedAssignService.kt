@@ -534,4 +534,16 @@ class BedAssignService {
         result >= 1.000 -> "${(result * 100.0).roundToInt() / 100.0}km"
         else -> ""
     }
+
+    @Transactional
+    fun removeData(ptId: String?): CommonResponse<String> {
+        infoPtRepository.delete("ptId = '$ptId'")
+        bdasEsvyRepository.delete("ptId = '$ptId'")
+        bdasReqRepository.delete("id.ptId = '$ptId'")
+        bdasReqAprvRepository.delete("id.ptId = '$ptId'")
+        bdasAprvRepository.delete("id.ptId = '$ptId'")
+        bdasTrnsRepository.delete("id.ptId = '$ptId'")
+        bdasAdmsRepository.delete("id.ptId = '$ptId'")
+        return CommonResponse("$ptId 정보 삭제")
+    }
 }

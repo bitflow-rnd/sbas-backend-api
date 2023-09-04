@@ -159,7 +159,7 @@ class BdasAprvRepository : PanacheRepositoryBase<BdasAprv, BdasAprvId> {
                 "from BdasReqAprv bra " +
                 "inner join InfoUser iu on iu.instId = bra.reqHospId " +
                 "where bra.id.ptId = '$ptId' and bra.id.bdasSeq = $bdasSeq and bra.id.asgnReqSeq in (${subQuery}) " +
-//                "and iu.jobCd = 'PMGR0003' " +
+                "and iu.jobCd = 'PMGR0003' " +
                 "order by bra.id.asgnReqSeq "
 
         val resultList: MutableList<TimeLine> = emptyList<TimeLine>().toMutableList()
