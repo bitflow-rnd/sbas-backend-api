@@ -158,7 +158,7 @@ class BedAssignService {
 
                 val oldAsgnReqSeq = bdasReqAprvs.size
                 hospList.forEachIndexed { idx, infoHosp ->
-                    log.debug("hospList>>>>>>>>>>> ${infoHosp.hospId}")
+                    log.debug("hospList>>>>>>>>>>> $idx, $infoHosp.hospId")
                     val entity = saveRequest.toEntityWhenNotInHosp(
                         asgnReqSeq = idx + 1 + oldAsgnReqSeq,
                         hospId = infoHosp.hospId,
@@ -531,14 +531,49 @@ class BedAssignService {
     }
 
     @Transactional
-    fun removeData(ptId: String?): CommonResponse<String> {
-        infoPtRepository.delete("ptId = '$ptId'")
-        bdasEsvyRepository.delete("ptId = '$ptId'")
-        bdasReqRepository.delete("id.ptId = '$ptId'")
-        bdasReqAprvRepository.delete("id.ptId = '$ptId'")
-        bdasAprvRepository.delete("id.ptId = '$ptId'")
-        bdasTrnsRepository.delete("id.ptId = '$ptId'")
-        bdasAdmsRepository.delete("id.ptId = '$ptId'")
+    fun removeData(ptId: String?, step: Int?): CommonResponse<String> {
+        if (step != null) {
+            when (step) {
+                0 -> {
+                    infoPtRepository.delete("ptId = '$ptId'")
+                }
+                1 -> {
+                    infoPtRepository.delete("ptId = '$ptId'")
+                    bdasEsvyRepository.delete("ptId = '$ptId'")
+                    bdasReqRepository.delete("id.ptId = '$ptId'")
+                }
+                2 -> {
+                    infoPtRepository.delete("ptId = '$ptId'")
+                    bdasEsvyRepository.delete("ptId = '$ptId'")
+                    bdasReqRepository.delete("id.ptId = '$ptId'")
+                    bdasReqAprvRepository.delete("id.ptId = '$ptId'")
+                }
+                3 -> {
+                    infoPtRepository.delete("ptId = '$ptId'")
+                    bdasEsvyRepository.delete("ptId = '$ptId'")
+                    bdasReqRepository.delete("id.ptId = '$ptId'")
+                    bdasReqAprvRepository.delete("id.ptId = '$ptId'")
+                    bdasAprvRepository.delete("id.ptId = '$ptId'")
+                }
+                4 -> {
+                    infoPtRepository.delete("ptId = '$ptId'")
+                    bdasEsvyRepository.delete("ptId = '$ptId'")
+                    bdasReqRepository.delete("id.ptId = '$ptId'")
+                    bdasReqAprvRepository.delete("id.ptId = '$ptId'")
+                    bdasAprvRepository.delete("id.ptId = '$ptId'")
+                    bdasTrnsRepository.delete("id.ptId = '$ptId'")
+                }
+                5 -> {
+                    infoPtRepository.delete("ptId = '$ptId'")
+                    bdasEsvyRepository.delete("ptId = '$ptId'")
+                    bdasReqRepository.delete("id.ptId = '$ptId'")
+                    bdasReqAprvRepository.delete("id.ptId = '$ptId'")
+                    bdasAprvRepository.delete("id.ptId = '$ptId'")
+                    bdasTrnsRepository.delete("id.ptId = '$ptId'")
+                    bdasAdmsRepository.delete("id.ptId = '$ptId'")
+                }
+            }
+        }
         return CommonResponse("$ptId 정보 삭제")
     }
 }

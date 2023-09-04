@@ -68,8 +68,8 @@ class PrivateBedAssignEndpoint {
     }
 
     @GET
-    @Path("remove/{ptId}")
-    fun remove(@RestPath ptId: String?): Response {
-        return Response.ok(bedAssignService.removeData(ptId)).build()
+    @Path("remove/{ptId}/{step}")
+    fun remove(@RestPath ptId: String?, @RestPath step: Int?): Response {
+        return Response.ok(bedAssignService.removeData(ptId, step)).build()
     }
 }
