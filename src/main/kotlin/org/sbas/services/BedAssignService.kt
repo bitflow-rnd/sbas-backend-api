@@ -538,35 +538,22 @@ class BedAssignService {
                     infoPtRepository.delete("ptId = '$ptId'")
                 }
                 1 -> {
-                    infoPtRepository.delete("ptId = '$ptId'")
                     bdasEsvyRepository.delete("ptId = '$ptId'")
                     bdasReqRepository.delete("id.ptId = '$ptId'")
                 }
                 2 -> {
-                    infoPtRepository.delete("ptId = '$ptId'")
-                    bdasEsvyRepository.delete("ptId = '$ptId'")
-                    bdasReqRepository.delete("id.ptId = '$ptId'")
                     bdasReqAprvRepository.delete("id.ptId = '$ptId'")
                 }
                 3 -> {
-                    infoPtRepository.delete("ptId = '$ptId'")
-                    bdasEsvyRepository.delete("ptId = '$ptId'")
-                    bdasReqRepository.delete("id.ptId = '$ptId'")
-                    bdasReqAprvRepository.delete("id.ptId = '$ptId'")
                     bdasAprvRepository.delete("id.ptId = '$ptId'")
                 }
                 4 -> {
-                    infoPtRepository.delete("ptId = '$ptId'")
-                    bdasEsvyRepository.delete("ptId = '$ptId'")
-                    bdasReqRepository.delete("id.ptId = '$ptId'")
-                    bdasReqAprvRepository.delete("id.ptId = '$ptId'")
-                    bdasAprvRepository.delete("id.ptId = '$ptId'")
                     bdasTrnsRepository.delete("id.ptId = '$ptId'")
                 }
                 5 -> {
-                    infoPtRepository.delete("ptId = '$ptId'")
-                    bdasEsvyRepository.delete("ptId = '$ptId'")
-                    bdasReqRepository.delete("id.ptId = '$ptId'")
+                    bdasAdmsRepository.delete("id.ptId = '$ptId'")
+                }
+                6 -> {
                     bdasReqAprvRepository.delete("id.ptId = '$ptId'")
                     bdasAprvRepository.delete("id.ptId = '$ptId'")
                     bdasTrnsRepository.delete("id.ptId = '$ptId'")
