@@ -22,14 +22,14 @@ class BdasTrns(
     @Column(name = "crew_1_id", length = 15)
     var crew1Id : String? = null, // 구급대원1 ID
 
-    @Column(name = "crew_1_pstn", nullable = false, length = 15)
-    var crew1Pstn : String, // 구급대원1 직급
+    @Column(name = "crew_1_pstn", length = 15)
+    var crew1Pstn : String?, // 구급대원1 직급
 
-    @Column(name = "crew_1_nm", nullable = false, length = 10)
-    var crew1Nm : String, // 구급대원1 이름
+    @Column(name = "crew_1_nm", length = 10)
+    var crew1Nm : String?, // 구급대원1 이름
 
-    @Column(name = "crew_1_telno", nullable = false, length = 12)
-    var crew1Telno : String, // 구급대원1 전화번호
+    @Column(name = "crew_1_telno", length = 12)
+    var crew1Telno : String?, // 구급대원1 전화번호
 
     @Column(name = "crew_2_id", length = 15)
     var crew2Id : String? = null,
@@ -58,8 +58,8 @@ class BdasTrns(
     @Column(name = "chf_telno", nullable = false, length = 12)
     var chfTelno : String,
 
-    @Column(name = "vecno", nullable = false, length = 8)
-    var vecno : String,
+    @Column(name = "vecno", length = 8)
+    var vecno : String?,
 
     @Column(name = "msg", length = 500)
     var msg : String? = null,
