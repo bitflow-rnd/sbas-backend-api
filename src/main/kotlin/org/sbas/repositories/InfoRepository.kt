@@ -170,34 +170,32 @@ class InfoHospRepository : PanacheRepositoryBase<InfoHosp, String> {
             from(entity(InfoHosp::class))
             limit(20)
             param.page?.run { offset(this.minus(1).times(20)) }
-            whereAndOrder(param)
+            whereAnd(param)
+            orderBy(
+                ExpressionOrderSpec(col(InfoHosp::hospId), ascending = false),
+            )
         }
 
         return infoHosps.toMutableList()
     }
 
     fun countInfoHosps(param: InfoHospSearchParam): Int {
-        val count = queryFactory.listQuery {
-            selectMulti(
-                col(InfoHosp::hospId), col(InfoHosp::hpId), col(InfoHosp::dutyName), col(InfoHosp::dutyDivNam),
-                col(InfoHosp::dstrCd1), col(InfoHosp::dstrCd2), col(InfoHosp::dutyTel1), col(InfoHosp::dutyTel1),col(InfoHosp::updtDttm),
-            )
+        val count = queryFactory.listQuery<Long> {
+            selectMulti(count(entity(InfoHosp::class)))
             from(entity(InfoHosp::class))
-            whereAndOrder(param)
+            param.page?.run { offset(this.minus(1).times(20)) }
+            whereAnd(param)
         }
-        return count.size
+        return count[0].toInt()
     }
 
-    private fun CriteriaQueryDsl<InfoHospListDto>.whereAndOrder(param: InfoHospSearchParam) {
+    private fun CriteriaQueryDsl<*>.whereAnd(param: InfoHospSearchParam) {
         whereAnd(
             param.hospId?.run { col(InfoHosp::hospId).like("%$this%") },
             param.dutyName?.run { col(InfoHosp::dutyName).like("%$this%") },
             param.dstrCd1?.run { col(InfoHosp::dstrCd1).equal(this) },
             param.dstrCd2?.run { col(InfoHosp::dstrCd2).equal(this) },
             param.dutyDivNam?.run { col(InfoHosp::dutyDivNam).`in`(this) },
-        )
-        orderBy(
-            ExpressionOrderSpec(col(InfoHosp::hospId), ascending = false),
         )
     }
 
