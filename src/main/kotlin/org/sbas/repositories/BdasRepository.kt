@@ -44,7 +44,7 @@ class BdasReqRepository : PanacheRepositoryBase<BdasReq, BdasReqId> {
         cond += param.period?.run { " and pt.updtDttm > '${Instant.now().minusSeconds(60 * 60 * 24 * this)}' " } ?: ""
 
         val query2 = "select new org.sbas.dtos.bdas.BdasListDto(br.id.ptId, br.id.bdasSeq, pt.ptNm, pt.gndr, fn_get_age(pt.rrno1, pt.rrno2), " +
-                "pt.rrno1, pt.mpno, pt.bascAddr, br.updtDttm, be.diagNm, br.bedStatCd, 'chrgInstNm', br.inhpAsgnYn, br.ptTypeCd, br.svrtTypeCd, br.undrDsesCd, ba.admsStatCd) " +
+                "pt.rrno1, pt.mpno, pt.bascAddr, br.rgstDttm, be.diagNm, br.bedStatCd, 'chrgInstNm', br.inhpAsgnYn, br.ptTypeCd, br.svrtTypeCd, br.undrDsesCd, ba.admsStatCd) " +
                 "from BdasReq br " +
                 "join InfoPt pt on br.id.ptId = pt.ptId " +
                 "join BdasEsvy be on br.id.bdasSeq = be.bdasSeq " +
@@ -91,7 +91,7 @@ class BdasReqRepository : PanacheRepositoryBase<BdasReq, BdasReqId> {
     fun findTimeLineInfo(ptId: String, bdasSeq: Int): MutableList<CompleteTimeLine> {
         val query =
             "select new org.sbas.dtos.bdas.CompleteTimeLine('병상요청 (' || (case br.inhpAsgnYn when 'Y' then '원내배정' when 'N' then '전원요청' end) || ')', " +
-                    "iu.instNm || ' / ' || iu.userNm, br.updtDttm, br.msg, '${TimeLineStatCd.COMPLETE.cdNm}', " +
+                    "iu.instNm || ' / ' || iu.userNm, br.rgstDttm, br.msg, '${TimeLineStatCd.COMPLETE.cdNm}', " +
                     "iu.instId, iu.instNm, iu.id) " +
                     "from BdasReq br " +
                     "join InfoUser iu on iu.id = br.rgstUserId " +
@@ -108,7 +108,7 @@ class BdasReqAprvRepository : PanacheRepositoryBase<BdasReqAprv, BdasReqAprvId> 
     fun findTimeLineInfo(ptId: String, bdasSeq: Int): MutableList<CompleteTimeLine> {
         val query =
             "select new org.sbas.dtos.bdas.CompleteTimeLine(case bra.aprvYn when 'Y' then '승인' when 'N' then '배정불가' end, " +
-                    "iu.instNm || ' / ' || iu.userNm, bra.updtDttm, bra.msg, '${TimeLineStatCd.COMPLETE.cdNm}', " +
+                    "iu.instNm || ' / ' || iu.userNm, bra.rgstDttm, bra.msg, '${TimeLineStatCd.COMPLETE.cdNm}', " +
                     "iu.instId, iu.instNm, iu.id) " +
                     "from BdasReqAprv bra " +
                     "join InfoUser iu on iu.id = bra.updtUserId " +
@@ -144,7 +144,7 @@ class BdasAprvRepository : PanacheRepositoryBase<BdasAprv, BdasAprvId> {
         // TODO
         val query =
             "select new org.sbas.dtos.bdas.BdasAprvCompleteTimeLine(case ba.aprvYn when 'Y' then '배정완료' when 'N' then '배정불가' end, " +
-                    "ih.dutyName || ' / ' || iu.userNm, ba.updtDttm, ba.msg, '${TimeLineStatCd.COMPLETE.cdNm}', " +
+                    "ih.dutyName || ' / ' || iu.userNm, ba.rgstDttm, ba.msg, '${TimeLineStatCd.COMPLETE.cdNm}', " +
                     "ih.hospId, ih.dutyName, iu.id, ba.id.asgnReqSeq) " +
                     "from BdasAprv ba " +
                     "inner join InfoUser iu on iu.id = ba.updtUserId " +
@@ -194,7 +194,7 @@ class BdasTrnsRepository : PanacheRepositoryBase<BdasTrns, BdasTrnsId> {
     fun findSuspendTimeLineInfo(ptId: String, bdasSeq: Int): MutableList<CompleteTimeLine> {
         val query = "select new org.sbas.dtos.bdas.CompleteTimeLine('이송중', " +
                 "iu.instNm || ' / ' || iu.userNm, " +
-                "bt.updtDttm, " +
+                "bt.rgstDttm, " +
                 "bt.vecno || chr(10) || bt.msg, " +
                 "'${TimeLineStatCd.COMPLETE.cdNm}', " +
                 "iu.instId, iu.instNm, iu.id) " +
@@ -209,7 +209,7 @@ class BdasTrnsRepository : PanacheRepositoryBase<BdasTrns, BdasTrnsId> {
         val query = "select new org.sbas.dtos.bdas.CompleteTimeLine(" +
                 "'이송완료', " +
                 "iu.instNm || ' / ' || iu.userNm, " +
-                "bt.updtDttm, " +
+                "bt.rgstDttm, " +
                 "bt.vecno || chr(10) || bt.msg, " +
                 "'${TimeLineStatCd.COMPLETE.cdNm}', " +
                 "iu.instId, iu.instNm, iu.id) " +
@@ -250,7 +250,7 @@ class BdasAdmsRepository : PanacheRepositoryBase<BdasAdms, BdasAdmsId> {
                 "case ba.admsStatCd when '${AdmsStatCd.IOST0001.name}' then '입원완료' " +
                 "when '${AdmsStatCd.IOST0002.name}' then '퇴원완료' when '${AdmsStatCd.IOST0003}' then '자택회송' end, " +
                 "iu.instNm || ' / ' || iu.userNm, " +
-                "ba.updtDttm, " +
+                "ba.rgstDttm, " +
                 "ba.msg, " +
                 "'${TimeLineStatCd.COMPLETE.cdNm}', " +
                 "iu.instId, iu.instNm, iu.id) " +
