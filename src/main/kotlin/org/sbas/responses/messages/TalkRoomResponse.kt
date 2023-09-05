@@ -15,7 +15,7 @@ fun arrToJson(arrayData: MutableList<TalkRoomResponse>): String {
     for (item in arrayData) {
         val msg = item.msg
         result += "{\"tkrmId\":\"${item.tkrmId}\", \"tkrmNm\":\"${item.tkrmNm}\", " +
-            "\"msg\":${msg?.let { "\"$it\"" } ?: "null"}, \"rgstDttm\":\"${item.rgstDttm}\"}"
+            "\"msg\": \"${msg?.replace("\n", "\\n")}\", \"rgstDttm\":\"${item.rgstDttm}\"}"
         if(item != arrayData.last()){
             result += ","
         }

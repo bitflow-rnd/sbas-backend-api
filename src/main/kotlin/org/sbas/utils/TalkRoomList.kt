@@ -39,7 +39,8 @@ class TalkRoomList {
     private lateinit var talkUserRepository: TalkUserRepository
 
     @OnOpen
-    fun onOpen(session: Session, @PathParam("userId") userId: String) {updateTalkRooms(userId)
+    fun onOpen(session: Session, @PathParam("userId") userId: String) {
+        updateTalkRooms(userId)
 
         val sendObject = arrToJson(talkRooms)
 
