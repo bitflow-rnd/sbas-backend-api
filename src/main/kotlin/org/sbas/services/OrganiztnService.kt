@@ -70,7 +70,7 @@ class OrganiztnService {
 
         val findHosp = infoHospRepository.findInfoHosps(param)
         val count = infoHospRepository.countInfoHosps(param)
-
+        log.debug(count)
         return CommonListResponse(findHosp, count)
     }
 
@@ -153,17 +153,9 @@ class OrganiztnService {
     @Transactional
     fun findFireStatns(param: FireStatnSearchParam): CommonResponse<*> {
         val fireStatnList = infoInstRepository.findFireStatns(param)
-        val crewCountList = infoCrewRepository.countInfoCrewsGroupByInstId()
+        val count = infoInstRepository.countFireStatns(param)
 
-        fireStatnList.forEach { dto ->
-            crewCountList.forEach {
-                if (dto.instId == it.instId) {
-                    dto.crewCount = it.crewCount
-                }
-            }
-        }
-
-        return CommonListResponse(fireStatnList)
+        return CommonListResponse(fireStatnList, count)
     }
 
     /**
