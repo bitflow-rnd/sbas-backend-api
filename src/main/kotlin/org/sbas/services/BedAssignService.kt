@@ -123,7 +123,11 @@ class BedAssignService {
         // 푸쉬 알람 보내기
         bdasUsers.forEach {
             log.debug("registerBedRequestInfo bdasUsers >>> ${it.id}")
-            firebaseService.sendMessage("${findInfoPt.ptNm}님 병상요청", "${bdasReqDprtInfo.msg}", it.id)
+            try {
+                firebaseService.sendMessage("${findInfoPt.ptNm}님 병상요청", "${bdasReqDprtInfo.msg}", it.id)
+            } catch (e: Exception) {
+                return CommonResponse("병상 요청")
+            }
         }
 //        firebaseService.sendMessage("${bdasReq.rgstUserId!!} ${BedStatCd.BAST0003.cdNm}", "${bdasReqDprtInfo.msg}", "TEST-APR-1")
 
@@ -166,8 +170,11 @@ class BedAssignService {
                     )
                     bdasReqAprvRepository.persist(entity)
                     findBdasReq.changeBedStatTo(BedStatCd.BAST0004.name)
+                    try {
+                        firebaseService.sendMessage("${findInfoPt.ptNm}님 전원요청", "${saveRequest.msg}", infoHosp.userId)
+                    } catch (_: Exception) {
 
-                    firebaseService.sendMessage("${findInfoPt.ptNm}님 전원요청", "${saveRequest.msg}", infoHosp.userId)
+                    }
                 }
 
             } else if (findBdasReq.inhpAsgnYn == "Y") { // 원내 배정 승인
@@ -301,7 +308,12 @@ class BedAssignService {
         // 푸쉬 알람 보내기
         bdasUsers.forEach {
             log.debug("asgnConfirm bdasUsers >>> ${it.id}")
-            firebaseService.sendMessage("${findInfoPt.ptNm}님 배정승인", "${saveRequest.msg}", it.id)
+            try {
+                firebaseService.sendMessage("${findInfoPt.ptNm}님 배정승인", "${saveRequest.msg}", it.id)
+
+            } catch (e: Exception) {
+                return CommonResponse("승인")
+            }
         }
 //        firebaseService.sendMessage("${findInfoPt.ptNm}님 배정승인", "${saveRequest.msg}", "TEST-APR-1")
 
