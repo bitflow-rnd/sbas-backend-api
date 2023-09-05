@@ -126,6 +126,7 @@ class BedAssignService {
             try {
                 firebaseService.sendMessage("${findInfoPt.ptNm}님 병상요청", "${bdasReqDprtInfo.msg}", it.id)
             } catch (e: Exception) {
+                log.warn(e.printStackTrace())
                 return CommonResponse("병상 요청")
             }
         }
@@ -172,8 +173,8 @@ class BedAssignService {
                     findBdasReq.changeBedStatTo(BedStatCd.BAST0004.name)
                     try {
                         firebaseService.sendMessage("${findInfoPt.ptNm}님 전원요청", "${saveRequest.msg}", infoHosp.userId)
-                    } catch (_: Exception) {
-
+                    } catch (e: Exception) {
+                        log.warn(e.printStackTrace())
                     }
                 }
 
@@ -312,7 +313,7 @@ class BedAssignService {
                 firebaseService.sendMessage("${findInfoPt.ptNm}님 배정승인", "${saveRequest.msg}", it.id)
 
             } catch (e: Exception) {
-                return CommonResponse("승인")
+                log.warn(e.printStackTrace())
             }
         }
 //        firebaseService.sendMessage("${findInfoPt.ptNm}님 배정승인", "${saveRequest.msg}", "TEST-APR-1")
