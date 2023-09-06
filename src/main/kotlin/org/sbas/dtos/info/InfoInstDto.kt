@@ -56,6 +56,7 @@ data class FireStatnSearchParam(
     @field: QueryParam("dstrCd1") var dstrCd1: String?,
     @field: QueryParam("dstrCd2") var dstrCd2: String?,
     @field: QueryParam("chrgTelno") var chrgTelno: String?,
+    @field: QueryParam("page") var page: Int? = 0,
 )
 
 data class FireStatnListDto(
@@ -64,13 +65,7 @@ data class FireStatnListDto(
     val dstrCd1: String?,
     val dstrCd2: String?,
     val chrgTelno: String?,
-) {
-    var crewCount: Long = 0L
-}
-
-data class CrewCountList(
-    val crewCount: Long,
-    val instId: String,
+    val crewCount: Long?,
 )
 
 data class FireStatnDto(

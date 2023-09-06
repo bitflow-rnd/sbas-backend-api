@@ -8,12 +8,18 @@ import org.sbas.entities.info.InfoPt
 import java.time.Instant
 import javax.validation.constraints.NotBlank
 import javax.validation.constraints.NotNull
+import javax.validation.constraints.Pattern
 
 data class InfoPtDto(
     @field: NotBlank val ptNm: String,
     @field: NotBlank val gndr: String,
-    @field: NotBlank val rrno1: String,
-    @field: NotBlank val rrno2: String,
+    @field: [NotBlank Pattern(
+        regexp = "\\d{2}([0]\\d|[1][0-2])([0][1-9]|[1-2]\\d|[3][0-1])", message = "생년월일을 확인해주세요"
+    )]
+    val rrno1: String,
+    @field: [NotBlank Pattern(
+        regexp = "[1-9]", message = "주민등록번호 뒷자리 첫번째 숫자를 확인해주세요"
+    )] val rrno2: String,
     @field: NotBlank val dethYn: String,
     @field: NotNull val natiCd: NatiCd,
     val natiNm: String?,

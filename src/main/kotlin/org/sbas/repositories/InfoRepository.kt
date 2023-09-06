@@ -5,6 +5,7 @@ import com.linecorp.kotlinjdsl.listQuery
 import com.linecorp.kotlinjdsl.query.spec.ExpressionOrderSpec
 import com.linecorp.kotlinjdsl.querydsl.CriteriaQueryDsl
 import com.linecorp.kotlinjdsl.querydsl.expression.col
+import com.linecorp.kotlinjdsl.subquery
 import io.quarkus.hibernate.orm.panache.kotlin.PanacheRepositoryBase
 import io.quarkus.panache.common.Sort
 import org.jboss.logging.Logger
@@ -131,14 +132,6 @@ class InfoCrewRepository : PanacheRepositoryBase<InfoCrew, InfoCrewId> {
         return find("inst_id = '$instId' and crew_id = '$crewId'").firstResult()
     }
 
-    fun countInfoCrewsGroupByInstId(): MutableList<CrewCountList> {
-        val query = "select new org.sbas.dtos.info.CrewCountList(count(ic.id.crewId), ic.id.instId) " +
-                "from InfoCrew ic " +
-                "group by ic.id.instId "
-
-        return getEntityManager().createQuery(query, CrewCountList::class.java).resultList
-    }
-
     fun findLatestCrewId(instId: String): String? {
         return find("inst_id = '$instId'", Sort.by("crew_id", Sort.Direction.Descending))
             .firstResult()?.id?.crewId
@@ -168,36 +161,33 @@ class InfoHospRepository : PanacheRepositoryBase<InfoHosp, String> {
                 col(InfoHosp::dstrCd1), col(InfoHosp::dstrCd2), col(InfoHosp::dutyTel1), col(InfoHosp::dutyTel1), col(InfoHosp::updtDttm),
             )
             from(entity(InfoHosp::class))
-            limit(20)
-            param.page?.run { offset(this.minus(1).times(20)) }
-            whereAndOrder(param)
+            limit(15)
+            param.page?.run { offset(this.minus(1).times(15)) }
+            whereAnd(param)
+            orderBy(
+                ExpressionOrderSpec(col(InfoHosp::hospId), ascending = false),
+            )
         }
 
         return infoHosps.toMutableList()
     }
 
     fun countInfoHosps(param: InfoHospSearchParam): Int {
-        val count = queryFactory.listQuery {
-            selectMulti(
-                col(InfoHosp::hospId), col(InfoHosp::hpId), col(InfoHosp::dutyName), col(InfoHosp::dutyDivNam),
-                col(InfoHosp::dstrCd1), col(InfoHosp::dstrCd2), col(InfoHosp::dutyTel1), col(InfoHosp::dutyTel1),col(InfoHosp::updtDttm),
-            )
+        val count = queryFactory.listQuery<Long> {
+            selectMulti(count(entity(InfoHosp::class)))
             from(entity(InfoHosp::class))
-            whereAndOrder(param)
+            whereAnd(param)
         }
-        return count.size
+        return count[0].toInt()
     }
 
-    private fun CriteriaQueryDsl<InfoHospListDto>.whereAndOrder(param: InfoHospSearchParam) {
+    private fun CriteriaQueryDsl<*>.whereAnd(param: InfoHospSearchParam) {
         whereAnd(
             param.hospId?.run { col(InfoHosp::hospId).like("%$this%") },
             param.dutyName?.run { col(InfoHosp::dutyName).like("%$this%") },
             param.dstrCd1?.run { col(InfoHosp::dstrCd1).equal(this) },
             param.dstrCd2?.run { col(InfoHosp::dstrCd2).equal(this) },
             param.dutyDivNam?.run { col(InfoHosp::dutyDivNam).`in`(this) },
-        )
-        orderBy(
-            ExpressionOrderSpec(col(InfoHosp::hospId), ascending = false),
         )
     }
 
@@ -302,21 +292,25 @@ class InfoInstRepository : PanacheRepositoryBase<InfoInst, String> {
 
     fun findFireStatns(param: FireStatnSearchParam): MutableList<FireStatnListDto> {
         val fireStatnList: List<FireStatnListDto> = queryFactory.listQuery {
+            val crewCount = queryFactory.subquery {
+                select(
+                    count(col(InfoCrewId::crewId))
+                )
+                from(entity(InfoCrew::class))
+                associate(entity(InfoCrew::class), InfoCrewId::class, on(InfoCrew::id))
+                groupBy(col(InfoCrewId::instId))
+                where(col(InfoCrewId::instId).equal(col(InfoInst::id)))
+            }
             selectMulti(
                 col(InfoInst::id), col(InfoInst::instNm),
                 function("fn_get_cd_nm", String::class.java, literal("SIDO"), col(InfoInst::dstrCd1)),
                 function("fn_get_dstr_cd2_nm", String::class.java, col(InfoInst::dstrCd1), col(InfoInst::dstrCd2)),
-                col(InfoInst::chrgTelno),
+                col(InfoInst::chrgTelno), crewCount
             )
             from(entity(InfoInst::class))
-            whereAnd(
-                col(InfoInst::instTypeCd).equal("ORGN0002"),
-                param.instId?.run { col(InfoInst::id).like("%$this%") },
-                param.instNm?.run { col(InfoInst::instNm).like("%$this%") },
-                param.dstrCd1?.run { col(InfoInst::dstrCd1).equal(this) },
-                param.dstrCd2?.run { col(InfoInst::dstrCd2).equal(this) },
-                param.chrgTelno?.run { col(InfoInst::chrgTelno).like("%$this%") },
-            )
+            fireStatnsWhereAnd(param)
+            limit(15)
+            param.page?.run { offset(this.minus(1).times(15)) }
             orderBy(
                 ExpressionOrderSpec(col(InfoInst::id), ascending = false),
                 ExpressionOrderSpec(col(InfoInst::rgstDttm), ascending = false),
@@ -325,6 +319,27 @@ class InfoInstRepository : PanacheRepositoryBase<InfoInst, String> {
         }
 
         return fireStatnList.toMutableList()
+    }
+
+    fun countFireStatns(param: FireStatnSearchParam): Int {
+        val count = queryFactory.listQuery<Long> {
+            selectMulti((count(entity(InfoInst::class))))
+            from(entity(InfoInst::class))
+            fireStatnsWhereAnd(param)
+        }
+
+        return count[0].toInt()
+    }
+
+    private fun CriteriaQueryDsl<*>.fireStatnsWhereAnd(param: FireStatnSearchParam) {
+        whereAnd(
+            col(InfoInst::instTypeCd).equal("ORGN0002"),
+            param.instId?.run { col(InfoInst::id).like("%$this%") },
+            param.instNm?.run { col(InfoInst::instNm).like("%$this%") },
+            param.dstrCd1?.run { col(InfoInst::dstrCd1).equal(this) },
+            param.dstrCd2?.run { col(InfoInst::dstrCd2).equal(this) },
+            param.chrgTelno?.run { col(InfoInst::chrgTelno).like("%$this%") },
+        )
     }
 
     fun findLatestFireStatInstId(): String? {
