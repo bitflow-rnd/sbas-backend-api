@@ -4,10 +4,14 @@ import io.vertx.core.json.JsonArray
 import io.vertx.core.json.JsonObject
 import kotlinx.coroutines.*
 import org.jboss.logging.Logger
+import org.sbas.dtos.TalkMsgDto
 import org.sbas.entities.talk.TalkMsg
 import org.sbas.entities.talk.TalkUser
 import org.sbas.repositories.TalkMsgRepository
+import org.sbas.repositories.TalkRoomRepository
 import org.sbas.repositories.TalkUserRepository
+import org.sbas.responses.messages.TalkRoomResponse
+import org.sbas.restclients.FirebaseService
 import javax.inject.Inject
 import javax.websocket.*
 import javax.websocket.server.PathParam
@@ -19,7 +23,7 @@ class TalkRoomMod {
 
     companion object {
         private val chatSockets = mutableMapOf<String, TalkRoomMod>() // WebSocket 연결을 관리할 Map
-        private lateinit var talkMsg: MutableList<TalkMsg>
+        private lateinit var talkMsg: MutableList<TalkMsgDto>
     }
 
     private lateinit var session: Session // WebSocket 세션
@@ -29,7 +33,13 @@ class TalkRoomMod {
     lateinit var log: Logger
 
     @Inject
+    private lateinit var firebaseService: FirebaseService
+
+    @Inject
     lateinit var talkMsgRepository: TalkMsgRepository
+
+    @Inject
+    lateinit var talkRoomRepository: TalkRoomRepository
 
     @Inject
     lateinit var talkUserRepository: TalkUserRepository
@@ -83,7 +93,32 @@ class TalkRoomMod {
             withContext(Dispatchers.IO) {
                 talkMsgRepository.findChatDetail(tkrmId)
             }
-        } as MutableList<TalkMsg>
+        } as MutableList<TalkMsgDto>
         talkMsg = resultList
     }
+
+    private fun sendMsg(msg: TalkMsg, tkrmId: String, userId: String){
+        val talkRoomResponse: TalkRoomResponse?
+        val talkUsers: List<TalkUser>
+
+        runBlocking(Dispatchers.IO) {
+            talkRoomResponse = talkRoomRepository.findTalkRoomResponseByTkrmId(tkrmId)
+            talkUsers = talkUserRepository.findUsersByTkrmId(tkrmId)
+        }
+
+        chatSockets
+            .forEach {
+                it.value.session.asyncRemote.sendText(JsonObject.mapFrom(msg).toString())
+            }
+
+        talkUsers
+            .forEach{
+                if(chatSockets[it.id?.userId] != null) {
+                    chatSockets[it.id?.userId]?.session?.asyncRemote?.sendText(JsonObject.mapFrom(talkRoomResponse).toString())
+                }else {
+                    firebaseService.sendMessage(userId, msg.msg, it.id?.userId!!)
+                }
+            }
+    }
+
 }
