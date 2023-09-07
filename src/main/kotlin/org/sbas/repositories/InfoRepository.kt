@@ -209,19 +209,20 @@ class InfoHospRepository : PanacheRepositoryBase<InfoHosp, String> {
 
         return infoHospList.toMutableList()
     }
-    fun findListByDstrCd1AndDstrCd2(dstrCd1: String, dstrCd2: String?): MutableList<InfoHosp> {
-//        val list = queryFactory.listQuery<InfoHosp> {
-//            select(
-//                entity(InfoHosp::class)
-//            )
-//            from(entity(InfoHosp::class))
-//            join(entity(InfoUser::class), on { col(InfoHosp::hospId).equal(col(InfoUser::instId)) })
-//            whereAnd(
-//                col(InfoHosp::dstrCd1).equal(dstrCd1),
-//                dstrCd2?.run { col(InfoHosp::dstrCd1).equal(this) },
-//            )
-//        }
-//        return list
+    fun findAvalHospListByDstrCd1(dstrCd1: String): MutableList<AvalHospDto> {
+        val list = queryFactory.listQuery<AvalHospDto> {
+            selectMulti(
+                col(InfoHosp::hospId), col(InfoHosp::dutyName), col(InfoHosp::wgs84Lon), col(InfoHosp::wgs84Lat),
+                col(InfoHosp::dutyAddr), col(InfoBed::gnbdIcu), col(InfoBed::npidIcu), col(InfoBed::gnbdSvrt),
+            )
+            from(entity(InfoHosp::class))
+            join(entity(InfoBed::class), on { col(InfoHosp::hospId).equal(col(InfoBed::hospId)) })
+            whereAnd(
+                col(InfoHosp::dstrCd1).equal(dstrCd1),
+            )
+        }
+
+        return list.toMutableList()
 
 //        val query = "select ih.* from info_hosp ih join info_user iu on ih.hosp_id = iu.inst_id "
 //
@@ -231,16 +232,16 @@ class InfoHospRepository : PanacheRepositoryBase<InfoHosp, String> {
 //            " where ih.dstr_cd1 = '$dstrCd1' and (iu.job_cd = 'PMGR0003' OR iu.job_cd like '병상배정%') "
 //        }
 
-        val query = "select ih.* from info_hosp ih join info_bed ib on ih.hosp_id = ib.hosp_id "
+//        val query = "select ih.* from info_hosp ih join info_bed ib on ih.hosp_id = ib.hosp_id "
+//
+//        val where = if (!dstrCd2.isNullOrBlank()) {
+//            " where ih.dstr_cd1 = '$dstrCd1' and ih.dstr_cd2 = '$dstrCd2' "
+//        } else {
+//            " where ih.dstr_cd1 = '$dstrCd1' "
+//        }
 
-        val where = if (!dstrCd2.isNullOrBlank()) {
-            " where ih.dstr_cd1 = '$dstrCd1' and ih.dstr_cd2 = '$dstrCd2' "
-        } else {
-            " where ih.dstr_cd1 = '$dstrCd1' "
-        }
-
-        @Suppress("UNCHECKED_CAST")
-        return getEntityManager().createNativeQuery(query + where, InfoHosp::class.java).resultList.toMutableList() as MutableList<InfoHosp>
+//        @Suppress("UNCHECKED_CAST")
+//        return getEntityManager().createNativeQuery(query + where, InfoHosp::class.java).resultList.toMutableList() as MutableList<InfoHosp>
     }
 
     fun findPubHealthCenter(dstrCd1: String?, dstrCd2: String?): List<InfoInstResponse> {

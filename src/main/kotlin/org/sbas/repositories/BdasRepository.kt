@@ -199,7 +199,7 @@ class BdasTrnsRepository : PanacheRepositoryBase<BdasTrns, BdasTrnsId> {
                 "'${TimeLineStatCd.COMPLETE.cdNm}', " +
                 "iu.instId, iu.instNm, iu.id) " +
                 "from BdasTrns bt " +
-                "join InfoUser iu on iu.id = bt.updtUserId " +
+                "join InfoUser iu on iu.id = bt.rgstUserId " +
                 "where bt.id.ptId = '$ptId' and bt.id.bdasSeq = $bdasSeq"
 
         return getEntityManager().createQuery(query, CompleteTimeLine::class.java).resultList
@@ -214,7 +214,7 @@ class BdasTrnsRepository : PanacheRepositoryBase<BdasTrns, BdasTrnsId> {
                 "'${TimeLineStatCd.COMPLETE.cdNm}', " +
                 "iu.instId, iu.instNm, iu.id) " +
                 "from BdasTrns bt " +
-                "join InfoUser iu on iu.id = bt.updtUserId " +
+                "join InfoUser iu on iu.id = bt.rgstUserId " +
                 "where bt.id.ptId = '$ptId' and bt.id.bdasSeq = $bdasSeq"
 
         return getEntityManager().createQuery(query, CompleteTimeLine::class.java).resultList
@@ -238,7 +238,7 @@ class BdasAdmsRepository : PanacheRepositoryBase<BdasAdms, BdasAdmsId> {
                 "'${TimeLineStatCd.SUSPEND.cdNm}', " +
                 "iu.instId, iu.instNm, iu.id) " +
                 "from BdasAprv ba " +
-                "join InfoUser iu on iu.id = ba.updtUserId " +
+                "join InfoUser iu on iu.id = ba.rgstUserId " +
                 "where ba.id.ptId = '$ptId' and ba.id.bdasSeq = $bdasSeq " +
                 "and ba.aprvYn = 'Y' "
 
@@ -255,7 +255,7 @@ class BdasAdmsRepository : PanacheRepositoryBase<BdasAdms, BdasAdmsId> {
                 "'${TimeLineStatCd.COMPLETE.cdNm}', " +
                 "iu.instId, iu.instNm, iu.id) " +
                 "from BdasAdms ba " +
-                "join InfoUser iu on iu.id = ba.updtUserId " +
+                "join InfoUser iu on iu.id = ba.rgstUserId " +
                 "where ba.id.ptId = '$ptId' and ba.id.bdasSeq = $bdasSeq " +
                 "order by ba.id.admsSeq "
 

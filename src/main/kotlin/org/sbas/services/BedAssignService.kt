@@ -202,10 +202,10 @@ class BedAssignService {
             bdasReqAprvRepository.findReqAprvListByPtIdAndBdasSeq(ptId, bdasSeq)
 
         val dstrCd1 = findBdasReq.reqDstr1Cd
-        val dstrCd2 = findBdasReq.reqDstr2Cd
+        val dstrCd2: String? = findBdasReq.reqDstr2Cd
 
         // 병상 배정 요청시 선택한 dstrCd1, dstrCd2에 해당하는 infoHosp 목록
-        val infoHospList = infoHospRepository.findListByDstrCd1AndDstrCd2(dstrCd1, dstrCd2)
+        val infoHospList = infoHospRepository.findAvalHospListByDstrCd1(dstrCd1)
         log.debug("getAvalHospList >>>>>>>>>>>>>> ${infoHospList.size}")
         val list = infoHospList.map {
             val distance = calculateDistance(
@@ -215,21 +215,31 @@ class BedAssignService {
                 lon2 = it.wgs84Lon!!.toDouble(),
             )
             AvalHospListResponse(
-                hospId = it.hospId!!,
+                hospId = it.hospId,
                 hospNm = it.dutyName!!,
                 doubleDistance = distance,
                 distance = convertToStringDistance(distance),
                 addr = it.dutyAddr!!,
+                gnbdIcu = it.gnbdIcu, // hv22 54
+                npidIcu = it.npidIcu, // hv23 55
+                gnbdSvrt = it.gnbdSvrt, // hv24 56
             )
-        }.filter { response -> response.hospId !in findBdasReqAprv.map { it.reqHospId } }
-
-        // TODO 페이징 처리??
-        if (list.size > 10) {
-            val sortedList = list.subList(0, 10).sortedBy { it.doubleDistance }.distinctBy { it.hospId }
-            return CommonListResponse(sortedList)
+//        }.filter { response -> response.hospId !in findBdasReqAprv.map { it.reqHospId } }
         }
 
-        val sortedList = list.sortedBy { it.doubleDistance }.distinctBy { it.hospId }
+//        // TODO 페이징 처리??
+//        if (list.size > 10) {
+////            val sortedList = list.subList(0, 10).sortedByDescending { it.npidIcu }.sortedBy { it.doubleDistance }.distinctBy { it.hospId }
+//            val sortedList = list.subList(0, 10)
+//                .sortedWith(compareBy({ -it.npidIcu }, { -it.gnbdIcu }, { -it.gnbdSvrt }, { it.doubleDistance }))
+//                .distinctBy { it.hospId }
+//            return CommonListResponse(sortedList)
+//        }
+
+        val sortedList =
+            list.sortedWith(compareBy({ -it.npidIcu }, { -it.gnbdIcu }, { -it.gnbdSvrt }, { it.doubleDistance }))
+                .distinctBy { it.hospId }.distinctBy { it.hospId }
+
         return CommonListResponse(sortedList)
     }
 

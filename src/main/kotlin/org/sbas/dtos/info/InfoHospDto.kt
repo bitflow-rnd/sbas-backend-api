@@ -132,3 +132,14 @@ data class InfoHospId(
     val hospId: String,
     val hpId: String,
 )
+
+data class AvalHospDto(
+    val hospId: String,
+    val dutyName: String?,
+    val wgs84Lon: String?,
+    val wgs84Lat: String?,
+    val dutyAddr: String?,
+    val gnbdIcu: Int, // hv22 54
+    val npidIcu: Int, // hv23 55
+    val gnbdSvrt: Int, // hv24 56
+)

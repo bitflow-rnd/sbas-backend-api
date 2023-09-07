@@ -75,4 +75,7 @@ data class AvalHospListResponse(
     val distance: String?,
     val addr: String,
 //    val tagList = mutableListOf<String>()
+    val gnbdIcu: Int, // hv22 54
+    val npidIcu: Int, // hv23 55
+    val gnbdSvrt: Int, // hv24 56
 )
