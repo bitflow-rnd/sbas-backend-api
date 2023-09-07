@@ -2,6 +2,7 @@ package org.sbas.entities.talk
 
 import org.hibernate.annotations.CreationTimestamp
 import org.hibernate.annotations.UpdateTimestamp
+import org.sbas.dtos.TalkMsgDto
 import java.io.Serializable
 import java.time.Instant
 import javax.persistence.*
@@ -67,12 +68,12 @@ data class TalkMsgId(
     }
 }
 
-fun arrToJson(arrayData: MutableList<TalkMsg>): String {
+fun arrToJson(arrayData: MutableList<TalkMsgDto>): String {
     var result = "["
 
     for (item in arrayData) {
         val attcId = item.attcId
-        result += "{\"id\":{\"tkrmId\":\"${item.id?.tkrmId}\", \"msgSeq\":${item.id?.msgSeq}, \"histSeq\":${item.id?.histSeq}}, " +
+        result += "{\"id\":{\"tkrmId\":\"${item.tkrmId}\", \"msgSeq\":${item.msgSeq}, \"histSeq\":${item.histSeq}}, " +
             "\"histCd\":\"${item.histCd}\", \"msg\":\"${item.msg}\", \"attcId\":${attcId?.let { "\"$it\"" } ?: "null"}, \"rgstUserId\":\"${item.rgstUserId}\"," +
             "\"rgstDttm\":\"${item.rgstDttm}\", \"updtUserId\":\"${item.updtUserId}\", \"updtDttm\":\"${item.updtDttm}\"}"
         if(item != arrayData.last()){

@@ -34,7 +34,7 @@ class TalkService {
         return CommonResponse(findChatRooms)
     }
 
-    fun getMyChat(tkrmId: String) : CommonResponse<List<TalkMsg>>{
+    fun getMyChat(tkrmId: String) : CommonResponse<*>{
         val findChatDetail = talkMsgRepository.findChatDetail(tkrmId)
 
         if(findChatDetail.isEmpty()) throw NotFoundException("채팅방에 저장된 메시지가 없습니다.")

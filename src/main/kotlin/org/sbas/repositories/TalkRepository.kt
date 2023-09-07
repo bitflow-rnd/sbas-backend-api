@@ -2,6 +2,7 @@ package org.sbas.repositories
 
 import io.quarkus.hibernate.orm.panache.kotlin.PanacheRepositoryBase
 import kotlinx.coroutines.runBlocking
+import org.sbas.dtos.TalkMsgDto
 import org.sbas.entities.talk.*
 import org.sbas.responses.messages.TalkRoomResponse
 import java.time.Instant
@@ -40,10 +41,18 @@ class TalkUserRepository : PanacheRepositoryBase<TalkUser, TalkUserId>{
 
 @ApplicationScoped
 class TalkMsgRepository : PanacheRepositoryBase<TalkMsg, TalkMsgId> {
-
-
     @Transactional
-    fun findChatDetail(tkrmId: String) = find("select tm from TalkMsg tm where tm.id.tkrmId = '$tkrmId' order by tm.id.msgSeq").list()
+    fun findChatDetail(tkrmId: String): List<TalkMsgDto> {
+        val query = "select new org.sbas.dtos.TalkMsgDto(tm.id.tkrmId, tm.id.msgSeq, tm.id.histSeq, " +
+                "tm.histCd, tm.msg, tm.attcId, " +
+                "iu.instNm || ' / ' || iu.userNm, " +
+                "tm.rgstDttm, tm.updtUserId, tm.updtDttm) " +
+                "from TalkMsg tm " +
+                "inner join InfoUser iu on iu.id = tm.rgstUserId "
+
+        return getEntityManager().createQuery(query, TalkMsgDto::class.java).resultList
+//        return find("select tm from TalkMsg tm where tm.id.tkrmId = '$tkrmId' order by tm.id.msgSeq").list()
+    }
 
     @Transactional
     fun insertMessage(message: String, tkrmId: String, userId: String): TalkMsg{

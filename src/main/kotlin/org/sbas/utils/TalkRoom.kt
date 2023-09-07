@@ -2,16 +2,13 @@ package org.sbas.utils
 
 import io.vertx.core.json.JsonObject
 import kotlinx.coroutines.*
-import org.eclipse.microprofile.config.inject.ConfigProperty
 import org.jboss.logging.Logger
+import org.sbas.dtos.TalkMsgDto
 import org.sbas.entities.talk.TalkMsg
 import org.sbas.entities.talk.TalkUser
 import org.sbas.entities.talk.arrToJson
 import org.sbas.handlers.FileHandler
-import org.sbas.repositories.BaseAttcRepository
-import org.sbas.repositories.TalkMsgRepository
-import org.sbas.repositories.TalkRoomRepository
-import org.sbas.repositories.TalkUserRepository
+import org.sbas.repositories.*
 import org.sbas.responses.messages.TalkRoomResponse
 import org.sbas.restclients.FirebaseService
 import javax.enterprise.context.ApplicationScoped
@@ -27,7 +24,7 @@ class TalkRoom {
 
     companion object {
         private val chatSockets = mutableMapOf<String, Session>() // WebSocket 연결을 관리할 Map
-        private lateinit var talkMsg: MutableList<TalkMsg>
+        private lateinit var talkMsg: MutableList<TalkMsgDto>
     }
 
     @Inject
@@ -38,6 +35,9 @@ class TalkRoom {
 
     @Inject
     lateinit var talkUserRepository: TalkUserRepository
+
+    @Inject
+    private lateinit var infoUserRepository: InfoUserRepository
 
     @Inject
     private lateinit var talkRoomRepository: TalkRoomRepository
@@ -86,7 +86,7 @@ class TalkRoom {
             withContext(Dispatchers.IO) {
                 talkMsgRepository.findChatDetail(tkrmId)
             }
-        } as MutableList<TalkMsg>
+        } as MutableList<TalkMsgDto>
         talkMsg = resultList
     }
 
