@@ -127,3 +127,8 @@ data class InfoHospWithUser(
     val instNm: String,
     val userId: String,
 )
+
+data class InfoHospId(
+    val hospId: String,
+    val hpId: String,
+)

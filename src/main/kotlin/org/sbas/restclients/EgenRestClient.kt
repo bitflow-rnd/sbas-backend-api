@@ -60,8 +60,8 @@ interface EgenRestClient {
     @GET
     @Path("ErmctInfoInqireService/getEmrrmRltmUsefulSckbdInfoInqire")
     fun getEmrrmRltmUsefulSckbdInfoInqire(@QueryParam("serviceKey") serviceKey: String,
-                                          @QueryParam("STAGE1") stage1: String,
-                                          @QueryParam("STAGE2") stage2: String,
+                                          @QueryParam("STAGE1") stage1: String?,
+                                          @QueryParam("STAGE2") stage2: String?,
                                           @QueryParam("pageNo") pageNo: String?,
                                           @QueryParam("numOfRows") numOfRows: String?): String
 

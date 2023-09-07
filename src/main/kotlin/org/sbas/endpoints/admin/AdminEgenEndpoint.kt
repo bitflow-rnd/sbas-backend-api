@@ -5,6 +5,7 @@ import org.eclipse.microprofile.openapi.annotations.tags.Tag
 import org.jboss.logging.Logger
 import org.sbas.constants.EgenCmMid
 import org.sbas.restparameters.EgenApiBassInfoParams
+import org.sbas.restparameters.EgenApiEmrrmRltmUsefulSckbdInfoParams
 import org.sbas.restparameters.EgenApiLcInfoParams
 import org.sbas.restparameters.EgenApiListInfoParams
 import org.sbas.services.EgenService
@@ -35,8 +36,10 @@ class AdminEgenEndpoint {
     @Operation(summary = "E-GEN 실시간가용병상 정보 동기화", description = "")
     @POST
     @Path("syncrealtmavailbeds")
-    fun syncRealTmAvailBeds(): Response {
-        return Response.ok().build()
+    fun syncRealTmAvailBeds(param: EgenApiEmrrmRltmUsefulSckbdInfoParams): Response {
+        //TODO
+        param.numOfRows = param.numOfRows ?: "100"
+        return Response.ok(egenService.saveUsefulSckbdInfo(param)).build()
     }
 
     @Operation(summary = "E-GEN 공통코드 동기화", description = "")

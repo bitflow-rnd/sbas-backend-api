@@ -6,17 +6,17 @@ import org.eclipse.microprofile.rest.client.inject.RestClient
 import org.jboss.logging.Logger
 import org.json.JSONObject
 import org.sbas.constants.EgenCmMid
+import org.sbas.constants.enums.SidoCd
 import org.sbas.dtos.BaseCodeEgenSaveReq
+import org.sbas.dtos.info.InfoBedSaveReq
 import org.sbas.dtos.info.InfoHospSaveReq
 import org.sbas.dtos.toEntity
 import org.sbas.entities.info.InfoHosp
-import org.sbas.repositories.BaseCodeEgenRepository
-import org.sbas.repositories.BaseCodeRepository
-import org.sbas.repositories.InfoHospRepository
-import org.sbas.repositories.PageRepository
+import org.sbas.repositories.*
 import org.sbas.responses.CommonResponse
 import org.sbas.restclients.EgenRestClient
 import org.sbas.restparameters.EgenApiBassInfoParams
+import org.sbas.restparameters.EgenApiEmrrmRltmUsefulSckbdInfoParams
 import org.sbas.restparameters.EgenApiLcInfoParams
 import org.sbas.restparameters.EgenApiListInfoParams
 import javax.enterprise.context.ApplicationScoped
@@ -40,6 +40,9 @@ class EgenService {
     private lateinit var infoHospRepository: InfoHospRepository
 
     @Inject
+    private lateinit var infoBedRepository: InfoBedRepository
+
+    @Inject
     private lateinit var baseCodeRepository: BaseCodeRepository
 
     @Inject
@@ -50,6 +53,9 @@ class EgenService {
 
     @ConfigProperty(name = "restclient.egen.service.key")
     private lateinit var serviceKey: String
+
+    @Inject
+    private lateinit var objectMapper: ObjectMapper
 
     /**
      * 코드 마스터 정보 조회
@@ -132,16 +138,17 @@ class EgenService {
     /**
      * 응급실 실시간 가용병상정보 조회
      */
-    fun getEmrrmRltmUsefulSckbdInfoInqire(): JSONObject {
+    fun getEmrrmRltmUsefulSckbdInfoInqire(param: EgenApiEmrrmRltmUsefulSckbdInfoParams): Pair<JSONObject, Int> {
         val jsonObject = JSONObject(
             egenRestClient.getEmrrmRltmUsefulSckbdInfoInqire(
                 serviceKey = serviceKey,
-                stage1 = "", stage2 = "",
-                pageNo = "",
-                numOfRows = ""
+                stage1 = param.stage1,
+                stage2 = param.stage2,
+                pageNo = param.pageNo,
+                numOfRows = param.numOfRows,
             )
         )
-        return extractBody(jsonObject)
+        return Pair(extractBody(jsonObject), extractTotalCount(jsonObject))
     }
 
     /**
@@ -317,6 +324,37 @@ class EgenService {
     fun hospMerge(input: InfoHosp) {
         infoHospRepository.getEntityManager().merge(input)
     }
+
+
+    @Transactional
+    fun saveUsefulSckbdInfo(param: EgenApiEmrrmRltmUsefulSckbdInfoParams) {
+//        val (jsonObjectIntPair, totalCount) = getEmrrmRltmUsefulSckbdInfoInqire(param)
+
+        SidoCd.values().forEach {
+            if (it.cdNm == "강원도") {
+                param.stage1 = "강원특별자치도"
+            } else {
+                param.stage1 = it.cdNm
+            }
+            val (jsonObjectIntPair, _) = getEmrrmRltmUsefulSckbdInfoInqire(param)
+            val infoJsonArray = jsonObjectIntPair.getJSONArray("item")
+            var infoBedSaveReq: InfoBedSaveReq
+
+            infoJsonArray.forEach {jsonObject ->
+                infoBedSaveReq = objectMapper.readValue(jsonObject.toString(), InfoBedSaveReq::class.java)
+                val infoHospIds = infoHospRepository.findInfoHospByHpId(infoBedSaveReq.hpid)
+                infoBedRepository.persist(infoBedSaveReq.toEntity(infoHospIds.hospId))
+            }
+        }
+//
+//
+//        infoJsonArray.forEach {
+//            infoBedSaveReq = objectMapper.readValue(it.toString(), InfoBedSaveReq::class.java)
+//            val infoHospIds = infoHospRepository.findInfoHospByHpId(infoBedSaveReq.hpid)
+//            infoBedRepository.persist(infoBedSaveReq.toEntity(infoHospIds.hospId))
+//        }
+    }
+
 
     private fun extractBody(jsonObject: JSONObject): JSONObject {
         val header = jsonObject.getJSONObject("response").getJSONObject("header")

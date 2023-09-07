@@ -1,5 +1,7 @@
 package org.sbas.restparameters
 
+import org.sbas.utils.annotation.NoArg
+
 data class EgenApiListInfoParams(
     val q0: String? = null, // 주소(시도)
     val q1: String? = null, // 주소(시군구)
@@ -23,4 +25,12 @@ data class EgenApiBassInfoParams(
     val hpId: String, // 기관 ID
     val pageNo: String = "1",
     val numOfRows: String = "10",
+)
+
+@NoArg
+data class EgenApiEmrrmRltmUsefulSckbdInfoParams(
+    var stage1: String?,
+    val stage2: String?,
+    var pageNo: String?,
+    var numOfRows: String?,
 )
