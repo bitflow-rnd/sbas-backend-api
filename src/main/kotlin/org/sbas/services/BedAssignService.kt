@@ -124,7 +124,7 @@ class BedAssignService {
         bdasUsers.forEach {
             log.debug("registerBedRequestInfo bdasUsers >>> ${it.id}")
             try {
-                firebaseService.sendMessage("${findInfoPt.ptNm}님 병상요청", "${bdasReqDprtInfo.msg}", it.id)
+                firebaseService.sendMessage("${findInfoPt.ptNm}님 병상요청", "신규 병상요청", it.id)
             } catch (e: Exception) {
                 log.warn(e.printStackTrace())
                 return CommonResponse("병상 요청")
@@ -172,7 +172,7 @@ class BedAssignService {
                     bdasReqAprvRepository.persist(entity)
                     findBdasReq.changeBedStatTo(BedStatCd.BAST0004.name)
                     try {
-                        firebaseService.sendMessage("${findInfoPt.ptNm}님 전원요청", "${saveRequest.msg}", infoHosp.userId)
+                        firebaseService.sendMessage("${findInfoPt.ptNm}님 전원요청", "가용 병상 확인해 주시기 바랍니다.", infoHosp.userId)
                     } catch (e: Exception) {
                         log.warn(e.printStackTrace())
                     }
@@ -270,7 +270,7 @@ class BedAssignService {
             val refusedBdasAprv = bdasAprvRepository.findRefusedBdasAprv(saveRequest.ptId, saveRequest.bdasSeq)
             if (bdasReqAprvList.size == refusedBdasAprv.size) {
                 firebaseService.sendMessage(
-                    entity.rgstUserId!!,
+                    "${findInfoPt.ptNm}님 병상배정",
                     "모든 병원이 배정 불가 처리되었습니다. 재요청 바랍니다.",
                     bdasReqAprvList[0].rgstUserId!!
                 )
@@ -303,20 +303,26 @@ class BedAssignService {
 
         findBdasReq.changeBedStatTo(BedStatCd.BAST0005.name)
 
-        // 지역코드로 병상배정반 찾기
-        val bdasUsers = infoUserRepository.findBdasUserByReqDstrCd(findBdasReq.reqDstr1Cd, findBdasReq.reqDstr2Cd)
-
         // 푸쉬 알람 보내기
-        bdasUsers.forEach {
-            log.debug("asgnConfirm bdasUsers >>> ${it.id}")
-            try {
-                firebaseService.sendMessage("${findInfoPt.ptNm}님 배정승인", "${saveRequest.msg}", it.id)
-
-            } catch (e: Exception) {
-                log.warn(e.printStackTrace())
-            }
+        val msg = when (saveRequest.aprvYn) {
+            "Y" -> "병상 배정이 승인되었습니다."
+            else -> "병상 배정이 불가처리되었습니다."
         }
-//        firebaseService.sendMessage("${findInfoPt.ptNm}님 배정승인", "${saveRequest.msg}", "TEST-APR-1")
+
+        firebaseService.sendMessage("${findInfoPt.ptNm}님 병상배정", msg, bdasReqAprvList[0].rgstUserId!!)
+
+//        // 지역코드로 병상배정반 찾기
+//        val bdasUsers = infoUserRepository.findBdasUserByReqDstrCd(findBdasReq.reqDstr1Cd, findBdasReq.reqDstr2Cd)
+//
+//        bdasUsers.forEach {
+//            log.debug("asgnConfirm bdasUsers >>> ${it.id}")
+//            try {
+//                firebaseService.sendMessage("${findInfoPt.ptNm}님 병상배정", "병상 배정이 승인되었습니다.", bdasReqAprvList[0].rgstUserId!!)
+//
+//            } catch (e: Exception) {
+//                log.warn(e.printStackTrace())
+//            }
+//        }
 
         return CommonResponse(BdasAprvResponse(false, "배정 승인되었습니다."))
     }

@@ -29,6 +29,7 @@ class PublicOrganiztnEndpoint {
     @GET
     @Path("medinsts")
     fun getMedInsts(@BeanParam param: InfoHospSearchParam): Response? {
+        log.debug("PublicOrganiztnEndpoint getMedInsts >>> $param")
         return Response.ok(organiztnService.findInfoHospList(param)).build()
     }
 
@@ -52,6 +53,7 @@ class PublicOrganiztnEndpoint {
     @GET
     @Path("firestatns")
     fun getFireStatns(@BeanParam param: FireStatnSearchParam): Response {
+        log.debug("PublicOrganiztnEndpoint getFireStatns >>> $param")
         return Response.ok(organiztnService.findFireStatns(param)).build()
     }
 }
