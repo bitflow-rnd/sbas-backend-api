@@ -4,9 +4,11 @@ import io.vertx.core.json.JsonArray
 import io.vertx.core.json.JsonObject
 import kotlinx.coroutines.*
 import org.jboss.logging.Logger
+import org.jboss.resteasy.reactive.RestQuery
 import org.sbas.dtos.TalkMsgDto
 import org.sbas.entities.talk.TalkMsg
 import org.sbas.entities.talk.TalkUser
+import org.sbas.entities.talk.arrToJson
 import org.sbas.repositories.TalkMsgRepository
 import org.sbas.repositories.TalkRoomRepository
 import org.sbas.repositories.TalkUserRepository
@@ -16,6 +18,7 @@ import javax.inject.Inject
 import javax.websocket.*
 import javax.websocket.server.PathParam
 import javax.websocket.server.ServerEndpoint
+import javax.ws.rs.QueryParam
 
 
 @ServerEndpoint("/chat-rooms/room/{tkrmId}")
@@ -28,6 +31,7 @@ class TalkRoomMod {
 
     private lateinit var session: Session // WebSocket 세션
     private lateinit var tkrmId: String // 채팅방 ID
+    private lateinit var userId: String // 접속 사용자 ID
 
     @Inject
     lateinit var log: Logger
@@ -55,11 +59,17 @@ class TalkRoomMod {
         val sendObject = JsonArray.of(talkMsg).toString()
         session.asyncRemote.sendText(sendObject)
 
-        chatSockets[tkrmId] = this // WebSocket 연결을 Map에 추가
     }
 
     @OnMessage
     fun onMessage(session: Session, data: String, @PathParam("tkrmId") tkrmId: String) {
+
+        if (data.startsWith("hello|")) {
+            this.userId = data.split("hello|")[1]
+            chatSockets[this.userId] = this // WebSocket 연결을 Map에 추가
+            return
+        }
+
         var addMsg: TalkMsg
         val otherUsers: MutableList<TalkUser>
         log.debug("data" + data)
@@ -115,7 +125,7 @@ class TalkRoomMod {
             .forEach{
                 if(chatSockets[it.id?.userId] != null) {
                     chatSockets[it.id?.userId]?.session?.asyncRemote?.sendText(JsonObject.mapFrom(talkRoomResponse).toString())
-                }else {
+                } else {
                     firebaseService.sendMessage(userId, msg.msg, it.id?.userId!!)
                 }
             }
