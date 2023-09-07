@@ -48,7 +48,8 @@ class TalkMsgRepository : PanacheRepositoryBase<TalkMsg, TalkMsgId> {
                 "iu.instNm || ' / ' || iu.userNm, " +
                 "tm.rgstDttm, tm.updtUserId, tm.updtDttm) " +
                 "from TalkMsg tm " +
-                "inner join InfoUser iu on iu.id = tm.rgstUserId "
+                "inner join InfoUser iu on iu.id = tm.rgstUserId " +
+                "where tm.id.tkrmId = '$tkrmId' order by tm.id.msgSeq "
 
         return getEntityManager().createQuery(query, TalkMsgDto::class.java).resultList
 //        return find("select tm from TalkMsg tm where tm.id.tkrmId = '$tkrmId' order by tm.id.msgSeq").list()
