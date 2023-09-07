@@ -89,16 +89,6 @@ class InfoPtRepository : PanacheRepositoryBase<InfoPt, String> {
                 "where be.ptId = '${ptId}' " +
                 "order by ba.id.bdasSeq desc"
 
-//        val query2 = "select new org.sbas.dtos.info.BdasHisInfo(be.ptId, be.bdasSeq, " +
-//                "be.diagNm, ) " +
-//                "from BdasEsvy be " +
-//                "join bdasReq br on be.bdasSeq = br.id.bdasSeq " +
-//                "where be.ptId = '${ptId}' " +
-//                "order by br.id.bdasSeq desc"
-
-//        entityManager.createQuery(query2, BdasHisInfo::class.java).resultList
-
-
         return entityManager.createQuery(query, BdasHisInfo::class.java).resultList.toMutableList()
     }
 }
@@ -154,6 +144,20 @@ class InfoHospRepository : PanacheRepositoryBase<InfoHosp, String> {
         return find("hosp_id = '$hospId'").firstResult()
     }
 
+    fun findInfoHospByHpId(hpId: String): InfoHospId {
+        val infoHospId = queryFactory.listQuery<InfoHospId> {
+            selectMulti(
+                col(InfoHosp::hospId), col(InfoHosp::hpId)
+            )
+            from(entity(InfoHosp::class))
+            where(
+                col(InfoHosp::hpId).equal(hpId)
+            )
+        }
+
+        return infoHospId[0]
+    }
+
     fun findInfoHosps(param: InfoHospSearchParam): MutableList<InfoHospListDto> {
         val infoHosps = queryFactory.listQuery<InfoHospListDto> {
             selectMulti(
@@ -181,16 +185,7 @@ class InfoHospRepository : PanacheRepositoryBase<InfoHosp, String> {
         return count[0].toInt()
     }
 
-    private fun CriteriaQueryDsl<*>.whereAnd(param: InfoHospSearchParam) {
-        whereAnd(
-            param.hospId?.run { col(InfoHosp::hospId).like("%$this%") },
-            param.dutyName?.run { col(InfoHosp::dutyName).like("%$this%") },
-            param.dstrCd1?.run { col(InfoHosp::dstrCd1).equal(this) },
-            param.dstrCd2?.run { col(InfoHosp::dstrCd2).equal(this) },
-            param.dutyDivNam?.run { col(InfoHosp::dutyDivNam).`in`(this) },
-        )
-    }
-
+    // TODO
     fun findInfoHospDetail(hpId: String) : InfoHospDetailDto {
         val findHosp = find("from InfoHosp where hpId = '$hpId'").firstResult() ?: throw NotFoundException("Please check hpId")
         val count = userRepository.find("from InfoUser where instId = '$hpId'").count()
@@ -228,12 +223,20 @@ class InfoHospRepository : PanacheRepositoryBase<InfoHosp, String> {
 //        }
 //        return list
 
-        val query = "select ih.* from info_hosp ih join info_user iu on ih.hosp_id = iu.inst_id"
+//        val query = "select ih.* from info_hosp ih join info_user iu on ih.hosp_id = iu.inst_id "
+//
+//        val where = if (!dstrCd2.isNullOrBlank()) {
+//            " where ih.dstr_cd1 = '$dstrCd1' and ih.dstr_cd2 = '$dstrCd2' and (iu.job_cd = 'PMGR0003' OR iu.job_cd like '병상배정%') "
+//        } else {
+//            " where ih.dstr_cd1 = '$dstrCd1' and (iu.job_cd = 'PMGR0003' OR iu.job_cd like '병상배정%') "
+//        }
 
-        val where = if (dstrCd2 != null) {
-            " where ih.dstr_cd1 = '$dstrCd1' and ih.dstr_cd2 = '$dstrCd2' and (iu.job_cd = 'PMGR0003' OR iu.job_cd like '병상배정%') "
+        val query = "select ih.* from info_hosp ih join info_bed ib on ih.hosp_id = ib.hosp_id "
+
+        val where = if (!dstrCd2.isNullOrBlank()) {
+            " where ih.dstr_cd1 = '$dstrCd1' and ih.dstr_cd2 = '$dstrCd2' "
         } else {
-            " where ih.dstr_cd1 = '$dstrCd1' and (iu.job_cd = 'PMGR0003' OR iu.job_cd like '병상배정%') "
+            " where ih.dstr_cd1 = '$dstrCd1' "
         }
 
         @Suppress("UNCHECKED_CAST")
@@ -255,6 +258,16 @@ class InfoHospRepository : PanacheRepositoryBase<InfoHosp, String> {
         }
 
         return healthCenterList
+    }
+
+    private fun CriteriaQueryDsl<*>.whereAnd(param: InfoHospSearchParam) {
+        whereAnd(
+            param.hospId?.run { col(InfoHosp::hospId).like("%$this%") },
+            param.dutyName?.run { col(InfoHosp::dutyName).like("%$this%") },
+            param.dstrCd1?.run { col(InfoHosp::dstrCd1).equal(this) },
+            param.dstrCd2?.run { col(InfoHosp::dstrCd2).equal(this) },
+            param.dutyDivNam?.run { col(InfoHosp::dutyDivNam).`in`(this) },
+        )
     }
 }
 
@@ -331,6 +344,14 @@ class InfoInstRepository : PanacheRepositoryBase<InfoInst, String> {
         return count[0].toInt()
     }
 
+    fun findLatestFireStatInstId(): String? {
+        return find("inst_type_cd = 'ORGN0002'", Sort.by("inst_id", Sort.Direction.Descending)).firstResult()?.id
+    }
+
+    fun findFireStatn(instId: String): InfoInst? {
+        return find("inst_type_cd = 'ORGN0002' and inst_id = '$instId'").firstResult()
+    }
+
     private fun CriteriaQueryDsl<*>.fireStatnsWhereAnd(param: FireStatnSearchParam) {
         whereAnd(
             col(InfoInst::instTypeCd).equal("ORGN0002"),
@@ -340,14 +361,6 @@ class InfoInstRepository : PanacheRepositoryBase<InfoInst, String> {
             param.dstrCd2?.run { col(InfoInst::dstrCd2).equal(this) },
             param.chrgTelno?.run { col(InfoInst::chrgTelno).like("%$this%") },
         )
-    }
-
-    fun findLatestFireStatInstId(): String? {
-        return find("inst_type_cd = 'ORGN0002'", Sort.by("inst_id", Sort.Direction.Descending)).firstResult()?.id
-    }
-
-    fun findFireStatn(instId: String): InfoInst? {
-        return find("inst_type_cd = 'ORGN0002' and inst_id = '$instId'").firstResult()
     }
 }
 
@@ -359,3 +372,6 @@ class InfoCntcRepository : PanacheRepositoryBase<InfoCntc, InfoCntcId> {
     fun getMyUsers(userId: String) = find("from InfoCntc where id.userId = '$userId'").list()
 
 }
+
+@ApplicationScoped
+class InfoBedRepository : PanacheRepositoryBase<InfoBed, String>
