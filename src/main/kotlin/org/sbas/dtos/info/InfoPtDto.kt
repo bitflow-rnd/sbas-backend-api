@@ -1,14 +1,15 @@
 package org.sbas.dtos.info
 
 import com.fasterxml.jackson.annotation.JsonIgnore
-import org.sbas.constants.enums.BedStatCd
-import org.sbas.constants.enums.NatiCd
-import org.sbas.constants.enums.UndrDsesCd
+import com.fasterxml.jackson.annotation.JsonProperty
+import org.sbas.constants.enums.*
 import org.sbas.entities.info.InfoPt
+import org.sbas.utils.annotation.NoArg
 import java.time.Instant
 import javax.validation.constraints.NotBlank
 import javax.validation.constraints.NotNull
 import javax.validation.constraints.Pattern
+import javax.ws.rs.QueryParam
 
 data class InfoPtDto(
     @field: NotBlank val ptNm: String,
@@ -66,32 +67,72 @@ data class InfoPtDto(
     }
 }
 
+@NoArg
+data class InfoPtSearchParam(
+    @field: QueryParam("gndr") var gndr: String?,
+    @field: QueryParam("natiCd") var natiCd: NatiCd?,
+    @field: QueryParam("dstr1Cd") var dstr1Cd: String?,
+    @field: QueryParam("dstr2Cd") var dstr2Cd: String?,
+    @field: QueryParam("hospNm") var hospNm: String?,
+    @field: QueryParam("bedStatCd") var bedStatCd: String?,
+    @field: [QueryParam("dateType") Pattern(
+        regexp = "\\b(?:updtDttm|rgstDttm)\\b"
+    )]
+    var dateType: String?,
+    @field: QueryParam("period") var period: Long?,
+
+    @field: QueryParam("ptNm") var ptNm: String?,
+    @field: QueryParam("rrno1") var rrno1: String?,
+    @field: QueryParam("mpno") var mpno: String?,
+    @field: QueryParam("ptId") var ptId: String?,
+    @field: QueryParam("page") var page: Int?,
+)
+
 /**
  * 환자 목록 조회용 DTO
  */
+@NoArg
 data class InfoPtSearchDto(
-    var ptId: String?,
-    var bdasSeq: Int?,
-    var ptNm: String?,
-    var gndr: String?,
-    var dstr1Cd: String?,
-    var dstr1CdNm: String?,
-    var dstr2Cd: String?,
-    var dstr2CdNm: String?,
-    var hospId: String?,
-    var hospNm: String?,
-    var mpno: String?,
-    var natiCd: NatiCd?,
+    val ptId: String?,
+    val bdasSeq: Int?,
+    val ptNm: String?,
+    val gndr: String?,
+    val rrno1: String?,
+    val dstr1Cd: String?,
+    val dstr1CdNm: String?,
+    val dstr2Cd: String?,
+    val dstr2CdNm: String?,
+    val hospId: String?,
+    val hospNm: String?,
+    val mpno: String?,
+    val natiCd: NatiCd?,
     val natiCdNm: String?,
-    var bedStatCd: String?,
-    var updtDttm: Instant?,
-    @JsonIgnore var ptTypeCd: String?,
-    @JsonIgnore var svrtTypeCd: String?,
-    @JsonIgnore var undrDsesCd: String?,
-    var age: Int?,
+    val bedStatCd: String?,
+    val rgstDttm: Instant?,
+    val updtDttm: Instant?,
+    @JsonIgnore val ptTypeCd: String?,
+    @JsonIgnore val svrtTypeCd: String?,
+    @JsonIgnore val undrDsesCd: String?,
+    val age: Int?,
 ) {
-    var bedStatCdNm: String? = bedStatCd?.let { BedStatCd.valueOf(it).cdNm }
-    var tagList: MutableList<String>? = mutableListOf()
+    val bedStatCdNm: String? = bedStatCd?.let { BedStatCd.valueOf(it).cdNm }
+    val tagList: MutableList<String>
+        get() {
+            val tagList: MutableList<String> = mutableListOf()
+            if (ptTypeCd != null) {
+                val splitList = ptTypeCd.split(";")
+                tagList.addAll(splitList.map { PtTypeCd.valueOf(it).cdNm })
+            }
+            if (svrtTypeCd != null) {
+                val splitList = svrtTypeCd.split(";")
+                tagList.addAll(splitList.map { SvrtTypeCd.valueOf(it).cdNm })
+            }
+            if (undrDsesCd != null) {
+                val splitList = undrDsesCd.split(";")
+                tagList.addAll(splitList.map { UndrDsesCd.valueOf(it).cdNm })
+            }
+            return tagList
+        }
 }
 
 /**

@@ -14,7 +14,6 @@ import org.sbas.entities.info.InfoPt
 import org.sbas.handlers.FileHandler
 import org.sbas.handlers.NaverApiHandler
 import org.sbas.parameters.NewsScoreParameters
-import org.sbas.parameters.SearchParameters
 import org.sbas.repositories.*
 import org.sbas.responses.CommonResponse
 import org.sbas.responses.CommonListResponse
@@ -199,23 +198,8 @@ class PatientService {
     }
 
     @Transactional
-    fun findInfoPtList(searchParam: SearchParameters): CommonResponse<*> {
-        val list = infoPtRepository.findInfoPtList()
-        list.forEach { dto ->
-            if (dto.ptTypeCd != null) {
-                val splitList = dto.ptTypeCd!!.split(";")
-                dto.tagList!!.addAll(splitList.map { PtTypeCd.valueOf(it).cdNm })
-            }
-            if (dto.svrtTypeCd != null) {
-                val splitList = dto.svrtTypeCd!!.split(";")
-                dto.tagList!!.addAll(splitList.map { SvrtTypeCd.valueOf(it).cdNm })
-            }
-            if (dto.undrDsesCd != null) {
-                val splitList = dto.undrDsesCd!!.split(";")
-                dto.tagList!!.addAll(splitList.map { UndrDsesCd.valueOf(it).cdNm })
-            }
-        }
-
+    fun findInfoPtList(param: InfoPtSearchParam): CommonResponse<*> {
+        val list = infoPtRepository.findInfoPtList(param)
         return CommonListResponse(list)
     }
 

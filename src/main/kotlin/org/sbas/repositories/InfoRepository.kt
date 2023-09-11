@@ -11,6 +11,7 @@ import io.quarkus.panache.common.Sort
 import org.jboss.logging.Logger
 import org.sbas.dtos.info.*
 import org.sbas.entities.info.*
+import java.time.Instant
 import javax.enterprise.context.ApplicationScoped
 import javax.inject.Inject
 import javax.persistence.EntityManager
@@ -25,6 +26,9 @@ class InfoPtRepository : PanacheRepositoryBase<InfoPt, String> {
     @Inject
     private lateinit var queryFactory: QueryFactory
 
+    @Inject
+    private lateinit var log: Logger
+
     fun findByPtNmAndRrno(ptNm: String, rrno1: String, rrno2: String): InfoPt? =
         find("pt_nm = '$ptNm' AND rrno_1 = '$rrno1' AND rrno_2 = '$rrno2'").firstResult()
 
@@ -32,42 +36,35 @@ class InfoPtRepository : PanacheRepositoryBase<InfoPt, String> {
         return find("dstr_1_cd = '$dstr1Cd' and dstr_2_cd = '$dstr2Cd'").list()
     }
 
-    fun findInfoPtList(): MutableList<InfoPtSearchDto> {
-//
-//        val query = "select max(id.bdasSeq) as bdasSeq from BdasReq group by id.ptId"
-//        @Suppress("UNCHECKED_CAST")
-//        val maxBdasSeqList = entityManager.createQuery(query).resultList as MutableList<Int>
-//
-//        val list = queryFactory.listQuery<InfoPtSearchDto> {
-//            selectMulti(
-//                col(InfoPt::ptId), col(BdasReqId::bdasSeq), col(InfoPt::ptNm), col(InfoPt::gndr),
-//                col(InfoPt::dstr1Cd), function("fn_get_cd_nm", String::class.java, literal("SIDO"), col(InfoPt::dstr1Cd)),
-//                col(InfoPt::dstr2Cd), function("fn_get_cd_nm", String::class.java, literal("SIDO"+col(InfoPt::dstr1Cd)), col(InfoPt::dstr2Cd)),
-//                literal("hospId"), literal("hospNm"), col(InfoPt::mpno), col(InfoPt::natiCd),
-//                col(BdasReq::bedStatCd), col(InfoPt::updtDttm)
-//
-//            )
-//            from(entity(InfoPt::class))
-//            join(entity(BdasReq::class), on { col(InfoPt::ptId).equal(col(BdasReqId::ptId))})
-//            associate(entity(BdasReq::class), BdasReqId::class, on(BdasReq::id))
-////            exists(subQuery)
-//            whereOr(
-//                col(BdasReqId::bdasSeq).`in`(maxBdasSeqList),
-//                col(BdasReqId::bdasSeq).equal(nullLiteral()),
-//            )
-//        }
-//        return list.toMutableList()
-        //TODO 기관 이름추가
-        val query = "select new org.sbas.dtos.info.InfoPtSearchDto(a.ptId, b.id.bdasSeq, a.ptNm, a.gndr, " +
-                "a.dstr1Cd, fn_get_cd_nm('SIDO', a.dstr1Cd), a.dstr2Cd, fn_get_cd_nm('SIDO'||a.dstr1Cd, a.dstr2Cd), " +
-                "ba.hospId, '', a.mpno, a.natiCd, a.natiNm, b.bedStatCd, a.updtDttm, " +
-                "b.ptTypeCd, b.svrtTypeCd, b.undrDsesCd, fn_get_age(a.rrno1, a.rrno2)) " +
-                "from InfoPt a " +
-                "left join BdasReq b on a.ptId = b.id.ptId " +
-                "left join BdasAdms ba on b.id.bdasSeq = ba.id.bdasSeq " +
-                "where b.id.bdasSeq in ((select max(id.bdasSeq) as bdasSeq from BdasReq group by id.ptId)) or b.id.bdasSeq is null " +
-                "order by a.updtDttm desc"
-        return entityManager.createQuery(query, InfoPtSearchDto::class.java).resultList
+    fun findInfoPtList(param: InfoPtSearchParam): List<InfoPtSearchDto> {
+        var cond = param.ptNm?.run { " and pt.ptNm like '%$this%' " } ?: ""
+        cond += param.rrno1?.run { " and pt.rrno1 like '%$this%' " } ?: ""
+        cond += param.mpno?.run { " and pt.mpno like '%$this%' " } ?: ""
+        cond += param.ptId?.run { " and pt.ptId like '%$this%' " } ?: ""
+
+        cond += param.gndr?.run { " and pt.gndr like '%$this%' " } ?: ""
+        cond += param.natiCd?.run { " and pt.natiCd like '%$this%' " } ?: ""
+        cond += param.dstr1Cd?.run { " and pt.dstr1Cd like '%$this%' " } ?: ""
+        cond += param.dstr2Cd?.run { " and pt.dstr2Cd like '%$this%' " } ?: ""
+        cond += param.hospNm?.run { " and bra.reqHospNm like '%$this%' " } ?: ""
+        cond += param.bedStatCd?.run { " and br.bedStatCd like '%$this%' " } ?: ""
+        cond += param.period?.run { " and pt.${param.dateType} > '${Instant.now().minusSeconds(60 * 60 * 24 * this)}' " } ?: ""
+
+        val offset = param.page?.run { this.minus(1).times(15) } ?: 0
+
+        val query = "select new org.sbas.dtos.info.InfoPtSearchDto(pt.ptId, br.id.bdasSeq, pt.ptNm, pt.gndr, pt.rrno1, " +
+                "pt.dstr1Cd, fn_get_cd_nm('SIDO', pt.dstr1Cd), pt.dstr2Cd, fn_get_cd_nm('SIDO'||pt.dstr1Cd, pt.dstr2Cd), " +
+                "bap.hospId, ih.dutyName, pt.mpno, pt.natiCd, pt.natiNm, br.bedStatCd, pt.updtDttm, pt.rgstDttm, " +
+                "br.ptTypeCd, br.svrtTypeCd, br.undrDsesCd, fn_get_age(pt.rrno1, pt.rrno2)) " +
+                "from InfoPt pt " +
+                "left join BdasReq br on pt.ptId = br.id.ptId " +
+                "left join BdasAprv bap on (br.id.bdasSeq = bap.id.bdasSeq and bap.aprvYn = 'Y') " +
+                "left join InfoHosp ih on bap.hospId = ih.hospId " +
+                "where (br.id.bdasSeq in ((select max(id.bdasSeq) as bdasSeq from BdasReq group by id.ptId)) or br.id.bdasSeq is null) " +
+                "$cond " +
+                "order by pt.rgstDttm desc "
+
+        return entityManager.createQuery(query, InfoPtSearchDto::class.java).setMaxResults(15).setFirstResult(offset).resultList
     }
 
     fun updateAttcId(attcId: String): Int {

@@ -12,8 +12,8 @@ import org.sbas.dtos.bdas.BdasEsvySaveRequest
 import org.sbas.dtos.bdas.BdasReqSaveRequest
 import org.sbas.dtos.info.InfoPtCheckRequest
 import org.sbas.dtos.info.InfoPtDto
+import org.sbas.dtos.info.InfoPtSearchParam
 import org.sbas.parameters.NewsScoreParameters
-import org.sbas.parameters.SearchParameters
 import org.sbas.services.BedAssignService
 import org.sbas.services.PatientService
 import javax.inject.Inject
@@ -151,13 +151,12 @@ class PrivatePatientEndpoint {
         return Response.ok().build()
     }
 
-    @Operation(summary = "전국 환자검색", description = "")
+    @Operation(summary = "전국 환자검색", description = "검색 조건에 맞는 환자 목록 조회")
     @GET
     @Path("search")
-    fun search(@BeanParam searchParam: SearchParameters): Response {
-        //TODO
-        log.debug("searchParam: $searchParam")
-        return Response.ok(patientService.findInfoPtList(searchParam)).build()
+    fun search(@BeanParam @Valid param: InfoPtSearchParam): Response {
+        log.debug("searchParam: $param")
+        return Response.ok(patientService.findInfoPtList(param)).build()
     }
 
     @Operation(summary = "내 기관 관련 환자목록", description = "")
