@@ -201,7 +201,8 @@ class PatientService {
     fun findInfoPtList(param: InfoPtSearchParam): CommonResponse<*> {
         val list = infoPtRepository.findInfoPtList(param)
         val count = infoPtRepository.countInfoPtList(param)
-        return CommonListResponse(list, count)
+        log.debug(count)
+        return CommonListResponse(list, count.toInt())
     }
 
     private fun getTagList(dto: BdasHisInfo) {

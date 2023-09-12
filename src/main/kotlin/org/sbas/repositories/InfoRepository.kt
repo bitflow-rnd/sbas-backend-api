@@ -54,8 +54,10 @@ class InfoPtRepository : PanacheRepositoryBase<InfoPt, String> {
         return entityManager.createQuery(query, InfoPtSearchDto::class.java).setMaxResults(15).setFirstResult(offset).resultList
     }
 
-    fun countInfoPtList(param: InfoPtSearchParam): Int {
+    fun countInfoPtList(param: InfoPtSearchParam): Long {
         val (cond, _) = conditionAndOffset(param)
+
+        log.debug("hello")
 
         val query = "select count(pt.ptId) " +
                 "from InfoPt pt " +
@@ -65,7 +67,7 @@ class InfoPtRepository : PanacheRepositoryBase<InfoPt, String> {
                 "where (br.id.bdasSeq in ((select max(id.bdasSeq) as bdasSeq from BdasReq group by id.ptId)) or br.id.bdasSeq is null) " +
                 "$cond "
 
-        return entityManager.createQuery(query).firstResult
+        return entityManager.createQuery(query).singleResult as Long
     }
 
     fun updateAttcId(attcId: String): Int {
