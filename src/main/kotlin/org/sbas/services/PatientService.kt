@@ -200,7 +200,8 @@ class PatientService {
     @Transactional
     fun findInfoPtList(param: InfoPtSearchParam): CommonResponse<*> {
         val list = infoPtRepository.findInfoPtList(param)
-        return CommonListResponse(list)
+        val count = infoPtRepository.countInfoPtList(param)
+        return CommonListResponse(list, count)
     }
 
     private fun getTagList(dto: BdasHisInfo) {

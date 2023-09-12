@@ -37,20 +37,7 @@ class InfoPtRepository : PanacheRepositoryBase<InfoPt, String> {
     }
 
     fun findInfoPtList(param: InfoPtSearchParam): List<InfoPtSearchDto> {
-        var cond = param.ptNm?.run { " and pt.ptNm like '%$this%' " } ?: ""
-        cond += param.rrno1?.run { " and pt.rrno1 like '%$this%' " } ?: ""
-        cond += param.mpno?.run { " and pt.mpno like '%$this%' " } ?: ""
-        cond += param.ptId?.run { " and pt.ptId like '%$this%' " } ?: ""
-
-        cond += param.gndr?.run { " and pt.gndr like '%$this%' " } ?: ""
-        cond += param.natiCd?.run { " and pt.natiCd like '%$this%' " } ?: ""
-        cond += param.dstr1Cd?.run { " and pt.dstr1Cd like '%$this%' " } ?: ""
-        cond += param.dstr2Cd?.run { " and pt.dstr2Cd like '%$this%' " } ?: ""
-        cond += param.hospNm?.run { " and bra.reqHospNm like '%$this%' " } ?: ""
-        cond += param.bedStatCd?.run { " and br.bedStatCd like '%$this%' " } ?: ""
-        cond += param.period?.run { " and pt.${param.dateType} > '${Instant.now().minusSeconds(60 * 60 * 24 * this)}' " } ?: ""
-
-        val offset = param.page?.run { this.minus(1).times(15) } ?: 0
+        val (cond, offset) = conditionAndOffset(param)
 
         val query = "select new org.sbas.dtos.info.InfoPtSearchDto(pt.ptId, br.id.bdasSeq, pt.ptNm, pt.gndr, pt.rrno1, " +
                 "pt.dstr1Cd, fn_get_cd_nm('SIDO', pt.dstr1Cd), pt.dstr2Cd, fn_get_cd_nm('SIDO'||pt.dstr1Cd, pt.dstr2Cd), " +
@@ -65,6 +52,20 @@ class InfoPtRepository : PanacheRepositoryBase<InfoPt, String> {
                 "order by pt.rgstDttm desc "
 
         return entityManager.createQuery(query, InfoPtSearchDto::class.java).setMaxResults(15).setFirstResult(offset).resultList
+    }
+
+    fun countInfoPtList(param: InfoPtSearchParam): Int {
+        val (cond, _) = conditionAndOffset(param)
+
+        val query = "select count(pt.ptId) " +
+                "from InfoPt pt " +
+                "left join BdasReq br on pt.ptId = br.id.ptId " +
+                "left join BdasAprv bap on (br.id.bdasSeq = bap.id.bdasSeq and bap.aprvYn = 'Y') " +
+                "left join InfoHosp ih on bap.hospId = ih.hospId " +
+                "where (br.id.bdasSeq in ((select max(id.bdasSeq) as bdasSeq from BdasReq group by id.ptId)) or br.id.bdasSeq is null) " +
+                "$cond "
+
+        return entityManager.createQuery(query).firstResult
     }
 
     fun updateAttcId(attcId: String): Int {
@@ -87,6 +88,29 @@ class InfoPtRepository : PanacheRepositoryBase<InfoPt, String> {
                 "order by ba.id.bdasSeq desc"
 
         return entityManager.createQuery(query, BdasHisInfo::class.java).resultList.toMutableList()
+    }
+
+    private fun conditionAndOffset(param: InfoPtSearchParam): Pair<String, Int> {
+        var cond = param.ptNm?.run { " and pt.ptNm like '%$this%' " } ?: ""
+        cond += param.rrno1?.run { " and pt.rrno1 like '%$this%' " } ?: ""
+        cond += param.mpno?.run { " and pt.mpno like '%$this%' " } ?: ""
+        cond += param.ptId?.run { " and pt.ptId like '%$this%' " } ?: ""
+
+        cond += param.gndr?.run { " and pt.gndr like '%$this%' " } ?: ""
+        cond += param.natiCd?.run { " and pt.natiCd like '%$this%' " } ?: ""
+        cond += param.dstr1Cd?.run { " and pt.dstr1Cd like '%$this%' " } ?: ""
+        cond += param.dstr2Cd?.run { " and pt.dstr2Cd like '%$this%' " } ?: ""
+        cond += param.hospNm?.run { " and bra.reqHospNm like '%$this%' " } ?: ""
+        cond += param.bedStatCd?.run { " and br.bedStatCd like '%$this%' " } ?: ""
+        cond += param.period?.run {
+            " and pt.${param.dateType} > '${
+                Instant.now().minusSeconds(60 * 60 * 24 * this)
+            }' "
+        } ?: ""
+
+        val offset = param.page?.run { this.minus(1).times(15) } ?: 0
+
+        return Pair(cond, offset)
     }
 }
 
