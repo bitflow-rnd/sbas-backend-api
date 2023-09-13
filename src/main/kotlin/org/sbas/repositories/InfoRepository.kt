@@ -103,7 +103,7 @@ class InfoPtRepository : PanacheRepositoryBase<InfoPt, String> {
         cond += param.dstr1Cd?.run { " and pt.dstr1Cd like '%$this%' " } ?: ""
         cond += param.dstr2Cd?.run { " and pt.dstr2Cd like '%$this%' " } ?: ""
         cond += param.hospNm?.run { " and bra.reqHospNm like '%$this%' " } ?: ""
-        cond += param.bedStatCd?.run { " and br.bedStatCd like '%$this%' " } ?: ""
+        cond += param.bedStatCd?.run { " and br.bedStatCd in ('${this.split(',').joinToString("', '")}')" } ?: ""
         cond += param.period?.run {
             " and pt.${param.dateType} > '${
                 Instant.now().minusSeconds(60 * 60 * 24 * this)
