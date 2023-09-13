@@ -93,9 +93,9 @@ class InfoPtRepository : PanacheRepositoryBase<InfoPt, String> {
     }
 
     private fun conditionAndOffset(param: InfoPtSearchParam): Pair<String, Int> {
-        var cond = param.ptNm?.run { " and pt.ptNm like '%$this%' " } ?: ""
-        cond += param.rrno1?.run { " and pt.rrno1 like '%$this%' " } ?: ""
-        cond += param.mpno?.run { " and pt.mpno like '%$this%' " } ?: ""
+        var cond = param.ptNm?.run { " and (pt.ptNm like '%$this%' " } ?: "and (1=1"
+        cond += param.rrno1?.run { " or pt.rrno1 like '%$this%' " } ?: ""
+        cond += param.mpno?.run { " or pt.mpno like '%$this%') " } ?: ") "
         cond += param.ptId?.run { " and pt.ptId like '%$this%' " } ?: ""
 
         cond += param.gndr?.run { " and pt.gndr like '%$this%' " } ?: ""
