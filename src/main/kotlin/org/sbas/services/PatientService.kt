@@ -190,8 +190,6 @@ class PatientService {
         val bdasHisInfoList = infoPtRepository.findBdasHisInfo(ptId)
         bdasHisInfoList.forEachIndexed { idx, bdasHisInfo ->
             bdasHisInfo.order = "${bdasHisInfoList.size - idx}"
-            bdasHisInfo.bedStatCdNm = BedStatCd.valueOf(bdasHisInfo.bedStatCd).cdNm
-            getTagList(bdasHisInfo)
         }
 
         return CommonListResponse(bdasHisInfoList)
@@ -201,23 +199,7 @@ class PatientService {
     fun findInfoPtList(param: InfoPtSearchParam): CommonResponse<*> {
         val list = infoPtRepository.findInfoPtList(param)
         val count = infoPtRepository.countInfoPtList(param)
-        log.debug(count)
         return CommonListResponse(list, count.toInt())
-    }
-
-    private fun getTagList(dto: BdasHisInfo) {
-        if (dto.ptTypeCd != null) {
-            val splitList = dto.ptTypeCd.split(";")
-            dto.tagList!!.addAll(splitList.map { PtTypeCd.valueOf(it).cdNm })
-        }
-        if (dto.svrtTypeCd != null) {
-            val splitList = dto.svrtTypeCd.split(";")
-            dto.tagList!!.addAll(splitList.map { SvrtTypeCd.valueOf(it).cdNm })
-        }
-        if (dto.undrDsesCd != null) {
-            val splitList = dto.undrDsesCd.split(";")
-            dto.tagList!!.addAll(splitList.map { UndrDsesCd.valueOf(it).cdNm })
-        }
     }
 
     fun calculateNewsScore(param: NewsScoreParameters): CommonResponse<Map<String, Any>> {

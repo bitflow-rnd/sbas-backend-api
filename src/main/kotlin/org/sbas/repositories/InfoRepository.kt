@@ -57,8 +57,6 @@ class InfoPtRepository : PanacheRepositoryBase<InfoPt, String> {
     fun countInfoPtList(param: InfoPtSearchParam): Long {
         val (cond, _) = conditionAndOffset(param)
 
-        log.debug("hello")
-
         val query = "select count(pt.ptId) " +
                 "from InfoPt pt " +
                 "left join BdasReq br on pt.ptId = br.id.ptId " +
@@ -102,7 +100,7 @@ class InfoPtRepository : PanacheRepositoryBase<InfoPt, String> {
         cond += param.natiCd?.run { " and pt.natiCd like '%$this%' " } ?: ""
         cond += param.dstr1Cd?.run { " and pt.dstr1Cd like '%$this%' " } ?: ""
         cond += param.dstr2Cd?.run { " and pt.dstr2Cd like '%$this%' " } ?: ""
-        cond += param.hospNm?.run { " and bra.reqHospNm like '%$this%' " } ?: ""
+        cond += param.hospNm?.run { " and ih.dutyName like '%$this%' " } ?: ""
         cond += param.bedStatCd?.run { " and br.bedStatCd like '%$this%' " } ?: ""
         cond += param.period?.run {
             " and pt.${param.dateType} > '${
@@ -232,6 +230,7 @@ class InfoHospRepository : PanacheRepositoryBase<InfoHosp, String> {
 
         return infoHospList.toMutableList()
     }
+
     fun findAvalHospListByDstrCd1(dstrCd1: String): MutableList<AvalHospDto> {
         val list = queryFactory.listQuery<AvalHospDto> {
             selectMulti(

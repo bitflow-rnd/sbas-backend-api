@@ -65,9 +65,11 @@ data class BdasListDto(
 
 data class BdasList(
     val title: String,
-    var count: Int,
     val items: MutableList<BdasListDto>,
-)
+) {
+    val count: Int
+        get() = items.size
+}
 
 @NoArg
 data class BdasListSearchParam(

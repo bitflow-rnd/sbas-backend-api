@@ -176,8 +176,24 @@ data class BdasHisInfo(
     @JsonIgnore val svrtTypeCd: String?,
     @JsonIgnore val undrDsesCd: String?,
 ) {
-    var tagList: MutableList<String>? = mutableListOf()
-    var bedStatCdNm: String = ""
+    val tagList: MutableList<String>
+        get() {
+            val tagList: MutableList<String> = mutableListOf()
+            if (ptTypeCd != null) {
+                val splitList = ptTypeCd.split(";")
+                tagList.addAll(splitList.map { PtTypeCd.valueOf(it).cdNm })
+            }
+            if (svrtTypeCd != null) {
+                val splitList = svrtTypeCd.split(";")
+                tagList.addAll(splitList.map { SvrtTypeCd.valueOf(it).cdNm })
+            }
+            if (undrDsesCd != null) {
+                val splitList = undrDsesCd.split(";")
+                tagList.addAll(splitList.map { UndrDsesCd.valueOf(it).cdNm })
+            }
+            return tagList
+        }
+    var bedStatCdNm: String? = bedStatCd.let { BedStatCd.valueOf(it).cdNm }
     var order: String = ""
 }
 
