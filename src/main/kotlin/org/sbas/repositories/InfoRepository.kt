@@ -91,9 +91,9 @@ class InfoPtRepository : PanacheRepositoryBase<InfoPt, String> {
     }
 
     private fun conditionAndOffset(param: InfoPtSearchParam): Pair<String, Int> {
-        var cond = param.ptNm?.run { " and pt.ptNm like '%$this%' " } ?: ""
-        cond += param.rrno1?.run { " and pt.rrno1 like '%$this%' " } ?: ""
-        cond += param.mpno?.run { " and pt.mpno like '%$this%' " } ?: ""
+        var cond = param.ptNm?.run { " and (pt.ptNm like '%$this%' " } ?: "and (1=1"
+        cond += param.rrno1?.run { " or pt.rrno1 like '%$this%' " } ?: ""
+        cond += param.mpno?.run { " or pt.mpno like '%$this%') " } ?: ") "
         cond += param.ptId?.run { " and pt.ptId like '%$this%' " } ?: ""
 
         cond += param.gndr?.run { " and pt.gndr like '%$this%' " } ?: ""
@@ -101,7 +101,7 @@ class InfoPtRepository : PanacheRepositoryBase<InfoPt, String> {
         cond += param.dstr1Cd?.run { " and pt.dstr1Cd like '%$this%' " } ?: ""
         cond += param.dstr2Cd?.run { " and pt.dstr2Cd like '%$this%' " } ?: ""
         cond += param.hospNm?.run { " and ih.dutyName like '%$this%' " } ?: ""
-        cond += param.bedStatCd?.run { " and br.bedStatCd like '%$this%' " } ?: ""
+        cond += param.bedStatCd?.run { " and br.bedStatCd in ('${this.split(',').joinToString("', '")}')" } ?: ""
         cond += param.period?.run {
             " and pt.${param.dateType} > '${
                 Instant.now().minusSeconds(60 * 60 * 24 * this)
