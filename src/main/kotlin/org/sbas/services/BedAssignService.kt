@@ -375,11 +375,11 @@ class BedAssignService {
 
     @Transactional
     fun findBedAsgnList(param: BdasListSearchParam): CommonResponse<*> {
-        val bdasReqList = BdasList(title = "병상요청", count = 0, items = mutableListOf())
-        val bdasReqAprvList = BdasList(title = "병상배정", count = 0, items = mutableListOf())
-        val bdasAprvList = BdasList(title = "이송/배차", count = 0, items = mutableListOf())
-        val bdasTrnsList = BdasList(title = "입/퇴원", count = 0, items = mutableListOf())
-        val bdasAdmsList = BdasList(title = "완료", count = 0, items = mutableListOf())
+        val bdasReqList = BdasList(title = "병상요청", items = mutableListOf())
+        val bdasReqAprvList = BdasList(title = "병상배정", items = mutableListOf())
+        val bdasAprvList = BdasList(title = "이송/배차", items = mutableListOf())
+        val bdasTrnsList = BdasList(title = "입/퇴원", items = mutableListOf())
+        val bdasAdmsList = BdasList(title = "완료", items = mutableListOf())
 
         val findBdasList = bdasReqRepository.findBdasList(param)
         findBdasList.forEach {
@@ -406,12 +406,6 @@ class BedAssignService {
                 }
             }
         }
-
-        bdasReqList.count = bdasReqList.items.size
-        bdasReqAprvList.count = bdasReqAprvList.items.size
-        bdasAprvList.count = bdasAprvList.items.size
-        bdasTrnsList.count = bdasTrnsList.items.size
-        bdasAdmsList.count = bdasAdmsList.items.size
 
         val res = listOf(bdasReqList, bdasReqAprvList, bdasAprvList, bdasTrnsList, bdasAdmsList)
 
