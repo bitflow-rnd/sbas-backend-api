@@ -37,9 +37,10 @@ class BdasReqRepository : PanacheRepositoryBase<BdasReq, BdasReqId> {
 
     fun findBdasList(param: BdasListSearchParam): MutableList<BdasListDto> {
 
-        var cond = param.ptNm?.run { " and pt.ptNm like '%$this%' " } ?: ""
-        cond += param.rrno1?.run { " and pt.rrno1 like '%$this%' " } ?: ""
-        cond += param.mpno?.run { " and pt.mpno like '%$this%' " } ?: ""
+        var cond = param.ptNm?.run { " and (pt.ptNm like '%$this%' " } ?: "and (1=1"
+        cond += param.rrno1?.run { " or pt.rrno1 like '%$this%' " } ?: ""
+        cond += param.mpno?.run { " or pt.mpno like '%$this%') " } ?: ") "
+
         // TODO
         cond += param.period?.run { " and pt.updtDttm > '${Instant.now().minusSeconds(60 * 60 * 24 * this)}' " } ?: ""
 
