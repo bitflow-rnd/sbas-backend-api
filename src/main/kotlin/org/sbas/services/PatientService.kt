@@ -202,6 +202,27 @@ class PatientService {
         return CommonListResponse(list, count.toInt())
     }
 
+    @Transactional
+    fun findHospNmList(param: InfoPtSearchParam): CommonResponse<*> {
+        val list = infoPtRepository.findHospNmList(param)
+        return CommonListResponse(list)
+    }
+
+    private fun getTagList(dto: BdasHisInfo) {
+        if (dto.ptTypeCd != null) {
+            val splitList = dto.ptTypeCd.split(";")
+            dto.tagList!!.addAll(splitList.map { PtTypeCd.valueOf(it).cdNm })
+        }
+        if (dto.svrtTypeCd != null) {
+            val splitList = dto.svrtTypeCd.split(";")
+            dto.tagList!!.addAll(splitList.map { SvrtTypeCd.valueOf(it).cdNm })
+        }
+        if (dto.undrDsesCd != null) {
+            val splitList = dto.undrDsesCd.split(";")
+            dto.tagList!!.addAll(splitList.map { UndrDsesCd.valueOf(it).cdNm })
+        }
+    }
+
     fun calculateNewsScore(param: NewsScoreParameters): CommonResponse<Map<String, Any>> {
         val list = mutableListOf<Int>()
         when {

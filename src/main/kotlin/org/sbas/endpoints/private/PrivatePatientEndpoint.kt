@@ -159,6 +159,13 @@ class PrivatePatientEndpoint {
         return Response.ok(patientService.findInfoPtList(param)).build()
     }
 
+    @Operation(summary = "", description = "")
+    @GET
+    @Path("searchhosps")
+    fun searchhosps(@BeanParam @Valid param: InfoPtSearchParam): Response {
+        return Response.ok(patientService.findHospNmList(param)).build()
+    }
+
     @Operation(summary = "내 기관 관련 환자목록", description = "")
     @GET
     @Path("myorganiztn")

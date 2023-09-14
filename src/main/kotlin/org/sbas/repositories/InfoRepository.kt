@@ -54,6 +54,20 @@ class InfoPtRepository : PanacheRepositoryBase<InfoPt, String> {
         return entityManager.createQuery(query, InfoPtSearchDto::class.java).setMaxResults(15).setFirstResult(offset).resultList
     }
 
+    fun findHospNmList(param: InfoPtSearchParam): List<*> {
+        val cond = condition(param)
+
+        val query = "select distinct ih.dutyName " +
+                "from InfoPt pt " +
+                "left join BdasReq br on pt.ptId = br.id.ptId " +
+                "left join BdasAprv bap on (br.id.bdasSeq = bap.id.bdasSeq and bap.aprvYn = 'Y') " +
+                "left join InfoHosp ih on bap.hospId = ih.hospId " +
+                "where (br.id.bdasSeq in ((select max(id.bdasSeq) as bdasSeq from BdasReq group by id.ptId)) or br.id.bdasSeq is null) " +
+                "$cond"
+
+        return entityManager.createQuery(query).resultList
+    }
+
     fun countInfoPtList(param: InfoPtSearchParam): Long {
         val (cond, _) = conditionAndOffset(param)
 
@@ -90,7 +104,7 @@ class InfoPtRepository : PanacheRepositoryBase<InfoPt, String> {
         return entityManager.createQuery(query, BdasHisInfo::class.java).resultList.toMutableList()
     }
 
-    private fun conditionAndOffset(param: InfoPtSearchParam): Pair<String, Int> {
+    private fun condition(param: InfoPtSearchParam): String {
         var cond = param.ptNm?.run { " and (pt.ptNm like '%$this%' " } ?: "and (1=1"
         cond += param.rrno1?.run { " or pt.rrno1 like '%$this%' " } ?: ""
         cond += param.mpno?.run { " or pt.mpno like '%$this%') " } ?: ") "
@@ -108,6 +122,11 @@ class InfoPtRepository : PanacheRepositoryBase<InfoPt, String> {
             }' "
         } ?: ""
 
+        return cond
+    }
+
+    private fun conditionAndOffset(param: InfoPtSearchParam): Pair<String, Int> {
+        val cond = condition(param)
         val offset = param.page?.run { this.minus(1).times(15) } ?: 0
 
         return Pair(cond, offset)
