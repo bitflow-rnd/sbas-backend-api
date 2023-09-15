@@ -21,9 +21,10 @@ data class BdasListDto(
     val bedStatCd: String,
     var chrgInstNm: String?,
     val inhpAsgnYn: String?,
-    var ptTypeCd: String,
-    var svrtTypeCd: String?,
-    var undrDsesCd: String?,
+    val ptTypeCd: String,
+    val svrtTypeCd: String?,
+    val undrDsesCd: String?,
+    val reqBedTypeCd: String?,
     @JsonIgnore
     val admsStatCd: String?,
 ) {
@@ -38,6 +39,9 @@ data class BdasListDto(
 
     @JsonProperty("svrtTypeCdNm")
     private val svrtTypeCdNm = svrtTypeCd?.let { SvrtTypeCd.valueOf(it).cdNm }
+
+    private val reqBedTypeCdNm: String?
+        get() = reqBedTypeCd?.let { ReqBedTypeCd.valueOf(reqBedTypeCd).cdNm }
 
     @JsonProperty("tagList")
     private val tagList: MutableList<String> = emptyList<String>().toMutableList()
@@ -77,4 +81,11 @@ data class BdasListSearchParam(
     @field: QueryParam("rrno1") var rrno1: String?,
     @field: QueryParam("mpno") var mpno: String?,
     @field: QueryParam("period") var period: Long?,
+    @field: QueryParam("ptTypeCd") var ptTypeCd: String?,
+    @field: QueryParam("svrtTypeCd") var svrtTypeCd: String?,
+    @field: QueryParam("gndr") var gndr: String?,
+    @field: QueryParam("fromAge") var fromAge: Int?,
+    @field: QueryParam("toAge") var toAge: Int?,
+    @field: QueryParam("bedStatCd") var bedStatCd: String?,
+    @field: QueryParam("page") var page: Int?,
 )

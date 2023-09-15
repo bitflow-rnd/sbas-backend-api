@@ -41,11 +41,24 @@ class BdasReqRepository : PanacheRepositoryBase<BdasReq, BdasReqId> {
         cond += param.rrno1?.run { " or pt.rrno1 like '%$this%' " } ?: ""
         cond += param.mpno?.run { " or pt.mpno like '%$this%') " } ?: ") "
 
+        cond += param.ptTypeCd?.run { " and br.ptTypeCd = '$this' " } ?: ""
+        cond += param.svrtTypeCd?.run { " and br.svrtTypeCd like '%$this%' " } ?: ""
+        cond += param.gndr?.run { " and pt.gndr like '%$this%' " } ?: ""
+        cond += param.bedStatCd?.run { " and br.bedStatCd like '%$this%' " } ?: ""
+
+        cond += when {
+            param.fromAge != null && param.toAge != null -> " and fn_get_age(pt.rrno1, pt.rrno2) between $this and ${param.toAge} "
+            param.fromAge != null && param.toAge == null -> " and fn_get_age(pt.rrno1, pt.rrno2) <= ${param.fromAge} "
+            param.fromAge == null && param.toAge != null -> " and fn_get_age(pt.rrno1, pt.rrno2) >= ${param.toAge} "
+            else -> ""
+        }
+
         // TODO
         cond += param.period?.run { " and pt.updtDttm > '${Instant.now().minusSeconds(60 * 60 * 24 * this)}' " } ?: ""
 
         val query2 = "select new org.sbas.dtos.bdas.BdasListDto(br.id.ptId, br.id.bdasSeq, pt.ptNm, pt.gndr, fn_get_age(pt.rrno1, pt.rrno2), " +
-                "pt.rrno1, pt.mpno, pt.bascAddr, br.updtDttm, be.diagNm, br.bedStatCd, 'chrgInstNm', br.inhpAsgnYn, br.ptTypeCd, br.svrtTypeCd, br.undrDsesCd, ba.admsStatCd) " +
+                "pt.rrno1, pt.mpno, pt.bascAddr, br.updtDttm, be.diagNm, br.bedStatCd, 'chrgInstNm', br.inhpAsgnYn, " +
+                "br.ptTypeCd, br.svrtTypeCd, br.undrDsesCd, br.reqBedTypeCd, ba.admsStatCd) " +
                 "from BdasReq br " +
                 "join InfoPt pt on br.id.ptId = pt.ptId " +
                 "join BdasEsvy be on br.id.bdasSeq = be.bdasSeq " +

@@ -54,20 +54,6 @@ class InfoPtRepository : PanacheRepositoryBase<InfoPt, String> {
         return entityManager.createQuery(query, InfoPtSearchDto::class.java).setMaxResults(15).setFirstResult(offset).resultList
     }
 
-    fun findHospNmList(param: InfoPtSearchParam): List<*> {
-        val cond = condition(param)
-
-        val query = "select distinct ih.dutyName " +
-                "from InfoPt pt " +
-                "left join BdasReq br on pt.ptId = br.id.ptId " +
-                "left join BdasAprv bap on (br.id.bdasSeq = bap.id.bdasSeq and bap.aprvYn = 'Y') " +
-                "left join InfoHosp ih on bap.hospId = ih.hospId " +
-                "where (br.id.bdasSeq in ((select max(id.bdasSeq) as bdasSeq from BdasReq group by id.ptId)) or br.id.bdasSeq is null) " +
-                "$cond"
-
-        return entityManager.createQuery(query).resultList
-    }
-
     fun countInfoPtList(param: InfoPtSearchParam): Long {
         val (cond, _) = conditionAndOffset(param)
 
@@ -80,6 +66,20 @@ class InfoPtRepository : PanacheRepositoryBase<InfoPt, String> {
                 "$cond "
 
         return entityManager.createQuery(query).singleResult as Long
+    }
+
+    fun findHospNmList(param: InfoPtSearchParam): List<*> {
+        val cond = condition(param)
+
+        val query = "select distinct ih.dutyName " +
+                "from InfoPt pt " +
+                "left join BdasReq br on pt.ptId = br.id.ptId " +
+                "left join BdasAprv bap on (br.id.bdasSeq = bap.id.bdasSeq and bap.aprvYn = 'Y') " +
+                "left join InfoHosp ih on bap.hospId = ih.hospId " +
+                "where (br.id.bdasSeq in ((select max(id.bdasSeq) as bdasSeq from BdasReq group by id.ptId)) or br.id.bdasSeq is null) " +
+                "$cond"
+
+        return entityManager.createQuery(query).resultList
     }
 
     fun updateAttcId(attcId: String): Int {
@@ -116,7 +116,15 @@ class InfoPtRepository : PanacheRepositoryBase<InfoPt, String> {
         cond += param.dstr1Cd?.run { " and pt.dstr1Cd like '%$this%' " } ?: ""
         cond += param.dstr2Cd?.run { " and pt.dstr2Cd like '%$this%' " } ?: ""
         cond += param.hospNm?.run { " and ih.dutyName like '%$this%' " } ?: ""
-        cond += param.bedStatCd?.run { " and br.bedStatCd in ('${this.split(',').joinToString("', '")}')" } ?: ""
+
+        cond += param.bedStatCd?.run {
+            if (this.contains("BAST0001")) {
+                " and br.bedStatCd in ('${this.split(',').joinToString("', '")}') or br.bedStatCd is null "
+            } else {
+                " and br.bedStatCd in ('${this.split(',').joinToString("', '")}') "
+            }
+        } ?: ""
+
         cond += param.period?.run {
             " and pt.${param.dateType} > '${
                 Instant.now().minusSeconds(60 * 60 * 24 * this)
