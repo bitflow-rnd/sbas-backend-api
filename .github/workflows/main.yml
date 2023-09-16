@@ -13,5 +13,5 @@ jobs:
         uses: actions/checkout@master
       - name: Build native executable and upload it as an artifact
         uses: maxday/quarkus-native-build-docker-action@1
-          outputName: g8id-bo-api
+          outputName: sbas-api
           dockerfilePath: Dockerfile
