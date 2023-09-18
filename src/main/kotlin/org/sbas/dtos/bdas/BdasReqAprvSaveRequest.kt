@@ -78,4 +78,27 @@ data class AvalHospListResponse(
     val gnbdIcu: Int, // hv22 54
     val npidIcu: Int, // hv23 55
     val gnbdSvrt: Int, // hv24 56
-)
+    val gnbdSmsv: Int, // hv25
+    val gnbdModr: Int, // hv26
+) {
+    val tagList: MutableList<String>
+        get() {
+            val list = mutableListOf<String>()
+            if (gnbdIcu >= 1) {
+                list.add("중환자")
+            }
+            if (npidIcu >= 1) {
+                list.add("음압격리")
+            }
+            if (gnbdSvrt >= 1) {
+                list.add("중증")
+            }
+            if (gnbdSmsv >= 1) {
+                list.add("준중증")
+            }
+            if (gnbdModr >= 1) {
+                list.add("중등증")
+            }
+            return list
+        }
+}

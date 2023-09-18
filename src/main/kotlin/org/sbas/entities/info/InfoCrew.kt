@@ -55,8 +55,8 @@ data class InfoCrewId(
     @Column(name = "inst_id", nullable = false, length = 10)
     var instId: String? = null, // 기관 ID
 
-    @Column(name = "crew_id", nullable = false, length = 15)
-    var crewId: String? = null, // 구급대원 ID
+    @Column(name = "crew_id", nullable = false)
+    var crewId: Int? = null, // 구급대원 ID
 ) : Serializable {
 
     companion object {

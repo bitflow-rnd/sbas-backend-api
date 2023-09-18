@@ -142,4 +142,6 @@ data class AvalHospDto(
     val gnbdIcu: Int, // hv22 54
     val npidIcu: Int, // hv23 55
     val gnbdSvrt: Int, // hv24 56
+    val gnbdSmsv: Int, // hv25
+    val gnbdModr: Int, // hv26
 )

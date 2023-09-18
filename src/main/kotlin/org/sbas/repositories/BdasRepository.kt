@@ -42,9 +42,9 @@ class BdasReqRepository : PanacheRepositoryBase<BdasReq, BdasReqId> {
         cond += param.mpno?.run { " or pt.mpno like '%$this%') " } ?: ") "
 
         cond += param.ptTypeCd?.run { " and br.ptTypeCd = '$this' " } ?: ""
-        cond += param.svrtTypeCd?.run { " and br.svrtTypeCd like '%$this%' " } ?: ""
-        cond += param.gndr?.run { " and pt.gndr like '%$this%' " } ?: ""
-        cond += param.bedStatCd?.run { " and br.bedStatCd like '%$this%' " } ?: ""
+        cond += param.svrtTypeCd?.run { " and br.svrtTypeCd in ('${this.split(';').joinToString("', '")}') " } ?: ""
+        cond += param.gndr?.run { " and pt.gndr in ('${this.split(';').joinToString("', '")}') " } ?: ""
+        cond += param.bedStatCd?.run { " and br.bedStatCd in ('${this.split(';').joinToString("', '")}') " } ?: ""
 
         cond += when {
             param.fromAge != null && param.toAge != null -> " and fn_get_age(pt.rrno1, pt.rrno2) between $this and ${param.toAge} "
@@ -56,6 +56,8 @@ class BdasReqRepository : PanacheRepositoryBase<BdasReq, BdasReqId> {
         // TODO
         cond += param.period?.run { " and pt.updtDttm > '${Instant.now().minusSeconds(60 * 60 * 24 * this)}' " } ?: ""
 
+        val offset = param.page?.run { this.minus(1).times(15) } ?: 0
+
         val query2 = "select new org.sbas.dtos.bdas.BdasListDto(br.id.ptId, br.id.bdasSeq, pt.ptNm, pt.gndr, fn_get_age(pt.rrno1, pt.rrno2), " +
                 "pt.rrno1, pt.mpno, pt.bascAddr, br.updtDttm, be.diagNm, br.bedStatCd, 'chrgInstNm', br.inhpAsgnYn, " +
                 "br.ptTypeCd, br.svrtTypeCd, br.undrDsesCd, br.reqBedTypeCd, ba.admsStatCd) " +
@@ -66,7 +68,8 @@ class BdasReqRepository : PanacheRepositoryBase<BdasReq, BdasReqId> {
                 "where br.id.bdasSeq in (select max(id.bdasSeq) as bdasSeq from BdasReq group by id.ptId) " +
                 "$cond " +
                 "order by br.id.bdasSeq desc"
-        return entityManager.createQuery(query2, BdasListDto::class.java).resultList
+
+        return entityManager.createQuery(query2, BdasListDto::class.java).setMaxResults(15).setFirstResult(offset).resultList
     }
 
     fun findChrgInst(bedStatCd: String, ptId: String, bdasSeq: Int): String {

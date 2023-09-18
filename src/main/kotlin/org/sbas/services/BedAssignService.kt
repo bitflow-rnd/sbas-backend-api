@@ -6,6 +6,7 @@ import org.sbas.constants.enums.BedStatCd
 import org.sbas.constants.enums.DprtTypeCd
 import org.sbas.constants.enums.TimeLineStatCd
 import org.sbas.dtos.bdas.*
+import org.sbas.dtos.info.InfoCrewRegDto
 import org.sbas.entities.bdas.BdasReqId
 import org.sbas.handlers.GeocodingHandler
 import org.sbas.repositories.*
@@ -63,6 +64,9 @@ class BedAssignService {
 
     @Inject
     private lateinit var baseCodeRepository: BaseCodeRepository
+
+    @Inject
+    private lateinit var infoCrewRepository: InfoCrewRepository
 
     @Inject
     private lateinit var geoHandler: GeocodingHandler
@@ -223,6 +227,8 @@ class BedAssignService {
                 gnbdIcu = it.gnbdIcu, // hv22 54
                 npidIcu = it.npidIcu, // hv23 55
                 gnbdSvrt = it.gnbdSvrt, // hv24 56
+                gnbdSmsv = it.gnbdSmsv, // hv25
+                gnbdModr = it.gnbdModr, // hv26
             )
 //        }.filter { response -> response.hospId !in findBdasReqAprv.map { it.reqHospId } }
         }
@@ -347,6 +353,48 @@ class BedAssignService {
         }
 
         bdasTrnsRepository.persist(saveRequest.toEntity())
+
+        // 구급대원 정보 저장
+        val infoCrew1 = saveRequest.crew1Id?.let {
+            InfoCrewRegDto(
+                instId = saveRequest.instId,
+                crewId = 0,
+                crewNm = saveRequest.crew1Nm,
+                telno = saveRequest.crew1Telno,
+                rmk = null,
+                pstn = saveRequest.crew1Pstn
+            )
+        }
+        val infoCrew2 = saveRequest.crew2Id?.let {
+            InfoCrewRegDto(
+                instId = saveRequest.instId,
+                crewId = 0,
+                crewNm = saveRequest.crew2Nm,
+                telno = saveRequest.crew2Telno,
+                rmk = null,
+                pstn = saveRequest.crew2Pstn,
+            )
+        }
+        val infoCrew3 = saveRequest.crew3Id?.let {
+            InfoCrewRegDto(
+                instId = saveRequest.instId,
+                crewId = 0,
+                crewNm = saveRequest.crew3Nm,
+                telno = saveRequest.crew3Telno,
+                rmk = null,
+                pstn = saveRequest.crew3Pstn,
+            )
+        }
+
+        val latestCrewId = infoCrewRepository.findLatestCrewId(saveRequest.instId) ?: 0
+        val list = mutableListOf(infoCrew1, infoCrew2, infoCrew3)
+        val infoCrews = list.filterNotNull().mapIndexed { idx, it ->
+            it.toEntityForInsert(latestCrewId + 1 + idx)
+        }
+        infoCrews.forEach {
+            infoCrewRepository.persist(it)
+        }
+
         findBdasReq.changeBedStatTo(BedStatCd.BAST0006.name)
 
         return CommonResponse("이송 정보 등록 성공")

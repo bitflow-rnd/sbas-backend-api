@@ -77,7 +77,7 @@ class InfoPtRepository : PanacheRepositoryBase<InfoPt, String> {
                 "left join BdasAprv bap on (br.id.bdasSeq = bap.id.bdasSeq and bap.aprvYn = 'Y') " +
                 "left join InfoHosp ih on bap.hospId = ih.hospId " +
                 "where (br.id.bdasSeq in ((select max(id.bdasSeq) as bdasSeq from BdasReq group by id.ptId)) or br.id.bdasSeq is null) " +
-                "$cond"
+                "$cond "
 
         return entityManager.createQuery(query).resultList
     }
@@ -158,7 +158,7 @@ class InfoCrewRepository : PanacheRepositoryBase<InfoCrew, InfoCrewId> {
             associate(entity(InfoCrew::class), InfoCrewId::class, on(InfoCrew::id))
             whereAnd(
                 col(InfoCrewId::instId).equal(param.instId),
-                param.crewId?.run { col(InfoCrewId::crewId).like("%$this%") },
+                param.crewId?.run { col(InfoCrewId::crewId).equal(this) },
                 param.crewNm?.run { col(InfoCrew::crewNm).like("%$this%") },
                 param.telno?.run { col(InfoCrew::telno).like("%$this%") },
             )
@@ -171,7 +171,7 @@ class InfoCrewRepository : PanacheRepositoryBase<InfoCrew, InfoCrewId> {
         return find("inst_id = '$instId' and crew_id = '$crewId'").firstResult()
     }
 
-    fun findLatestCrewId(instId: String): String? {
+    fun findLatestCrewId(instId: String): Int? {
         return find("inst_id = '$instId'", Sort.by("crew_id", Sort.Direction.Descending))
             .firstResult()?.id?.crewId
     }
@@ -264,6 +264,7 @@ class InfoHospRepository : PanacheRepositoryBase<InfoHosp, String> {
             selectMulti(
                 col(InfoHosp::hospId), col(InfoHosp::dutyName), col(InfoHosp::wgs84Lon), col(InfoHosp::wgs84Lat),
                 col(InfoHosp::dutyAddr), col(InfoBed::gnbdIcu), col(InfoBed::npidIcu), col(InfoBed::gnbdSvrt),
+                col(InfoBed::gnbdSmsv), col(InfoBed::gnbdModr),
             )
             from(entity(InfoHosp::class))
             join(entity(InfoBed::class), on { col(InfoHosp::hospId).equal(col(InfoBed::hospId)) })
