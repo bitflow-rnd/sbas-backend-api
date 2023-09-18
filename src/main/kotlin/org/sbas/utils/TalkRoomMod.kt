@@ -1,14 +1,12 @@
 package org.sbas.utils
 
-import io.vertx.core.json.JsonArray
 import io.vertx.core.json.JsonObject
 import kotlinx.coroutines.*
 import org.jboss.logging.Logger
-import org.jboss.resteasy.reactive.RestQuery
+import org.json.JSONArray
 import org.sbas.dtos.TalkMsgDto
 import org.sbas.entities.talk.TalkMsg
 import org.sbas.entities.talk.TalkUser
-import org.sbas.entities.talk.arrToJson
 import org.sbas.repositories.TalkMsgRepository
 import org.sbas.repositories.TalkRoomRepository
 import org.sbas.repositories.TalkUserRepository
@@ -18,7 +16,6 @@ import javax.inject.Inject
 import javax.websocket.*
 import javax.websocket.server.PathParam
 import javax.websocket.server.ServerEndpoint
-import javax.ws.rs.QueryParam
 
 
 @ServerEndpoint("/chat-rooms/room/{tkrmId}")
@@ -56,9 +53,9 @@ class TalkRoomMod {
 
         updateTalkMsg(tkrmId)
 
-        val sendObject = JsonArray.of(talkMsg).toString()
-        session.asyncRemote.sendText(sendObject)
+        val sendObject = JSONArray(talkMsg).toString()
 
+        session.asyncRemote.sendText(sendObject)
     }
 
     @OnMessage
@@ -72,7 +69,7 @@ class TalkRoomMod {
 
         var addMsg: TalkMsg
         val otherUsers: MutableList<TalkUser>
-        log.debug("data" + data)
+        log.debug("data >>> $data")
         val idx = data.indexOf("|")
         val userId = data.substring(0, idx)
         val message = data.substring(idx+1)

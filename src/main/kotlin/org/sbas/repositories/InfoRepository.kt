@@ -105,6 +105,10 @@ class InfoPtRepository : PanacheRepositoryBase<InfoPt, String> {
     }
 
     private fun condition(param: InfoPtSearchParam): String {
+        var cond2 = " (and pt.ptNm like '%${param.ptNm ?: ""}%' " +
+                "or pt.rrno1 like '%${param.rrno1 ?: ""}%' " +
+                "or pt.mpno like '%${param.mpno ?: ""}%') "
+
         var cond = param.ptNm?.run { " and (pt.ptNm like '%$this%' " } ?: "and (1=1"
         cond += param.rrno1?.run { " or pt.rrno1 like '%$this%' " } ?: ""
         cond += param.mpno?.run { " or pt.mpno like '%$this%') " } ?: ") "
