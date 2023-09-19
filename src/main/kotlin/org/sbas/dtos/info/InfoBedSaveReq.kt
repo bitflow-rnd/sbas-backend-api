@@ -14,6 +14,15 @@ data class InfoBedSaveReq(
     var hv25: Int? = null, // hv25
     var hv26: Int? = null, // hv26
     var hv27: Int? = null, // hv27
+    var hvventiayn: String? = null,
+    var hvventisoayn: String? = null,
+    var hvincuayn: String? = null,
+    var hvecmoayn: String? = null,
+    var hvoxyayn: String? = null,
+    var hvctayn: String? = null,
+    var hvmriayn: String? = null,
+    var hvangioayn: String? = null,
+    var hvhypoayn: String? = null,
 ) {
     fun toEntity(hospId: String): InfoBed {
         return InfoBed(
@@ -29,6 +38,15 @@ data class InfoBedSaveReq(
             npibSmsv = null,
             npibModr = null,
             npibLbrInft = null,
+            ventilator = hvventiayn,
+            ventilatorPreemie = hvventisoayn,
+            incubator = hvincuayn,
+            ecmo = hvecmoayn,
+            highPressureOxygen = hvoxyayn,
+            ct = hvctayn,
+            mri = hvmriayn,
+            bloodVesselImaging = hvangioayn,
+            bodyTemperatureControl = hvhypoayn,
         )
     }
 }

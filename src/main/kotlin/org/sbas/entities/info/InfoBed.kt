@@ -49,7 +49,34 @@ class InfoBed(
     @Column(name = "npib_lbr_inft")
     var npibLbrInft: Int? = null,
 
-    ) : CommonEntity(), Serializable {
+    @Column(name = "ventilator")
+    var ventilator: String? = null,
+
+    @Column(name = "ventilator_preemie")
+    var ventilatorPreemie: String? = null,
+
+    @Column(name = "incubator")
+    var incubator: String? = null,
+
+    @Column(name = "ecmo")
+    var ecmo: String? = null,
+
+    @Column(name = "high_pressure_oxygen")
+    var highPressureOxygen: String? = null,
+
+    @Column(name = "ct")
+    var ct: String? = null,
+
+    @Column(name = "mri")
+    var mri: String? = null,
+
+    @Column(name = "blood_vessel_imaging")
+    var bloodVesselImaging: String? = null,
+
+    @Column(name = "body_temperature_control")
+    var bodyTemperatureControl: String? = null,
+
+) : CommonEntity(), Serializable {
     companion object {
         @Serial
         private const val serialVersionUID: Long = 4876653874697519726L

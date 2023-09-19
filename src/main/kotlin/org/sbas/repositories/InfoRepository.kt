@@ -216,8 +216,14 @@ class InfoHospRepository : PanacheRepositoryBase<InfoHosp, String> {
             selectMulti(
                 col(InfoHosp::hospId), col(InfoHosp::hpId), col(InfoHosp::dutyName), col(InfoHosp::dutyDivNam),
                 col(InfoHosp::dstrCd1), col(InfoHosp::dstrCd2), col(InfoHosp::dutyTel1), col(InfoHosp::dutyTel1), col(InfoHosp::updtDttm),
+                col(InfoBed::gnbdIcu), col(InfoBed::npidIcu), col(InfoBed::gnbdSvrt),
+                col(InfoBed::gnbdSmsv), col(InfoBed::gnbdModr),
+                col(InfoBed::ventilator), col(InfoBed::ventilatorPreemie), col(InfoBed::incubator), col(InfoBed::ecmo),
+                col(InfoBed::highPressureOxygen), col(InfoBed::ct), col(InfoBed::mri), col(InfoBed::highPressureOxygen),
+                col(InfoBed::bodyTemperatureControl),
             )
             from(entity(InfoHosp::class))
+            join(entity(InfoBed::class), on { col(InfoHosp::hospId).equal(col(InfoBed::hospId)) })
             limit(15)
             param.page?.run { offset(this.minus(1).times(15)) }
             whereAnd(param)
@@ -233,6 +239,7 @@ class InfoHospRepository : PanacheRepositoryBase<InfoHosp, String> {
         val count = queryFactory.listQuery<Long> {
             selectMulti(count(entity(InfoHosp::class)))
             from(entity(InfoHosp::class))
+            join(entity(InfoBed::class), on { col(InfoHosp::hospId).equal(col(InfoBed::hospId)) })
             whereAnd(param)
         }
         return count[0].toInt()
@@ -269,6 +276,9 @@ class InfoHospRepository : PanacheRepositoryBase<InfoHosp, String> {
                 col(InfoHosp::hospId), col(InfoHosp::dutyName), col(InfoHosp::wgs84Lon), col(InfoHosp::wgs84Lat),
                 col(InfoHosp::dutyAddr), col(InfoBed::gnbdIcu), col(InfoBed::npidIcu), col(InfoBed::gnbdSvrt),
                 col(InfoBed::gnbdSmsv), col(InfoBed::gnbdModr),
+                col(InfoBed::ventilator), col(InfoBed::ventilatorPreemie), col(InfoBed::incubator), col(InfoBed::ecmo),
+                col(InfoBed::highPressureOxygen), col(InfoBed::ct), col(InfoBed::mri), col(InfoBed::highPressureOxygen),
+                col(InfoBed::bodyTemperatureControl),
             )
             from(entity(InfoHosp::class))
             join(entity(InfoBed::class), on { col(InfoHosp::hospId).equal(col(InfoBed::hospId)) })
