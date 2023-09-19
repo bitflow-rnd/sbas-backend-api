@@ -50,7 +50,7 @@ class PrivateBedAssignEndpoint {
     @Operation(summary = "이송/배차 처리 (+구급대, 구급대원 및 차량번호 등록)", description = "")
     @POST
     @Path("confirmtransf")
-    fun confirmtransf(bdasTrnsSaveRequest: BdasTrnsSaveRequest): Response {
+    fun confirmtransf(@Valid bdasTrnsSaveRequest: BdasTrnsSaveRequest): Response {
         log.debug("PrivateBedAssignEndpoint confirmtransf >>> $bdasTrnsSaveRequest")
         return Response.ok(bedAssignService.confirmTrans(bdasTrnsSaveRequest)).build()
     }

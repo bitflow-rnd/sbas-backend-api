@@ -69,6 +69,9 @@ class BedAssignService {
     private lateinit var infoCrewRepository: InfoCrewRepository
 
     @Inject
+    private lateinit var infoInstRepository: InfoInstRepository
+
+    @Inject
     private lateinit var geoHandler: GeocodingHandler
 
     @Inject
@@ -355,7 +358,7 @@ class BedAssignService {
         bdasTrnsRepository.persist(saveRequest.toEntity())
 
         // 구급대원 정보 저장
-        val infoCrew1 = saveRequest.crew1Id?.let {
+        val infoCrew1 = saveRequest.crew1Nm?.let {
             InfoCrewRegDto(
                 instId = saveRequest.instId,
                 crewId = 0,
@@ -365,7 +368,7 @@ class BedAssignService {
                 pstn = saveRequest.crew1Pstn
             )
         }
-        val infoCrew2 = saveRequest.crew2Id?.let {
+        val infoCrew2 = saveRequest.crew2Nm?.let {
             InfoCrewRegDto(
                 instId = saveRequest.instId,
                 crewId = 0,
@@ -375,7 +378,7 @@ class BedAssignService {
                 pstn = saveRequest.crew2Pstn,
             )
         }
-        val infoCrew3 = saveRequest.crew3Id?.let {
+        val infoCrew3 = saveRequest.crew3Nm?.let {
             InfoCrewRegDto(
                 instId = saveRequest.instId,
                 crewId = 0,
@@ -391,9 +394,14 @@ class BedAssignService {
         val infoCrews = list.filterNotNull().mapIndexed { idx, it ->
             it.toEntityForInsert(latestCrewId + 1 + idx)
         }
+
         infoCrews.forEach {
             infoCrewRepository.persist(it)
         }
+
+        // 차량정보 저장
+        val fireStatn = infoInstRepository.findFireStatn(saveRequest.instId) ?: throw NotFoundException("fire station not found")
+        fireStatn.updateFireStatnVecno(saveRequest.vecno)
 
         findBdasReq.changeBedStatTo(BedStatCd.BAST0006.name)
 

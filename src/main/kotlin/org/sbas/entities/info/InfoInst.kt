@@ -53,6 +53,9 @@ class InfoInst(
 
     @Column(name = "attc_id", length = 10)
     var attcId: String? = null, // 첨부 ID
+
+    @Column(name = "vecno", length = 50)
+    var vecno: String? = null, // 차량번호
 ) : CommonEntity() {
 
     fun toFireStatnDto(): FireStatnDto {
@@ -84,6 +87,14 @@ class InfoInst(
             lon?.let { this@InfoInst.lon = it }
             rmk?.let { this@InfoInst.rmk = it }
             attcId?.let { this@InfoInst.attcId = it }
+        }
+    }
+
+    fun updateFireStatnVecno(vecno: String?) {
+        if (this.vecno.isNullOrEmpty()) {
+            this.vecno = vecno
+        } else {
+            this.vecno += ";$vecno"
         }
     }
 }
