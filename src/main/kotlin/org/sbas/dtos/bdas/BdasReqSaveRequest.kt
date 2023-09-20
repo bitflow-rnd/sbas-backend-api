@@ -9,6 +9,7 @@ import org.sbas.utils.StringUtils
 import org.sbas.utils.annotation.ValidEnum
 import javax.validation.Valid
 import javax.validation.constraints.NotBlank
+import javax.validation.constraints.NotEmpty
 import javax.validation.constraints.Pattern
 
 /**
@@ -22,11 +23,12 @@ data class BdasReqSaveRequest(
 ) {
 
     fun toEntity(bdasReqId: BdasReqId): BdasReq {
+        val ptTypeCd = svrInfo.ptTypeCd?.let { if (it.isEmpty()) "PTTP0001" else it } ?: "PTTP0001"
         return BdasReq(
             id = bdasReqId,
             reqDt = StringUtils.getYyyyMmDd(),
             reqTm = StringUtils.getHhMmSs(),
-            ptTypeCd = svrInfo.ptTypeCd ?: "PTTP0001",
+            ptTypeCd = ptTypeCd,
             undrDsesCd = svrInfo.undrDsesCd,
             undrDsesEtc = svrInfo.undrDsesEtc,
             reqBedTypeCd = svrInfo.reqBedTypeCd,
