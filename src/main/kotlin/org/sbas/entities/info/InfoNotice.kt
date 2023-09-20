@@ -22,7 +22,7 @@ class InfoNotice(
     var content: String? = null, // 내용
 
     @Column(name = "is_active", nullable = false)
-    var isActive: Boolean = true, // 활성화 여부(true = 활성, false = 비활성)
+    var isActive: Boolean? = null, // 활성화 여부(true = 활성, false = 비활성)
 
 ) : CommonEntity(), Serializable {
 
