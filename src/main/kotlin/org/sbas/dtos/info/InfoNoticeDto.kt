@@ -18,3 +18,21 @@ data class RegNoticeReq(
         )
     }
 }
+
+data class ModNoticeReq(
+    @field: [NotBlank(message = "id는 필수 값입니다.") Length(max = 10)]
+    val noticeId: String,
+    val title: String?,
+    val content: String?,
+)
+
+data class DelNoticeReq(
+    @field: [NotBlank(message = "id는 필수 값입니다.") Length(max = 10)]
+    val noticeId: String,
+)
+
+data class NoticeActiveReq(
+    @field: [NotBlank(message = "id는 필수 값입니다.") Length(max = 10)]
+    val noticeId: String,
+    val isActive: Boolean
+)
