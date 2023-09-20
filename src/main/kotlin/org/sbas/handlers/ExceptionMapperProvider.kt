@@ -9,8 +9,6 @@ import org.postgresql.util.PSQLException
 import org.sbas.constants.SbasConst
 import org.sbas.responses.CommonResponse
 import org.sbas.utils.CustomizedException
-import java.sql.SQLException
-import javax.persistence.PersistenceException
 import javax.ws.rs.BadRequestException
 import javax.ws.rs.InternalServerErrorException
 import javax.ws.rs.NotFoundException
