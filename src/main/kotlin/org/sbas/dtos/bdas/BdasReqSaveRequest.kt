@@ -26,7 +26,7 @@ data class BdasReqSaveRequest(
             id = bdasReqId,
             reqDt = StringUtils.getYyyyMmDd(),
             reqTm = StringUtils.getHhMmSs(),
-            ptTypeCd = svrInfo.ptTypeCd,
+            ptTypeCd = svrInfo.ptTypeCd ?: "PTTP0001",
             undrDsesCd = svrInfo.undrDsesCd,
             undrDsesEtc = svrInfo.undrDsesEtc,
             reqBedTypeCd = svrInfo.reqBedTypeCd,
@@ -72,8 +72,7 @@ data class BdasReqSaveRequest(
 data class BdasReqSvrInfo(
     @field: NotBlank
     val ptId: String,
-    @field: NotBlank
-    val ptTypeCd: String,
+    val ptTypeCd: String?,
     @field: NotBlank
     val undrDsesCd: String,
     @field: [NotBlank ValidEnum(enumClass = ReqBedTypeCd::class)]

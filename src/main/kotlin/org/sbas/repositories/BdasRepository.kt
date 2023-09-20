@@ -49,7 +49,7 @@ class BdasReqRepository : PanacheRepositoryBase<BdasReq, BdasReqId> {
                 "$cond " +
                 "order by br.id.bdasSeq desc"
 
-        return entityManager.createQuery(query2, BdasListDto::class.java).setMaxResults(15).setFirstResult(offset).resultList
+        return entityManager.createQuery(query2, BdasListDto::class.java).resultList
     }
 
     fun countBdasList(param: BdasListSearchParam): Long {
