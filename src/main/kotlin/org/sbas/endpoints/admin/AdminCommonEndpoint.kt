@@ -8,8 +8,8 @@ import org.sbas.dtos.BaseCodeGrpSaveReq
 import org.sbas.dtos.BaseCodeGrpUpdateReq
 import org.sbas.dtos.BaseCodeSaveReq
 import org.sbas.dtos.BaseCodeUpdateReq
+import org.sbas.dtos.info.RegNoticeReq
 import org.sbas.services.CommonService
-import javax.annotation.security.RolesAllowed
 import javax.inject.Inject
 import javax.validation.Valid
 import javax.ws.rs.GET
@@ -110,5 +110,12 @@ class AdminCommonEndpoint {
     @Path("delegencode/{param}")
     fun deleteEGenCode(@RestPath param: String): Response {
         return Response.ok().build()
+    }
+
+    @Operation(summary = "공지사항 등록", description = "공지사항 등록 API")
+    @POST
+    @Path("reg-notice")
+    fun regNotice(reqNoticeReq: RegNoticeReq): Response{
+        return Response.ok(commonService.regNotice(reqNoticeReq)).build()
     }
 }

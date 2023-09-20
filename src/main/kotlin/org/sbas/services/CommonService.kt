@@ -3,11 +3,13 @@ package org.sbas.services
 import io.quarkus.cache.CacheKey
 import org.jboss.logging.Logger
 import org.sbas.dtos.*
+import org.sbas.dtos.info.RegNoticeReq
 import org.sbas.entities.base.BaseCode
 import org.sbas.entities.base.BaseCodeEgen
 import org.sbas.entities.base.BaseCodeId
 import org.sbas.repositories.BaseCodeEgenRepository
 import org.sbas.repositories.BaseCodeRepository
+import org.sbas.repositories.NoticeRepository
 import org.sbas.responses.CommonResponse
 import org.sbas.utils.CustomizedException
 import javax.enterprise.context.ApplicationScoped
@@ -31,6 +33,9 @@ class CommonService {
 
     @Inject
     private lateinit var egenCodeRepository: BaseCodeEgenRepository
+
+    @Inject
+    private lateinit var noticeRepository: NoticeRepository
 
     /**
      * 공통코드 그룹 목록 조회
@@ -181,6 +186,15 @@ class CommonService {
 //    @CacheResult(cacheName = "cmMid")
     fun findCodeEgenList(cmMid: String): CommonResponse<List<BaseCodeEgen>> {
         return CommonResponse(egenCodeRepository.findCodeEgenByCmMid(cmMid = cmMid))
+    }
+
+    @Transactional
+    fun regNotice(regNoticeReq: RegNoticeReq): CommonResponse<String>{
+        val infoNotice = regNoticeReq.toEntity()
+
+        noticeRepository.persist(infoNotice)
+
+        return CommonResponse("success")
     }
 
     /**
