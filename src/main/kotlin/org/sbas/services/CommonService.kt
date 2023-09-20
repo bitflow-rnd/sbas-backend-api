@@ -3,6 +3,9 @@ package org.sbas.services
 import io.quarkus.cache.CacheKey
 import org.jboss.logging.Logger
 import org.sbas.dtos.*
+import org.sbas.dtos.info.DelNoticeReq
+import org.sbas.dtos.info.ModNoticeReq
+import org.sbas.dtos.info.NoticeActiveReq
 import org.sbas.dtos.info.RegNoticeReq
 import org.sbas.entities.base.BaseCode
 import org.sbas.entities.base.BaseCodeEgen
@@ -188,11 +191,51 @@ class CommonService {
         return CommonResponse(egenCodeRepository.findCodeEgenByCmMid(cmMid = cmMid))
     }
 
+    /**
+     * 공지사항 등록
+     */
     @Transactional
     fun regNotice(regNoticeReq: RegNoticeReq): CommonResponse<String>{
         val infoNotice = regNoticeReq.toEntity()
 
         noticeRepository.persist(infoNotice)
+
+        return CommonResponse("success")
+    }
+
+    /**
+     * 공지사항 수정
+     */
+    @Transactional
+    fun modNotice(modNoticeReq: ModNoticeReq): CommonResponse<String>{
+        val findNotice = noticeRepository.findById(modNoticeReq.noticeId) ?: throw NotFoundException("${modNoticeReq.noticeId} not found")
+
+        findNotice.title = modNoticeReq.title ?: findNotice.title
+        findNotice.content = modNoticeReq.content ?: findNotice.content
+
+        return CommonResponse("success")
+    }
+
+    /**
+     * 공지사항 삭제
+     */
+    @Transactional
+    fun delNotice(delNoticeReq: DelNoticeReq): CommonResponse<String>{
+        val findNotice = noticeRepository.findById(delNoticeReq.noticeId) ?: throw NotFoundException("${delNoticeReq.noticeId} not found")
+
+        noticeRepository.delete(findNotice)
+
+        return CommonResponse("success")
+    }
+
+    /**
+     * 공지사항 활성화/비활성화
+     */
+    @Transactional
+    fun modNoticeIsActive(noticeActiveReq: NoticeActiveReq): CommonResponse<String>{
+        val findNotice = noticeRepository.findById(noticeActiveReq.noticeId) ?: throw NotFoundException("${noticeActiveReq.noticeId} not found")
+
+        findNotice.isActive = noticeActiveReq.isActive
 
         return CommonResponse("success")
     }

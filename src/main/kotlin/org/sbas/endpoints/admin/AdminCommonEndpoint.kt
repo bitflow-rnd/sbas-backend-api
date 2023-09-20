@@ -8,6 +8,9 @@ import org.sbas.dtos.BaseCodeGrpSaveReq
 import org.sbas.dtos.BaseCodeGrpUpdateReq
 import org.sbas.dtos.BaseCodeSaveReq
 import org.sbas.dtos.BaseCodeUpdateReq
+import org.sbas.dtos.info.DelNoticeReq
+import org.sbas.dtos.info.ModNoticeReq
+import org.sbas.dtos.info.NoticeActiveReq
 import org.sbas.dtos.info.RegNoticeReq
 import org.sbas.services.CommonService
 import javax.inject.Inject
@@ -118,4 +121,26 @@ class AdminCommonEndpoint {
     fun regNotice(reqNoticeReq: RegNoticeReq): Response{
         return Response.ok(commonService.regNotice(reqNoticeReq)).build()
     }
+
+    @Operation(summary = "공지사항 수정", description = "공지사항 수정 API")
+    @POST
+    @Path("mod-notice")
+    fun regNotice(modNoticeReq: ModNoticeReq): Response {
+        return Response.ok(commonService.modNotice(modNoticeReq)).build()
+    }
+
+    @Operation(summary = "공지사항 삭제", description = "공지사항 삭제 API")
+    @POST
+    @Path("del-notice")
+    fun delNotice(delNoticeReq: DelNoticeReq): Response {
+        return Response.ok(commonService.delNotice(delNoticeReq)).build()
+    }
+
+    @Operation(summary = "공지사항 활성화/비활성화", description = "공지사항 활성화/비활성화 API")
+    @POST
+    @Path("notice/active")
+    fun modNoticeIsActive(noticeActiveReq: NoticeActiveReq): Response{
+        return Response.ok(commonService.modNoticeIsActive(noticeActiveReq)).build()
+    }
+
 }
