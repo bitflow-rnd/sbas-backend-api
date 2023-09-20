@@ -430,7 +430,7 @@ class BedAssignService {
     }
 
     @Transactional
-    fun findBedAsgnList(param: BdasListSearchParam): CommonResponse<*> {
+    fun findBedAsgnList(param: BdasListSearchParam): Map<String, Any> {
         val bdasReqList = BdasList(title = "병상요청", items = mutableListOf())
         val bdasReqAprvList = BdasList(title = "병상배정", items = mutableListOf())
         val bdasAprvList = BdasList(title = "이송/배차", items = mutableListOf())
@@ -439,7 +439,6 @@ class BedAssignService {
 
         val findBdasList = bdasReqRepository.findBdasList(param)
         findBdasList.forEach {
-            it.chrgInstNm = bdasReqRepository.findChrgInst(it.bedStatCd, it.ptId, it.bdasSeq)
             when (it.bedStatCd) {
                 BedStatCd.BAST0003.name -> {
                     bdasReqList.items.add(it)
@@ -463,9 +462,11 @@ class BedAssignService {
             }
         }
 
-        val res = listOf(bdasReqList, bdasReqAprvList, bdasAprvList, bdasTrnsList, bdasAdmsList)
+        val res: List<BdasList> = listOf(bdasReqList, bdasReqAprvList, bdasAprvList, bdasTrnsList, bdasAdmsList)
+        val count = bdasReqRepository.countBdasList(param)
 
-        return CommonResponse(res)
+        // TODO
+        return mapOf("code" to "00", "message" to "SUCCESS", "count" to count, "result" to res)
     }
 
     @Transactional

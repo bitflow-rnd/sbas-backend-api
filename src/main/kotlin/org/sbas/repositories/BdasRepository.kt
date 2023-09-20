@@ -36,7 +36,35 @@ class BdasReqRepository : PanacheRepositoryBase<BdasReq, BdasReqId> {
     }
 
     fun findBdasList(param: BdasListSearchParam): MutableList<BdasListDto> {
+        val (cond, offset) = conditionAndOffset(param)
 
+        val query2 = "select new org.sbas.dtos.bdas.BdasListDto(br.id.ptId, br.id.bdasSeq, pt.ptNm, pt.gndr, fn_get_age(pt.rrno1, pt.rrno2), " +
+                "pt.rrno1, pt.mpno, pt.bascAddr, br.updtDttm, be.diagNm, br.bedStatCd, fn_find_chrg_inst(br.bedStatCd, br.id.ptId, br.id.bdasSeq), br.inhpAsgnYn, " +
+                "br.ptTypeCd, br.svrtTypeCd, br.undrDsesCd, br.reqBedTypeCd, ba.admsStatCd) " +
+                "from BdasReq br " +
+                "join InfoPt pt on br.id.ptId = pt.ptId " +
+                "join BdasEsvy be on br.id.bdasSeq = be.bdasSeq " +
+                "left join BdasAdms ba on br.id.bdasSeq = ba.id.bdasSeq " +
+                "where br.id.bdasSeq in (select max(id.bdasSeq) as bdasSeq from BdasReq group by id.ptId) " +
+                "$cond " +
+                "order by br.id.bdasSeq desc"
+
+        return entityManager.createQuery(query2, BdasListDto::class.java).setMaxResults(15).setFirstResult(offset).resultList
+    }
+
+    fun countBdasList(param: BdasListSearchParam): Long {
+        val (cond, _) = conditionAndOffset(param)
+        val query = "select count(br.id.ptId) " +
+                "from BdasReq br " +
+                "join InfoPt pt on br.id.ptId = pt.ptId " +
+                "join BdasEsvy be on br.id.bdasSeq = be.bdasSeq " +
+                "left join BdasAdms ba on br.id.bdasSeq = ba.id.bdasSeq " +
+                "where br.id.bdasSeq in (select max(id.bdasSeq) as bdasSeq from BdasReq group by id.ptId) " +
+                "$cond "
+        return entityManager.createQuery(query).singleResult as Long
+    }
+
+    private fun conditionAndOffset(param: BdasListSearchParam): Pair<String, Int> {
         var cond = param.ptNm?.run { " and (pt.ptNm like '%$this%' " } ?: "and (1=1"
         cond += param.rrno1?.run { " or pt.rrno1 like '%$this%' " } ?: ""
         cond += param.mpno?.run { " or pt.mpno like '%$this%') " } ?: ") "
@@ -52,24 +80,10 @@ class BdasReqRepository : PanacheRepositoryBase<BdasReq, BdasReqId> {
             param.fromAge == null && param.toAge != null -> " and fn_get_age(pt.rrno1, pt.rrno2) >= ${param.toAge} "
             else -> ""
         }
-
-        // TODO
         cond += param.period?.run { " and pt.updtDttm > '${Instant.now().minusSeconds(60 * 60 * 24 * this)}' " } ?: ""
-
         val offset = param.page?.run { this.minus(1).times(15) } ?: 0
 
-        val query2 = "select new org.sbas.dtos.bdas.BdasListDto(br.id.ptId, br.id.bdasSeq, pt.ptNm, pt.gndr, fn_get_age(pt.rrno1, pt.rrno2), " +
-                "pt.rrno1, pt.mpno, pt.bascAddr, br.updtDttm, be.diagNm, br.bedStatCd, 'chrgInstNm', br.inhpAsgnYn, " +
-                "br.ptTypeCd, br.svrtTypeCd, br.undrDsesCd, br.reqBedTypeCd, ba.admsStatCd) " +
-                "from BdasReq br " +
-                "join InfoPt pt on br.id.ptId = pt.ptId " +
-                "join BdasEsvy be on br.id.bdasSeq = be.bdasSeq " +
-                "left join BdasAdms ba on br.id.bdasSeq = ba.id.bdasSeq " +
-                "where br.id.bdasSeq in (select max(id.bdasSeq) as bdasSeq from BdasReq group by id.ptId) " +
-                "$cond " +
-                "order by br.id.bdasSeq desc"
-
-        return entityManager.createQuery(query2, BdasListDto::class.java).setMaxResults(15).setFirstResult(offset).resultList
+        return Pair(cond, offset)
     }
 
     fun findChrgInst(bedStatCd: String, ptId: String, bdasSeq: Int): String {

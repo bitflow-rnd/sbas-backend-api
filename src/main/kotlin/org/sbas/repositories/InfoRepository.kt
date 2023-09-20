@@ -221,6 +221,8 @@ class InfoHospRepository : PanacheRepositoryBase<InfoHosp, String> {
                 col(InfoBed::ventilator), col(InfoBed::ventilatorPreemie), col(InfoBed::incubator), col(InfoBed::ecmo),
                 col(InfoBed::highPressureOxygen), col(InfoBed::ct), col(InfoBed::mri), col(InfoBed::highPressureOxygen),
                 col(InfoBed::bodyTemperatureControl),
+                col(InfoBed::emrgncyNrmlBed), col(InfoBed::ngtvIsltnChild), col(InfoBed::nrmlIsltnChild),
+                col(InfoBed::nrmlChildBed), col(InfoBed::emrgncyNrmlIsltnBed),
             )
             from(entity(InfoHosp::class))
             join(entity(InfoBed::class), on { col(InfoHosp::hospId).equal(col(InfoBed::hospId)) })
@@ -440,4 +442,9 @@ class InfoCntcRepository : PanacheRepositoryBase<InfoCntc, InfoCntcId> {
 }
 
 @ApplicationScoped
-class InfoBedRepository : PanacheRepositoryBase<InfoBed, String>
+class InfoBedRepository : PanacheRepositoryBase<InfoBed, String> {
+
+    fun findByHpid(hpid: String): InfoBed? {
+        return find("hpid = '$hpid'").firstResult()
+    }
+}

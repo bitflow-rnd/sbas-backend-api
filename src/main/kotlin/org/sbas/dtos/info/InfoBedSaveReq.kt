@@ -23,6 +23,11 @@ data class InfoBedSaveReq(
     var hvmriayn: String? = null,
     var hvangioayn: String? = null,
     var hvhypoayn: String? = null,
+    val hvec: Int?,
+    val hv15: Int?,
+    val hv16: Int?,
+    val hv28: Int?,
+    val hv30: Int?,
 ) {
     fun toEntity(hospId: String): InfoBed {
         return InfoBed(
@@ -38,15 +43,20 @@ data class InfoBedSaveReq(
             npibSmsv = null,
             npibModr = null,
             npibLbrInft = null,
-            ventilator = hvventiayn,
-            ventilatorPreemie = hvventisoayn,
-            incubator = hvincuayn,
-            ecmo = hvecmoayn,
-            highPressureOxygen = hvoxyayn,
-            ct = hvctayn,
-            mri = hvmriayn,
-            bloodVesselImaging = hvangioayn,
-            bodyTemperatureControl = hvhypoayn,
+            ventilator = hvventiayn?.let { if (it.contains("N")) "N" else "Y" },
+            ventilatorPreemie = hvventisoayn?.let { if (it.contains("N")) "N" else "Y" },
+            incubator = hvincuayn?.let { if (it.contains("N")) "N" else "Y" },
+            ecmo = hvecmoayn?.let { if (it.contains("N")) "N" else "Y" },
+            highPressureOxygen = hvoxyayn?.let { if (it.contains("N")) "N" else "Y" },
+            ct = hvctayn?.let { if (it.contains("N")) "N" else "Y" },
+            mri = hvmriayn?.let { if (it.contains("N")) "N" else "Y" },
+            bloodVesselImaging = hvangioayn?.let { if (it.contains("N")) "N" else "Y" },
+            bodyTemperatureControl = hvhypoayn?.let { if (it.contains("N")) "N" else "Y" },
+            emrgncyNrmlBed = hvec ?: 0,
+            ngtvIsltnChild = hv15 ?: 0,
+            nrmlIsltnChild = hv16 ?: 0,
+            nrmlChildBed = hv28 ?: 0,
+            emrgncyNrmlIsltnBed = hv30 ?: 0,
         )
     }
 }

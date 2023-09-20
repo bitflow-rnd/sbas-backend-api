@@ -343,16 +343,17 @@ class EgenService {
             infoJsonArray.forEach {jsonObject ->
                 infoBedSaveReq = objectMapper.readValue(jsonObject.toString(), InfoBedSaveReq::class.java)
                 val infoHospIds = infoHospRepository.findInfoHospByHpId(infoBedSaveReq.hpid)
-                infoBedRepository.getEntityManager().merge(infoBedSaveReq.toEntity(infoHospIds.hospId))
+
+                val findInfoBed = infoBedRepository.findByHpid(infoHospIds.hpId)
+                val newEntity = infoBedSaveReq.toEntity(infoHospIds.hospId)
+
+                if (findInfoBed != null) {
+                    infoBedRepository.getEntityManager().merge(newEntity)
+                } else {
+                    infoBedRepository.persist(newEntity)
+                }
             }
         }
-//
-//
-//        infoJsonArray.forEach {
-//            infoBedSaveReq = objectMapper.readValue(it.toString(), InfoBedSaveReq::class.java)
-//            val infoHospIds = infoHospRepository.findInfoHospByHpId(infoBedSaveReq.hpid)
-//            infoBedRepository.persist(infoBedSaveReq.toEntity(infoHospIds.hospId))
-//        }
     }
 
 

@@ -76,6 +76,21 @@ class InfoBed(
     @Column(name = "body_temperature_control")
     var bodyTemperatureControl: String? = null,
 
+    @Column
+    var emrgncyNrmlBed: Int?, // hvec - 일반(응급실일반병상)
+
+    @Column
+    var ngtvIsltnChild: Int?, // hv15 - 소아 음압격리
+
+    @Column
+    var nrmlIsltnChild: Int?, // hv16 - 소아 일반격리
+
+    @Column
+    var nrmlChildBed: Int?, // hv28 - 소아
+
+    @Column
+    var emrgncyNrmlIsltnBed: Int?, // hv30 - 응급실 일반 격리 병상
+
 ) : CommonEntity(), Serializable {
     companion object {
         @Serial

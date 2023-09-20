@@ -109,6 +109,11 @@ data class InfoHospListDto(
     var mri: String?,
     var bloodVesselImaging: String?,
     var bodyTemperatureControl: String?,
+    var emrgncyNrmlBed: Int?, // hvec - 일반(응급실일반병상)
+    var ngtvIsltnChild: Int?, // hv15 - 소아 음압격리
+    var nrmlIsltnChild: Int?, // hv16 - 소아 일반격리
+    var nrmlChildBed: Int?, // hv28 - 소아
+    var emrgncyNrmlIsltnBed: Int?, // hv30 - 응급실 일반 격리 병상
 )
 
 data class InfoHospWithUser(
