@@ -16,10 +16,10 @@ class InfoUser(
     var id: String,  // 사용자 ID
 
     @Column(name = "pw", nullable = false, length = 100)
-    var pw: String? = null, // 비밀번호
+    var pw: String, // 비밀번호
 
     @Column(name = "user_nm", nullable = false, length = 10)
-    var userNm: String? = null, // 사용자 이름
+    var userNm: String, // 사용자 이름
 
     @Column(name = "user_ci", nullable = false, length = 300)
     var userCi: String? = null, // 사용자 CI
@@ -31,7 +31,7 @@ class InfoUser(
     var gndr: String? = null, //성별
 
     @Column(name = "telno", nullable = false, length = 11)
-    var telno: String? = null, // 전화번호
+    var telno: String, // 전화번호
 
     @Column(name = "job_cd", nullable = false, length = 8)
     var jobCd: String? = null, // 직무 코드
@@ -43,19 +43,19 @@ class InfoUser(
     var ptTypeCd: String? = null, // 환자 유형 코드
 
     @Column(name = "inst_type_cd", nullable = false, length = 10)
-    var instTypeCd: String? = null, // 기관 유형 코드
+    var instTypeCd: String, // 기관 유형 코드
 
     @Column(name = "inst_id", nullable = false, length = 10)
-    var instId: String? = null, // 기관 ID
+    var instId: String, // 기관 ID
 
     @Column(name = "inst_nm", nullable = false, length = 200)
-    var instNm: String? = null, // 기관 이름
+    var instNm: String, // 기관 이름
 
     @Column(name = "duty_dstr_1_cd", nullable = false, length = 8)
-    var dutyDstr1Cd: String? = null, // 근무 지역 코드 (시도)
+    var dutyDstr1Cd: String, // 근무 지역 코드 (시도)
 
     @Column(name = "duty_dstr_2_cd", nullable = false, length = 8)
-    var dutyDstr2Cd: String? = null, // 근무 지역 코드 (시군구)
+    var dutyDstr2Cd: String, // 근무 지역 코드 (시군구)
 
     @Column(name = "attc_id", length = 12)
     var attcId: String? = null, // 첨부 ID
