@@ -11,6 +11,7 @@ data class RegNoticeReq(
     val isActive: Boolean?,
     val noticeType: Char?,
     val isUnlimited: Boolean?,
+    val attcGrpId: String?,
 ) {
     fun toEntity(): InfoNotice {
         return InfoNotice(
@@ -19,6 +20,7 @@ data class RegNoticeReq(
             isActive = isActive ?: true,
             noticeType = noticeType,
             isUnlimited = isUnlimited ?: false,
+            attcGrpId = attcGrpId
         )
     }
 }
@@ -31,15 +33,10 @@ data class ModNoticeReq(
     val isActive: Boolean?,
     val noticeType: Char?,
     val isUnlimited: Boolean?,
+    val attcGrpId: String?,
 )
 
 data class DelNoticeReq(
     @field: [NotBlank(message = "id는 필수 값입니다.") Length(max = 10)]
     val noticeId: String,
-)
-
-data class NoticeActiveReq(
-    @field: [NotBlank(message = "id는 필수 값입니다.") Length(max = 10)]
-    val noticeId: String,
-    val isActive: Boolean
 )
