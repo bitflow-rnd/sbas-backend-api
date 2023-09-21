@@ -1,10 +1,14 @@
 package org.sbas.dtos.info
 
+import org.sbas.constants.enums.AdmsStatCd
+import org.sbas.constants.enums.PtTypeCd
 import org.sbas.constants.enums.UserStatCd
 import org.sbas.entities.info.InfoUser
 import org.sbas.utils.annotation.NoArg
+import org.sbas.utils.annotation.ValidEnum
 import java.time.Instant
 import javax.validation.constraints.NotBlank
+import javax.validation.constraints.NotNull
 import javax.validation.constraints.Pattern
 import javax.ws.rs.QueryParam
 
@@ -67,6 +71,7 @@ data class InfoUserSaveRequest(
     var userStatCd: UserStatCd?,
 ) {
     fun toEntity(userStatCd: UserStatCd?): InfoUser {
+        val ptTypeCd = ptTypeCd?.let { it.ifEmpty { null } }
         return InfoUser(
             id = id,
             pw = pw,
