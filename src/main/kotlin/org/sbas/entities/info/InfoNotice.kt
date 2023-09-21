@@ -30,6 +30,9 @@ class InfoNotice(
     @Column(name = "is_unlimited", nullable = false)
     var isUnlimited: Boolean? = null,
 
+    @Column(name = "attc_grp_id")
+    var attcGrpId: String? = null
+
 ) : CommonEntity(), Serializable {
 
     @Id

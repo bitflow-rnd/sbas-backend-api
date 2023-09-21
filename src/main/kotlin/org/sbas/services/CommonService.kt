@@ -5,7 +5,6 @@ import org.jboss.logging.Logger
 import org.sbas.dtos.*
 import org.sbas.dtos.info.DelNoticeReq
 import org.sbas.dtos.info.ModNoticeReq
-import org.sbas.dtos.info.NoticeActiveReq
 import org.sbas.dtos.info.RegNoticeReq
 import org.sbas.entities.base.BaseCode
 import org.sbas.entities.base.BaseCodeEgen
@@ -210,11 +209,12 @@ class CommonService {
     fun modNotice(modNoticeReq: ModNoticeReq): CommonResponse<String>{
         val findNotice = noticeRepository.findById(modNoticeReq.noticeId) ?: throw NotFoundException("${modNoticeReq.noticeId} not found")
 
-        findNotice.title = modNoticeReq.title ?: findNotice.title
-        findNotice.content = modNoticeReq.content ?: findNotice.content
-        findNotice.isActive = modNoticeReq.isActive ?: findNotice.isActive
-        findNotice.noticeType = modNoticeReq.noticeType ?: findNotice.noticeType
-        findNotice.isUnlimited = modNoticeReq.isUnlimited ?: findNotice.isUnlimited
+        findNotice.title = modNoticeReq.title
+        findNotice.content = modNoticeReq.content
+        findNotice.isActive = modNoticeReq.isActive
+        findNotice.noticeType = modNoticeReq.noticeType
+        findNotice.isUnlimited = modNoticeReq.isUnlimited
+        findNotice.attcGrpId = modNoticeReq.attcGrpId
 
         return CommonResponse("success")
     }
