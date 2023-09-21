@@ -24,6 +24,12 @@ class InfoNotice(
     @Column(name = "is_active", nullable = false)
     var isActive: Boolean? = null, // 활성화 여부(true = 활성, false = 비활성)
 
+    @Column(name = "notice_type", nullable = false, length = 1)
+    var noticeType: Char? = null,
+
+    @Column(name = "is_unlimited", nullable = false)
+    var isUnlimited: Boolean? = null,
+
 ) : CommonEntity(), Serializable {
 
     @Id

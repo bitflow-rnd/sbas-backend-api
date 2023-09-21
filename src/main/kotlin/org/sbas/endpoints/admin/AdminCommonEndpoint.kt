@@ -136,11 +136,4 @@ class AdminCommonEndpoint {
         return Response.ok(commonService.delNotice(delNoticeReq)).build()
     }
 
-    @Operation(summary = "공지사항 활성화/비활성화", description = "공지사항 활성화/비활성화 API")
-    @POST
-    @Path("notice/active")
-    fun modNoticeIsActive(noticeActiveReq: NoticeActiveReq): Response{
-        return Response.ok(commonService.modNoticeIsActive(noticeActiveReq)).build()
-    }
-
 }
