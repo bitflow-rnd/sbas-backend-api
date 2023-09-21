@@ -9,12 +9,16 @@ data class RegNoticeReq(
     val title: String,
     val content: String?,
     val isActive: Boolean?,
+    val noticeType: Char?,
+    val isUnlimited: Boolean?,
 ) {
     fun toEntity(): InfoNotice {
         return InfoNotice(
             title = title,
             content = content,
             isActive = isActive ?: true,
+            noticeType = noticeType,
+            isUnlimited = isUnlimited ?: false,
         )
     }
 }
@@ -24,6 +28,9 @@ data class ModNoticeReq(
     val noticeId: String,
     val title: String?,
     val content: String?,
+    val isActive: Boolean?,
+    val noticeType: Char?,
+    val isUnlimited: Boolean?,
 )
 
 data class DelNoticeReq(

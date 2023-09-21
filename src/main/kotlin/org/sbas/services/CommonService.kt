@@ -212,6 +212,9 @@ class CommonService {
 
         findNotice.title = modNoticeReq.title ?: findNotice.title
         findNotice.content = modNoticeReq.content ?: findNotice.content
+        findNotice.isActive = modNoticeReq.isActive ?: findNotice.isActive
+        findNotice.noticeType = modNoticeReq.noticeType ?: findNotice.noticeType
+        findNotice.isUnlimited = modNoticeReq.isUnlimited ?: findNotice.isUnlimited
 
         return CommonResponse("success")
     }
@@ -224,18 +227,6 @@ class CommonService {
         val findNotice = noticeRepository.findById(delNoticeReq.noticeId) ?: throw NotFoundException("${delNoticeReq.noticeId} not found")
 
         noticeRepository.delete(findNotice)
-
-        return CommonResponse("success")
-    }
-
-    /**
-     * 공지사항 활성화/비활성화
-     */
-    @Transactional
-    fun modNoticeIsActive(noticeActiveReq: NoticeActiveReq): CommonResponse<String>{
-        val findNotice = noticeRepository.findById(noticeActiveReq.noticeId) ?: throw NotFoundException("${noticeActiveReq.noticeId} not found")
-
-        findNotice.isActive = noticeActiveReq.isActive
 
         return CommonResponse("success")
     }
