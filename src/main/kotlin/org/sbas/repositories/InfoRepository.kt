@@ -416,6 +416,17 @@ class InfoInstRepository : PanacheRepositoryBase<InfoInst, String> {
         return find("inst_type_cd = 'ORGN0002'", Sort.by("inst_id", Sort.Direction.Descending)).firstResult()?.id
     }
 
+    fun findFireStatnDtoByInstId(instId: String): FireStatnDto? {
+        val query = "select new org.sbas.dtos.info.FireStatnDto(ii.id, ii.instNm, " +
+                "ii.chrgId, ii.chrgNm, ii.dstrCd1, fn_get_cd_nm('SIDO', ii.dstrCd1), " +
+                "ii.dstrCd2, fn_get_cd_nm('SIDO'||ii.dstrCd1, ii.dstrCd2), " +
+                "ii.chrgTelno, ii.rmk, ii.detlAddr, ii.lat, ii.lon, ii.vecno ) " +
+                "from InfoInst ii " +
+                "where ii.instTypeCd = 'ORGN0002' and ii.id = '$instId' "
+
+        return getEntityManager().createQuery(query, FireStatnDto::class.java).singleResult
+    }
+
     fun findFireStatn(instId: String): InfoInst? {
         return find("inst_type_cd = 'ORGN0002' and inst_id = '$instId'").firstResult()
     }

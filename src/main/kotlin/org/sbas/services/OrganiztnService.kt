@@ -162,9 +162,10 @@ class OrganiztnService {
      */
     @Transactional
     fun findFireStatn(instId: String): CommonResponse<FireStatnDto> {
-        val findFireStatn = infoInstRepository.findFireStatn(instId) ?: throw NotFoundException("$instId firestatn not found")
+        val findFireStatn = infoInstRepository.findFireStatnDtoByInstId(instId)
+            ?: throw NotFoundException("$instId firestatn not found")
 
-        return CommonResponse(findFireStatn.toFireStatnDto())
+        return CommonResponse(findFireStatn)
     }
 
     /**

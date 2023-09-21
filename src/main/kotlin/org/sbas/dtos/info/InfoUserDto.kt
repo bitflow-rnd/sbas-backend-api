@@ -58,9 +58,6 @@ data class InfoUserSaveRequest(
     @field: [NotBlank Size(min = 1, max = 10)]
     val userNm: String,
 
-    val userCi: String?,
-    val pushKey: String?,
-
     @field: [Size(min = 1, max = 1)]
     val gndr: String?,
 
@@ -106,8 +103,8 @@ data class InfoUserSaveRequest(
             id = id,
             pw = pw,
             userNm = userNm,
-            userCi = userCi ?: "",
-            pushKey = pushKey ?: "",
+            userCi = "",
+            pushKey = "",
             telno = telno,
             jobCd = jobCd,
             ocpCd = ocpCd,

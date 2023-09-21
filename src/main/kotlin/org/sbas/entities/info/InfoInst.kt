@@ -1,6 +1,5 @@
 package org.sbas.entities.info
 
-import org.sbas.dtos.info.FireStatnDto
 import org.sbas.dtos.info.InfoInstUpdateReq
 import org.sbas.entities.CommonEntity
 import javax.persistence.Column
@@ -19,13 +18,13 @@ class InfoInst(
     var id: String, // 기관 ID
 
     @Column(name = "inst_type_cd", nullable = false, length = 8)
-    var instTypeCd: String? = null, // 기관 유형 코드
+    var instTypeCd: String, // 기관 유형 코드
 
     @Column(name = "inst_nm", nullable = false, length = 100)
-    var instNm: String? = null, // 기관 이름
+    var instNm: String, // 기관 이름
 
     @Column(name = "dstr_cd_1", nullable = false, length = 8)
-    var dstrCd1: String? = null, // 지역 코드 (시도)
+    var dstrCd1: String, // 지역 코드 (시도)
 
     @Column(name = "dstr_cd_2", length = 8)
     var dstrCd2: String? = null, // 지역 코드 (시군구)
@@ -57,22 +56,6 @@ class InfoInst(
     @Column(name = "vecno", length = 50)
     var vecno: String? = null, // 차량번호
 ) : CommonEntity() {
-
-    fun toFireStatnDto(): FireStatnDto {
-        return FireStatnDto(
-            instId = id,
-            instNm = instNm,
-            chrgId = chrgId,
-            chrgNm = chrgNm,
-            dstrCd1 = dstrCd1,
-            dstrCd2 = dstrCd2,
-            chrgTelno = chrgTelno,
-            rmk = rmk,
-            detlAddr = detlAddr?.split(" ")?.get(2),
-            lat = lat,
-            lon = lon,
-        )
-    }
 
     fun update(updateDto: InfoInstUpdateReq) {
         with(updateDto) {

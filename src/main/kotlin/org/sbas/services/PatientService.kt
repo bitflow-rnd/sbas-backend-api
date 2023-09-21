@@ -6,17 +6,15 @@ import org.jboss.logging.Logger
 import org.jboss.resteasy.reactive.multipart.FileUpload
 import org.sbas.constants.SbasConst
 import org.sbas.constants.enums.BedStatCd
-import org.sbas.constants.enums.PtTypeCd
 import org.sbas.constants.enums.SvrtTypeCd
-import org.sbas.constants.enums.UndrDsesCd
 import org.sbas.dtos.info.*
 import org.sbas.entities.info.InfoPt
 import org.sbas.handlers.FileHandler
 import org.sbas.handlers.NaverApiHandler
 import org.sbas.parameters.NewsScoreParameters
 import org.sbas.repositories.*
-import org.sbas.responses.CommonResponse
 import org.sbas.responses.CommonListResponse
+import org.sbas.responses.CommonResponse
 import org.sbas.utils.CustomizedException
 import org.sbas.utils.StringUtils
 import java.io.File
@@ -206,21 +204,6 @@ class PatientService {
     fun findHospNmList(param: InfoPtSearchParam): CommonResponse<*> {
         val list = infoPtRepository.findHospNmList(param)
         return CommonListResponse(list)
-    }
-
-    private fun getTagList(dto: BdasHisInfo) {
-        if (dto.ptTypeCd != null) {
-            val splitList = dto.ptTypeCd.split(";")
-            dto.tagList!!.addAll(splitList.map { PtTypeCd.valueOf(it).cdNm })
-        }
-        if (dto.svrtTypeCd != null) {
-            val splitList = dto.svrtTypeCd.split(";")
-            dto.tagList!!.addAll(splitList.map { SvrtTypeCd.valueOf(it).cdNm })
-        }
-        if (dto.undrDsesCd != null) {
-            val splitList = dto.undrDsesCd.split(";")
-            dto.tagList!!.addAll(splitList.map { UndrDsesCd.valueOf(it).cdNm })
-        }
     }
 
     fun calculateNewsScore(param: NewsScoreParameters): CommonResponse<Map<String, Any>> {

@@ -20,8 +20,8 @@ data class InfoInstUpdateReq(
 )
 
 data class FireStatnSaveReq(
-    val instNm: String?,
-    val dstrCd1: String?,
+    val instNm: String,
+    val dstrCd1: String,
     val dstrCd2: String?,
     val chrgId: String?,
     val chrgNm: String?,
@@ -73,13 +73,16 @@ data class FireStatnDto(
     val instNm: String?,
     val chrgId: String?,
     val chrgNm: String?,
-    val dstrCd1: String?,
+    val dstrCd1: String,
+    val dstrCd1Nm: String,
     val dstrCd2: String?,
+    val dstrCd2Nm: String?,
     val chrgTelno: String?,
     val rmk: String?,
     val detlAddr: String?,
     val lat: String?,
     val lon: String?,
+    val vecno: String?,
 )
 
 data class InfoInstResponse(
