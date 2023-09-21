@@ -10,7 +10,6 @@ import org.sbas.dtos.BaseCodeSaveReq
 import org.sbas.dtos.BaseCodeUpdateReq
 import org.sbas.dtos.info.DelNoticeReq
 import org.sbas.dtos.info.ModNoticeReq
-import org.sbas.dtos.info.NoticeActiveReq
 import org.sbas.dtos.info.RegNoticeReq
 import org.sbas.services.CommonService
 import javax.inject.Inject
