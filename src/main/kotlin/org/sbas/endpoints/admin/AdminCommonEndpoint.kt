@@ -4,6 +4,7 @@ import org.eclipse.microprofile.openapi.annotations.Operation
 import org.eclipse.microprofile.openapi.annotations.tags.Tag
 import org.jboss.logging.Logger
 import org.jboss.resteasy.reactive.RestPath
+import org.jboss.resteasy.reactive.multipart.FileUpload
 import org.sbas.dtos.BaseCodeGrpSaveReq
 import org.sbas.dtos.BaseCodeGrpUpdateReq
 import org.sbas.dtos.BaseCodeSaveReq

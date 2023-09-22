@@ -2,6 +2,7 @@ package org.sbas.services
 
 import io.quarkus.cache.CacheKey
 import org.jboss.logging.Logger
+import org.jboss.resteasy.reactive.multipart.FileUpload
 import org.sbas.dtos.*
 import org.sbas.dtos.info.DelNoticeReq
 import org.sbas.dtos.info.ModNoticeReq
@@ -9,6 +10,8 @@ import org.sbas.dtos.info.RegNoticeReq
 import org.sbas.entities.base.BaseCode
 import org.sbas.entities.base.BaseCodeEgen
 import org.sbas.entities.base.BaseCodeId
+import org.sbas.handlers.FileHandler
+import org.sbas.repositories.BaseAttcRepository
 import org.sbas.repositories.BaseCodeEgenRepository
 import org.sbas.repositories.BaseCodeRepository
 import org.sbas.repositories.NoticeRepository
@@ -39,6 +42,12 @@ class CommonService {
     @Inject
     private lateinit var noticeRepository: NoticeRepository
 
+    @Inject
+    private lateinit var baseAttcRepository: BaseAttcRepository
+
+    @Inject
+    private lateinit var fileHandler: FileHandler
+
     /**
      * 공통코드 그룹 목록 조회
      */
@@ -66,8 +75,9 @@ class CommonService {
      */
     @Transactional
     fun updateBaseCdGrp(updateReq: BaseCodeGrpUpdateReq): CommonResponse<String> {
-        val baseCodeGrp = baseCodeRepository.findBaseCodeGrp(updateReq.cdGrpId) ?: throw NotFoundException("${updateReq.cdGrpId} not found")
-        
+        val baseCodeGrp = baseCodeRepository.findBaseCodeGrp(updateReq.cdGrpId)
+            ?: throw NotFoundException("${updateReq.cdGrpId} not found")
+
         // 코드 그룹 항목 수정
         baseCodeGrp.changeBaseCodeGrp(updateReq.cdGrpNm, updateReq.rmk)
 
@@ -88,14 +98,14 @@ class CommonService {
     fun deleteBaseCdGrp(cdGrpId: String): CommonResponse<String> {
         val baseCodeList = baseCodeRepository.findBaseCodeByCdGrpId(cdGrpId)
         val baseCodeGrp = baseCodeRepository.findBaseCodeGrp(cdGrpId) ?: throw NotFoundException("$cdGrpId not found")
-        
+
         // cdSeq 가 0이 아닌 항목들이 존재하면 삭제 X
         if (baseCodeList.any { it.cdSeq != 0 }) {
             throw CustomizedException("하위 항목들이 존재합니다.", Response.Status.CONFLICT)
         }
-        
+
         baseCodeRepository.delete(baseCodeGrp)
-        
+
         return CommonResponse("삭제 성공")
     }
 
@@ -134,7 +144,8 @@ class CommonService {
 //    @CacheInvalidate(cacheName = "cdGrpId")
     fun updateBaseCode(updateReq: BaseCodeUpdateReq): CommonResponse<String> {
         val baseCodeId = updateReq.getId()
-        val findBaseCode = baseCodeRepository.findById(baseCodeId) ?: throw NotFoundException("${baseCodeId.cdId} not found")
+        val findBaseCode = baseCodeRepository.findById(baseCodeId)
+            ?: throw NotFoundException("${baseCodeId.cdId} not found")
 
         findBaseCode.changeBaseCode(updateReq)
 
@@ -150,7 +161,7 @@ class CommonService {
         val findBaseCode = baseCodeRepository.findBaseCodeByCdId(cdId) ?: throw NotFoundException("$cdId not found")
 
         baseCodeRepository.delete(findBaseCode)
-        
+
         return CommonResponse("삭제 성공")
     }
 
@@ -194,7 +205,7 @@ class CommonService {
      * 공지사항 등록
      */
     @Transactional
-    fun regNotice(regNoticeReq: RegNoticeReq): CommonResponse<String>{
+    fun regNotice(regNoticeReq: RegNoticeReq): CommonResponse<String> {
         val infoNotice = regNoticeReq.toEntity()
 
         noticeRepository.persist(infoNotice)
@@ -206,8 +217,9 @@ class CommonService {
      * 공지사항 수정
      */
     @Transactional
-    fun modNotice(modNoticeReq: ModNoticeReq): CommonResponse<String>{
-        val findNotice = noticeRepository.findById(modNoticeReq.noticeId) ?: throw NotFoundException("${modNoticeReq.noticeId} not found")
+    fun modNotice(modNoticeReq: ModNoticeReq): CommonResponse<String> {
+        val findNotice = noticeRepository.findById(modNoticeReq.noticeId)
+            ?: throw NotFoundException("${modNoticeReq.noticeId} not found")
 
         findNotice.title = modNoticeReq.title
         findNotice.content = modNoticeReq.content
@@ -223,8 +235,9 @@ class CommonService {
      * 공지사항 삭제
      */
     @Transactional
-    fun delNotice(delNoticeReq: DelNoticeReq): CommonResponse<String>{
-        val findNotice = noticeRepository.findById(delNoticeReq.noticeId) ?: throw NotFoundException("${delNoticeReq.noticeId} not found")
+    fun delNotice(delNoticeReq: DelNoticeReq): CommonResponse<String> {
+        val findNotice = noticeRepository.findById(delNoticeReq.noticeId)
+            ?: throw NotFoundException("${delNoticeReq.noticeId} not found")
 
         noticeRepository.delete(findNotice)
 
