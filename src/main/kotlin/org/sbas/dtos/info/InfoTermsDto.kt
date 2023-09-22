@@ -19,13 +19,13 @@ data class RegTermsReq(
         var id = InfoTermsId(termsType = termsType)
 
         val currentInfoTerms = termsRepository.findByTermsType(termsType)
-        val currentTermsVersion = currentInfoTerms?.id?.termsVersion ?: "00"
+//        val currentTermsVersion = currentInfoTerms?.id?.termsVersion ?: "00"
 
-        val nextVersion = (currentTermsVersion.toIntOrNull() ?: 0) + 1
+//        val nextVersion = (currentTermsVersion.toIntOrNull() ?: 0) + 1
 
-        val formattedVersion = nextVersion.toString().padStart(2, '0')
+//        val formattedVersion = nextVersion.toString().padStart(2, '0')
 
-        id.termsVersion = formattedVersion
+//        id.termsVersion = formattedVersion
         var termsName = ""
 
         if (termsType == "01") termsName = "개인정보수집동의"
