@@ -17,9 +17,9 @@ data class RegTermsReq(
 
     fun toEntity(): InfoTerms{
         val id = InfoTermsId(termsType = termsType)
-        val version = termsRepository.findByTermsType(termsType)?.id?.termsVersion ?: "00"
+        val version = termsRepository.findByTermsType(termsType)?.id?.termsVersion
 
-        val nextVersion = (version.toIntOrNull() ?: 0) + 1
+        val nextVersion = (version?.toIntOrNull() ?: 0) + 1
         val formattedVersion = nextVersion.toString().padStart(2, '0')
 
         id.termsVersion = formattedVersion
