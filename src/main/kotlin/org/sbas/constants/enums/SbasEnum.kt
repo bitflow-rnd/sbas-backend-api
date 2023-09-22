@@ -94,3 +94,16 @@ enum class PmgrTypeCd(val cdNm: String) {
     PMGR0003("병상배정"),
     PMGR0004("시스템관리"),
 }
+
+enum class InstTypeCd(val cdNm: String) {
+    ORGN0001("지방자치단체"),
+    ORGN0002("구급대"),
+    ORGN0003("보건소"),
+    ORGN0004("의료기관"),
+    ORGN0005("전산담당"),
+}
+
+enum class DtpmTypeCd(val cdNm: String) {
+    DTPM0001("일반"),
+    DTPM0002("게스트"),
+}

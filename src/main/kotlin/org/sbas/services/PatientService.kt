@@ -145,8 +145,8 @@ class PatientService {
     fun findInfoPtWithMyOrgan(): CommonListResponse<InfoPt> {
         //TODO
         val infoUser = infoUserRepository.findById(jwt.name) ?: throw NotFoundException("infoUser not found")
-        val infoInst = infoInstRepository.findById(infoUser.instId!!) ?: throw NotFoundException("infoInst not found")
-        val infoPtList = infoPtRepository.findByDstrCd(infoInst.dstrCd1!!, infoInst.dstrCd2!!)
+        val infoInst = infoInstRepository.findById(infoUser.instId) ?: throw NotFoundException("infoInst not found")
+        val infoPtList = infoPtRepository.findByDstrCd(infoInst.dstrCd1, infoInst.dstrCd2!!)
 
         return CommonListResponse(infoPtList)
     }

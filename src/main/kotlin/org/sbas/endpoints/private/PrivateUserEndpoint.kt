@@ -5,7 +5,7 @@ import org.eclipse.microprofile.openapi.annotations.tags.Tag
 import org.jboss.logging.Logger
 import org.jboss.resteasy.reactive.RestPath
 import org.sbas.dtos.info.InfoCntcDto
-import org.sbas.entities.info.InfoUser
+import org.sbas.dtos.info.InfoUserUpdateReq
 import org.sbas.parameters.ModifyPwRequest
 import org.sbas.parameters.ModifyTelnoRequest
 import org.sbas.parameters.PageRequest
@@ -56,7 +56,7 @@ class PrivateUserEndpoint {
     @Operation(summary = "기본정보 수정", description = "유저정보에서 기본정보 수정 API")
     @POST
     @Path("modify-info")
-    fun modifyInfo(@Valid infoUser: InfoUser) : Response {
+    fun modifyInfo(@Valid infoUser: InfoUserUpdateReq) : Response {
         return Response.ok(userService.modifyInfo(infoUser)).build()
     }
 

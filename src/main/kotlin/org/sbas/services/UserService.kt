@@ -58,20 +58,20 @@ class UserService {
      * 사용자 등록 요청
      */
     @Transactional
-    fun reqUserReg(infoUserSaveRequest: InfoUserSaveRequest): CommonResponse<String> {
-        val infoUser = infoUserSaveRequest.toEntity(UserStatCd.URST0001)
-        infoUser.setRgstAndUpdtUserIdTo(infoUserSaveRequest.id)
+    fun reqUserReg(infoUserSaveReq: InfoUserSaveReq): CommonResponse<String> {
+        val infoUser = infoUserSaveReq.toEntity(UserStatCd.URST0001)
+        infoUser.setRgstAndUpdtUserIdTo(infoUserSaveReq.id)
         userRepository.persist(infoUser)
-        return CommonResponse("${infoUserSaveRequest.userNm}님 사용자 등록을 요청하였습니다.")
+        return CommonResponse("${infoUserSaveReq.userNm}님 사용자 등록을 요청하였습니다.")
     }
 
     /**
      * 관리자 사용자 등록
      */
     @Transactional
-    fun reg(infoUserSaveRequest: InfoUserSaveRequest): CommonResponse<String> {
-        val infoUser = infoUserSaveRequest.toEntity(UserStatCd.URST0002)
-        infoUser.setRgstAndUpdtUserIdTo(infoUserSaveRequest.id)
+    fun reg(infoUserSaveReq: InfoUserSaveReq): CommonResponse<String> {
+        val infoUser = infoUserSaveReq.toEntity(UserStatCd.URST0002)
+        infoUser.setRgstAndUpdtUserIdTo(infoUserSaveReq.id)
         userRepository.persist(infoUser)
         return CommonResponse("등록 성공")
     }
@@ -170,9 +170,9 @@ class UserService {
         val findUser = userRepository.findByUserId(modifyPwRequest.id)
             ?: throw CustomizedException("유저 정보가 없습니다.", Response.Status.NOT_FOUND)
 
-        findUser.pw = modifyPwRequest.modifyPw
+        findUser.changePasswordTo(modifyPwRequest.modifyPw)
 
-        return CommonResponse("${findUser.userNm}님의 비밀번호가 수정되었습니다.")
+        return CommonResponse("${findUser.id}님의 비밀번호가 수정되었습니다.")
 
     }
 
@@ -183,7 +183,7 @@ class UserService {
         val findUser = userRepository.findByUserId(modifyTelnoRequest.id)
             ?: throw CustomizedException("유저 정보가 없습니다.", Response.Status.NOT_FOUND)
 
-        findUser.telno = modifyTelnoRequest.modifyTelno
+        findUser.changeTelnoTo(modifyTelnoRequest.modifyTelno)
 
         return CommonResponse("${findUser.userNm}님의 핸드폰번호가 수정되었습니다.")
     }
@@ -224,12 +224,12 @@ class UserService {
             findUser.pwErrCnt!! >= 5 -> {
                 throw CustomizedException("비밀번호 불일치 5회 발생", Response.Status.FORBIDDEN)
             }
-            findUser.pw.equals(loginRequest.pw) -> {
+            findUser.pw == loginRequest.pw -> {
                 findUser.pwErrCnt = 0
-                CommonResponse(TokenUtils.generateUserToken(findUser.id, findUser.userNm!!))
+                CommonResponse(TokenUtils.generateUserToken(findUser.id, findUser.userNm))
             }
             else -> {
-                findUser.pwErrCnt = findUser.pwErrCnt!! + 1
+                findUser.plusPasswordErrorCount()
                 throw CustomizedException("사용자 정보가 일치하지 않습니다.", Response.Status.BAD_REQUEST)
             }
         }
@@ -247,22 +247,13 @@ class UserService {
     }
 
     @Transactional
-    fun modifyInfo(infoUser: InfoUser) : CommonResponse<String> {
-        if(jwt.name != infoUser.id) return CommonResponse("token id와 id가 일치하지 않습니다.")
+    fun modifyInfo(request: InfoUserUpdateReq) : CommonResponse<String> {
+        if(jwt.name != request.id) return CommonResponse("token id와 id가 일치하지 않습니다.")
 
-        var findUser = userRepository.findByUserId(infoUser.id)
+        val findUser = userRepository.findByUserId(request.id)
             ?: throw CustomizedException("등록된 ID가 없습니다.", Response.Status.NOT_FOUND)
 
-        findUser.jobCd = infoUser.jobCd
-        findUser.ocpCd = infoUser.ocpCd
-        findUser.ptTypeCd = infoUser.ptTypeCd
-        findUser.instTypeCd = infoUser.instTypeCd
-        findUser.instId = infoUser.instId
-        findUser.instNm = findUser.instNm
-        findUser.dutyDstr1Cd = findUser.dutyDstr1Cd
-        findUser.dutyDstr2Cd = findUser.dutyDstr2Cd
-        findUser.attcId = findUser.attcId
-        findUser.updtUserId = infoUser.id
+        findUser.updateTo(request)
 
         return CommonResponse("SUCCESS")
     }
@@ -276,7 +267,7 @@ class UserService {
         val findUsers = userRepository.findAllUsers(pageRequest)
         findUsers.map {
             userRepository.getEntityManager().detach(it)
-            it.jobCd = PmgrTypeCd.valueOf(it.jobCd!!).cdNm
+            it.jobCd = PmgrTypeCd.valueOf(it.jobCd).cdNm
             it.dutyDstr1Cd = SidoCd.valueOf("SIDO${it.dutyDstr1Cd}").cdNm
         }
         val totalCnt = userRepository.count()

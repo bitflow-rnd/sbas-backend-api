@@ -24,6 +24,14 @@ annotation class ValidEnum(
     val message: String = "해당 코드에 없는 값입니다.",
     val groups: Array<KClass<*>> = [],
     val payload: Array<KClass<out Payload>> = [],
+
+    /**
+     * 체크할 enum class
+     */
     val enumClass: KClass<out Enum<*>>,
-    val ignoreCase: Boolean = false,
+
+    /**
+     * null 허용 여부
+     */
+    val isNullable: Boolean = false,
 )

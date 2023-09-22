@@ -4,7 +4,7 @@ import org.eclipse.microprofile.openapi.annotations.Operation
 import org.eclipse.microprofile.openapi.annotations.tags.Tag
 import org.jboss.logging.Logger
 import org.sbas.constants.SbasConst
-import org.sbas.dtos.info.InfoUserSaveRequest
+import org.sbas.dtos.info.InfoUserSaveReq
 import org.sbas.entities.info.InfoUser
 import org.sbas.parameters.CheckCertNoRequest
 import org.sbas.parameters.LoginRequest
@@ -67,8 +67,8 @@ class PublicUserEndpoint {
     @Operation(summary = "사용자 등록 요청", description = "사용자 조직 사용자 또는 어드민에게 요청 전송 API")
     @POST
     @Path("requserreg")
-    fun reqUserReg(@Valid infoUserSaveRequest: InfoUserSaveRequest): Response {
-        return Response.ok(userService.reqUserReg(infoUserSaveRequest)).build()
+    fun reqUserReg(@Valid infoUserSaveReq: InfoUserSaveReq): Response {
+        return Response.ok(userService.reqUserReg(infoUserSaveReq)).build()
     }
 
     @Operation(summary = "로그인", description = "로그인 API")

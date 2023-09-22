@@ -1,14 +1,14 @@
 package org.sbas.dtos.info
 
-import org.sbas.constants.enums.UserStatCd
+import org.sbas.constants.enums.*
 import org.sbas.entities.info.InfoUser
 import org.sbas.utils.annotation.NoArg
+import org.sbas.utils.annotation.ValidEnum
 import java.time.Instant
 import javax.validation.constraints.NotBlank
 import javax.validation.constraints.Pattern
 import javax.validation.constraints.Size
 import javax.ws.rs.QueryParam
-import kotlin.math.min
 
 /**
  * 사용자 목록 조회 DTO
@@ -45,7 +45,7 @@ data class InfoUserSearchParam(
 /**
  * 사용자 등록 DTO
  */
-data class InfoUserSaveRequest(
+data class InfoUserSaveReq(
     @field: [NotBlank
     Pattern(regexp = "^[a-zA-Z0-9@._-]+\$",
         message = "영소문자, 영대문자, 숫자, @.-_ 만 가능합니다")
@@ -58,22 +58,22 @@ data class InfoUserSaveRequest(
     @field: [NotBlank Size(min = 1, max = 10)]
     val userNm: String,
 
-    @field: [Size(min = 1, max = 1)]
+    @field: [Size(min = 1, max = 1) Pattern(regexp = "^(남|여)\$")]
     val gndr: String?,
 
     @field: [NotBlank Size(min = 1, max = 12)]
     val telno: String,
 
-    @field: Size(min = 1, max = 8)
-    val jobCd: String?,
+    @field: [Size(min = 1, max = 8) NotBlank ValidEnum(enumClass = PmgrTypeCd::class)]
+    val jobCd: String,
 
     @field: Size(min = 1, max = 8)
     val ocpCd: String?,
 
-    @field: [Size(min = 1, max = 256)]
+    @field: [Size(min = 1) ValidEnum(enumClass = PtTypeCd::class, isNullable = true)]
     val ptTypeCd: String?,
 
-    @field: [NotBlank Size(min = 1, max = 8)]
+    @field: [NotBlank Size(min = 1, max = 8) ValidEnum(enumClass = InstTypeCd::class)]
     val instTypeCd: String,
 
     @field: [NotBlank Size(min = 1, max = 10)]
@@ -94,7 +94,7 @@ data class InfoUserSaveRequest(
     @field: [NotBlank Size(min = 1, max = 8)]
     val btDt: String,
 
-    @field: [NotBlank Size(min = 1, max = 8)]
+    @field: [NotBlank Size(min = 1, max = 8) ValidEnum(enumClass = DtpmTypeCd::class)]
     val authCd: String,
 ) {
     fun toEntity(userStatCd: UserStatCd?): InfoUser {
@@ -105,6 +105,7 @@ data class InfoUserSaveRequest(
             userNm = userNm,
             userCi = "",
             pushKey = "",
+            gndr = gndr,
             telno = telno,
             jobCd = jobCd,
             ocpCd = ocpCd,
@@ -121,3 +122,52 @@ data class InfoUserSaveRequest(
         )
     }
 }
+
+data class InfoUserUpdateReq(
+    val id: String,
+
+    @field: [NotBlank Size(min = 1, max = 256)]
+    val pw: String,
+
+    @field: [NotBlank Size(min = 1, max = 10)]
+    val userNm: String,
+
+    @field: [Size(min = 1, max = 1) Pattern(regexp = "^(남|여)\$")]
+    val gndr: String?,
+
+    @field: [NotBlank Size(min = 1, max = 12)]
+    val telno: String,
+
+    @field: [Size(min = 1, max = 8) NotBlank ValidEnum(enumClass = PmgrTypeCd::class)]
+    val jobCd: String,
+
+    @field: Size(min = 1, max = 8)
+    val ocpCd: String?,
+
+    @field: [Size(min = 1) ValidEnum(enumClass = PtTypeCd::class, isNullable = true)]
+    val ptTypeCd: String?,
+
+    @field: [NotBlank Size(min = 1, max = 8) ValidEnum(enumClass = InstTypeCd::class)]
+    val instTypeCd: String,
+
+    @field: [NotBlank Size(min = 1, max = 10)]
+    val instId: String,
+
+    @field: [NotBlank Size(min = 1, max = 200)]
+    val instNm: String,
+
+    @field: [NotBlank Size(min = 1, max = 8)]
+    val dutyDstr1Cd: String,
+
+    @field: [NotBlank Size(min = 1, max = 8)]
+    val dutyDstr2Cd: String,
+
+    @field: [Size(min = 1, max = 12)]
+    val attcId: String?,
+
+    @field: [NotBlank Size(min = 1, max = 8)]
+    val btDt: String,
+
+    @field: [NotBlank Size(min = 1, max = 8) ValidEnum(enumClass = DtpmTypeCd::class)]
+    val authCd: String,
+)

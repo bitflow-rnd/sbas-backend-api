@@ -3,7 +3,7 @@ package org.sbas.endpoints.admin
 import org.eclipse.microprofile.openapi.annotations.Operation
 import org.eclipse.microprofile.openapi.annotations.tags.Tag
 import org.jboss.logging.Logger
-import org.sbas.dtos.info.InfoUserSaveRequest
+import org.sbas.dtos.info.InfoUserSaveReq
 import org.sbas.dtos.info.InfoUserSearchParam
 import org.sbas.parameters.UpdatePushKeyRequest
 import org.sbas.parameters.UserIdRequest
@@ -40,8 +40,8 @@ class AdminUserEndpoint {
     @Operation(summary = "관리자 사용자 등록", description = "관리자 화면에서 사용자 등록")
     @POST
     @Path("reg")
-    fun reg(@Valid infoUserSaveRequest: InfoUserSaveRequest): Response {
-        return Response.ok(userService.reg(infoUserSaveRequest)).build()
+    fun reg(@Valid infoUserSaveReq: InfoUserSaveReq): Response {
+        return Response.ok(userService.reg(infoUserSaveReq)).build()
     }
 
     @Operation(summary = "사용자 목록", description = "백오피스에서 어드민(전산담당)이 처리하는 사용자 목록 조회 API")
