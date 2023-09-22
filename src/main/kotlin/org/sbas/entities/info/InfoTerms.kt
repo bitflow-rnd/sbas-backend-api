@@ -22,10 +22,9 @@ class InfoTerms (
 @Embeddable
 data class InfoTermsId(
     @Column(name = "terms_type", nullable = false, length = 2)
-    var termsType: String? = null, // 01 : 개인정보수집동의, 02 : 서비스이용약관, 03 : 개인정보처리방침
+    var termsType: String, // 01 : 개인정보수집동의, 02 : 서비스이용약관, 03 : 개인정보처리방침
 
     @Column(name = "terms_version", nullable = false, length = 2)
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     var termsVersion: String? = null,
 ) : Serializable {
 
