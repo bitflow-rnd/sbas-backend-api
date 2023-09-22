@@ -253,7 +253,7 @@ class CommonService {
 
         termsRepository.persist(regInfoTerms)
 
-        return CommonResponse(maxTermsVersion)
+        return CommonResponse("success")
     }
 
     /**
