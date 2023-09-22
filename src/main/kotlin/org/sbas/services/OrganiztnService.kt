@@ -1,5 +1,6 @@
 package org.sbas.services
 
+import com.fasterxml.jackson.databind.ObjectMapper
 import org.jboss.logging.Logger
 import org.jboss.resteasy.reactive.RestResponse
 import org.jboss.resteasy.reactive.multipart.FileUpload
@@ -11,6 +12,7 @@ import org.sbas.handlers.GeocodingHandler
 import org.sbas.repositories.*
 import org.sbas.responses.CommonResponse
 import org.sbas.responses.CommonListResponse
+import org.sbas.restparameters.EgenApiBassInfoParams
 import org.sbas.restparameters.NaverGeocodingApiParams
 import org.sbas.utils.CustomizedException
 import org.sbas.utils.StringUtils
@@ -52,6 +54,12 @@ class OrganiztnService {
     @Inject
     private lateinit var fileHandler: FileHandler
 
+    @Inject
+    private lateinit var egenService: EgenService
+
+    @Inject
+    private lateinit var objectMapper: ObjectMapper
+
     /**
      * 의료기관(병원) 목록 조회
      */
@@ -76,10 +84,12 @@ class OrganiztnService {
     /**
      * 의료기관 상세 조회
      */
-    fun findInfoHospById(hpId: String) : CommonResponse<InfoHospDetailDto> {
-        val findResult = infoHospRepository.findInfoHospDetail(hpId)
+    fun findInfoHospById(hpId: String) : CommonResponse<InfoHospResponse> {
+        val jsonObject = egenService.getHsptlBassInfoInqire(param = EgenApiBassInfoParams(hpId = hpId))
+        val item = jsonObject.getJSONObject("item")
+        val readValue = objectMapper.readValue(item.toString(), InfoHospResponse::class.java)
 
-        return CommonResponse(findResult)
+        return CommonResponse(readValue)
     }
 
     /**
@@ -102,7 +112,7 @@ class OrganiztnService {
     fun regFireStatn(fireStatnSaveReq: FireStatnSaveReq): CommonResponse<String> {
         val fireStatnInstId = StringUtils.incrementCode("FS", 8, infoInstRepository.findLatestFireStatInstId())
 
-        val baseCode = baseCodeRepository.findBaseCodeByCdId(fireStatnSaveReq.dstrCd1 ?: "")
+        val baseCode = baseCodeRepository.findBaseCodeByCdId(fireStatnSaveReq.dstrCd1)
         val dstrCd2Nm = baseCodeRepository.getDstrCd2Nm(fireStatnSaveReq.dstrCd1, fireStatnSaveReq.dstrCd2)
 
         val fullAddr = baseCode!!.cdNm + dstrCd2Nm + fireStatnSaveReq.detlAddr
