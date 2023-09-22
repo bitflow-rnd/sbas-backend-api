@@ -2,18 +2,17 @@ package org.sbas.services
 
 import io.quarkus.cache.CacheKey
 import org.jboss.logging.Logger
-import org.jboss.resteasy.reactive.multipart.FileUpload
 import org.sbas.dtos.*
 import org.sbas.dtos.info.DelNoticeReq
 import org.sbas.dtos.info.ModNoticeReq
 import org.sbas.dtos.info.RegNoticeReq
+import org.sbas.dtos.info.RegTermsReq
 import org.sbas.entities.base.BaseCode
 import org.sbas.entities.base.BaseCodeEgen
 import org.sbas.entities.base.BaseCodeId
-import org.sbas.handlers.FileHandler
-import org.sbas.repositories.BaseAttcRepository
 import org.sbas.repositories.BaseCodeEgenRepository
 import org.sbas.repositories.BaseCodeRepository
+import org.sbas.repositories.InfoTermsRepository
 import org.sbas.repositories.NoticeRepository
 import org.sbas.responses.CommonResponse
 import org.sbas.utils.CustomizedException
@@ -43,10 +42,7 @@ class CommonService {
     private lateinit var noticeRepository: NoticeRepository
 
     @Inject
-    private lateinit var baseAttcRepository: BaseAttcRepository
-
-    @Inject
-    private lateinit var fileHandler: FileHandler
+    private lateinit var termsRepository: InfoTermsRepository
 
     /**
      * 공통코드 그룹 목록 조회
@@ -240,6 +236,18 @@ class CommonService {
             ?: throw NotFoundException("${delNoticeReq.noticeId} not found")
 
         noticeRepository.delete(findNotice)
+
+        return CommonResponse("success")
+    }
+
+    /**
+     * 약관 등록
+     */
+    @Transactional
+    fun regTerms(regTermsReq: RegTermsReq): CommonResponse<String>{
+        val regInfoTerms = regTermsReq.toEntity()
+
+        termsRepository.persist(regInfoTerms)
 
         return CommonResponse("success")
     }
