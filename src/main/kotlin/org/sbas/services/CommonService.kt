@@ -246,10 +246,12 @@ class CommonService {
     @Transactional
     fun regTerms(regTermsReq: RegTermsReq): CommonResponse<String>{
         val maxTermsVersion = termsRepository.findByTermsType(regTermsReq.termsType)
+        val nextVersion = (maxTermsVersion.toIntOrNull() ?: 0) + 1
+        val formattedVersion = nextVersion.toString().padStart(2, '0')
 
-//        val regInfoTerms = regTermsReq.toEntity()
-//
-//        termsRepository.persist(regInfoTerms)
+        val regInfoTerms = regTermsReq.toEntity(formattedVersion)
+
+        termsRepository.persist(regInfoTerms)
 
         return CommonResponse(maxTermsVersion)
     }
