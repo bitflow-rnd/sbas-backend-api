@@ -3,7 +3,6 @@ package org.sbas.handlers
 import org.eclipse.microprofile.config.inject.ConfigProperty
 import org.jboss.logging.Logger
 import org.jboss.resteasy.reactive.multipart.FileUpload
-import org.sbas.constants.SbasConst
 import org.sbas.dtos.FileDto
 import org.sbas.utils.CustomizedException
 import org.sbas.utils.StringUtils
@@ -111,15 +110,5 @@ class FileHandler {
         val fileExt = fileUpload.fileName().substring(dotPos + 1).lowercase()
 
         return "$fileName.$fileExt"
-    }
-
-    fun getFileTypeCd(fileExt: String): String {
-        val imageExtensions = setOf("bmp", "jpeg", "jpg", "gif", "png", "pdf")
-        val fileTypeCd = if (fileExt.lowercase() in imageExtensions) {
-            SbasConst.FileTypeCd.IMAGE
-        } else {
-            SbasConst.FileTypeCd.VIDEO
-        }
-        return fileTypeCd
     }
 }
