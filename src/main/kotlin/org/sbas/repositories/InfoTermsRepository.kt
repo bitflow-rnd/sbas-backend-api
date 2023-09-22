@@ -11,7 +11,7 @@ import javax.enterprise.context.ApplicationScoped
 class InfoTermsRepository : PanacheRepositoryBase<InfoTerms, InfoTermsId> {
 
     fun findByTermsType(termsType: String): InfoTerms? {
-        val resultList = find("terms_type = '$termsType'").list()
+        var resultList = find("terms_type = '$termsType'").list()
 
         return resultList.maxByOrNull { it.id.termsVersion?.toIntOrNull() ?: 0 }
     }

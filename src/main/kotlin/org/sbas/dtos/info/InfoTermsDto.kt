@@ -15,24 +15,27 @@ data class RegTermsReq(
     @Inject
     private lateinit var termsRepository: InfoTermsRepository
 
-    fun toEntity(): InfoTerms{
-        val id = InfoTermsId(termsType = termsType)
-        val version = termsRepository.findByTermsType(termsType)?.id?.termsVersion
+    fun toEntity(): InfoTerms {
+        var id = InfoTermsId(termsType = termsType)
 
-        val nextVersion = (version?.toIntOrNull() ?: 0) + 1
+        val currentInfoTerms = termsRepository.findByTermsType(termsType)
+        val currentTermsVersion = currentInfoTerms?.id?.termsVersion ?: "00"
+
+        val nextVersion = (currentTermsVersion.toIntOrNull() ?: 0) + 1
+
         val formattedVersion = nextVersion.toString().padStart(2, '0')
 
         id.termsVersion = formattedVersion
-
         var termsName = ""
 
-        if(termsType == "01") termsName = "개인정보수집동의"
-        else if(termsType == "02") termsName = "서비스이용약관"
-        else if(termsType == "03") termsName = "개인정보처리방침"
+        if (termsType == "01") termsName = "개인정보수집동의"
+        else if (termsType == "02") termsName = "서비스이용약관"
+        else if (termsType == "03") termsName = "개인정보처리방침"
 
         return InfoTerms(
             id = id,
             termsName = termsName,
-            detail = detail)
+            detail = detail,
+        )
     }
 }
