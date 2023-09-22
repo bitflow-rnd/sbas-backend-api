@@ -3,8 +3,6 @@ package org.sbas.dtos.info
 import org.hibernate.validator.constraints.Length
 import org.sbas.entities.info.InfoTerms
 import org.sbas.entities.info.InfoTermsId
-import org.sbas.repositories.InfoTermsRepository
-import javax.inject.Inject
 import javax.validation.constraints.NotBlank
 
 data class RegTermsReq(
