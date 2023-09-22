@@ -49,12 +49,11 @@ class FileService {
      * 전체 공개 권한 파일 업로드
      */
     @Transactional
-    fun publicFileUpload(param1: String?, param2: MutableList<FileUpload>?): CommonListResponse<String> {
+    fun publicFileUpload(param1: String?, param2: MutableList<FileUpload>?): CommonResponse<String> {
         if (param2.isNullOrEmpty()) {
             throw CustomizedException("파일을 등록하세요.", Response.Status.BAD_REQUEST)
         }
 
-        val result = mutableListOf<String>()
         var attcGrpId = ""
         param2.forEach {
             if (it.size() == 0L) {
@@ -73,20 +72,17 @@ class FileService {
             val baseAttc = fileDto.toPublicEntity(attcGrpId = attcGrpId, fileTypeCd = fileTypeCd, rmk = null)
 
             baseAttcRepository.persist(baseAttc)
-
-            result.add(baseAttc.attcId)
         }
 
-        return CommonListResponse(result)
+        return CommonResponse(attcGrpId)
     }
 
     @Transactional
-    fun privateFileUpload(param1: String?, param2: MutableList<FileUpload>?): CommonListResponse<String> {
+    fun privateFileUpload(param1: String?, param2: MutableList<FileUpload>?): CommonResponse<String> {
         if (param2.isNullOrEmpty()) {
             throw CustomizedException("파일을 등록하세요.", Response.Status.BAD_REQUEST)
         }
 
-        val result = mutableListOf<String>()
         var attcGrpId = ""
         param2.forEach {
             if (it.size() == 0L) {
@@ -104,11 +100,9 @@ class FileService {
             val baseAttc = fileDto.toPrivateEntity(attcGrpId = attcGrpId, fileTypeCd = fileTypeCd, rmk = null)
 
             baseAttcRepository.persist(baseAttc)
-
-            result.add(baseAttc.attcId)
         }
 
-        return CommonListResponse(result)
+        return CommonResponse(attcGrpId)
     }
 
     private fun getFileTypeCd(fileExt: String): String {
