@@ -245,7 +245,9 @@ class CommonService {
      */
     @Transactional
     fun regTerms(regTermsReq: RegTermsReq): CommonResponse<String>{
-        termsRepository.persist(regTermsReq.toEntity())
+        val regInfoTerms = regTermsReq.toEntity()
+
+        termsRepository.persist(regInfoTerms)
 
         return CommonResponse("success")
     }
