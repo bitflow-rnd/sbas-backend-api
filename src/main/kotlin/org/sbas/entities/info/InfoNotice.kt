@@ -25,13 +25,13 @@ class InfoNotice(
     var isActive: Boolean? = null, // 활성화 여부(true = 활성, false = 비활성)
 
     @Column(name = "notice_type", nullable = false, length = 1)
-    var noticeType: Char? = null,
+    var noticeType: Char? = null, // 공지 타입(B = 일반, N = 공지)
 
     @Column(name = "is_unlimited", nullable = false)
-    var isUnlimited: Boolean? = null,
+    var isUnlimited: Boolean? = null, // 기간 무제한 여부(true = 무제한, false = 제한)
 
     @Column(name = "attc_grp_id")
-    var attcGrpId: String? = null
+    var attcGrpId: String? = null // 첨푸 그룹 ID
 
 ) : CommonEntity(), Serializable {
 
