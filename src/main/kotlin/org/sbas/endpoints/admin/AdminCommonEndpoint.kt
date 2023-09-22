@@ -4,7 +4,6 @@ import org.eclipse.microprofile.openapi.annotations.Operation
 import org.eclipse.microprofile.openapi.annotations.tags.Tag
 import org.jboss.logging.Logger
 import org.jboss.resteasy.reactive.RestPath
-import org.jboss.resteasy.reactive.multipart.FileUpload
 import org.sbas.dtos.BaseCodeGrpSaveReq
 import org.sbas.dtos.BaseCodeGrpUpdateReq
 import org.sbas.dtos.BaseCodeSaveReq
@@ -12,6 +11,7 @@ import org.sbas.dtos.BaseCodeUpdateReq
 import org.sbas.dtos.info.DelNoticeReq
 import org.sbas.dtos.info.ModNoticeReq
 import org.sbas.dtos.info.RegNoticeReq
+import org.sbas.dtos.info.RegTermsReq
 import org.sbas.services.CommonService
 import javax.inject.Inject
 import javax.validation.Valid
@@ -134,6 +134,13 @@ class AdminCommonEndpoint {
     @Path("del-notice")
     fun delNotice(delNoticeReq: DelNoticeReq): Response {
         return Response.ok(commonService.delNotice(delNoticeReq)).build()
+    }
+
+    @Operation(summary = "약관 등록", description = "약관 등록 API")
+    @POST
+    @Path("reg-terms")
+    fun regTerms(regTermsReq: RegTermsReq): Response {
+        return Response.ok(commonService.regTerms(regTermsReq)).build()
     }
 
 }
