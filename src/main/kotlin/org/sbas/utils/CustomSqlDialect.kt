@@ -14,5 +14,6 @@ class CustomSqlDialect : PostgreSQL10Dialect() {
         registerFunction("fn_get_dstr_cd2_nm", StandardSQLFunction("fn_get_dstr_cd2_nm", StandardBasicTypes.STRING))
         registerFunction("fn_get_age", StandardSQLFunction("fn_get_age", StandardBasicTypes.INTEGER))
         registerFunction("fn_find_chrg_inst", StandardSQLFunction("fn_find_chrg_inst", StandardBasicTypes.STRING))
+        registerFunction("fn_like_any", StandardSQLFunction("fn_like_any", StandardBasicTypes.BOOLEAN))
     }
 }

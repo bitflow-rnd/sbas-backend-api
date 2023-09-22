@@ -67,12 +67,12 @@ class BdasReqRepository : PanacheRepositoryBase<BdasReq, BdasReqId> {
     private fun conditionAndOffset(param: BdasListSearchParam): Pair<String, Int> {
         var cond = param.ptNm?.run { " and (pt.ptNm like '%$this%' " } ?: "and (1=1"
         cond += param.rrno1?.run { " or pt.rrno1 like '%$this%' " } ?: ""
-        cond += param.mpno?.run { " or pt.mpno like '%$this%') " } ?: ") "
+        cond += param.mpno?.run { " or pt.mpno like '%$this%') " } ?: ")"
 
-        cond += param.ptTypeCd?.run { " and br.ptTypeCd = '$this' " } ?: ""
-        cond += param.svrtTypeCd?.run { " and br.svrtTypeCd in ('${this.split(';').joinToString("', '")}') " } ?: ""
-        cond += param.gndr?.run { " and pt.gndr in ('${this.split(';').joinToString("', '")}') " } ?: ""
-        cond += param.bedStatCd?.run { " and br.bedStatCd in ('${this.split(';').joinToString("', '")}') " } ?: ""
+        cond += param.ptTypeCd?.run { " and fn_like_any(br.ptTypeCd, '{%${this.split(',').joinToString("%, %")}%}') = true " } ?: ""
+        cond += param.svrtTypeCd?.run { " and br.svrtTypeCd in ('${this.split(',').joinToString("', '")}') " } ?: ""
+        cond += param.gndr?.run { " and pt.gndr in ('${this.split(',').joinToString("', '")}') " } ?: ""
+        cond += param.reqBedTypeCd?.run { " and br.reqBedTypeCd in ('${this.split(',').joinToString("', '")}') " } ?: ""
 
         cond += when {
             param.fromAge != null && param.toAge != null -> " and fn_get_age(pt.rrno1, pt.rrno2) between $this and ${param.toAge} "
