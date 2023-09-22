@@ -12,8 +12,6 @@ data class RegTermsReq(
     val termsType: String,
     val detail: String,
 ) {
-    @Inject
-    private lateinit var termsRepository: InfoTermsRepository
 
     fun toEntity(version: String): InfoTerms {
         var id = InfoTermsId(termsType = termsType, termsVersion = version)
