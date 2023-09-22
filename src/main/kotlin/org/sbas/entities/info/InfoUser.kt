@@ -1,6 +1,7 @@
 package org.sbas.entities.info
 
-import org.sbas.constants.enums.UserStatCd
+import org.sbas.constants.enums.*
+import org.sbas.dtos.info.InfoUserUpdateReq
 import org.sbas.entities.CommonEntity
 import java.time.Instant
 import javax.persistence.*
@@ -34,12 +35,12 @@ class InfoUser(
     var telno: String, // 전화번호
 
     @Column(name = "job_cd", nullable = false, length = 8)
-    var jobCd: String? = null, // 직무 코드
+    var jobCd: String, // 직무 코드
 
-    @Column(name = "ocp_cd", nullable = false, length = 8)
+    @Column(name = "ocp_cd", length = 8)
     var ocpCd: String? = null, // 직종 코드
 
-    @Column(name = "pt_type_cd", length = 256)
+    @Column(name = "pt_type_cd", length = 250)
     var ptTypeCd: String? = null, // 환자 유형 코드
 
     @Column(name = "inst_type_cd", nullable = false, length = 10)
@@ -95,5 +96,35 @@ class InfoUser(
     fun setRgstAndUpdtUserIdTo(userId: String?) {
         rgstUserId = userId
         updtUserId = userId
+    }
+
+    fun changePasswordTo(pw: String) {
+        this.pw = pw
+    }
+
+    fun changeTelnoTo(telno: String) {
+        this.telno = telno
+    }
+
+    fun updateTo(request: InfoUserUpdateReq) {
+        this.pw = request.pw
+        this.userNm = request.userNm
+        this.gndr = request.gndr
+        this.telno = request.telno
+        this.jobCd = request.jobCd
+        this.ocpCd = request.ocpCd
+        this.ptTypeCd = request.ptTypeCd
+        this.instTypeCd = request.instTypeCd
+        this.instId = request.instId
+        this.instNm = request.instNm
+        this.dutyDstr1Cd = request.dutyDstr1Cd
+        this.dutyDstr2Cd = request.dutyDstr2Cd
+        this.attcId = request.attcId
+        this.btDt = request.btDt
+        this.authCd = request.authCd
+    }
+
+    fun plusPasswordErrorCount() {
+        this.pwErrCnt = pwErrCnt?.plus(1)
     }
 }
