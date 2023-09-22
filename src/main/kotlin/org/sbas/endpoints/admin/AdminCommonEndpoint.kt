@@ -4,6 +4,7 @@ import org.eclipse.microprofile.openapi.annotations.Operation
 import org.eclipse.microprofile.openapi.annotations.tags.Tag
 import org.jboss.logging.Logger
 import org.jboss.resteasy.reactive.RestPath
+import org.jboss.resteasy.reactive.multipart.FileUpload
 import org.sbas.dtos.BaseCodeGrpSaveReq
 import org.sbas.dtos.BaseCodeGrpUpdateReq
 import org.sbas.dtos.BaseCodeSaveReq
@@ -117,8 +118,8 @@ class AdminCommonEndpoint {
     @Operation(summary = "공지사항 등록", description = "공지사항 등록 API")
     @POST
     @Path("reg-notice")
-    fun regNotice(reqNoticeReq: RegNoticeReq): Response{
-        return Response.ok(commonService.regNotice(reqNoticeReq)).build()
+    fun regNotice(reqNoticeReq: RegNoticeReq, files: MutableList<FileUpload>?): Response{
+        return Response.ok(commonService.regNotice(reqNoticeReq, files)).build()
     }
 
     @Operation(summary = "공지사항 수정", description = "공지사항 수정 API")
