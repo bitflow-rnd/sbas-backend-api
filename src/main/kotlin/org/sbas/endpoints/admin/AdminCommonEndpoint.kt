@@ -118,8 +118,8 @@ class AdminCommonEndpoint {
     @Operation(summary = "공지사항 등록", description = "공지사항 등록 API")
     @POST
     @Path("reg-notice")
-    fun regNotice(reqNoticeReq: RegNoticeReq, files: MutableList<FileUpload>?): Response{
-        return Response.ok(commonService.regNotice(reqNoticeReq, files)).build()
+    fun regNotice(reqNoticeReq: RegNoticeReq): Response{
+        return Response.ok(commonService.regNotice(reqNoticeReq)).build()
     }
 
     @Operation(summary = "공지사항 수정", description = "공지사항 수정 API")

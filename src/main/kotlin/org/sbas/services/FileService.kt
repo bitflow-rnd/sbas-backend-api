@@ -55,11 +55,15 @@ class FileService {
         }
 
         val result = mutableListOf<String>()
+        var attcGrpId = ""
         param2.forEach {
             if (it.size() == 0L) {
                 throw CustomizedException("파일을 등록하세요.", Response.Status.BAD_REQUEST)
             }
-            val attcGrpId = baseAttcRepository.getNextValAttcGrpId()
+            if(attcGrpId == ""){
+                attcGrpId = baseAttcRepository.getNextValAttcGrpId()
+            }
+
             val fileDto = fileHandler.createPublicFile(it)
 
             val dotPos = fileDto.fileName.lastIndexOf(".")
@@ -83,11 +87,14 @@ class FileService {
         }
 
         val result = mutableListOf<String>()
+        var attcGrpId = ""
         param2.forEach {
             if (it.size() == 0L) {
                 throw CustomizedException("파일을 등록하세요.", Response.Status.BAD_REQUEST)
             }
-            val attcGrpId = baseAttcRepository.getNextValAttcGrpId()
+            if(attcGrpId == ""){
+                attcGrpId = baseAttcRepository.getNextValAttcGrpId()
+            }
             val fileDto = fileHandler.createPrivateFile(it)
 
             val dotPos = fileDto.fileName.lastIndexOf(".")

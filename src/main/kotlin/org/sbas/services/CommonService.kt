@@ -205,37 +205,8 @@ class CommonService {
      * 공지사항 등록
      */
     @Transactional
-    fun regNotice(regNoticeReq: RegNoticeReq, files: MutableList<FileUpload>?): CommonResponse<String> {
+    fun regNotice(regNoticeReq: RegNoticeReq): CommonResponse<String> {
         val infoNotice = regNoticeReq.toEntity()
-
-        if (!files.isNullOrEmpty()) {
-            val result = mutableListOf<String>()
-
-            val attcGrpId = baseAttcRepository.getNextValAttcGrpId()
-
-            files.forEach {
-                if (it.size() === 0L) {
-                    throw CustomizedException("파일을 등록하세요.", Response.Status.BAD_REQUEST)
-                }
-
-                val fileDto = fileHandler.createPrivateFile(it)
-
-                val dotPos = fileDto.fileName.lastIndexOf(".")
-                val fileExt = fileDto.fileName.substring(dotPos + 1).lowercase()
-
-                val fileTypeCd = fileHandler.getFileTypeCd(fileExt)
-                val baseAttc = fileDto.toPrivateEntity(
-                    attcGrpId = attcGrpId,
-                    fileTypeCd = fileTypeCd,
-                    rmk = null
-                )
-
-                baseAttcRepository.persist(baseAttc)
-                result.add(baseAttc.attcId)
-            }
-
-            infoNotice.attcGrpId = attcGrpId
-        }
 
         noticeRepository.persist(infoNotice)
 
