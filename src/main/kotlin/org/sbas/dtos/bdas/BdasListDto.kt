@@ -86,6 +86,6 @@ data class BdasListSearchParam(
     @field: QueryParam("gndr") var gndr: String?,
     @field: QueryParam("fromAge") var fromAge: Int?,
     @field: QueryParam("toAge") var toAge: Int?,
-    @field: QueryParam("bedStatCd") var bedStatCd: String?,
+    @field: QueryParam("reqBedTypeCd") var reqBedTypeCd: String?,
     @field: QueryParam("page") var page: Int?,
 )
