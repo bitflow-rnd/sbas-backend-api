@@ -127,6 +127,8 @@ data class InfoHospWithUser(
 data class InfoHospId(
     val hospId: String,
     val hpId: String,
+    val dstrCd1: String?,
+    val dstrCd1Nm: String?,
 )
 
 data class AvalHospDto(

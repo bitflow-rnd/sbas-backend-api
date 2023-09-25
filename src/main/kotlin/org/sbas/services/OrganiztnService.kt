@@ -4,16 +4,16 @@ import com.fasterxml.jackson.databind.ObjectMapper
 import org.jboss.logging.Logger
 import org.jboss.resteasy.reactive.RestResponse
 import org.jboss.resteasy.reactive.multipart.FileUpload
+import org.json.JSONObject
 import org.sbas.constants.SbasConst
 import org.sbas.dtos.info.*
 import org.sbas.entities.info.InfoCrewId
 import org.sbas.handlers.FileHandler
 import org.sbas.handlers.GeocodingHandler
 import org.sbas.repositories.*
-import org.sbas.responses.CommonResponse
 import org.sbas.responses.CommonListResponse
-import org.sbas.restparameters.EgenApiBassInfoParams
-import org.sbas.restparameters.NaverGeocodingApiParams
+import org.sbas.responses.CommonResponse
+import org.sbas.restparameters.*
 import org.sbas.utils.CustomizedException
 import org.sbas.utils.StringUtils
 import java.io.File
@@ -84,12 +84,61 @@ class OrganiztnService {
     /**
      * 의료기관 상세 조회
      */
-    fun findInfoHospById(hpId: String) : CommonResponse<InfoHospResponse> {
+    fun findInfoHospById(hpId: String) : CommonResponse<HospInfoRes> {
         val jsonObject = egenService.getHsptlBassInfoInqire(param = EgenApiBassInfoParams(hpId = hpId))
-        val item = jsonObject.getJSONObject("item")
-        val readValue = objectMapper.readValue(item.toString(), InfoHospResponse::class.java)
 
-        return CommonResponse(readValue)
+        val item = jsonObject.getJSONObject("item")
+        val hospBasicInfo = objectMapper.readValue(item.toString(), HospBasicInfo::class.java)
+
+        val jsonObject2 = egenService.getHsptlMdcncListInfoInqire(param = EgenApiListInfoParams(qn = hospBasicInfo.dutyName))
+        val bassInfo = jsonObject2.getJSONArray("item").first {
+            it as JSONObject
+            it.getString("hpid") == hospBasicInfo.hpid
+        } as JSONObject
+
+        val jsonObject3 = egenService.getHsptlMdcncLcinfoInqire(param = EgenApiLcInfoParams(wgs84Lat = hospBasicInfo.wgs84Lat!!, wgs84Lon = hospBasicInfo.wgs84Lon!!))
+        val lcInfo = jsonObject3.getJSONArray("item").first {
+            it as JSONObject
+            it.getString("hpid") == hospBasicInfo.hpid
+        } as JSONObject
+
+        hospBasicInfo.dutyDiv = bassInfo.getString("dutyDiv")
+        hospBasicInfo.dutyDivNam = bassInfo.getString("dutyDivNam")
+        hospBasicInfo.dutyEmcls = bassInfo.getString("dutyEmcls")
+        hospBasicInfo.dutyEmclsName = bassInfo.getString("dutyEmclsName")
+        hospBasicInfo.dutyFax = lcInfo.getString("dutyFax")
+        hospBasicInfo.startTime = lcInfo.getString("startTime").replaceFirst(Regex("(\\d{2})(\\d{2})"), "$1:$2")
+        hospBasicInfo.endTime = lcInfo.getInt("endTime").toString().replaceFirst(Regex("(\\d{2})(\\d{2})"), "$1:$2")
+
+        val hospDetailInfo = findHospDetailInfo(hpId)
+
+        return CommonResponse(HospInfoRes(hospBasicInfo, hospDetailInfo))
+    }
+
+    fun findHospDetailInfo(hpId: String): HospDetailInfo {
+        val infoHosp = infoHospRepository.findInfoHospByHpId(hpId)
+
+        val stage1 = if (infoHosp.dstrCd1Nm == "강원도") {
+            "강원특별자치도"
+        } else {
+            infoHosp.dstrCd1Nm!!
+        }
+
+        val jsonObject = egenService.getEmrrmRltmUsefulSckbdInfoInqire(
+            param = EgenApiEmrrmRltmUsefulSckbdInfoParams(
+                stage1 = stage1,
+                stage2 = null,
+                pageNo = "1",
+                numOfRows = "100",
+            )
+        )
+
+        val detailInfo = jsonObject.first.getJSONArray("item").first {
+            it as JSONObject
+            it.getString("hpid") == hpId
+        } as JSONObject
+
+        return objectMapper.readValue(detailInfo.toString(), HospDetailInfo::class.java)
     }
 
     /**
