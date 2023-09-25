@@ -3,8 +3,13 @@ package org.sbas.dtos.info
 import com.fasterxml.jackson.annotation.JsonProperty
 import org.sbas.utils.annotation.NoArg
 
+data class HospInfoRes(
+    val hospBasicInfo: HospBasicInfo,
+    val hospDetailInfo: HospDetailInfo,
+)
+
 @NoArg
-data class InfoHospResponse(
+data class HospBasicInfo(
     var hpid: String?,
     var dutyName: String?,
     var dutyAddr: String?,
@@ -159,3 +164,63 @@ data class InfoHospResponse(
         dutyTime8s = dutyTime8s?.replaceFirst(Regex("(\\d{2})(\\d{2})"), "$1:$2")
     }
 }
+
+data class HospDetailInfo(
+    val dutytel3: String?, // 응급실전화
+    val hvdnm: String?, // 당직의
+    val hv1: String?, // 당직의 직통연락처
+    val hvamyn: String?, // 구급차
+    val hvctayn: String?, // CT
+    val hvmriayn: String?, // MRI
+    val hvangioayn: String?, // 조영촬영기
+    val hvventiayn: String?, // 인공호흡기가용
+    val hv5: String?, // 신경과입원실
+    val hv7: String?, // 약물중환자
+    val hv10: String?, // VENTI(소아)
+    val hv11: String?, // 인큐베이터(보육기)
+    val hv42: String?, // 분만실
+
+    val hvec: String?, // 응급실
+    val hvoc: String?, // 수술실
+    val hvcc: String?, // 신경중환자
+    val hvncc: String?, // 신생중환자
+    val hvccc: String?, // 흉부중환자
+    val hvicc: String?, // 일반중환자
+    val hvgc: String?, // 입원실
+    val hv2: String?, // 내과중환자실
+    val hv3: String?, // 외과중환자실
+    val hv4: String?, // 외과입원실
+    val hv6: String?, // 신경외과중환자실
+    val hv8: String?, // 화상중환자
+    val hv9: String?, // 외상중환자
+
+    val hv13: String?, // 격리진료구역 음압격리 병상
+    val hv14: String?, // 격리진료구역 일반격리 병상
+    val hv15: String?, // 소아 음압격리병상
+    val hv16: String?, // 소아 일반격리병상
+    val hv17: String?, // 응급전용 중환자실 음압 격리병상
+    val hv18: String?, // 응급전용 중환자실 일반 격리병상
+    val hv19: String?, // 응급전용 입원실 음압 격리병상
+    val hv21: String?, // 응급전용 입원실 일반격리 병상
+    val hv22: String?, // 감염병 전담병상 중환자실
+    val hv23: String?, // 감염병 전담병상 중환자실 내 음압격리병상
+    val hv24: String?, // 감염병 전담병상 중증 일반병상
+    val hv25: String?, // 감염병 전담병상 준-중증 일반병상
+    val hv26: String?, // 감염병 전담병상 중등증 일반병상
+    val hv27: String?, // 코호트 격리구역 병상
+    val hv28: String?, // 응급실 소아 병상
+    val hv29: String?, // 응급실 음압 격리 병상
+    val hv30: String?, // 응급실 일반 격리 병상
+    val hv31: String?, // 응급전용 중환자실
+    val hv32: String?, // 소아 중환자실
+    val hv33: String?, // 소아응급전용 중환자실 병상
+    val hv34: String?, // 심장내과 중환자실
+    val hv35: String?, // 중환자실 내 음압 격리 병상
+    val hv36: String?, // 응급전용 입원실
+    val hv37: String?, // 소아응급전용 입원 병상
+    val hv38: String?, // 외상전용 입원실
+    val hv39: String?, // 외상전용 수술실
+    val hv40: String?, // 정신과 폐쇄 병상
+    val hv41: String?, // 음압 격리 병상
+    val hv43: String?, // 화상전용 처치실
+)

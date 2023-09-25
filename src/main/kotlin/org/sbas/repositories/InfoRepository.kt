@@ -200,7 +200,8 @@ class InfoHospRepository : PanacheRepositoryBase<InfoHosp, String> {
     fun findInfoHospByHpId(hpId: String): InfoHospId {
         val infoHospId = queryFactory.listQuery<InfoHospId> {
             selectMulti(
-                col(InfoHosp::hospId), col(InfoHosp::hpId)
+                col(InfoHosp::hospId), col(InfoHosp::hpId), col(InfoHosp::dstrCd1),
+                function("fn_get_cd_nm", String::class.java, literal("SIDO"), col(InfoHosp::dstrCd1)),
             )
             from(entity(InfoHosp::class))
             where(
