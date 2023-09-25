@@ -147,4 +147,11 @@ class AdminCommonEndpoint {
         return Response.ok(commonService.modTerms(modTermsReq)).build()
     }
 
+    @Operation(summary = "약관 삭제", description = "약관 삭제 API")
+    @POST
+    @Path("del-terms")
+    fun delTerms(delTermsReq: DelTermsReq): Response {
+        return Response.ok(commonService.delTerms(delTermsReq)).build()
+    }
+
 }

@@ -270,6 +270,19 @@ class CommonService {
     }
 
     /**
+     * 약관 삭제
+     */
+    @Transactional
+    fun delTerms(delTermsReq: DelTermsReq): CommonResponse<String>{
+        val termsId = InfoTermsId(termsType = delTermsReq.termsType, termsVersion = delTermsReq.termsVersion)
+        val findTerms = termsRepository.findById(termsId) ?: throw NotFoundException("No terms and conditions of this type found")
+
+        termsRepository.delete(findTerms)
+
+        return CommonResponse("${findTerms.termsName} 버전 ${termsId.termsVersion} 삭제 완료")
+    }
+
+    /**
      * BaseCode -> BaseCodeResponse 변환
      */
     private fun toBaseCodeResponse(baseCodeList: List<BaseCode>) =
