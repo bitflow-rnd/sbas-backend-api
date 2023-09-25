@@ -27,3 +27,9 @@ data class RegTermsReq(
         )
     }
 }
+data class ModTermsReq(
+    @field: [NotBlank(message = "약관 타입을 설정해 주세요.") Length(max = 2)]
+    val termsType: String,
+    val termsVersion: String?,
+    val detail: String,
+)

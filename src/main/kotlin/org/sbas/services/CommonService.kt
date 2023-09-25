@@ -3,13 +3,11 @@ package org.sbas.services
 import io.quarkus.cache.CacheKey
 import org.jboss.logging.Logger
 import org.sbas.dtos.*
-import org.sbas.dtos.info.DelNoticeReq
-import org.sbas.dtos.info.ModNoticeReq
-import org.sbas.dtos.info.RegNoticeReq
-import org.sbas.dtos.info.RegTermsReq
+import org.sbas.dtos.info.*
 import org.sbas.entities.base.BaseCode
 import org.sbas.entities.base.BaseCodeEgen
 import org.sbas.entities.base.BaseCodeId
+import org.sbas.entities.info.InfoTermsId
 import org.sbas.repositories.BaseCodeEgenRepository
 import org.sbas.repositories.BaseCodeRepository
 import org.sbas.repositories.InfoTermsRepository
@@ -245,7 +243,7 @@ class CommonService {
      */
     @Transactional
     fun regTerms(regTermsReq: RegTermsReq): CommonResponse<String>{
-        val maxTermsVersion = termsRepository.findByTermsType(regTermsReq.termsType)
+        val maxTermsVersion = termsRepository.findTermsVersionByTermsType(regTermsReq.termsType)
         val nextVersion = (maxTermsVersion.toIntOrNull() ?: 0) + 1
         val formattedVersion = nextVersion.toString().padStart(2, '0')
 
@@ -254,6 +252,21 @@ class CommonService {
         termsRepository.persist(regInfoTerms)
 
         return CommonResponse("success")
+    }
+
+    /**
+     * 약관 수정
+     */
+    @Transactional
+    fun modTerms(modTermsReq: ModTermsReq): CommonResponse<String>{
+        val termsVersion = modTermsReq.termsVersion ?: termsRepository.findTermsVersionByTermsType(modTermsReq.termsType)
+        val termsId = InfoTermsId(termsType = modTermsReq.termsType, termsVersion = termsVersion)
+
+        val findTerms = termsRepository.findById(termsId) ?: throw NotFoundException("No terms and conditions of this type found")
+
+        findTerms.detail = modTermsReq.detail
+
+        return CommonResponse("${findTerms.termsName} 내용 수정 완료")
     }
 
     /**

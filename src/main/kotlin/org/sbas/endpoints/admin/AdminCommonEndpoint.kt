@@ -8,10 +8,7 @@ import org.sbas.dtos.BaseCodeGrpSaveReq
 import org.sbas.dtos.BaseCodeGrpUpdateReq
 import org.sbas.dtos.BaseCodeSaveReq
 import org.sbas.dtos.BaseCodeUpdateReq
-import org.sbas.dtos.info.DelNoticeReq
-import org.sbas.dtos.info.ModNoticeReq
-import org.sbas.dtos.info.RegNoticeReq
-import org.sbas.dtos.info.RegTermsReq
+import org.sbas.dtos.info.*
 import org.sbas.services.CommonService
 import javax.inject.Inject
 import javax.validation.Valid
@@ -141,6 +138,13 @@ class AdminCommonEndpoint {
     @Path("reg-terms")
     fun regTerms(regTermsReq: RegTermsReq): Response {
         return Response.ok(commonService.regTerms(regTermsReq)).build()
+    }
+
+    @Operation(summary = "약관 수정", description = "약관 수정(버전 변동 X) API")
+    @POST
+    @Path("mod-terms")
+    fun modTerms(modTermsReq: ModTermsReq): Response {
+        return Response.ok(commonService.modTerms(modTermsReq)).build()
     }
 
 }
