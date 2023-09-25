@@ -9,10 +9,14 @@ import javax.enterprise.context.ApplicationScoped
 class InfoTermsRepository : PanacheRepositoryBase<InfoTerms, InfoTermsId> {
 
     fun findTermsVersionByTermsType(termsType: String): String {
-        var resultList = find("terms_type = '$termsType'").list()
+        val resultList = find("terms_type = '$termsType'").list()
 
         val maxVersion = resultList.maxByOrNull { it.id.termsVersion?.toIntOrNull() ?: 0 }
         return maxVersion?.id?.termsVersion ?: "00"
+    }
+
+    fun findTermsListByTermsType(termsType: String): List<InfoTerms> {
+        return find("terms_type = '$termsType'").list()
     }
 
 }

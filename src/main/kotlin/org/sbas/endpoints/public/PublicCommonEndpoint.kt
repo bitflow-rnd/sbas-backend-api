@@ -100,11 +100,11 @@ class PublicCommonEndpoint {
         return Response.ok(fileService.getImage(attcId)).build()
     }
 
-    @Operation(summary = "개인정보수집동의 목록", description = "")
+    @Operation(summary = "약관 목록", description = "약관 목록 API")
     @GET
-    @Path("prvinfocollctagrees")
-    fun prvinfocollctagrees(): Response {
-        return Response.ok().build()
+    @Path("terms/{termsType}")
+    fun getTermsByTermsType(@RestPath termsType: String): Response {
+        return Response.ok(commonService.getTermsByTermsType(termsType)).build()
     }
 
     @Operation(summary = "개인정보수집동의 상세", description = "")
