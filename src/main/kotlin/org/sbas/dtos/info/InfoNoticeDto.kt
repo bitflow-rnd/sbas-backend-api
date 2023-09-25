@@ -40,6 +40,10 @@ data class ModNoticeReq(
     val content: String?,
     val isActive: Boolean?,
     val noticeType: Char?,
+    val startNoticeDt: String,
+    val startNoticeTm: String,
+    val endNoticeDt: String,
+    val endNoticeTm: String,
     val isUnlimited: Boolean?,
     val attcGrpId: String?,
 )

@@ -223,6 +223,10 @@ class CommonService {
         findNotice.content = modNoticeReq.content
         findNotice.isActive = modNoticeReq.isActive
         findNotice.noticeType = modNoticeReq.noticeType
+        findNotice.startNoticeDt = modNoticeReq.startNoticeDt
+        findNotice.startNoticeTm = modNoticeReq.startNoticeTm
+        findNotice.endNoticeDt = modNoticeReq.endNoticeDt
+        findNotice.endNoticeTm = modNoticeReq.endNoticeTm
         findNotice.isUnlimited = modNoticeReq.isUnlimited
         findNotice.attcGrpId = modNoticeReq.attcGrpId
 
