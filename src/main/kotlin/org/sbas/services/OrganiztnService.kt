@@ -110,8 +110,8 @@ class OrganiztnService {
         infoHospResponse.dutyEmcls = bassInfo.getString("dutyEmcls")
         infoHospResponse.dutyEmclsName = bassInfo.getString("dutyEmclsName")
         infoHospResponse.dutyFax = lcInfo.getString("dutyFax")
-        infoHospResponse.startTime = lcInfo.getInt("startTime")
-        infoHospResponse.endTime = lcInfo.getInt("endTime")
+        infoHospResponse.startTime = lcInfo.getString("startTime").replaceFirst(Regex("(\\d{2})(\\d{2})"), "$1:$2")
+        infoHospResponse.endTime = lcInfo.getInt("endTime").toString().replaceFirst(Regex("(\\d{2})(\\d{2})"), "$1:$2")
 
         return CommonResponse(infoHospResponse)
     }

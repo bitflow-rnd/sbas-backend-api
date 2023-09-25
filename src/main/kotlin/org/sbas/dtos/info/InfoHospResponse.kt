@@ -123,8 +123,8 @@ data class InfoHospResponse(
     var dutyEmcls: String?,
     var dutyEmclsName: String?,
     var dutyFax: String?,
-    var startTime: Int?,
-    var endTime: Int?,
+    var startTime: String?,
+    var endTime: String?,
 ) {
     init {
         mkioskTy25 = mkioskTy25?.trim()
@@ -140,5 +140,22 @@ data class InfoHospResponse(
         mkioskTy10 = mkioskTy10?.trim()
         mkioskTy11 = mkioskTy11?.trim()
         dgidIdNameList = dgidIdName?.split(",")
+
+        dutyTime1c = dutyTime1c?.replaceFirst(Regex("(\\d{2})(\\d{2})"), "$1:$2")
+        dutyTime2c = dutyTime2c?.replaceFirst(Regex("(\\d{2})(\\d{2})"), "$1:$2")
+        dutyTime3c = dutyTime3c?.replaceFirst(Regex("(\\d{2})(\\d{2})"), "$1:$2")
+        dutyTime4c = dutyTime4c?.replaceFirst(Regex("(\\d{2})(\\d{2})"), "$1:$2")
+        dutyTime5c = dutyTime5c?.replaceFirst(Regex("(\\d{2})(\\d{2})"), "$1:$2")
+        dutyTime6c = dutyTime6c?.replaceFirst(Regex("(\\d{2})(\\d{2})"), "$1:$2")
+        dutyTime7c = dutyTime7c?.replaceFirst(Regex("(\\d{2})(\\d{2})"), "$1:$2")
+        dutyTime8c = dutyTime8c?.replaceFirst(Regex("(\\d{2})(\\d{2})"), "$1:$2")
+        dutyTime1s = dutyTime1s?.replaceFirst(Regex("(\\d{2})(\\d{2})"), "$1:$2")
+        dutyTime2s = dutyTime2s?.replaceFirst(Regex("(\\d{2})(\\d{2})"), "$1:$2")
+        dutyTime3s = dutyTime3s?.replaceFirst(Regex("(\\d{2})(\\d{2})"), "$1:$2")
+        dutyTime4s = dutyTime4s?.replaceFirst(Regex("(\\d{2})(\\d{2})"), "$1:$2")
+        dutyTime5s = dutyTime5s?.replaceFirst(Regex("(\\d{2})(\\d{2})"), "$1:$2")
+        dutyTime6s = dutyTime6s?.replaceFirst(Regex("(\\d{2})(\\d{2})"), "$1:$2")
+        dutyTime7s = dutyTime7s?.replaceFirst(Regex("(\\d{2})(\\d{2})"), "$1:$2")
+        dutyTime8s = dutyTime8s?.replaceFirst(Regex("(\\d{2})(\\d{2})"), "$1:$2")
     }
 }
