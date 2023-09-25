@@ -307,8 +307,10 @@ class CommonService {
      * 약관 동의
      */
     @Transactional
-    fun termsAgree(agreeReq: TermsAgreementId): CommonResponse<String> {
-        val saveAgreement = TermsAgreement(id = agreeReq, agreeYn = "Y")
+    fun termsAgree(termsAgreeReq: TermsAgreeReq): CommonResponse<String> {
+        val termsVersion = termsRepository.findTermsVersionByTermsType(termsAgreeReq.termsType)
+        val termsId = TermsAgreementId(userId = termsAgreeReq.userId,termsType = termsAgreeReq.termsType, termsVersion = termsVersion)
+        val saveAgreement = TermsAgreement(id = termsId, agreeYn = "Y")
         termsAgreementRepository.persist(saveAgreement)
 
         return CommonResponse("success")

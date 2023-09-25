@@ -40,3 +40,11 @@ data class DelTermsReq(
     @field: [NotBlank(message = "약관 버전을 설정해 주세요.") Length(max = 2)]
     val termsVersion: String,
 )
+
+data class TermsAgreeReq(
+    @field: [NotBlank(message = "사용자 ID를 입력해 주세요.") Length(max = 2)]
+    val userId: String,
+    @field: [NotBlank(message = "약관 타입을 설정해 주세요.") Length(max = 2)]
+    val termsType: String,
+    val agreeYn: String,
+)

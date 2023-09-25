@@ -6,6 +6,7 @@ import org.jboss.logging.Logger
 import org.jboss.resteasy.reactive.RestForm
 import org.jboss.resteasy.reactive.RestPath
 import org.jboss.resteasy.reactive.multipart.FileUpload
+import org.sbas.dtos.info.TermsAgreeReq
 import org.sbas.entities.info.TermsAgreementId
 import org.sbas.services.CommonService
 import org.sbas.services.FileService
@@ -73,11 +74,11 @@ class PrivateCommonEndpoint {
         return Response.ok().build()
     }
 
-    @Operation(summary = "약관 동의", description = "약관 동의 API")
+    @Operation(summary = "약관 동의", description = "최신 버전 약관 동의 API")
     @POST
     @Path("terms/agree")
-    fun termsAgree(agreeReq: TermsAgreementId): Response {
-        return Response.ok(commonService.termsAgree(agreeReq)).build()
+    fun termsAgree(termsAgreeReq: TermsAgreeReq): Response {
+        return Response.ok(commonService.termsAgree(termsAgreeReq)).build()
     }
 
 }
