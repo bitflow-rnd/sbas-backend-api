@@ -9,10 +9,9 @@ import org.sbas.entities.base.BaseCodeEgen
 import org.sbas.entities.base.BaseCodeId
 import org.sbas.entities.info.InfoTerms
 import org.sbas.entities.info.InfoTermsId
-import org.sbas.repositories.BaseCodeEgenRepository
-import org.sbas.repositories.BaseCodeRepository
-import org.sbas.repositories.InfoTermsRepository
-import org.sbas.repositories.NoticeRepository
+import org.sbas.entities.info.TermsAgreement
+import org.sbas.entities.info.TermsAgreementId
+import org.sbas.repositories.*
 import org.sbas.responses.CommonResponse
 import org.sbas.utils.CustomizedException
 import javax.enterprise.context.ApplicationScoped
@@ -42,6 +41,9 @@ class CommonService {
 
     @Inject
     private lateinit var termsRepository: InfoTermsRepository
+
+    @Inject
+    private lateinit var termsAgreementRepository: TermsAgreementRepository
 
     /**
      * 공통코드 그룹 목록 조회
@@ -295,6 +297,17 @@ class CommonService {
         val findTermsList = termsRepository.findTermsListByTermsType(termsType)
 
         return CommonResponse(findTermsList)
+    }
+
+    /**
+     * 약관 동의
+     */
+    @Transactional
+    fun termsAgree(agreeReq: TermsAgreementId): CommonResponse<String> {
+        val saveAgreement = TermsAgreement(id = agreeReq, agreeYn = "Y")
+        termsAgreementRepository.persist(saveAgreement)
+
+        return CommonResponse("success")
     }
 
     /**
