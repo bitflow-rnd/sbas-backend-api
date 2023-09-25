@@ -75,7 +75,7 @@ class EgenService {
     /**
      * 병‧의원 목록정보 조회 및 저장
      */
-    fun getHsptlMdcncListInfoInqire(param: EgenApiListInfoParams): JSONObject {
+    fun getHsptlMdcncListInfoInqire(param: EgenApiListInfoParams): Pair<JSONObject, Int> {
         val jsonObject = JSONObject(
             egenRestClient.getHsptlMdcncListInfoInqire(
                 serviceKey = serviceKey,
@@ -85,7 +85,7 @@ class EgenService {
                 ord = param.ord, pageNo = param.pageNo, numOfRows = param.numOfRows
             )
         )
-        return extractBody(jsonObject)
+        return Pair(extractBody(jsonObject), extractTotalCount(jsonObject))
     }
 
     /**
@@ -235,7 +235,7 @@ class EgenService {
     fun saveHsptlMdcncList(param: EgenApiListInfoParams): CommonResponse<*> {
         var res: InfoHospSaveReq
         val jsonArray = try {
-            getHsptlMdcncListInfoInqire(param)
+            getHsptlMdcncListInfoInqire(param).first
         } catch (e: Exception) {
             return CommonResponse(e.message)
         }
@@ -302,7 +302,7 @@ class EgenService {
             for (i in (currentPage + 1)..searchNum) {
                 var res: InfoHospSaveReq
 
-                val jsonArray = getHsptlMdcncListInfoInqire(EgenApiListInfoParams(pageNo = i.toString(), numOfRows = "1000"))
+                val jsonArray = getHsptlMdcncListInfoInqire(EgenApiListInfoParams(pageNo = i.toString(), numOfRows = "1000")).first
                 jsonArray.getJSONArray("item").forEach {
                     res = ObjectMapper().readValue(it.toString(), InfoHospSaveReq::class.java)
                     val addr = baseCodeRepository.findCdIdByAddrNm(res.dutyAddr!!)
