@@ -27,6 +27,18 @@ class InfoNotice(
     @Column(name = "notice_type", nullable = false, length = 1)
     var noticeType: Char? = null, // 공지 타입(B = 일반, N = 공지)
 
+    @Column(name = "start_notice_dt", nullable = false, length = 8)
+    var startNoticeDt: String? = null, // 공지 시작 날짜
+
+    @Column(name = "start_notice_tm", nullable = false, length = 2)
+    var startNoticeTm: String? = null, // 공지 시작 시간
+
+    @Column(name = "end_notice_dt", nullable = false, length = 8)
+    var endNoticeDt: String? = null, // 공지 종료 날짜
+
+    @Column(name = "end_notice_tm", nullable = false, length = 2)
+    var endNoticeTm: String? = null, // 공지 종료 시간
+
     @Column(name = "is_unlimited", nullable = false)
     var isUnlimited: Boolean? = null, // 기간 무제한 여부(true = 무제한, false = 제한)
 

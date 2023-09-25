@@ -10,6 +10,10 @@ data class RegNoticeReq(
     val content: String?,
     val isActive: Boolean?,
     val noticeType: Char?,
+    val startNoticeDt: String,
+    val startNoticeTm: String,
+    val endNoticeDt: String,
+    val endNoticeTm: String,
     val isUnlimited: Boolean?,
     val attcGrpId: String?,
 ) {
@@ -19,6 +23,10 @@ data class RegNoticeReq(
             content = content,
             isActive = isActive ?: true,
             noticeType = noticeType,
+            startNoticeDt = startNoticeDt,
+            startNoticeTm = startNoticeTm,
+            endNoticeDt = endNoticeDt,
+            endNoticeTm = endNoticeTm,
             isUnlimited = isUnlimited ?: false,
             attcGrpId = attcGrpId
         )
