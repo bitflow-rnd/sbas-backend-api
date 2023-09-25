@@ -7,6 +7,7 @@ import org.sbas.dtos.info.*
 import org.sbas.entities.base.BaseCode
 import org.sbas.entities.base.BaseCodeEgen
 import org.sbas.entities.base.BaseCodeId
+import org.sbas.entities.info.InfoTerms
 import org.sbas.entities.info.InfoTermsId
 import org.sbas.repositories.BaseCodeEgenRepository
 import org.sbas.repositories.BaseCodeRepository
@@ -181,6 +182,7 @@ class CommonService {
                 val findBaseCodeList = baseCodeRepository.findBaseCodeByCdGrpId(cdGrpId = cdGrpId)
                 toBaseCodeResponse(findBaseCodeList)
             }
+
             else -> throw NotFoundException("${cdGrpId}는 시/도의 코드 그룹 ID가 아닙니다.")
         }
     }
@@ -242,7 +244,7 @@ class CommonService {
      * 약관 등록
      */
     @Transactional
-    fun regTerms(regTermsReq: RegTermsReq): CommonResponse<String>{
+    fun regTerms(regTermsReq: RegTermsReq): CommonResponse<String> {
         val maxTermsVersion = termsRepository.findTermsVersionByTermsType(regTermsReq.termsType)
         val nextVersion = (maxTermsVersion.toIntOrNull() ?: 0) + 1
         val formattedVersion = nextVersion.toString().padStart(2, '0')
@@ -258,11 +260,13 @@ class CommonService {
      * 약관 수정
      */
     @Transactional
-    fun modTerms(modTermsReq: ModTermsReq): CommonResponse<String>{
-        val termsVersion = modTermsReq.termsVersion ?: termsRepository.findTermsVersionByTermsType(modTermsReq.termsType)
+    fun modTerms(modTermsReq: ModTermsReq): CommonResponse<String> {
+        val termsVersion = modTermsReq.termsVersion
+            ?: termsRepository.findTermsVersionByTermsType(modTermsReq.termsType)
         val termsId = InfoTermsId(termsType = modTermsReq.termsType, termsVersion = termsVersion)
 
-        val findTerms = termsRepository.findById(termsId) ?: throw NotFoundException("No terms and conditions of this type found")
+        val findTerms = termsRepository.findById(termsId)
+            ?: throw NotFoundException("No terms and conditions of this type found")
 
         findTerms.detail = modTermsReq.detail
 
@@ -273,13 +277,24 @@ class CommonService {
      * 약관 삭제
      */
     @Transactional
-    fun delTerms(delTermsReq: DelTermsReq): CommonResponse<String>{
+    fun delTerms(delTermsReq: DelTermsReq): CommonResponse<String> {
         val termsId = InfoTermsId(termsType = delTermsReq.termsType, termsVersion = delTermsReq.termsVersion)
-        val findTerms = termsRepository.findById(termsId) ?: throw NotFoundException("No terms and conditions of this type found")
+        val findTerms = termsRepository.findById(termsId)
+            ?: throw NotFoundException("No terms and conditions of this type found")
 
         termsRepository.delete(findTerms)
 
         return CommonResponse("${findTerms.termsName} 버전 ${termsId.termsVersion} 삭제 완료")
+    }
+
+    /**
+     * 약관 목록
+     */
+    @Transactional
+    fun getTermsByTermsType(termsType: String): CommonResponse<List<InfoTerms>> {
+        val findTermsList = termsRepository.findTermsListByTermsType(termsType)
+
+        return CommonResponse(findTermsList)
     }
 
     /**
