@@ -90,25 +90,20 @@ class OrganiztnService {
         val item = jsonObject.getJSONObject("item")
         val hospBasicInfo = objectMapper.readValue(item.toString(), HospBasicInfo::class.java)
 
-        val jsonObject2 = egenService.getHsptlMdcncListInfoInqire(param = EgenApiListInfoParams(qn = hospBasicInfo.dutyName))
-        val bassInfo = jsonObject2.getJSONArray("item").first {
-            it as JSONObject
-            it.getString("hpid") == hospBasicInfo.hpid
-        } as JSONObject
-
-        val jsonObject3 = egenService.getHsptlMdcncLcinfoInqire(param = EgenApiLcInfoParams(wgs84Lat = hospBasicInfo.wgs84Lat!!, wgs84Lon = hospBasicInfo.wgs84Lon!!))
-        val lcInfo = jsonObject3.getJSONArray("item").first {
-            it as JSONObject
-            it.getString("hpid") == hospBasicInfo.hpid
-        } as JSONObject
+        val (jsonObject2, totalCount) = egenService.getHsptlMdcncListInfoInqire(param = EgenApiListInfoParams(qn = hospBasicInfo.dutyName))
+        val bassInfo = if (totalCount == 1) {
+            jsonObject2.getJSONObject("item")
+        } else {
+            jsonObject2.getJSONArray("item").first {
+                it as JSONObject
+                it.getString("hpid") == hospBasicInfo.hpid
+            } as JSONObject
+        }
 
         hospBasicInfo.dutyDiv = bassInfo.getString("dutyDiv")
         hospBasicInfo.dutyDivNam = bassInfo.getString("dutyDivNam")
         hospBasicInfo.dutyEmcls = bassInfo.getString("dutyEmcls")
         hospBasicInfo.dutyEmclsName = bassInfo.getString("dutyEmclsName")
-        hospBasicInfo.dutyFax = lcInfo.getString("dutyFax")
-        hospBasicInfo.startTime = lcInfo.getString("startTime").replaceFirst(Regex("(\\d{2})(\\d{2})"), "$1:$2")
-        hospBasicInfo.endTime = lcInfo.getInt("endTime").toString().replaceFirst(Regex("(\\d{2})(\\d{2})"), "$1:$2")
 
         val hospDetailInfo = findHospDetailInfo(hpId)
 
