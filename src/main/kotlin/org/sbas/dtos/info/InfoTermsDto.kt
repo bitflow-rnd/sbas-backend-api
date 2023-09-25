@@ -39,5 +39,4 @@ data class DelTermsReq(
     val termsType: String,
     @field: [NotBlank(message = "약관 버전을 설정해 주세요.") Length(max = 2)]
     val termsVersion: String,
-    val detail: String,
 )
