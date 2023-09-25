@@ -4,15 +4,18 @@ import com.fasterxml.jackson.databind.ObjectMapper
 import org.jboss.logging.Logger
 import org.jboss.resteasy.reactive.RestResponse
 import org.jboss.resteasy.reactive.multipart.FileUpload
+import org.json.JSONObject
 import org.sbas.constants.SbasConst
 import org.sbas.dtos.info.*
 import org.sbas.entities.info.InfoCrewId
 import org.sbas.handlers.FileHandler
 import org.sbas.handlers.GeocodingHandler
 import org.sbas.repositories.*
-import org.sbas.responses.CommonResponse
 import org.sbas.responses.CommonListResponse
+import org.sbas.responses.CommonResponse
 import org.sbas.restparameters.EgenApiBassInfoParams
+import org.sbas.restparameters.EgenApiLcInfoParams
+import org.sbas.restparameters.EgenApiListInfoParams
 import org.sbas.restparameters.NaverGeocodingApiParams
 import org.sbas.utils.CustomizedException
 import org.sbas.utils.StringUtils
@@ -86,10 +89,31 @@ class OrganiztnService {
      */
     fun findInfoHospById(hpId: String) : CommonResponse<InfoHospResponse> {
         val jsonObject = egenService.getHsptlBassInfoInqire(param = EgenApiBassInfoParams(hpId = hpId))
-        val item = jsonObject.getJSONObject("item")
-        val readValue = objectMapper.readValue(item.toString(), InfoHospResponse::class.java)
 
-        return CommonResponse(readValue)
+        val item = jsonObject.getJSONObject("item")
+        val infoHospResponse = objectMapper.readValue(item.toString(), InfoHospResponse::class.java)
+
+        val jsonObject2 = egenService.getHsptlMdcncListInfoInqire(param = EgenApiListInfoParams(qn = infoHospResponse.dutyName))
+        val bassInfo = jsonObject2.getJSONArray("item").first {
+            it as JSONObject
+            it.getString("hpid") == infoHospResponse.hpid
+        } as JSONObject
+
+        val jsonObject3 = egenService.getHsptlMdcncLcinfoInqire(param = EgenApiLcInfoParams(wgs84Lat = infoHospResponse.wgs84Lat!!, wgs84Lon = infoHospResponse.wgs84Lon!!))
+        val lcInfo = jsonObject3.getJSONArray("item").first {
+            it as JSONObject
+            it.getString("hpid") == infoHospResponse.hpid
+        } as JSONObject
+
+        infoHospResponse.dutyDiv = bassInfo.getString("dutyDiv")
+        infoHospResponse.dutyDivNam = bassInfo.getString("dutyDivNam")
+        infoHospResponse.dutyEmcls = bassInfo.getString("dutyEmcls")
+        infoHospResponse.dutyEmclsName = bassInfo.getString("dutyEmclsName")
+        infoHospResponse.dutyFax = lcInfo.getString("dutyFax")
+        infoHospResponse.startTime = lcInfo.getInt("startTime")
+        infoHospResponse.endTime = lcInfo.getInt("endTime")
+
+        return CommonResponse(infoHospResponse)
     }
 
     /**

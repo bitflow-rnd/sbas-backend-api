@@ -41,29 +41,29 @@ data class InfoHospResponse(
     var dutyTime8s: String?, // 진료시간(공휴일)S
 
     @JsonProperty("MKioskTy25")
-    var mKioskTy25: String?, // 응급실(Emergency gatekeeper)
+    var mkioskTy25: String?, // 응급실(Emergency gatekeeper)
     @JsonProperty("MKioskTy1")
-    var mKioskTy1: String?, // 뇌출혈수술
+    var mkioskTy1: String?, // 뇌출혈수술
     @JsonProperty("MKioskTy2")
-    var mKioskTy2: String?, // 뇌경색의재관류
+    var mkioskTy2: String?, // 뇌경색의재관류
     @JsonProperty("MKioskTy3")
-    var mKioskTy3: String?, // 심근경색의재관류
+    var mkioskTy3: String?, // 심근경색의재관류
     @JsonProperty("MKioskTy4")
-    var mKioskTy4: String?, // 복부손상의수술
+    var mkioskTy4: String?, // 복부손상의수술
     @JsonProperty("MKioskTy5")
-    var mKioskTy5: String?,  // 사지접합의수술
+    var mkioskTy5: String?,  // 사지접합의수술
     @JsonProperty("MKioskTy6")
-    var mKioskTy6: String?,  // 응급내시경
+    var mkioskTy6: String?,  // 응급내시경
     @JsonProperty("MKioskTy7")
-    var mKioskTy7: String?,  // 응급투석
+    var mkioskTy7: String?,  // 응급투석
     @JsonProperty("MKioskTy8")
-    var mKioskTy8: String?,  // 조산산모
+    var mkioskTy8: String?,  // 조산산모
     @JsonProperty("MKioskTy9")
-    var mKioskTy9: String?,  // 정신질환자
+    var mkioskTy9: String?,  // 정신질환자
     @JsonProperty("MKioskTy10")
-    var mKioskTy10: String?, // 신생아
+    var mkioskTy10: String?, // 신생아
     @JsonProperty("MKioskTy11")
-    var mKioskTy11: String?, // 중증화상
+    var mkioskTy11: String?, // 중증화상
 
     var o001: String?, // 응급실 일반병상
     var o002: String?, // 응급실 소아 병상
@@ -107,6 +107,7 @@ data class InfoHospResponse(
     var wgs84Lon: String?, //    병원경도
     var wgs84Lat: String?, //   병원위도
     var dgidIdName: String?, //   진료과목
+
     var hpbdn: String?, //   병상수
     var hpccuyn: String?, //   흉부중환자실
     var hpcuyn: String?, //   신경중환자실
@@ -116,20 +117,28 @@ data class InfoHospResponse(
     var hpnicuyn: String?, //   신생아중환자실
     var hpopyn: String?, //  수술실
     var dgidIdNameList: List<String>?,
+
+    var dutyDiv: String?,
+    var dutyDivNam: String?,
+    var dutyEmcls: String?,
+    var dutyEmclsName: String?,
+    var dutyFax: String?,
+    var startTime: Int?,
+    var endTime: Int?,
 ) {
     init {
-        mKioskTy25 = mKioskTy25?.trim()
-        mKioskTy1 = mKioskTy1?.trim()
-        mKioskTy2 = mKioskTy2?.trim()
-        mKioskTy3 = mKioskTy3?.trim()
-        mKioskTy4 = mKioskTy4?.trim()
-        mKioskTy5 = mKioskTy5?.trim()
-        mKioskTy6 = mKioskTy6?.trim()
-        mKioskTy7 = mKioskTy7?.trim()
-        mKioskTy8 = mKioskTy8?.trim()
-        mKioskTy9 = mKioskTy9?.trim()
-        mKioskTy10 = mKioskTy10?.trim()
-        mKioskTy11 = mKioskTy11?.trim()
+        mkioskTy25 = mkioskTy25?.trim()
+        mkioskTy1 = mkioskTy1?.trim()
+        mkioskTy2 = mkioskTy2?.trim()
+        mkioskTy3 = mkioskTy3?.trim()
+        mkioskTy4 = mkioskTy4?.trim()
+        mkioskTy5 = mkioskTy5?.trim()
+        mkioskTy6 = mkioskTy6?.trim()
+        mkioskTy7 = mkioskTy7?.trim()
+        mkioskTy8 = mkioskTy8?.trim()
+        mkioskTy9 = mkioskTy9?.trim()
+        mkioskTy10 = mkioskTy10?.trim()
+        mkioskTy11 = mkioskTy11?.trim()
         dgidIdNameList = dgidIdName?.split(",")
     }
 }
