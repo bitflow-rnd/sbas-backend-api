@@ -6,7 +6,7 @@ import org.sbas.constants.enums.BedStatCd
 import org.sbas.constants.enums.DprtTypeCd
 import org.sbas.constants.enums.TimeLineStatCd
 import org.sbas.dtos.bdas.*
-import org.sbas.dtos.info.InfoCrewRegDto
+import org.sbas.dtos.info.InfoCrewSaveReq
 import org.sbas.entities.bdas.BdasReqId
 import org.sbas.handlers.GeocodingHandler
 import org.sbas.repositories.*
@@ -359,9 +359,8 @@ class BedAssignService {
 
         // 구급대원 정보 저장
         val infoCrew1 = saveRequest.crew1Nm?.let {
-            InfoCrewRegDto(
+            InfoCrewSaveReq(
                 instId = saveRequest.instId,
-                crewId = 0,
                 crewNm = saveRequest.crew1Nm,
                 telno = saveRequest.crew1Telno,
                 rmk = null,
@@ -369,9 +368,8 @@ class BedAssignService {
             )
         }
         val infoCrew2 = saveRequest.crew2Nm?.let {
-            InfoCrewRegDto(
+            InfoCrewSaveReq(
                 instId = saveRequest.instId,
-                crewId = 0,
                 crewNm = saveRequest.crew2Nm,
                 telno = saveRequest.crew2Telno,
                 rmk = null,
@@ -379,9 +377,8 @@ class BedAssignService {
             )
         }
         val infoCrew3 = saveRequest.crew3Nm?.let {
-            InfoCrewRegDto(
+            InfoCrewSaveReq(
                 instId = saveRequest.instId,
-                crewId = 0,
                 crewNm = saveRequest.crew3Nm,
                 telno = saveRequest.crew3Telno,
                 rmk = null,
@@ -391,6 +388,7 @@ class BedAssignService {
 
         val latestCrewId = infoCrewRepository.findLatestCrewId(saveRequest.instId) ?: 0
         val list = mutableListOf(infoCrew1, infoCrew2, infoCrew3)
+
         val infoCrews = list.filterNotNull().mapIndexed { idx, it ->
             it.toEntityForInsert(latestCrewId + 1 + idx)
         }

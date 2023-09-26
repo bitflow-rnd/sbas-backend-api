@@ -5,7 +5,8 @@ import org.eclipse.microprofile.openapi.annotations.tags.Tag
 import org.jboss.logging.Logger
 import org.jboss.resteasy.reactive.RestPath
 import org.sbas.dtos.info.FireStatnSaveReq
-import org.sbas.dtos.info.InfoCrewRegDto
+import org.sbas.dtos.info.InfoCrewSaveReq
+import org.sbas.dtos.info.InfoCrewUpdateReq
 import org.sbas.dtos.info.InfoInstUpdateReq
 import org.sbas.entities.info.InfoCrewId
 import org.sbas.services.OrganiztnService
@@ -58,15 +59,15 @@ class AdminOrganiztnEndpoint{
     @Operation(summary = "구급대원 등록", description = "구급대원 등록 API")
     @POST
     @Path("reg-fireman")
-    fun regFireman(@Valid infoCrewRegDto: InfoCrewRegDto): Response {
-        return Response.ok(organiztnService.regFireman(infoCrewRegDto)).build()
+    fun regFireman(@Valid infoCrewSaveReq: InfoCrewSaveReq): Response {
+        return Response.ok(organiztnService.regFireman(infoCrewSaveReq)).build()
     }
 
     @Operation(summary = "구급대원 수정", description = "구급대원 수정 API")
     @POST
     @Path("mod-fireman")
-    fun modFireman(@Valid infoCrewRegDto: InfoCrewRegDto): Response {
-        return Response.ok(organiztnService.modFireman(infoCrewRegDto)).build()
+    fun modFireman(@Valid updateReq: InfoCrewUpdateReq): Response {
+        return Response.ok(organiztnService.modFireman(updateReq)).build()
     }
 
     @Operation(summary = "구급대원 삭제", description = "구급대원 삭제 API")

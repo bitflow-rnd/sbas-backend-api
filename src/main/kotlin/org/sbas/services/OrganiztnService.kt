@@ -247,10 +247,10 @@ class OrganiztnService {
      * 구급대원 등록
      */
     @Transactional
-    fun regFireman(infoCrewRegDto: InfoCrewRegDto): CommonResponse<String> {
-        val latestCrewId = infoCrewRepository.findLatestCrewId(infoCrewRegDto.instId) ?: 0
+    fun regFireman(infoCrewSaveReq: InfoCrewSaveReq): CommonResponse<String> {
+        val latestCrewId = infoCrewRepository.findLatestCrewId(infoCrewSaveReq.instId) ?: 0
 
-        infoCrewRepository.persist(infoCrewRegDto.toEntityForInsert(latestCrewId + 1))
+        infoCrewRepository.persist(infoCrewSaveReq.toEntityForInsert(latestCrewId + 1))
 
         return CommonResponse("등록 성공")
     }
@@ -259,11 +259,11 @@ class OrganiztnService {
      * 구급대원 수정
      */
     @Transactional
-    fun modFireman(infoCrewRegDto: InfoCrewRegDto): CommonResponse<String>{
-        val findInfoCrew = infoCrewRepository.findById(InfoCrewId(infoCrewRegDto.instId, infoCrewRegDto.crewId))
+    fun modFireman(updateReq: InfoCrewUpdateReq): CommonResponse<String>{
+        val findInfoCrew = infoCrewRepository.findById(InfoCrewId(updateReq.instId, updateReq.crewId))
             ?: throw CustomizedException("해당 구급대원이 없습니다.", RestResponse.Status.NOT_FOUND)
 
-        findInfoCrew.update(infoCrewRegDto)
+        findInfoCrew.update(updateReq)
 
         return CommonResponse("${findInfoCrew.crewNm} 구급대원의 정보가 수정되었습니다.")
     }
