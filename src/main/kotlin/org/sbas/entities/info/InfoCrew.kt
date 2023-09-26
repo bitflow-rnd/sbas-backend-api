@@ -1,7 +1,7 @@
 package org.sbas.entities.info
 
 import org.sbas.dtos.info.InfoCrewDto
-import org.sbas.dtos.info.InfoCrewRegDto
+import org.sbas.dtos.info.InfoCrewUpdateReq
 import org.sbas.entities.CommonEntity
 import java.io.Serializable
 import javax.persistence.*
@@ -13,12 +13,12 @@ import javax.persistence.*
 @Table(name = "info_crew")
 class InfoCrew(
     @EmbeddedId
-    var id: InfoCrewId? = null,
+    var id: InfoCrewId,
 
     @Column(name = "crew_nm", nullable = false, length = 10)
-    var crewNm: String? = null, // 구급대원 이름
+    var crewNm: String, // 구급대원 이름
 
-    @Column(name = "telno", nullable = false, length = 11)
+    @Column(name = "telno", length = 11)
     var telno: String? = null, // 전화번호
 
     @Column(name = "rmk", length = 200)
@@ -31,8 +31,8 @@ class InfoCrew(
 
     fun toInfoCrewDto(): InfoCrewDto {
         return InfoCrewDto(
-            instId = id!!.instId,
-            crewId = id!!.crewId,
+            instId = id.instId,
+            crewId = id.crewId,
             crewNm = crewNm,
             telno = telno,
             rmk = rmk,
@@ -40,9 +40,9 @@ class InfoCrew(
         )
     }
 
-    fun update(dto: InfoCrewRegDto) {
-        with(dto) {
-            crewNm?.let { this@InfoCrew.crewNm = it }
+    fun update(req: InfoCrewUpdateReq) {
+        with(req) {
+            crewNm.let { this@InfoCrew.crewNm = it }
             telno?.let { this@InfoCrew.telno = it }
             rmk?.let { this@InfoCrew.rmk = it }
             pstn?.let { this@InfoCrew.pstn = it }
@@ -53,10 +53,10 @@ class InfoCrew(
 @Embeddable
 data class InfoCrewId(
     @Column(name = "inst_id", nullable = false, length = 10)
-    var instId: String? = null, // 기관 ID
+    var instId: String, // 기관 ID
 
     @Column(name = "crew_id", nullable = false)
-    var crewId: Int? = null, // 구급대원 ID
+    var crewId: Int, // 구급대원 ID
 ) : Serializable {
 
     companion object {
