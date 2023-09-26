@@ -35,24 +35,42 @@ class TermsAgreementRepository : PanacheRepositoryBase<TermsAgreement, TermsAgre
     private lateinit var infoTermsRepository: InfoTermsRepository
 
     fun findAgreeTermsListByUserId(userId: String, termsType: String): List<AgreeTermsListResponse> {
-        val latestAgreeTerms = if(termsType == "00"){
-            find("user_id = '$userId' and agree_yn = 'Y'")
-                .stream()
-                .collect(groupingBy({ it.id.termsType }, maxBy(comparing { it.id.termsVersion })))
-        }else {
-            find("user_id = '$userId' and terms_type = '$termsType' and agree_yn = 'Y'")
-                .stream()
-                .collect(groupingBy({ it.id.termsType }, maxBy(comparing { it.id.termsVersion })))
-        }
+        val latestAgreeTerms =
+            if (termsType == "00") {
+                find("user_id = '$userId' and agree_yn = 'Y'")
+                    .stream()
+                    .collect(groupingBy({ it.id.termsType }, maxBy(comparing { it.id.termsVersion })))
+            } else {
+                find("user_id = '$userId' and terms_type = '$termsType' and agree_yn = 'Y'")
+                    .stream()
+                    .collect(groupingBy({ it.id.termsType }, maxBy(comparing { it.id.termsVersion })))
+            }
+        val latestVersionTerms =
+            if (termsType == "00") {
+                infoTermsRepository.findAll()
+                    .stream()
+                    .collect(
+                        groupingBy(
+                        { it.id.termsType },
+                        maxBy(comparing { it.id.termsVersion.toString() })
+                        )
+                    )
+            }else {
+                infoTermsRepository.find("terms_type = '$termsType'")
+                    .stream()
+                    .collect(groupingBy({ it.id.termsType }, maxBy(comparing { it.id.termsVersion.toString() })))
+            }
 
         return latestAgreeTerms.values.mapNotNull { latestAgreedTerm ->
             val infoTerm = infoTermsRepository.findById(InfoTermsId(latestAgreedTerm.get().id.termsType, latestAgreedTerm.get().id.termsVersion))
+
+
             infoTerm?.let {
                 AgreeTermsListResponse(
                     userId = userId,
                     termsType = it.id.termsType,
                     termsName = it.termsName ?: "",
-                    recentYn = if (latestAgreedTerm.get().agreeYn == "Y") "Y" else "N", // 동의 여부를 "Y" 또는 "N"으로 매핑
+                    recentYn = if (latestAgreedTerm.get().agreeYn == "Y") "Y" else "N",
                     detail = it.detail,
                     agreeDttm = latestAgreedTerm.get().updtDttm
                 )
