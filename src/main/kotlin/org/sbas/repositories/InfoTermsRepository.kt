@@ -6,7 +6,6 @@ import org.sbas.entities.info.InfoTermsId
 import org.sbas.entities.info.TermsAgreement
 import org.sbas.entities.info.TermsAgreementId
 import org.sbas.responses.terms.AgreeTermsListResponse
-import java.time.ZoneId
 import java.util.Comparator.comparing
 import java.util.stream.Collectors.groupingBy
 import java.util.stream.Collectors.maxBy
@@ -74,14 +73,13 @@ class TermsAgreementRepository : PanacheRepositoryBase<TermsAgreement, TermsAgre
 
             if(infoTerms == null) return result
             else {
-                val zoneId = ZoneId.of("Asia/Seoul")
                 val item = AgreeTermsListResponse(
                     userId = userId,
                     termsType = termsType,
                     termsName = infoTerms.termsName!!,
                     recentYn = if(latestAgreeTerms.get().id.termsVersion == latestVersion) "Y" else "N",
                     detail = infoTerms.detail,
-                    agreeDttm = latestAgreeTerms.get().updtDttm?.atZone(zoneId)?.toInstant()
+                    agreeDttm = latestAgreeTerms.get().updtDttm
                 )
                 result.add(item)
             }
