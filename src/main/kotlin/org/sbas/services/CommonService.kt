@@ -13,6 +13,7 @@ import org.sbas.entities.info.TermsAgreement
 import org.sbas.entities.info.TermsAgreementId
 import org.sbas.repositories.*
 import org.sbas.responses.CommonResponse
+import org.sbas.responses.terms.AgreeTermsListResponse
 import org.sbas.utils.CustomizedException
 import javax.enterprise.context.ApplicationScoped
 import javax.inject.Inject
@@ -318,6 +319,16 @@ class CommonService {
         termsAgreementRepository.persist(saveAgreement)
 
         return CommonResponse("success")
+    }
+
+    /**
+     * 동의한 약관 목록
+     */
+    @Transactional
+    fun getAgreeTermsList(agreeTermsListReq: AgreeTermsListReq): CommonResponse<List<AgreeTermsListResponse>> {
+        val findTermsList = termsAgreementRepository.findAgreeTermsListByUserId(agreeTermsListReq.userId, agreeTermsListReq.termsType)
+
+        return CommonResponse(findTermsList)
     }
 
     /**
