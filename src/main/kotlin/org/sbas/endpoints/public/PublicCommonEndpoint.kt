@@ -114,27 +114,6 @@ class PublicCommonEndpoint {
         return Response.ok(commonService.getTermsDetailByTermsType(termsType)).build()
     }
 
-    @Operation(summary = "서비스이용약관 목록", description = "")
-    @GET
-    @Path("svcusgterms")
-    fun svcusgterms(): Response {
-        return Response.ok().build()
-    }
-
-    @Operation(summary = "서비스이용약관 상세", description = "")
-    @GET
-    @Path("svcusgterm")
-    fun svcusgterm(@RestPath param: String): Response {
-        return Response.ok().build()
-    }
-
-    @Operation(summary = "개인정보처리방침 상세", description = "")
-    @GET
-    @Path("prvinfoprocpolyc")
-    fun prvinfoprocpolyc(): Response {
-        return Response.ok().build()
-    }
-
     @Operation(summary = "공지사항 목록", description = "")
     @GET
     @Path("ancmts")
