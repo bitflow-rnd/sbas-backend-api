@@ -27,7 +27,7 @@ class InfoTermsRepository : PanacheRepositoryBase<InfoTerms, InfoTermsId> {
     }
 
     fun findTermsByTermsTypeAndTermsVersion(termsType: String, termsVersion: String): InfoTerms? {
-        return find("terms_type = '$termsType' and terms_version = '$termsVersion").firstResult()
+        return find("terms_type = '$termsType' and terms_version = '$termsVersion'").firstResult()
     }
 
 }
