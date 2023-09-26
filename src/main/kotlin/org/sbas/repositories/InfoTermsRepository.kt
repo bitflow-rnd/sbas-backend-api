@@ -26,6 +26,10 @@ class InfoTermsRepository : PanacheRepositoryBase<InfoTerms, InfoTermsId> {
         return find("terms_type = '$termsType'").list()
     }
 
+    fun findTermsByTermsTypeAndTermsVersion(termsType: String, termsVersion: String): InfoTerms? {
+        return find("terms_type = '$termsType' and terms_version = '$termsVersion").firstResult()
+    }
+
 }
 
 @ApplicationScoped
@@ -36,46 +40,50 @@ class TermsAgreementRepository : PanacheRepositoryBase<TermsAgreement, TermsAgre
 
     fun findAgreeTermsListByUserId(userId: String, termsType: String): List<AgreeTermsListResponse> {
         val result = mutableListOf<AgreeTermsListResponse>()
-        val latestAgreeTerms =
-            if (termsType == "00") {
+
+        if (termsType == "00") {
+            val latestAgreeTerms =
                 find("user_id = '$userId' and agree_yn = 'Y'")
                     .stream()
                     .collect(groupingBy({ it.id.termsType }, maxBy(comparing { it.id.termsVersion })))
-            } else {
+
+            latestAgreeTerms.forEach{(key, value) ->
+                val latestVersion = infoTermsRepository.findTermsVersionByTermsType(key)
+                val agreeTerms = infoTermsRepository.findTermsByTermsTypeAndTermsVersion(key, value.get().id.termsVersion)
+                    ?: return@forEach
+
+                val item = AgreeTermsListResponse(
+                    userId = userId,
+                    termsType = key,
+                    termsName = agreeTerms.termsName!!,
+                    recentYn = if (value.get().id.termsVersion == latestVersion) "Y" else "N",
+                    detail = agreeTerms.detail,
+                    agreeDttm = agreeTerms.updtDttm
+                )
+                result.add(item)
+            }
+        } else {
+            val latestAgreeTerms =
                 find("user_id = '$userId' and terms_type = '$termsType' and agree_yn = 'Y'")
                     .stream()
-                    .collect(groupingBy({ it.id.termsType }, maxBy(comparing { it.id.termsVersion })))
-            }
-        val latestVersionTerms =
-            if (termsType == "00") {
-                infoTermsRepository.findAll()
-                    .stream()
-                    .collect(
-                        groupingBy(
-                        { it.id.termsType },
-                        maxBy(comparing { it.id.termsVersion.toString() })
-                        )
-                    )
-            }else {
-                infoTermsRepository.find("terms_type = '$termsType'")
-                    .stream()
-                    .collect(groupingBy({ it.id.termsType }, maxBy(comparing { it.id.termsVersion.toString() })))
-            }
+                    .collect(maxBy(comparing { it.id.termsVersion }))
 
-        latestVersionTerms.let {
-            latestAgreeTerms.forEach { (key, value) ->
-                val input = AgreeTermsListResponse(
+            val latestVersion = infoTermsRepository.findTermsVersionByTermsType(termsType)
+            val infoTerms = infoTermsRepository.findTermsByTermsTypeAndTermsVersion(termsType, latestAgreeTerms.get().id.termsVersion)
+
+            if(infoTerms == null) return result
+            else {
+                val item = AgreeTermsListResponse(
                     userId = userId,
-                    termsType = value.get().id.termsType,
-                    termsName = it[key]?.get()?.termsName!!,
-                    recentYn = if(it[key]?.get()?.id?.termsVersion == value.get().id.termsVersion) "Y" else "N",
-                    detail = it[key]?.get()?.detail!!,
-                    agreeDttm = value.get().updtDttm
+                    termsType = termsType,
+                    termsName = infoTerms.termsName!!,
+                    recentYn = if(latestAgreeTerms.get().id.termsVersion == latestVersion) "Y" else "N",
+                    detail = infoTerms.detail,
+                    agreeDttm = infoTerms.updtDttm
                 )
-                result.add(input)
+                result.add(item)
             }
         }
-
         return result
     }
 
