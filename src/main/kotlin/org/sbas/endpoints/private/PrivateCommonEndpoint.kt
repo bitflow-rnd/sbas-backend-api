@@ -7,7 +7,6 @@ import org.jboss.resteasy.reactive.RestForm
 import org.jboss.resteasy.reactive.RestPath
 import org.jboss.resteasy.reactive.multipart.FileUpload
 import org.sbas.dtos.info.TermsAgreeReq
-import org.sbas.entities.info.TermsAgreementId
 import org.sbas.services.CommonService
 import org.sbas.services.FileService
 import javax.inject.Inject

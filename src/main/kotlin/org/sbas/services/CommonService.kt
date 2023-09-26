@@ -298,9 +298,13 @@ class CommonService {
      */
     @Transactional
     fun getTermsByTermsType(termsType: String): CommonResponse<List<InfoTerms>> {
-        val findTermsList = termsRepository.findTermsListByTermsType(termsType)
+        val result: List<InfoTerms> = if(termsType == "00"){
+            termsRepository.findAll().list()
+        }else {
+            termsRepository.findTermsListByTermsType(termsType)
+        }
 
-        return CommonResponse(findTermsList)
+        return CommonResponse(result)
     }
 
     /**
