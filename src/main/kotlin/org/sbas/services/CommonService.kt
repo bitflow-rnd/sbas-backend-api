@@ -14,6 +14,7 @@ import org.sbas.entities.info.TermsAgreementId
 import org.sbas.repositories.*
 import org.sbas.responses.CommonResponse
 import org.sbas.responses.terms.AgreeTermsListResponse
+import org.sbas.responses.terms.TermsDetailResponse
 import org.sbas.utils.CustomizedException
 import org.sbas.utils.StringUtils
 import javax.enterprise.context.ApplicationScoped
@@ -305,6 +306,23 @@ class CommonService {
         } else {
             termsRepository.findTermsListByTermsType(termsType)
         }
+
+        return CommonResponse(result)
+    }
+
+    /**
+     * 약관 상세
+     */
+    @Transactional
+    fun getTermsDetailByTermsType(termsType: String): CommonResponse<TermsDetailResponse>{
+        val findInfoTerms = termsRepository.findRecentTermsByTermsType(termsType) ?: throw NotFoundException("not found this type terms")
+
+        val result = TermsDetailResponse(
+            termsType = termsType,
+            detail = findInfoTerms.get().detail,
+            termsVersion = findInfoTerms.get().id.termsVersion!!,
+            termsName = findInfoTerms.get().termsName!!,
+        )
 
         return CommonResponse(result)
     }

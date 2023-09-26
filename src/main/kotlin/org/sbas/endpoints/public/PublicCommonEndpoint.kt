@@ -107,11 +107,11 @@ class PublicCommonEndpoint {
         return Response.ok(commonService.getTermsByTermsType(termsType)).build()
     }
 
-    @Operation(summary = "개인정보수집동의 상세", description = "")
+    @Operation(summary = "약관 상세", description = "약관 상세 API")
     @GET
-    @Path("prvinfocollctagree")
-    fun prvinfocollctagree(@RestPath param: String): Response {
-        return Response.ok().build()
+    @Path("terms/detail/{termsType}")
+    fun getTermsDetailByTermsType(@RestPath termsType: String): Response {
+        return Response.ok(commonService.getTermsDetailByTermsType(termsType)).build()
     }
 
     @Operation(summary = "서비스이용약관 목록", description = "")

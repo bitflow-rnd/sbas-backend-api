@@ -7,8 +7,7 @@ import org.sbas.entities.info.InfoTermsId
 import org.sbas.entities.info.TermsAgreement
 import org.sbas.entities.info.TermsAgreementId
 import org.sbas.responses.terms.AgreeTermsListResponse
-import java.time.Instant
-import java.time.format.DateTimeFormatter
+import java.util.*
 import java.util.Comparator.comparing
 import java.util.stream.Collectors.groupingBy
 import java.util.stream.Collectors.maxBy
@@ -33,6 +32,12 @@ class InfoTermsRepository : PanacheRepositoryBase<InfoTerms, InfoTermsId> {
         return find("terms_type = '$termsType' and terms_version = '$termsVersion'").firstResult()
     }
 
+    fun findRecentTermsByTermsType(termsType: String): Optional<InfoTerms> {
+        return find("terms_type = '$termsType'")
+                .stream()
+                .collect(maxBy(comparing { it.id.termsVersion.toString() }))
+    }
+
 }
 
 @ApplicationScoped
@@ -52,9 +57,9 @@ class TermsAgreementRepository : PanacheRepositoryBase<TermsAgreement, TermsAgre
                 find("user_id = '$userId' and agree_yn = 'Y'")
                     .stream()
                     .collect(groupingBy({ it.id.termsType }, maxBy(comparing { it.id.termsVersion })))
-            if(latestAgreeTerms.isEmpty()) return result
+                    ?: return result
 
-            latestAgreeTerms.forEach{(key, value) ->
+            latestAgreeTerms.forEach { (key, value) ->
                 val latestVersion = infoTermsRepository.findTermsVersionByTermsType(key)
                 val agreeTerms = infoTermsRepository.findTermsByTermsTypeAndTermsVersion(key, value.get().id.termsVersion)
                     ?: return@forEach
@@ -74,18 +79,18 @@ class TermsAgreementRepository : PanacheRepositoryBase<TermsAgreement, TermsAgre
                 find("user_id = '$userId' and terms_type = '$termsType' and agree_yn = 'Y'")
                     .stream()
                     .collect(maxBy(comparing { it.id.termsVersion }))
-            if(latestAgreeTerms.isEmpty) return result
+                    ?: return result
 
             val latestVersion = infoTermsRepository.findTermsVersionByTermsType(termsType)
             val infoTerms = infoTermsRepository.findTermsByTermsTypeAndTermsVersion(termsType, latestAgreeTerms.get().id.termsVersion)
 
-            if(infoTerms == null) return result
+            if (infoTerms == null) return result
             else {
                 val item = AgreeTermsListResponse(
                     userId = userId,
                     termsType = termsType,
                     termsName = infoTerms.termsName!!,
-                    recentYn = if(latestAgreeTerms.get().id.termsVersion == latestVersion) "Y" else "N",
+                    recentYn = if (latestAgreeTerms.get().id.termsVersion == latestVersion) "Y" else "N",
                     detail = infoTerms.detail,
                     agreeDttm = latestAgreeTerms.get().agreeDt!! + latestAgreeTerms.get().agreeTm!!
                 )
