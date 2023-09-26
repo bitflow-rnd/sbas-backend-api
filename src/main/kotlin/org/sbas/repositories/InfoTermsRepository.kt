@@ -35,6 +35,7 @@ class TermsAgreementRepository : PanacheRepositoryBase<TermsAgreement, TermsAgre
     private lateinit var infoTermsRepository: InfoTermsRepository
 
     fun findAgreeTermsListByUserId(userId: String, termsType: String): List<AgreeTermsListResponse> {
+        val result = mutableListOf<AgreeTermsListResponse>()
         val latestAgreeTerms =
             if (termsType == "00") {
                 find("user_id = '$userId' and agree_yn = 'Y'")
@@ -61,21 +62,21 @@ class TermsAgreementRepository : PanacheRepositoryBase<TermsAgreement, TermsAgre
                     .collect(groupingBy({ it.id.termsType }, maxBy(comparing { it.id.termsVersion.toString() })))
             }
 
-        return latestAgreeTerms.values.mapNotNull { latestAgreedTerm ->
-            val infoTerm = infoTermsRepository.findById(InfoTermsId(latestAgreedTerm.get().id.termsType, latestAgreedTerm.get().id.termsVersion))
-
-
-            infoTerm?.let {
-                AgreeTermsListResponse(
+        latestVersionTerms.let {
+            latestAgreeTerms.forEach { (key, value) ->
+                val input = AgreeTermsListResponse(
                     userId = userId,
-                    termsType = it.id.termsType,
-                    termsName = it.termsName ?: "",
-                    recentYn = if (latestAgreedTerm.get().agreeYn == "Y") "Y" else "N",
-                    detail = it.detail,
-                    agreeDttm = latestAgreedTerm.get().updtDttm
+                    termsType = value.get().id.termsType,
+                    termsName = it[key]?.get()?.termsName!!,
+                    recentYn = if(it[key]?.get()?.id?.termsVersion == value.get().id.termsVersion) "Y" else "N",
+                    detail = it[key]?.get()?.detail!!,
+                    agreeDttm = value.get().updtDttm
                 )
+                result.add(input)
             }
         }
+
+        return result
     }
 
 }
