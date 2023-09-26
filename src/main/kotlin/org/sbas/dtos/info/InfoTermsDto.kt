@@ -46,7 +46,6 @@ data class TermsAgreeReq(
     val userId: String,
     @field: [NotBlank(message = "약관 타입을 설정해 주세요.") Length(max = 2)]
     val termsType: String,
-    val agreeYn: String,
 )
 
 data class AgreeTermsListReq(

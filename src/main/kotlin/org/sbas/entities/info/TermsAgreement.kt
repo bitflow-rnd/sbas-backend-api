@@ -2,11 +2,7 @@ package org.sbas.entities.info
 
 import org.sbas.entities.CommonEntity
 import java.io.Serializable
-import javax.persistence.Column
-import javax.persistence.Embeddable
-import javax.persistence.EmbeddedId
-import javax.persistence.Entity
-import javax.persistence.Table
+import javax.persistence.*
 
 @Entity
 @Table(name = "terms_agreement")
@@ -17,6 +13,13 @@ class TermsAgreement (
 
     @Column(name = "agree_yn", nullable = false)
     var agreeYn: String? = null,
+
+    @Column(name = "agree_dt", nullable = false, length = 8)
+    var agreeDt: String? = null,
+
+    @Column(name = "agree_tm", nullable = false, length = 4)
+    var agreeTm: String? = null,
+
 ) : CommonEntity()
 
 @Embeddable
@@ -31,6 +34,7 @@ data class TermsAgreementId(
     var termsVersion: String, // 약관 버전
 
 ) : Serializable {
+
     companion object {
         private const val serialVersionUID: Long = -2970006139843366471L
     }
