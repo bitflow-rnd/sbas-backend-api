@@ -2,6 +2,7 @@ package org.sbas.dtos.info
 
 import org.sbas.entities.info.InfoInst
 import org.sbas.utils.annotation.NoArg
+import javax.validation.constraints.NotBlank
 import javax.ws.rs.QueryParam
 
 data class InfoInstUpdateReq(
@@ -20,7 +21,9 @@ data class InfoInstUpdateReq(
 )
 
 data class FireStatnSaveReq(
+    @field: NotBlank
     val instNm: String,
+    @field: NotBlank
     val dstrCd1: String,
     val dstrCd2: String?,
     val chrgId: String?,
@@ -66,6 +69,8 @@ data class FireStatnListDto(
     val dstrCd2: String?,
     val chrgTelno: String?,
     val crewCount: Long?,
+    val lat: String?,
+    val lon: String?,
 )
 
 data class FireStatnDto(
@@ -82,8 +87,12 @@ data class FireStatnDto(
     val detlAddr: String?,
     val lat: String?,
     val lon: String?,
-    val vecno: String?,
-)
+    var vecno: String?,
+) {
+    init {
+        vecno = vecno?.replace(";", ", ")
+    }
+}
 
 data class InfoInstResponse(
     val instId: String?,
