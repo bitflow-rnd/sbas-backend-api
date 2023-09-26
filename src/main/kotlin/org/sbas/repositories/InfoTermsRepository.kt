@@ -79,7 +79,7 @@ class TermsAgreementRepository : PanacheRepositoryBase<TermsAgreement, TermsAgre
                     termsName = infoTerms.termsName!!,
                     recentYn = if(latestAgreeTerms.get().id.termsVersion == latestVersion) "Y" else "N",
                     detail = infoTerms.detail,
-                    agreeDttm = infoTerms.updtDttm
+                    agreeDttm = latestAgreeTerms.get().updtDttm
                 )
                 result.add(item)
             }
