@@ -59,8 +59,8 @@ class InfoInst(
 
     fun update(updateDto: InfoInstUpdateReq) {
         with(updateDto) {
-            instNm?.let { this@InfoInst.instNm = it }
-            dstrCd1?.let { this@InfoInst.dstrCd1 = it }
+            instNm.let { this@InfoInst.instNm = it }
+            dstrCd1.let { this@InfoInst.dstrCd1 = it }
             dstrCd2?.let { this@InfoInst.dstrCd2 = it }
             chrgId?.let { this@InfoInst.chrgId = it }
             chrgNm?.let { this@InfoInst.chrgNm = it }

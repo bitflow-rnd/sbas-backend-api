@@ -3,12 +3,16 @@ package org.sbas.dtos.info
 import org.sbas.entities.info.InfoCrew
 import org.sbas.entities.info.InfoCrewId
 import org.sbas.utils.annotation.NoArg
+import javax.validation.constraints.NotBlank
+import javax.validation.constraints.Size
 import javax.ws.rs.QueryParam
 
-data class InfoCrewRegDto (
+data class InfoCrewSaveReq (
+    @field: [NotBlank(message = "기관 ID는 필수 값입니다.") Size(max = 10)]
     var instId : String,
-    var crewId : Int,
-    var crewNm : String?,
+    @field: [NotBlank(message = "구급대원 이름은 필수 값입니다.") Size(max = 12)]
+    var crewNm : String,
+    @field: Size(max = 12)
     var telno : String?,
     var rmk : String?,
     var pstn : String?,
@@ -25,6 +29,23 @@ data class InfoCrewRegDto (
     }
 }
 
+data class InfoCrewUpdateReq(
+    @field: [NotBlank(message = "기관 ID는 필수 값입니다.") Size(max = 10)]
+    var instId : String,
+    @field: NotBlank(message = "구급대원 ID는 필수 값입니다.")
+    var crewId : Int,
+    @field: [NotBlank(message = "구급대원 이름은 필수 값입니다.") Size(max = 12)]
+    var crewNm : String,
+    var telno : String?,
+    var rmk : String?,
+    var pstn : String?,
+)
+
+data class InfoCrewDelReq(
+    val instId: String,
+    val crewId: Int,
+)
+
 @NoArg
 data class InfoCrewSearchParam(
     @field: QueryParam("instId") var instId: String,
@@ -34,9 +55,9 @@ data class InfoCrewSearchParam(
 )
 
 data class InfoCrewDto(
-    val instId: String?,
-    val crewId: Int?,
-    val crewNm: String?,
+    val instId: String,
+    val crewId: Int,
+    val crewNm: String,
     val telno: String?,
     val rmk: String?,
     val pstn: String?,

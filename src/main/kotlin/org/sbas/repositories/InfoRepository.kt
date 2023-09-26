@@ -387,7 +387,7 @@ class InfoInstRepository : PanacheRepositoryBase<InfoInst, String> {
                 col(InfoInst::id), col(InfoInst::instNm),
                 function("fn_get_cd_nm", String::class.java, literal("SIDO"), col(InfoInst::dstrCd1)),
                 function("fn_get_dstr_cd2_nm", String::class.java, col(InfoInst::dstrCd1), col(InfoInst::dstrCd2)),
-                col(InfoInst::chrgTelno), crewCount
+                col(InfoInst::chrgTelno), crewCount, col(InfoInst::lat), col(InfoInst::lon)
             )
             from(entity(InfoInst::class))
             fireStatnsWhereAnd(param)
