@@ -35,11 +35,17 @@ class TermsAgreementRepository : PanacheRepositoryBase<TermsAgreement, TermsAgre
     private lateinit var infoTermsRepository: InfoTermsRepository
 
     fun findAgreeTermsListByUserId(userId: String, termsType: String): List<AgreeTermsListResponse> {
-        val latestAgreedTerms = find("userId", userId, "termsType", termsType)
-            .stream()
-            .collect(groupingBy({ it.id.termsType }, maxBy(comparing { it.id.termsVersion })))
+        val latestAgreeTerms = if(termsType == "00"){
+            find("user_id = '$userId' and agree_yn = 'Y'")
+                .stream()
+                .collect(groupingBy({ it.id.termsType }, maxBy(comparing { it.id.termsVersion })))
+        }else {
+            find("user_id = '$userId' and terms_type = '$termsType' and agree_yn = 'Y'")
+                .stream()
+                .collect(groupingBy({ it.id.termsType }, maxBy(comparing { it.id.termsVersion })))
+        }
 
-        return latestAgreedTerms.values.mapNotNull { latestAgreedTerm ->
+        return latestAgreeTerms.values.mapNotNull { latestAgreedTerm ->
             val infoTerm = infoTermsRepository.findById(InfoTermsId(latestAgreedTerm.get().id.termsType, latestAgreedTerm.get().id.termsVersion))
             infoTerm?.let {
                 AgreeTermsListResponse(
