@@ -3,12 +3,16 @@ package org.sbas.dtos.info
 import org.sbas.entities.info.InfoInst
 import org.sbas.utils.annotation.NoArg
 import javax.validation.constraints.NotBlank
+import javax.validation.constraints.Size
 import javax.ws.rs.QueryParam
 
 data class InfoInstUpdateReq(
+    @field: [NotBlank(message = "기관 ID는 필수 값입니다.") Size(max = 8)]
     var instId: String,
-    var instNm: String?,
-    var dstrCd1: String?,
+    @field: [NotBlank(message = "기관 이름은 필수 값입니다.")]
+    var instNm: String,
+    @field: NotBlank
+    var dstrCd1: String,
     var dstrCd2: String?,
     var chrgId: String?,
     var chrgNm: String?,
@@ -21,7 +25,7 @@ data class InfoInstUpdateReq(
 )
 
 data class FireStatnSaveReq(
-    @field: NotBlank
+    @field: [NotBlank(message = "기관 이름은 필수 값입니다.")]
     val instNm: String,
     @field: NotBlank
     val dstrCd1: String,

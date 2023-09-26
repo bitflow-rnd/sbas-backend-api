@@ -272,8 +272,8 @@ class OrganiztnService {
      * 구급대원 삭제
      */
     @Transactional
-    fun delFireman(infoCrewId: InfoCrewId): CommonResponse<String>{
-        val findInfoCrew = infoCrewRepository.findById(infoCrewId)
+    fun delFireman(infoCrewDelReq: InfoCrewDelReq): CommonResponse<String>{
+        val findInfoCrew = infoCrewRepository.findById(InfoCrewId(infoCrewDelReq.instId, infoCrewDelReq.crewId))
             ?: throw CustomizedException("해당 구급대원이 없습니다.", RestResponse.Status.NOT_FOUND)
 
         infoCrewRepository.delete(findInfoCrew)

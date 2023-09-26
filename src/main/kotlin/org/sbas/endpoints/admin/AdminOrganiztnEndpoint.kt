@@ -4,11 +4,7 @@ import org.eclipse.microprofile.openapi.annotations.Operation
 import org.eclipse.microprofile.openapi.annotations.tags.Tag
 import org.jboss.logging.Logger
 import org.jboss.resteasy.reactive.RestPath
-import org.sbas.dtos.info.FireStatnSaveReq
-import org.sbas.dtos.info.InfoCrewSaveReq
-import org.sbas.dtos.info.InfoCrewUpdateReq
-import org.sbas.dtos.info.InfoInstUpdateReq
-import org.sbas.entities.info.InfoCrewId
+import org.sbas.dtos.info.*
 import org.sbas.services.OrganiztnService
 import javax.inject.Inject
 import javax.validation.Valid
@@ -73,7 +69,7 @@ class AdminOrganiztnEndpoint{
     @Operation(summary = "구급대원 삭제", description = "구급대원 삭제 API")
     @POST
     @Path("del-fireman")
-    fun delFireman(@Valid infoCrewId: InfoCrewId): Response {
-        return Response.ok(organiztnService.delFireman(infoCrewId)).build()
+    fun delFireman(infoCrewDelReq: InfoCrewDelReq): Response {
+        return Response.ok(organiztnService.delFireman(infoCrewDelReq)).build()
     }
 }

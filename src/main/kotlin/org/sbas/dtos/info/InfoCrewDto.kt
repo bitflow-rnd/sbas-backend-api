@@ -4,13 +4,15 @@ import org.sbas.entities.info.InfoCrew
 import org.sbas.entities.info.InfoCrewId
 import org.sbas.utils.annotation.NoArg
 import javax.validation.constraints.NotBlank
+import javax.validation.constraints.Size
 import javax.ws.rs.QueryParam
 
 data class InfoCrewSaveReq (
-    @field: NotBlank
+    @field: [NotBlank(message = "기관 ID는 필수 값입니다.") Size(max = 10)]
     var instId : String,
-    @field: NotBlank
+    @field: [NotBlank(message = "구급대원 이름은 필수 값입니다.") Size(max = 12)]
     var crewNm : String,
+    @field: Size(max = 12)
     var telno : String?,
     var rmk : String?,
     var pstn : String?,
@@ -28,15 +30,20 @@ data class InfoCrewSaveReq (
 }
 
 data class InfoCrewUpdateReq(
-    @field: NotBlank
+    @field: [NotBlank(message = "기관 ID는 필수 값입니다.") Size(max = 10)]
     var instId : String,
-    @field: NotBlank
+    @field: NotBlank(message = "구급대원 ID는 필수 값입니다.")
     var crewId : Int,
-    @field: NotBlank
+    @field: [NotBlank(message = "구급대원 이름은 필수 값입니다.") Size(max = 12)]
     var crewNm : String,
     var telno : String?,
     var rmk : String?,
     var pstn : String?,
+)
+
+data class InfoCrewDelReq(
+    val instId: String,
+    val crewId: Int,
 )
 
 @NoArg
