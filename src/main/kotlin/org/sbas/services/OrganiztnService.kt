@@ -43,6 +43,9 @@ class OrganiztnService {
     private lateinit var infoInstRepository: InfoInstRepository
 
     @Inject
+    private lateinit var infoUserRepository: InfoUserRepository
+
+    @Inject
     private lateinit var baseCodeRepository: BaseCodeRepository
 
     @Inject
@@ -107,33 +110,9 @@ class OrganiztnService {
 
         val hospDetailInfo = findHospDetailInfo(hpId)
 
-        return CommonResponse(HospInfoRes(hospBasicInfo, hospDetailInfo))
-    }
+        val hospMedInfo = findHospMedInfo(hpId)
 
-    fun findHospDetailInfo(hpId: String): HospDetailInfo {
-        val infoHosp = infoHospRepository.findInfoHospByHpId(hpId)
-
-        val stage1 = if (infoHosp.dstrCd1Nm == "강원도") {
-            "강원특별자치도"
-        } else {
-            infoHosp.dstrCd1Nm!!
-        }
-
-        val jsonObject = egenService.getEmrrmRltmUsefulSckbdInfoInqire(
-            param = EgenApiEmrrmRltmUsefulSckbdInfoParams(
-                stage1 = stage1,
-                stage2 = null,
-                pageNo = "1",
-                numOfRows = "100",
-            )
-        )
-
-        val detailInfo = jsonObject.first.getJSONArray("item").first {
-            it as JSONObject
-            it.getString("hpid") == hpId
-        } as JSONObject
-
-        return objectMapper.readValue(detailInfo.toString(), HospDetailInfo::class.java)
+        return CommonResponse(HospInfoRes(hospBasicInfo, hospDetailInfo, hospMedInfo, hospMedInfo.size))
     }
 
     /**
@@ -342,5 +321,36 @@ class OrganiztnService {
             }
         }
         return CommonResponse("이미지 삭제 성공")
+    }
+
+    private fun findHospDetailInfo(hpId: String): HospDetailInfo {
+        val infoHosp = infoHospRepository.findInfoHospByHpId(hpId)
+
+        val stage1 = if (infoHosp.dstrCd1Nm == "강원도") {
+            "강원특별자치도"
+        } else {
+            infoHosp.dstrCd1Nm!!
+        }
+
+        val jsonObject = egenService.getEmrrmRltmUsefulSckbdInfoInqire(
+            param = EgenApiEmrrmRltmUsefulSckbdInfoParams(
+                stage1 = stage1,
+                stage2 = null,
+                pageNo = "1",
+                numOfRows = "100",
+            )
+        )
+
+        val detailInfo = jsonObject.first.getJSONArray("item").first {
+            it as JSONObject
+            it.getString("hpid") == hpId
+        } as JSONObject
+
+        return objectMapper.readValue(detailInfo.toString(), HospDetailInfo::class.java)
+    }
+
+    @Transactional
+    private fun findHospMedInfo(hpId: String): MutableList<HospMedInfo> {
+        return infoUserRepository.findMedicalInfoUser(hpId)
     }
 }

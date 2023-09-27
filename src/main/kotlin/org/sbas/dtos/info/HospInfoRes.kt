@@ -1,11 +1,15 @@
 package org.sbas.dtos.info
 
 import com.fasterxml.jackson.annotation.JsonProperty
+import org.sbas.constants.enums.*
 import org.sbas.utils.annotation.NoArg
+import java.time.Instant
 
 data class HospInfoRes(
     val hospBasicInfo: HospBasicInfo,
     val hospDetailInfo: HospDetailInfo,
+    val hospMedInfo: List<HospMedInfo>,
+    val hospMedInfoCount: Int,
 )
 
 @NoArg
@@ -224,3 +228,31 @@ data class HospDetailInfo(
     val hv41: String?, // 음압 격리 병상
     val hv43: String?, // 화상전용 처치실
 )
+
+data class HospMedInfo(
+    val userId: String,
+    var dutyDstr1Cd: String,
+    val ocpCd: String,
+    val userNm: String,
+    var ptTypeCd: String,
+    var jobCd: String,
+    var authCd: String,
+    val rgstDttm: Instant,
+    val updtDttm: Instant,
+    val userStatCd: UserStatCd,
+) {
+    val userStatCdNm: String
+        get() = userStatCd.cdNm
+
+    val ptTypeCdNm: List<String>
+        get() {
+            val splitPtTypeCd = ptTypeCd.split(";")
+            return splitPtTypeCd.map { PtTypeCd.valueOf(it).cdNm }
+        }
+
+    init {
+        dutyDstr1Cd = SidoCd.valueOf("SIDO$dutyDstr1Cd").cdNm
+        jobCd = PmgrTypeCd.valueOf(jobCd).cdNm
+        authCd = DtpmTypeCd.valueOf(authCd).cdNm
+    }
+}
