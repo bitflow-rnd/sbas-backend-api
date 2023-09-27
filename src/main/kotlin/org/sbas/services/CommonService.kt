@@ -1,6 +1,7 @@
 package org.sbas.services
 
 import io.quarkus.cache.CacheKey
+import io.quarkus.cache.CacheResult
 import org.jboss.logging.Logger
 import org.sbas.dtos.*
 import org.sbas.dtos.info.*
@@ -167,7 +168,7 @@ class CommonService {
      * 시/도 목록 조회
      */
     @Transactional
-//    @CacheResult(cacheName = "sido")
+    @CacheResult(cacheName = "sido")
     fun findSidoList(): CommonResponse<List<BaseCodeResponse>> {
         val findBaseCodeList = baseCodeRepository.findBaseCodeByCdGrpId("SIDO")
         return toBaseCodeResponse(findBaseCodeList)
