@@ -362,8 +362,18 @@ class CommonService {
     fun getNoticeList(pageRequest: PageRequest): CommonResponse<PagingListDto> {
         val findNotice = noticeRepository.findAllNoticeList(pageRequest)
         val totalCnt = noticeRepository.count()
-        val response = PagingListDto(totalCnt, findNotice as MutableList<InfoNotice>)
-        return CommonResponse(response)
+        val result = PagingListDto(totalCnt, findNotice as MutableList<InfoNotice>)
+        return CommonResponse(result)
+    }
+
+    /**
+     * 공지사항 상세 조회
+     */
+    @Transactional
+    fun getNoticeDetail(noticeId: String): CommonResponse<InfoNotice> {
+        val result = noticeRepository.findById(noticeId) ?: throw NotFoundException("not found this notice")
+
+        return CommonResponse(result)
     }
 
     /**

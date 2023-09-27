@@ -125,9 +125,9 @@ class PublicCommonEndpoint {
 
     @Operation(summary = "공지사항 상세", description = "")
     @GET
-    @Path("ancmt")
-    fun ancmt(@RestPath param: String): Response {
-        return Response.ok().build()
+    @Path("notice/{noticeId}")
+    fun getNoticeDetail(@RestPath noticeId: String): Response {
+        return Response.ok(commonService.getNoticeDetail(noticeId)).build()
     }
 
     @Operation(summary = "오픈소스라이선스 목록", description = "")
