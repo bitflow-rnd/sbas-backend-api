@@ -4,6 +4,7 @@ import org.sbas.entities.info.InfoCrew
 import org.sbas.entities.info.InfoCrewId
 import org.sbas.utils.annotation.NoArg
 import javax.validation.constraints.NotBlank
+import javax.validation.constraints.NotNull
 import javax.validation.constraints.Size
 import javax.ws.rs.QueryParam
 
@@ -32,7 +33,7 @@ data class InfoCrewSaveReq (
 data class InfoCrewUpdateReq(
     @field: [NotBlank(message = "기관 ID는 필수 값입니다.") Size(max = 10)]
     var instId : String,
-    @field: NotBlank(message = "구급대원 ID는 필수 값입니다.")
+    @field: NotNull(message = "구급대원 ID는 필수 값입니다.")
     var crewId : Int,
     @field: [NotBlank(message = "구급대원 이름은 필수 값입니다.") Size(max = 12)]
     var crewNm : String,

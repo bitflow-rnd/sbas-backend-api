@@ -1,7 +1,6 @@
 package org.sbas.dtos.info
 
 import com.fasterxml.jackson.annotation.JsonIgnore
-import com.fasterxml.jackson.annotation.JsonProperty
 import org.sbas.constants.enums.*
 import org.sbas.entities.info.InfoPt
 import org.sbas.utils.annotation.NoArg
