@@ -7,6 +7,7 @@ import com.linecorp.kotlinjdsl.querydsl.expression.col
 import com.linecorp.kotlinjdsl.querydsl.expression.column
 import io.quarkus.hibernate.orm.panache.kotlin.PanacheRepositoryBase
 import kotlinx.coroutines.runBlocking
+import org.sbas.dtos.info.HospMedInfo
 import org.sbas.dtos.info.InfoUserListDto
 import org.sbas.dtos.info.InfoUserSearchParam
 import org.sbas.entities.info.InfoUser
@@ -74,5 +75,15 @@ class InfoUserRepository : PanacheRepositoryBase<InfoUser, String> {
             "duty_dstr_1_cd = '$dstrCd1' and (job_cd = 'PMGR0002' OR job_cd like '병상승인%')"
         }
         return find(query).list()
+    }
+
+    fun findMedicalInfoUser(hpId: String): MutableList<HospMedInfo> {
+        val query = "select new org.sbas.dtos.info.HospMedInfo(iu.id, iu.dutyDstr1Cd, iu.ocpCd, " +
+                "iu.userNm, iu.ptTypeCd, iu.jobCd, iu.authCd, iu.rgstDttm, iu.updtDttm, iu.userStatCd) " +
+                "from InfoUser iu " +
+                "join InfoBed ib on ib.hospId = iu.instId " +
+                "where ib.hpId = '$hpId' "
+
+        return getEntityManager().createQuery(query, HospMedInfo::class.java).resultList
     }
 }
