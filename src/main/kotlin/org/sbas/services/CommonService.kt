@@ -14,7 +14,9 @@ import org.sbas.entities.info.TermsAgreementId
 import org.sbas.repositories.*
 import org.sbas.responses.CommonResponse
 import org.sbas.responses.terms.AgreeTermsListResponse
+import org.sbas.responses.terms.TermsDetailResponse
 import org.sbas.utils.CustomizedException
+import org.sbas.utils.StringUtils
 import javax.enterprise.context.ApplicationScoped
 import javax.inject.Inject
 import javax.transaction.Transactional
@@ -299,11 +301,28 @@ class CommonService {
      */
     @Transactional
     fun getTermsByTermsType(termsType: String): CommonResponse<List<InfoTerms>> {
-        val result: List<InfoTerms> = if(termsType == "00"){
+        val result: List<InfoTerms> = if (termsType == "00") {
             termsRepository.findAll().list()
-        }else {
+        } else {
             termsRepository.findTermsListByTermsType(termsType)
         }
+
+        return CommonResponse(result)
+    }
+
+    /**
+     * 약관 상세
+     */
+    @Transactional
+    fun getTermsDetailByTermsType(termsType: String): CommonResponse<TermsDetailResponse>{
+        val findInfoTerms = termsRepository.findRecentTermsByTermsType(termsType) ?: throw NotFoundException("not found this type terms")
+
+        val result = TermsDetailResponse(
+            termsType = termsType,
+            detail = findInfoTerms.get().detail,
+            termsVersion = findInfoTerms.get().id.termsVersion!!,
+            termsName = findInfoTerms.get().termsName!!,
+        )
 
         return CommonResponse(result)
     }
@@ -314,8 +333,15 @@ class CommonService {
     @Transactional
     fun termsAgree(termsAgreeReq: TermsAgreeReq): CommonResponse<String> {
         val termsVersion = termsRepository.findTermsVersionByTermsType(termsAgreeReq.termsType)
-        val termsId = TermsAgreementId(userId = termsAgreeReq.userId,termsType = termsAgreeReq.termsType, termsVersion = termsVersion)
-        val saveAgreement = TermsAgreement(id = termsId, agreeYn = "Y")
+        val termsId = TermsAgreementId(userId = termsAgreeReq.userId, termsType = termsAgreeReq.termsType, termsVersion = termsVersion)
+
+        val saveAgreement =
+            TermsAgreement(
+                id = termsId,
+                agreeYn = "Y",
+                agreeDt = StringUtils.getYyyyMmDd(),
+                agreeTm = StringUtils.getHhMm()
+            )
         termsAgreementRepository.persist(saveAgreement)
 
         return CommonResponse("success")
