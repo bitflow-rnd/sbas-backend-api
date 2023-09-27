@@ -244,11 +244,8 @@ data class HospMedInfo(
     val userStatCdNm: String
         get() = userStatCd.cdNm
 
-    val ptTypeCdNm: List<String>
-        get() {
-            val splitPtTypeCd = ptTypeCd.split(";")
-            return splitPtTypeCd.map { PtTypeCd.valueOf(it).cdNm }
-        }
+    val ptTypeCdNm: String
+        get() = ptTypeCd.replace(";", ", ")
 
     init {
         dutyDstr1Cd = SidoCd.valueOf("SIDO$dutyDstr1Cd").cdNm
