@@ -7,10 +7,8 @@ import org.sbas.dtos.info.*
 import org.sbas.entities.base.BaseCode
 import org.sbas.entities.base.BaseCodeEgen
 import org.sbas.entities.base.BaseCodeId
-import org.sbas.entities.info.InfoTerms
-import org.sbas.entities.info.InfoTermsId
-import org.sbas.entities.info.TermsAgreement
-import org.sbas.entities.info.TermsAgreementId
+import org.sbas.entities.info.*
+import org.sbas.parameters.PageRequest
 import org.sbas.repositories.*
 import org.sbas.responses.CommonResponse
 import org.sbas.responses.terms.AgreeTermsListResponse
@@ -355,6 +353,17 @@ class CommonService {
         val findTermsList = termsAgreementRepository.findAgreeTermsListByUserId(agreeTermsListReq.userId, agreeTermsListReq.termsType)
 
         return CommonResponse(findTermsList)
+    }
+
+    /**
+     * 공지사항 목록 조회(paging, total count 반영, filter X)
+     */
+    @Transactional
+    fun getNoticeList(pageRequest: PageRequest): CommonResponse<PagingListDto> {
+        val findNotice = noticeRepository.findAllNoticeList(pageRequest)
+        val totalCnt = noticeRepository.count()
+        val response = PagingListDto(totalCnt, findNotice as MutableList<InfoNotice>)
+        return CommonResponse(response)
     }
 
     /**

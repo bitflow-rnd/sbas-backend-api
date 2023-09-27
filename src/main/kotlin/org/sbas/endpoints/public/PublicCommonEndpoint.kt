@@ -6,10 +6,12 @@ import org.jboss.logging.Logger
 import org.jboss.resteasy.reactive.RestForm
 import org.jboss.resteasy.reactive.RestPath
 import org.jboss.resteasy.reactive.multipart.FileUpload
+import org.sbas.parameters.PageRequest
 import org.sbas.services.CommonService
 import org.sbas.services.FileService
 import javax.annotation.security.PermitAll
 import javax.inject.Inject
+import javax.ws.rs.BeanParam
 import javax.ws.rs.GET
 import javax.ws.rs.POST
 import javax.ws.rs.Path
@@ -114,11 +116,11 @@ class PublicCommonEndpoint {
         return Response.ok(commonService.getTermsDetailByTermsType(termsType)).build()
     }
 
-    @Operation(summary = "공지사항 목록", description = "")
+    @Operation(summary = "공지사항 목록", description = "공지사항 목록 API")
     @GET
-    @Path("ancmts")
-    fun ancmts(): Response {
-        return Response.ok().build()
+    @Path("notice")
+    fun getNoticeList(@BeanParam pageRequest: PageRequest): Response {
+        return Response.ok(commonService.getNoticeList(pageRequest)).build()
     }
 
     @Operation(summary = "공지사항 상세", description = "")
