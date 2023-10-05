@@ -216,7 +216,7 @@ class InfoHospRepository : PanacheRepositoryBase<InfoHosp, String> {
         val infoHosps = queryFactory.listQuery<InfoHospListDto> {
             selectMulti(
                 col(InfoHosp::hospId), col(InfoHosp::hpId), col(InfoHosp::dutyName), col(InfoHosp::dutyDivNam),
-                col(InfoHosp::dstrCd1), col(InfoHosp::dstrCd2), col(InfoHosp::dutyTel1), col(InfoHosp::dutyTel1), col(InfoHosp::updtDttm),
+                col(InfoHosp::dstrCd1), col(InfoHosp::dstrCd2), col(InfoHosp::dutyTel1), col(InfoHosp::dutyTel1), col(InfoBed::updtDttm),
                 col(InfoBed::gnbdIcu), col(InfoBed::npidIcu), col(InfoBed::gnbdSvrt),
                 col(InfoBed::gnbdSmsv), col(InfoBed::gnbdModr),
                 col(InfoBed::ventilator), col(InfoBed::ventilatorPreemie), col(InfoBed::incubator), col(InfoBed::ecmo),
