@@ -1,5 +1,6 @@
 package org.sbas.handlers
 
+import com.fasterxml.jackson.databind.exc.MismatchedInputException
 import com.google.firebase.messaging.FirebaseMessagingException
 import io.quarkus.arc.Priority
 import io.quarkus.security.AuthenticationFailedException
@@ -140,6 +141,17 @@ class FirebaseMessagingExceptionMapper : ExceptionMapper<FirebaseMessagingExcept
         return Response.status(Response.Status.OK)
             .type(MediaType.APPLICATION_JSON)
             .entity(CommonResponse(SbasConst.ResCode.FAIL, "check push token", null))
+            .build()
+    }
+}
+
+
+@Provider
+class MismatchedInputExceptionMapper : ExceptionMapper<MismatchedInputException> {
+    override fun toResponse(exception: MismatchedInputException): Response {
+        return Response.status(Response.Status.BAD_REQUEST)
+            .type(MediaType.APPLICATION_JSON)
+            .entity(CommonResponse(SbasConst.ResCode.FAIL, "${exception.path} is null", null))
             .build()
     }
 }

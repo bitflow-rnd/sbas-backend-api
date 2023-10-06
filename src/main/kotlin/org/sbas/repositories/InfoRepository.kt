@@ -49,7 +49,7 @@ class InfoPtRepository : PanacheRepositoryBase<InfoPt, String> {
                 "left join InfoHosp ih on bap.hospId = ih.hospId " +
                 "where (br.id.bdasSeq in ((select max(id.bdasSeq) as bdasSeq from BdasReq group by id.ptId)) or br.id.bdasSeq is null) " +
                 "$cond " +
-                "order by pt.rgstDttm desc "
+                "order by pt.updtDttm desc "
 
         return entityManager.createQuery(query, InfoPtSearchDto::class.java).setMaxResults(15).setFirstResult(offset).resultList
     }
