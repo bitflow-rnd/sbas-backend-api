@@ -40,9 +40,9 @@ class InfoUserRepository : PanacheRepositoryBase<InfoUser, String> {
             whereAnd(
                 param.dstr1Cd?.run { column(InfoUser::dutyDstr1Cd).equal(this) },
                 param.dstr2Cd?.run { column(InfoUser::dutyDstr2Cd).equal(this) },
-                param.instTypeCd?.run { column(InfoUser::instTypeCd).`in`(this) },
-                param.ptTypeCd?.run { column(InfoUser::ptTypeCd).`in`(this) },
-                param.userStatCd?.run { column(InfoUser::userStatCd).equal(this) },
+                param.instTypeCd?.run { column(InfoUser::instTypeCd).`in`(this.split(';')) },
+                param.ptTypeCd?.run { column(InfoUser::ptTypeCd).`in`(this.split(';')) },
+                param.userStatCd?.run { column(InfoUser::userStatCd).`in`(this) },
                 param.userNm?.run { column(InfoUser::userNm).like("%$this%") },
                 param.telno?.run { column(InfoUser::telno).like("%$this%") },
                 param.instNm?.run { column(InfoUser::instNm).like("%$this%") },
