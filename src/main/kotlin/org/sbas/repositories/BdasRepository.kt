@@ -11,6 +11,7 @@ import java.time.Instant
 import javax.enterprise.context.ApplicationScoped
 import javax.inject.Inject
 import javax.persistence.EntityManager
+import javax.persistence.TypedQuery
 
 @ApplicationScoped
 class BdasEsvyRepository : PanacheRepositoryBase<BdasEsvy, String> {
@@ -35,10 +36,8 @@ class BdasReqRepository : PanacheRepositoryBase<BdasReq, BdasReqId> {
         ).firstResult()
     }
 
-    fun findBdasList(param: BdasListSearchParam): MutableList<BdasListDto> {
-        val (cond, offset) = conditionAndOffset(param)
-
-        val query2 = "select new org.sbas.dtos.bdas.BdasListDto(br.id.ptId, br.id.bdasSeq, pt.ptNm, pt.gndr, fn_get_age(pt.rrno1, pt.rrno2), " +
+    fun queryForBdasList(param: BdasListSearchParam, cond: String?, offset: Int?): TypedQuery<BdasListDto> {
+        val query = "select new org.sbas.dtos.bdas.BdasListDto(br.id.ptId, br.id.bdasSeq, pt.ptNm, pt.gndr, fn_get_age(pt.rrno1, pt.rrno2), " +
                 "pt.rrno1, pt.mpno, pt.bascAddr, br.updtDttm, be.diagNm, br.bedStatCd, fn_find_chrg_inst(br.bedStatCd, br.id.ptId, br.id.bdasSeq), br.inhpAsgnYn, " +
                 "br.ptTypeCd, br.svrtTypeCd, br.undrDsesCd, br.reqBedTypeCd, ba.admsStatCd) " +
                 "from BdasReq br " +
@@ -47,9 +46,19 @@ class BdasReqRepository : PanacheRepositoryBase<BdasReq, BdasReqId> {
                 "left join BdasAdms ba on br.id.bdasSeq = ba.id.bdasSeq " +
                 "where br.id.bdasSeq in (select max(id.bdasSeq) as bdasSeq from BdasReq group by id.ptId) " +
                 "$cond " +
-                "order by br.id.bdasSeq desc"
+                "order by br.updtDttm desc "
 
-        return entityManager.createQuery(query2, BdasListDto::class.java).resultList
+        return entityManager.createQuery(query, BdasListDto::class.java)
+    }
+
+    fun findBdasList(param: BdasListSearchParam): MutableList<BdasListDto> {
+        val (cond, _) = conditionAndOffset(param)
+        return queryForBdasList(param, cond, null).resultList
+    }
+
+    fun findBdasListForWeb(param: BdasListSearchParam): MutableList<BdasListDto> {
+        val (cond, offset) = conditionAndOffset(param)
+        return queryForBdasList(param, cond, offset).setMaxResults(15).setFirstResult(offset).resultList
     }
 
     fun countBdasList(param: BdasListSearchParam): Long {
