@@ -350,7 +350,7 @@ class OrganiztnService {
     }
 
     @Transactional
-    private fun findHospMedInfo(hpId: String): MutableList<HospMedInfo> {
+    fun findHospMedInfo(hpId: String): MutableList<HospMedInfo> {
         return infoUserRepository.findMedicalInfoUser(hpId)
     }
 }

@@ -61,7 +61,10 @@ data class InfoUserSaveReq(
     @field: [Size(min = 1, max = 1) Pattern(regexp = "^(남|여)\$")]
     val gndr: String?,
 
-    @field: [NotBlank Size(min = 1, max = 12)]
+    @field: [NotBlank
+    Pattern(regexp = "^(01[016789]{1})[0-9]{3,4}[0-9]{4}\$",
+        message = "휴대전화 번호를 확인해 주세요.")
+    Size(min = 1, max = 12)]
     val telno: String,
 
     @field: [Size(min = 1, max = 8) NotBlank ValidEnum(enumClass = PmgrTypeCd::class)]

@@ -468,6 +468,13 @@ class BedAssignService {
     }
 
     @Transactional
+    fun findBedAsgnListForWeb(param: BdasListSearchParam): CommonListResponse<BdasListDto> {
+        val findBdasList = bdasReqRepository.findBdasListForWeb(param)
+        val count = bdasReqRepository.countBdasList(param)
+        return CommonListResponse(findBdasList, count.toInt())
+    }
+
+    @Transactional
     fun getTimeLine(ptId: String, bdasSeq: Int): CommonResponse<*> {
         val findBdasReq =
             bdasReqRepository.findByPtIdAndBdasSeq(ptId, bdasSeq) ?: throw NotFoundException("병상배정 정보가 없습니다.")
@@ -543,7 +550,7 @@ class BedAssignService {
             bdasEsvyRepository.findByPtIdWithLatestBdasSeq(ptId) ?: throw NotFoundException("$ptId not found")
         val findReq = bdasReqRepository.findByPtId(ptId) ?: throw NotFoundException("$ptId request not found")
         bdasReqRepository.getEntityManager().detach(findReq)
-        findReq.ptTypeCd = convertFromArr(findReq.ptTypeCd, "PTTP")
+//        findReq.ptTypeCd = convertFromArr(findReq.ptTypeCd, "PTTP")
         findReq.undrDsesCd = convertFromArr(findReq.undrDsesCd, "UDDS")
         findReq.svrtTypeCd = convertFromArr(findReq.svrtTypeCd, "SVTP")
         findReq.dnrAgreYn = baseCodeRepository.getCdNm("DNRA", findReq.dnrAgreYn)
