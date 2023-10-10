@@ -115,7 +115,7 @@ class PublicCommonEndpoint {
     @Operation(summary = "공지사항 목록", description = "공지사항 목록 API")
     @GET
     @Path("notice")
-    fun getNoticeList(@BeanParam noticeListReq: NoticeListReq): Response {
+    fun getNoticeList(noticeListReq: NoticeListReq): Response {
         return Response.ok(commonService.getNoticeList(noticeListReq)).build()
     }
 

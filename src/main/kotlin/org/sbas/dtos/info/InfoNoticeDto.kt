@@ -55,9 +55,8 @@ data class DelNoticeReq(
     val noticeId: String,
 )
 
-@NoArg
 data class NoticeListReq(
-    @field: QueryParam("userId") val userId: String,
-    @field: QueryParam("page") val page: Int?,
-    @field: QueryParam("size") val size: Int?
+    val userId: String,
+    val page: Int?,
+    val size: Int?
 )
