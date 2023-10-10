@@ -359,7 +359,7 @@ class CommonService {
     }
 
     /**
-     * 공지사항 목록 조회(paging, total count 반영, filter X)
+     * 공지사항 목록 조회(paging, total count 반영, filter O)
      */
     @Transactional
     fun getNoticeList(noticeListReq: NoticeListReq): CommonResponse<PagingListDto> {

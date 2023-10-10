@@ -58,5 +58,7 @@ data class DelNoticeReq(
 data class NoticeListReq(
     val userId: String,
     val page: Int?,
-    val size: Int?
+    val size: Int?,
+    val isActive: Boolean?,
+    val searchPeriod: String?,
 )
