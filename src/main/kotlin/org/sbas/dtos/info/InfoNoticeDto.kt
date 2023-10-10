@@ -2,6 +2,7 @@ package org.sbas.dtos.info
 
 import org.hibernate.validator.constraints.Length
 import org.sbas.entities.info.InfoNotice
+import org.sbas.utils.annotation.NoArg
 import javax.validation.constraints.NotBlank
 import javax.ws.rs.QueryParam
 
@@ -54,6 +55,7 @@ data class DelNoticeReq(
     val noticeId: String,
 )
 
+@NoArg
 data class NoticeListReq(
     @field: QueryParam("userId") val userId: String,
     @field: QueryParam("page") val page: Int?,
