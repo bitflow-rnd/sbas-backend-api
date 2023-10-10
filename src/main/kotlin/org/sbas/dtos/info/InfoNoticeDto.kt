@@ -3,6 +3,7 @@ package org.sbas.dtos.info
 import org.hibernate.validator.constraints.Length
 import org.sbas.entities.info.InfoNotice
 import javax.validation.constraints.NotBlank
+import javax.ws.rs.QueryParam
 
 data class RegNoticeReq(
     @field: [NotBlank(message = "제목은 필수 값입니다.") Length(max = 30)]
@@ -54,7 +55,7 @@ data class DelNoticeReq(
 )
 
 data class NoticeListReq(
-    val userId: String,
-    val page: Int?,
-    val size: Int?
+    @field: QueryParam("userId") val userId: String,
+    @field: QueryParam("page") val page: Int?,
+    @field: QueryParam("size") val size: Int?
 )
