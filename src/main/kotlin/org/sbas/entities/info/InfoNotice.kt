@@ -4,6 +4,7 @@ import org.hibernate.annotations.GenericGenerator
 import org.hibernate.annotations.Parameter
 import org.sbas.entities.CommonEntity
 import org.sbas.entities.StringPrefixedSequenceIdGenerator
+import org.sbas.responses.notice.NoticeListResponse
 import java.io.Serial
 import java.io.Serializable
 import javax.persistence.*
@@ -16,22 +17,22 @@ import javax.persistence.*
 class InfoNotice(
 
     @Column(name = "title", nullable = false, length = 30)
-    var title: String? = null, // 제목
+    var title: String, // 제목
 
     @Column(name = "content", nullable = false, length = 2000)
-    var content: String? = null, // 내용
+    var content: String, // 내용
 
     @Column(name = "is_active", nullable = false)
     var isActive: Boolean? = null, // 활성화 여부(true = 활성, false = 비활성)
 
     @Column(name = "notice_type", nullable = false, length = 1)
-    var noticeType: Char? = null, // 공지 타입(B = 일반, N = 공지)
+    var noticeType: Char, // 공지 타입(B = 일반, N = 공지)
 
     @Column(name = "start_notice_dt", nullable = false, length = 8)
-    var startNoticeDt: String? = null, // 공지 시작 날짜
+    var startNoticeDt: String, // 공지 시작 날짜
 
     @Column(name = "start_notice_tm", nullable = false, length = 2)
-    var startNoticeTm: String? = null, // 공지 시작 시간
+    var startNoticeTm: String, // 공지 시작 시간
 
     @Column(name = "end_notice_dt", nullable = false, length = 8)
     var endNoticeDt: String? = null, // 공지 종료 날짜
@@ -64,5 +65,16 @@ class InfoNotice(
     companion object{
         @Serial
         private const val serialVersionUID: Long = -1968163549813218566L
+    }
+
+    fun toListResponse(isRead: Boolean): NoticeListResponse{
+        return NoticeListResponse(
+            noticeId = noticeId,
+            title = title,
+            content = content,
+            noticeType = noticeType,
+            startNoticeDt = startNoticeDt,
+            isRead = isRead
+        )
     }
 }

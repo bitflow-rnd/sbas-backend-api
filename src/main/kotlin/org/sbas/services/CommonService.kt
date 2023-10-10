@@ -360,8 +360,8 @@ class CommonService {
      * 공지사항 목록 조회(paging, total count 반영, filter X)
      */
     @Transactional
-    fun getNoticeList(pageRequest: PageRequest): CommonResponse<PagingListDto> {
-        val findNotice = noticeRepository.findAllNoticeList(pageRequest)
+    fun getNoticeList(noticeListReq: NoticeListReq): CommonResponse<PagingListDto> {
+        val findNotice = noticeRepository.findAllNoticeList(noticeListReq)
         val totalCnt = noticeRepository.count()
         val result = PagingListDto(totalCnt, findNotice as MutableList<InfoNotice>)
         return CommonResponse(result)
