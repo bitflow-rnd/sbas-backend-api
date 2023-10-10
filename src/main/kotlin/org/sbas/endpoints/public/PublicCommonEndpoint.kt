@@ -7,6 +7,7 @@ import org.jboss.resteasy.reactive.RestForm
 import org.jboss.resteasy.reactive.RestPath
 import org.jboss.resteasy.reactive.multipart.FileUpload
 import org.sbas.dtos.info.NoticeListReq
+import org.sbas.entities.info.NoticeReadStatusId
 import org.sbas.services.CommonService
 import org.sbas.services.FileService
 import javax.annotation.security.PermitAll
@@ -124,6 +125,13 @@ class PublicCommonEndpoint {
     @Path("notice/{noticeId}")
     fun getNoticeDetail(@RestPath noticeId: String): Response {
         return Response.ok(commonService.getNoticeDetail(noticeId)).build()
+    }
+
+    @Operation(summary = "공지사항 읽기", description = "공지사항 읽기 API")
+    @POST
+    @Path("notice")
+    fun readNotice(noticeReadStatusId: NoticeReadStatusId): Response {
+        return Response.ok(commonService.readNotice(noticeReadStatusId)).build()
     }
 
     @Operation(summary = "오픈소스라이선스 목록", description = "")

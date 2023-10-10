@@ -9,7 +9,6 @@ import org.sbas.entities.base.BaseCode
 import org.sbas.entities.base.BaseCodeEgen
 import org.sbas.entities.base.BaseCodeId
 import org.sbas.entities.info.*
-import org.sbas.parameters.PageRequest
 import org.sbas.repositories.*
 import org.sbas.responses.CommonResponse
 import org.sbas.responses.terms.AgreeTermsListResponse
@@ -46,6 +45,9 @@ class CommonService {
 
     @Inject
     private lateinit var termsAgreementRepository: TermsAgreementRepository
+
+    @Inject
+    private lateinit var noticeReadStatusRepository: NoticeReadStatusRepository
 
     /**
      * 공통코드 그룹 목록 조회
@@ -375,6 +377,18 @@ class CommonService {
         val result = noticeRepository.findById(noticeId) ?: throw NotFoundException("not found this notice")
 
         return CommonResponse(result)
+    }
+
+    /**
+     * 공지사항 읽기
+     */
+    @Transactional
+    fun readNotice(noticeReadStatusId: NoticeReadStatusId): CommonResponse<String> {
+        val inputData = NoticeReadStatus(noticeReadStatusId, StringUtils.getYyyyMmDd(), StringUtils.getHhMm())
+
+        noticeReadStatusRepository.persist(inputData)
+
+        return CommonResponse("success")
     }
 
     /**
