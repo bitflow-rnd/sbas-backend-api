@@ -60,6 +60,7 @@ data class UserDetailResponse(
     val dutyDstr1CdNm: String,
     val dutyDstr2Cd: String,
     val dutyDstr2CdNm: String,
+    val btDt: String,
     val authCd: String,
     val attcId: String?,
 ) {
