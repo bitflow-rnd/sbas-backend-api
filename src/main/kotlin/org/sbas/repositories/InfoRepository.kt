@@ -190,9 +190,6 @@ class InfoHospRepository : PanacheRepositoryBase<InfoHosp, String> {
     @Inject
     private lateinit var queryFactory: QueryFactory
 
-    @Inject
-    private lateinit var userRepository: InfoUserRepository
-
     fun findInfoHospByHospId(hospId: String): InfoHosp? {
         return find("hosp_id = '$hospId'").firstResult()
     }
@@ -248,14 +245,6 @@ class InfoHospRepository : PanacheRepositoryBase<InfoHosp, String> {
         return count[0].toInt()
     }
 
-    // TODO
-    fun findInfoHospDetail(hpId: String) : InfoHospDetailDto {
-        val findHosp = find("from InfoHosp where hpId = '$hpId'").firstResult() ?: throw NotFoundException("Please check hpId")
-        val count = userRepository.find("from InfoUser where instId = '$hpId'").count()
-
-        return InfoHospDetailDto(findHosp, count)
-    }
-
     fun findByHospIdList(hospList: List<String>): MutableList<InfoHospWithUser> {
         val infoHospList = queryFactory.listQuery<InfoHospWithUser> {
             selectMulti(
@@ -291,25 +280,6 @@ class InfoHospRepository : PanacheRepositoryBase<InfoHosp, String> {
         }
 
         return list.toMutableList()
-
-//        val query = "select ih.* from info_hosp ih join info_user iu on ih.hosp_id = iu.inst_id "
-//
-//        val where = if (!dstrCd2.isNullOrBlank()) {
-//            " where ih.dstr_cd1 = '$dstrCd1' and ih.dstr_cd2 = '$dstrCd2' and (iu.job_cd = 'PMGR0003' OR iu.job_cd like '병상배정%') "
-//        } else {
-//            " where ih.dstr_cd1 = '$dstrCd1' and (iu.job_cd = 'PMGR0003' OR iu.job_cd like '병상배정%') "
-//        }
-
-//        val query = "select ih.* from info_hosp ih join info_bed ib on ih.hosp_id = ib.hosp_id "
-//
-//        val where = if (!dstrCd2.isNullOrBlank()) {
-//            " where ih.dstr_cd1 = '$dstrCd1' and ih.dstr_cd2 = '$dstrCd2' "
-//        } else {
-//            " where ih.dstr_cd1 = '$dstrCd1' "
-//        }
-
-//        @Suppress("UNCHECKED_CAST")
-//        return getEntityManager().createNativeQuery(query + where, InfoHosp::class.java).resultList.toMutableList() as MutableList<InfoHosp>
     }
 
     fun findPubHealthCenter(dstrCd1: String?, dstrCd2: String?): List<InfoInstResponse> {
@@ -328,6 +298,24 @@ class InfoHospRepository : PanacheRepositoryBase<InfoHosp, String> {
 
         return healthCenterList
     }
+
+    fun findMediOrgan(dstrCd1: String?, dstrCd2: String?): List<InfoInstResponse> {
+        val list = queryFactory.listQuery<InfoInstResponse> {
+            selectMulti(
+                col(InfoHosp::hospId), literal("ORGN0004"), col(InfoHosp::dutyName),
+                col(InfoHosp::dstrCd1), col(InfoHosp::dstrCd2),
+            )
+            from(entity(InfoHosp::class))
+            join(entity(InfoBed::class), on { col(InfoHosp::hospId).equal(col(InfoBed::hospId)) })
+            whereAnd(
+                dstrCd1?.run { col(InfoHosp::dstrCd1).equal(this) },
+                dstrCd2?.run { col(InfoHosp::dstrCd2).equal(this) },
+            )
+        }
+
+        return list.toMutableList()
+    }
+
 
     private fun CriteriaQueryDsl<*>.whereAnd(param: InfoHospSearchParam) {
         whereAnd(

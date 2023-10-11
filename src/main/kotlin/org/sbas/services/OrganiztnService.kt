@@ -1,6 +1,8 @@
 package org.sbas.services
 
 import com.fasterxml.jackson.databind.ObjectMapper
+import io.quarkus.cache.CacheKey
+import io.quarkus.cache.CacheResult
 import org.jboss.logging.Logger
 import org.jboss.resteasy.reactive.RestResponse
 import org.jboss.resteasy.reactive.multipart.FileUpload
@@ -87,7 +89,8 @@ class OrganiztnService {
     /**
      * 의료기관 상세 조회
      */
-    fun findInfoHospById(hpId: String) : CommonResponse<HospInfoRes> {
+    @CacheResult(cacheName = "infoHospDetail")
+    fun findInfoHospById(@CacheKey hpId: String) : CommonResponse<HospInfoRes> {
         val jsonObject = egenService.getHsptlBassInfoInqire(param = EgenApiBassInfoParams(hpId = hpId))
 
         val item = jsonObject.getJSONObject("item")
@@ -119,9 +122,10 @@ class OrganiztnService {
      * 기관코드 목록 조회
      */
     @Transactional
-    fun getInstCodes(dstrCd1: String?, dstrCd2: String?, instTypeCd: String): CommonListResponse<*> {
+    fun getInstCodes(dstrCd1: String?, dstrCd2: String?, instTypeCd: String?): CommonListResponse<*> {
         val instList = when (instTypeCd) {
             "ORGN0003" -> infoHospRepository.findPubHealthCenter(dstrCd1, dstrCd2)
+            "ORGN0004" -> infoHospRepository.findMediOrgan(dstrCd1, dstrCd2)
             else -> infoInstRepository.findInfoInst(dstrCd1, dstrCd2, instTypeCd)
         }
 
