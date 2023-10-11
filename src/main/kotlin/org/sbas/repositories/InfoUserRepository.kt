@@ -10,6 +10,7 @@ import kotlinx.coroutines.runBlocking
 import org.sbas.dtos.info.HospMedInfo
 import org.sbas.dtos.info.InfoUserListDto
 import org.sbas.dtos.info.InfoUserSearchParam
+import org.sbas.dtos.info.UserDetailResponse
 import org.sbas.entities.info.InfoUser
 import org.sbas.parameters.PageRequest
 import javax.enterprise.context.ApplicationScoped
@@ -85,5 +86,25 @@ class InfoUserRepository : PanacheRepositoryBase<InfoUser, String> {
                 "where ib.hpId = '$hpId' "
 
         return getEntityManager().createQuery(query, HospMedInfo::class.java).resultList
+    }
+
+    fun findInfoUserDetail(userId: String): List<UserDetailResponse> {
+        val infoUserDetail = queryFactory.listQuery<UserDetailResponse> {
+            selectMulti(
+                col(InfoUser::id), col(InfoUser::userNm), col(InfoUser::gndr), col(InfoUser::telno),
+                col(InfoUser::jobCd), col(InfoUser::ocpCd), col(InfoUser::ptTypeCd),
+                col(InfoUser::instTypeCd), col(InfoUser::instId), col(InfoUser::instNm), col(InfoUser::dutyDstr1Cd),
+                function("fn_get_cd_nm", String::class.java, literal("SIDO"), col(InfoUser::dutyDstr1Cd)),
+                col(InfoUser::dutyDstr2Cd),
+                function("fn_get_dstr_cd2_nm", String::class.java, col(InfoUser::dutyDstr1Cd), col(InfoUser::dutyDstr2Cd)),
+                col(InfoUser::authCd), col(InfoUser::attcId),
+            )
+            from(entity(InfoUser::class))
+            whereAnd(
+                col(InfoUser::id).equal(userId)
+            )
+        }
+
+        return infoUserDetail
     }
 }
