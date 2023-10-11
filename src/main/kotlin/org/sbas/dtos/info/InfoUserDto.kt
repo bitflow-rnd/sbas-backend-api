@@ -43,6 +43,37 @@ data class InfoUserSearchParam(
 )
 
 /**
+ * 사용자 상세 정보
+ */
+data class UserDetailResponse(
+    val id: String,
+    val userNm: String,
+    val gndr: String?,
+    val telno: String,
+    val jobCd: String,
+    val ocpCd: String?,
+    val ptTypeCd: String?,
+    val instTypeCd: String,
+    val instId: String,
+    val instNm: String,
+    val dutyDstr1Cd: String,
+    val dutyDstr1CdNm: String,
+    val dutyDstr2Cd: String,
+    val dutyDstr2CdNm: String,
+    val authCd: String,
+    val attcId: String?,
+) {
+    val jobCdNm = PmgrTypeCd.valueOf(jobCd).cdNm
+    val authCdNm = DtpmTypeCd.valueOf(authCd).cdNm
+    val instTypeCdNm = InstTypeCd.valueOf(instTypeCd).cdNm
+    val ptTypeCdNm: List<String>?
+        get() {
+            val list = ptTypeCd?.split(";")
+            return list?.map { PtTypeCd.valueOf(it).cdNm }
+        }
+}
+
+/**
  * 사용자 등록 DTO
  */
 data class InfoUserSaveReq(

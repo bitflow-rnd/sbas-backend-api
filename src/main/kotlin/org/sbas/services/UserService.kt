@@ -246,6 +246,9 @@ class UserService {
         return CommonResponse(findUser.id)
     }
 
+    /**
+     * 사용자 정보 수정
+     */
     @Transactional
     fun modifyInfo(request: InfoUserUpdateReq) : CommonResponse<String> {
         if(jwt.name != request.id) return CommonResponse("token id와 id가 일치하지 않습니다.")
@@ -300,9 +303,12 @@ class UserService {
      * 사용자 상세
      */
     @Transactional
-    fun getMyUserDetail(mbrId: String) : CommonResponse<InfoUser> {
-        val result = userRepository.findByUserId(mbrId) ?: throw NotFoundException("Not found this id")
-        return CommonResponse(result)
+    fun getMyUserDetail(mbrId: String) : CommonResponse<UserDetailResponse> {
+        val userDetail = userRepository.findInfoUserDetail(mbrId)
+
+        check(userDetail.isNotEmpty()) { throw NotFoundException("$mbrId not found") }
+
+        return CommonResponse(userDetail.first())
     }
 
     /**
