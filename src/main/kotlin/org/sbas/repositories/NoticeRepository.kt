@@ -56,15 +56,7 @@ class NoticeRepository : PanacheRepositoryBase<InfoNotice, String> {
             val readStatusId: NoticeReadStatusId = NoticeReadStatusId(userId = noticeListReq.userId, noticeId = it.noticeId)
             val findReadStatus = noticeReadStatusRepository.findById(readStatusId)
             resultList.add(
-                NoticeListResponse(
-                    noticeId = it.noticeId,
-                    title = it.title,
-                    content = it.content,
-                    noticeType = it.noticeType,
-                    startNoticeDt = it.startNoticeDt,
-                    isRead = findReadStatus != null,
-                    hasFile = it.attcGrpId != null
-                )
+                it.toListResponse(findReadStatus != null, it.attcGrpId != null)
             )
         }
 

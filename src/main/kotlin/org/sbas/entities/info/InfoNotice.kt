@@ -67,14 +67,15 @@ class InfoNotice(
         private const val serialVersionUID: Long = -1968163549813218566L
     }
 
-    fun toListResponse(isRead: Boolean): NoticeListResponse{
+    fun toListResponse(isRead: Boolean, hasFile: Boolean): NoticeListResponse{
         return NoticeListResponse(
             noticeId = noticeId,
             title = title,
             content = content,
             noticeType = noticeType,
             startNoticeDt = startNoticeDt,
-            isRead = isRead
+            isRead = isRead,
+            hasFile = hasFile
         )
     }
 }
