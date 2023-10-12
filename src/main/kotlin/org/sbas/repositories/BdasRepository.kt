@@ -36,7 +36,7 @@ class BdasReqRepository : PanacheRepositoryBase<BdasReq, BdasReqId> {
         ).firstResult()
     }
 
-    fun queryForBdasList(param: BdasListSearchParam, cond: String?, offset: Int?): TypedQuery<BdasListDto> {
+    fun queryForBdasList(cond: String?, offset: Int?): TypedQuery<BdasListDto> {
         val query = "select new org.sbas.dtos.bdas.BdasListDto(br.id.ptId, br.id.bdasSeq, pt.ptNm, pt.gndr, fn_get_age(pt.rrno1, pt.rrno2), " +
                 "pt.rrno1, pt.mpno, pt.bascAddr, br.updtDttm, be.diagNm, br.bedStatCd, fn_find_chrg_inst(br.bedStatCd, br.id.ptId, br.id.bdasSeq), br.inhpAsgnYn, " +
                 "br.ptTypeCd, br.svrtTypeCd, br.undrDsesCd, br.reqBedTypeCd, ba.admsStatCd) " +
@@ -53,12 +53,12 @@ class BdasReqRepository : PanacheRepositoryBase<BdasReq, BdasReqId> {
 
     fun findBdasList(param: BdasListSearchParam): MutableList<BdasListDto> {
         val (cond, _) = conditionAndOffset(param)
-        return queryForBdasList(param, cond, null).resultList
+        return queryForBdasList(cond, null).resultList
     }
 
     fun findBdasListForWeb(param: BdasListSearchParam): MutableList<BdasListDto> {
         val (cond, offset) = conditionAndOffset(param)
-        return queryForBdasList(param, cond, offset).setMaxResults(15).setFirstResult(offset).resultList
+        return queryForBdasList(cond, offset).setMaxResults(15).setFirstResult(offset).resultList
     }
 
     fun countBdasList(param: BdasListSearchParam): Long {
@@ -82,6 +82,7 @@ class BdasReqRepository : PanacheRepositoryBase<BdasReq, BdasReqId> {
         cond += param.svrtTypeCd?.run { " and br.svrtTypeCd in ('${this.split(',').joinToString("', '")}') " } ?: ""
         cond += param.gndr?.run { " and pt.gndr in ('${this.split(',').joinToString("', '")}') " } ?: ""
         cond += param.reqBedTypeCd?.run { " and br.reqBedTypeCd in ('${this.split(',').joinToString("', '")}') " } ?: ""
+        cond += param.bedStatCd?.run { " and br.bedStatCd in ('${this.split(',').joinToString("', '")}') " } ?: ""
 
         cond += when {
             param.fromAge != null && param.toAge != null -> " and fn_get_age(pt.rrno1, pt.rrno2) between $this and ${param.toAge} "
