@@ -7,8 +7,6 @@ import org.sbas.entities.StringPrefixedSequenceIdGenerator
 import org.sbas.responses.notice.NoticeListResponse
 import java.io.Serial
 import java.io.Serializable
-import java.time.LocalDate
-import java.time.format.DateTimeFormatter
 import javax.persistence.*
 
 /**
@@ -70,15 +68,16 @@ class InfoNotice(
     }
 
     fun toListResponse(isRead: Boolean, hasFile: Boolean): NoticeListResponse{
-        val formatter = DateTimeFormatter.ofPattern("yyyy.MM.dd")
-        val formatDt = LocalDate.parse(startNoticeDt, formatter).toString()
+        val year = startNoticeDt.substring(0, 4)
+        val month = startNoticeDt.substring(4,6)
+        val day = startNoticeDt.substring(6,8)
 
         return NoticeListResponse(
             noticeId = noticeId,
             title = title,
             content = content,
             noticeType = noticeType,
-            startNoticeDt = formatDt,
+            startNoticeDt = "$year.$month.$day",
             isRead = isRead,
             hasFile = hasFile
         )
