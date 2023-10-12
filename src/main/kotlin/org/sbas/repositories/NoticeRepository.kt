@@ -42,10 +42,8 @@ class NoticeRepository : PanacheRepositoryBase<InfoNotice, String> {
         val filterList = findList.filter {
             val isActiveMatch = it.isActive == noticeListReq.isActive || noticeListReq.isActive == null
 
-            log.warn(it.isActive === noticeListReq.isActive)
-
-            val endNoticeDt = LocalDate.parse(it.endNoticeDt, formatter)
-            val isAfterPeriodDate = endNoticeDt.isAfter(periodDate)
+            val startNoticeDt = LocalDate.parse(it.startNoticeDt, formatter)
+            val isAfterPeriodDate = startNoticeDt.isAfter(periodDate)
 
             isActiveMatch && isAfterPeriodDate
         }
