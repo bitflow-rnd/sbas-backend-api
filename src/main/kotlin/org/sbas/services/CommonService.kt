@@ -11,6 +11,7 @@ import org.sbas.entities.base.BaseCodeId
 import org.sbas.entities.info.*
 import org.sbas.repositories.*
 import org.sbas.responses.CommonResponse
+import org.sbas.responses.notice.NoticeListResponse
 import org.sbas.responses.terms.AgreeTermsListResponse
 import org.sbas.responses.terms.TermsDetailResponse
 import org.sbas.utils.CustomizedException
@@ -365,7 +366,7 @@ class CommonService {
     fun getNoticeList(noticeListReq: NoticeListReq): CommonResponse<PagingListDto> {
         val findNotice = noticeRepository.findAllNoticeList(noticeListReq)
         val totalCnt = noticeRepository.count()
-        val result = PagingListDto(totalCnt, findNotice as MutableList<InfoNotice>)
+        val result = PagingListDto(totalCnt, findNotice as MutableList<NoticeListResponse>)
         return CommonResponse(result)
     }
 

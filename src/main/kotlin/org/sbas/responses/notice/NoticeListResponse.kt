@@ -7,4 +7,5 @@ data class NoticeListResponse(
     val noticeType: Char,
     val startNoticeDt: String,
     val isRead: Boolean,
+    val hasFile: Boolean,
 )

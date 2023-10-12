@@ -62,7 +62,8 @@ class NoticeRepository : PanacheRepositoryBase<InfoNotice, String> {
                     content = it.content,
                     noticeType = it.noticeType,
                     startNoticeDt = it.startNoticeDt,
-                    isRead = findReadStatus != null
+                    isRead = findReadStatus != null,
+                    hasFile = it.attcGrpId != null
                 )
             )
         }
