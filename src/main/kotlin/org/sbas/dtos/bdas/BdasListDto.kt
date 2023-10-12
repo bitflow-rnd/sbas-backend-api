@@ -81,6 +81,7 @@ data class BdasListSearchParam(
     @field: QueryParam("rrno1") var rrno1: String?,
     @field: QueryParam("mpno") var mpno: String?,
     @field: QueryParam("period") var period: Long?,
+    @field: QueryParam("bedStatCd") var bedStatCd: String?,
     @field: QueryParam("ptTypeCd") var ptTypeCd: String?,
     @field: QueryParam("svrtTypeCd") var svrtTypeCd: String?,
     @field: QueryParam("gndr") var gndr: String?,
