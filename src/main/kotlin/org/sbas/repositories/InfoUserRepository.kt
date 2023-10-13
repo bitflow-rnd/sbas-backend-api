@@ -7,18 +7,21 @@ import com.linecorp.kotlinjdsl.querydsl.expression.col
 import com.linecorp.kotlinjdsl.querydsl.expression.column
 import io.quarkus.hibernate.orm.panache.kotlin.PanacheRepositoryBase
 import kotlinx.coroutines.runBlocking
-import org.sbas.dtos.info.HospMedInfo
-import org.sbas.dtos.info.InfoUserListDto
-import org.sbas.dtos.info.InfoUserSearchParam
-import org.sbas.dtos.info.UserDetailResponse
+import org.sbas.dtos.bdas.BdasListSearchParam
+import org.sbas.dtos.info.*
 import org.sbas.entities.info.InfoUser
 import org.sbas.parameters.PageRequest
+import java.time.Instant
 import javax.enterprise.context.ApplicationScoped
 import javax.inject.Inject
+import javax.persistence.EntityManager
 import javax.transaction.Transactional
 
 @ApplicationScoped
 class InfoUserRepository : PanacheRepositoryBase<InfoUser, String> {
+
+    @Inject
+    private lateinit var entityManager: EntityManager
 
     @Inject
     private lateinit var queryFactory: QueryFactory
@@ -29,29 +32,42 @@ class InfoUserRepository : PanacheRepositoryBase<InfoUser, String> {
 //    fun getMyUserDetail(userId: String) = find("from InfoUser where id = $userId").firstResult()
 
     fun findInfoUserList(param: InfoUserSearchParam): List<InfoUserListDto> {
-        //TODO 페이징 처리?
-        val infoUserList: List<InfoUserListDto> = queryFactory.listQuery {
-            select(
-                listOf(column(InfoUser::id), column(InfoUser::dutyDstr1Cd),
-                function("fn_get_cd_nm", String::class.java, literal("SIDO"), col(InfoUser::dutyDstr1Cd)),column(InfoUser::instTypeCd),
-                column(InfoUser::instNm), column(InfoUser::userNm), column(InfoUser::jobCd), column(InfoUser::authCd),
-                column(InfoUser::rgstDttm), column(InfoUser::userStatCd), column(InfoUser::rgstUserId))
-            )
-            from(entity(InfoUser::class))
-            whereAnd(
-                param.dstr1Cd?.run { column(InfoUser::dutyDstr1Cd).equal(this) },
-                param.dstr2Cd?.run { column(InfoUser::dutyDstr2Cd).equal(this) },
-                param.instTypeCd?.run { column(InfoUser::instTypeCd).`in`(this.split(';')) },
-                param.ptTypeCd?.run { column(InfoUser::ptTypeCd).`in`(this.split(';')) },
-                param.userStatCd?.run { column(InfoUser::userStatCd).`in`(this) },
-                param.userNm?.run { column(InfoUser::userNm).like("%$this%") },
-                param.telno?.run { column(InfoUser::telno).like("%$this%") },
-                param.instNm?.run { column(InfoUser::instNm).like("%$this%") },
-            )
-            orderBy(ExpressionOrderSpec(column(InfoUser::rgstDttm), ascending = false))
-        }
-        return infoUserList
+        val (cond, offset) = conditionAndOffset(param)
+
+        val query = "select new org.sbas.dtos.info.InfoUserListDto(iu.id, iu.dutyDstr1Cd, fn_get_cd_nm('SIDO', iu.dutyDstr1Cd), " +
+                "iu.instTypeCd, iu.instNm, iu.userNm, iu.jobCd, iu.authCd, iu.rgstDttm, iu.userStatCd, iu.rgstUserId) " +
+                "from InfoUser iu " +
+                "where " + "$cond " + "order by iu.updtDttm desc"
+
+        return entityManager.createQuery(query, InfoUserListDto::class.java).setMaxResults(15).setFirstResult(offset).resultList
     }
+
+    private fun conditionAndOffset(param: InfoUserSearchParam): Pair<String, Int> {
+        var cond = param.userNm?.run { " (iu.userNm like '%$this%' " } ?: " (1=1"
+        cond += param.telno?.run { " or iu.telno like '%$this%') " } ?: ")"
+
+        cond += param.ptTypeCd?.run { " and fn_like_any(iu.ptTypeCd, '{%${this.split(',').joinToString("%, %")}%}') = true " } ?: ""
+        cond += param.instTypeCd?.run { " and iu.instTypeCd in ('${this.split(',').joinToString("', '")}') " } ?: ""
+        cond += param.userStatCdStr?.run { " and iu.userStatCd in ('${this.split(',').joinToString("', '")}') " } ?: ""
+
+        cond += param.dstr1Cd?.run { " and iu.dutyDstr1Cd like '%$this%' " } ?: ""
+        cond += param.dstr2Cd?.run { " and iu.dutyDstr2Cd like '%$this%' " } ?: ""
+        cond += param.instNm?.run { " and iu.instNm like '%$this%' " } ?: ""
+
+        val offset = param.page?.run { this.minus(1).times(15) } ?: 0
+
+        return Pair(cond, offset)
+    }
+
+    fun countInfoUserList(param: InfoUserSearchParam): Long {
+        val (cond, _) = conditionAndOffset(param)
+
+        val query = "select count(iu.id) from InfoUser iu where $cond"
+
+        return entityManager.createQuery(query).singleResult as Long
+    }
+
+
 
     fun findId(infoUser: InfoUser): InfoUser? = find("select u from InfoUser u where u.userNm = '${infoUser.userNm}' and u.telno = '${infoUser.telno}'").firstResult()
 

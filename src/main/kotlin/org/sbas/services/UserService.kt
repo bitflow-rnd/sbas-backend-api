@@ -92,8 +92,9 @@ class UserService {
     fun getUsers(param: InfoUserSearchParam): CommonListResponse<InfoUserListDto> {
         val list = userRepository.findInfoUserList(param)
         list.forEach { it.userStatCdNm = it.userStatCd!!.cdNm }
+        val count = userRepository.countInfoUserList(param)
 
-        return CommonListResponse(list)
+        return CommonListResponse(list, count.toInt())
     }
 
     /**

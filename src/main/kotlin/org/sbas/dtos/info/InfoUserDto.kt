@@ -40,7 +40,10 @@ data class InfoUserSearchParam(
     @field: QueryParam("instTypeCd") var instTypeCd: String?,
     @field: QueryParam("ptTypeCd") var ptTypeCd: String?,
     @field: QueryParam("userStatCd") var userStatCd: UserStatCd?,
-)
+    @field: QueryParam("page") var page: Int?,
+    @field: QueryParam("userStatCdStr") var userStatCdStr: String?
+) {
+}
 
 /**
  * 사용자 상세 정보
