@@ -134,11 +134,13 @@ class FileService {
     fun publicFileDownload(attcGrpId: String, attcId: String): Response {
         val baseAttc = baseAttcRepository.findByAttcGrpIdAndAttcId(attcGrpId, attcId) ?: throw NotFoundException("baseAttc not found")
 
-//        val filePath = "${baseAttc.loclPath}/${baseAttc.fileNm}"
-        val filePath = "\\public${baseAttc.uriPath}\\${baseAttc.fileNm}"
+        val filePath = "${baseAttc.loclPath}/${baseAttc.fileNm}"
+//        val filePath = "/public${baseAttc.uriPath}/${baseAttc.fileNm}"
         val file = File(filePath)
         log.debug(file)
 
+        log.debug("file exists >>> ${file.exists()}")
+        log.debug("file canRead >>> ${file.canRead()}")
         // 파일이 존재하거나 읽을 수 있을 때
         if (file.exists() && file.canRead()) {
             try {
