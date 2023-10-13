@@ -10,6 +10,7 @@ import org.json.JSONObject
 import org.sbas.constants.SbasConst
 import org.sbas.dtos.info.*
 import org.sbas.entities.info.InfoCrewId
+import org.sbas.entities.info.InfoHospDetail
 import org.sbas.handlers.FileHandler
 import org.sbas.handlers.GeocodingHandler
 import org.sbas.repositories.*
@@ -52,6 +53,12 @@ class OrganiztnService {
 
     @Inject
     private lateinit var baseAttcRepository: BaseAttcRepository
+
+    @Inject
+    private lateinit var infoHospDetailRepository: InfoHospDetailRepository
+
+    @Inject
+    private lateinit var infoBedRepository: InfoBedRepository
 
     @Inject
     private lateinit var geoHandler: GeocodingHandler
@@ -356,5 +363,20 @@ class OrganiztnService {
     @Transactional
     fun findHospMedInfo(hpId: String): MutableList<HospMedInfo> {
         return infoUserRepository.findMedicalInfoUser(hpId)
+    }
+
+    @Transactional
+    fun modMedInstInfo(request: InfoHospDetail): CommonResponse<String> {
+        val infoBed = infoBedRepository.findById(request.hospId)
+            ?: throw NotFoundException("${request.hospId} not found")
+
+        val hospDetail = infoHospDetailRepository.findById(infoBed.hospId)
+
+        checkNotNull(hospDetail) {
+            infoHospDetailRepository.persist(request)
+        }
+        hospDetail.update(request)
+
+        return CommonResponse("성공")
     }
 }

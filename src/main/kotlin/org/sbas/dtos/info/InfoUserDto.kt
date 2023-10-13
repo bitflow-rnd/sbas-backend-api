@@ -126,7 +126,10 @@ data class InfoUserSaveReq(
     @field: [Size(min = 1, max = 12)]
     val attcId: String?,
 
-    @field: [NotBlank Size(min = 1, max = 8)]
+    @field: [NotBlank
+    Pattern(regexp = "^(19[0-9][0-9]|20\\d{2})(0[0-9]|1[0-2])(0[1-9]|[1-2][0-9]|3[0-1])\$",
+        message = "생년월일을 확인해 주세요.")
+    Size(min = 1, max = 8)]
     val btDt: String,
 
     @field: [NotBlank Size(min = 1, max = 8) ValidEnum(enumClass = DtpmTypeCd::class)]

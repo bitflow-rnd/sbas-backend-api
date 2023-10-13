@@ -7,6 +7,8 @@ import org.jboss.resteasy.reactive.RestForm
 import org.jboss.resteasy.reactive.RestPath
 import org.jboss.resteasy.reactive.multipart.FileUpload
 import org.sbas.dtos.info.InfoCrewSearchParam
+import org.sbas.dtos.info.InfoHospDetailRequest
+import org.sbas.dtos.info.toInfoHospDetail
 import org.sbas.services.OrganiztnService
 import javax.inject.Inject
 import javax.ws.rs.BeanParam
@@ -52,6 +54,14 @@ class PrivateOrganiztnEndpoint {
     @Path("delete-medinstimg/{hospId}")
     fun deleteMedinstimg(@RestPath hospId: String): Response {
         return Response.ok(organiztnService.deleteHospImg(hospId)).build()
+    }
+
+    @Operation(summary = "의료기관 정보 수정(E-Gen 데이터 제외)")
+    @POST
+    @Path("mod-medinstinfo")
+    fun modMedInstInfo(hospDetailRequest: InfoHospDetailRequest): Response {
+        val entity = hospDetailRequest.toInfoHospDetail()
+        return Response.ok(organiztnService.modMedInstInfo(entity)).build()
     }
 
     @Operation(summary = "사용자 기관(조직) 등록", description = "")
