@@ -135,7 +135,7 @@ class FileService {
         val baseAttc = baseAttcRepository.findByAttcGrpIdAndAttcId(attcGrpId, attcId) ?: throw NotFoundException("baseAttc not found")
 
 //        val filePath = "${baseAttc.loclPath}/${baseAttc.fileNm}"
-        val filePath = "public${baseAttc.uriPath}/${baseAttc.fileNm}"
+        val filePath = "/public${baseAttc.uriPath}/${baseAttc.fileNm}"
         val file = File(filePath)
         log.debug(file)
 
