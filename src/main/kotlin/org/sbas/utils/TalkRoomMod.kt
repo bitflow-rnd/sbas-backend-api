@@ -82,6 +82,7 @@ class TalkRoomMod {
             .filter { it.tkrmId == tkrmId }
             .forEach {
                 it.session.asyncRemote.sendText(JsonObject.mapFrom(addMsg).toString())
+                firebaseService.sendMessageMultiDevice(userId, message, userId)
             }
 
         otherUsers.forEach{
