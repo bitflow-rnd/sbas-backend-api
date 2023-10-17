@@ -14,7 +14,6 @@ import org.sbas.responses.CommonListResponse
 import org.sbas.responses.CommonResponse
 import org.sbas.responses.patient.DiseaseInfoResponse
 import org.sbas.responses.patient.TransInfoResponse
-import org.sbas.restclients.FirebaseService
 import org.sbas.restparameters.NaverGeocodingApiParams
 import org.sbas.utils.CustomizedException
 import javax.enterprise.context.ApplicationScoped
@@ -131,7 +130,7 @@ class BedAssignService {
         bdasUsers.forEach {
             log.debug("registerBedRequestInfo bdasUsers >>> ${it.id}")
             try {
-                firebaseService.sendMessage("${findInfoPt.ptNm}님 병상요청", "신규 병상요청", it.id)
+                firebaseService.sendMessageMultiDevice("${findInfoPt.ptNm}님 병상요청", "신규 병상요청", it.id)
             } catch (e: Exception) {
                 log.warn(e.printStackTrace())
                 return CommonResponse("병상 요청")
@@ -179,7 +178,7 @@ class BedAssignService {
                     bdasReqAprvRepository.persist(entity)
                     findBdasReq.changeBedStatTo(BedStatCd.BAST0004.name)
                     try {
-                        firebaseService.sendMessage("${findInfoPt.ptNm}님 전원요청", "가용 병상 확인해 주시기 바랍니다.", infoHosp.userId)
+                        firebaseService.sendMessageMultiDevice("${findInfoPt.ptNm}님 전원요청", "가용 병상 확인해 주시기 바랍니다.", infoHosp.userId)
                     } catch (e: Exception) {
                         log.warn(e.printStackTrace())
                     }
@@ -288,7 +287,7 @@ class BedAssignService {
             // 모든 병원이 배정불가인 경우
             val refusedBdasAprv = bdasAprvRepository.findRefusedBdasAprv(saveRequest.ptId, saveRequest.bdasSeq)
             if (bdasReqAprvList.size == refusedBdasAprv.size) {
-                firebaseService.sendMessage(
+                firebaseService.sendMessageMultiDevice(
                     "${findInfoPt.ptNm}님 병상배정",
                     "모든 병원이 배정 불가 처리되었습니다. 재요청 바랍니다.",
                     bdasReqAprvList[0].rgstUserId!!
@@ -328,7 +327,7 @@ class BedAssignService {
             else -> "병상 배정이 불가처리되었습니다."
         }
 
-        firebaseService.sendMessage("${findInfoPt.ptNm}님 병상배정", msg, bdasReqAprvList[0].rgstUserId!!)
+        firebaseService.sendMessageMultiDevice("${findInfoPt.ptNm}님 병상배정", msg, bdasReqAprvList[0].rgstUserId!!)
 
 //        // 지역코드로 병상배정반 찾기
 //        val bdasUsers = infoUserRepository.findBdasUserByReqDstrCd(findBdasReq.reqDstr1Cd, findBdasReq.reqDstr2Cd)

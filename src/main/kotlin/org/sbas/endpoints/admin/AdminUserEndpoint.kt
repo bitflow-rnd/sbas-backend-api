@@ -8,6 +8,7 @@ import org.sbas.dtos.info.InfoUserSearchParam
 import org.sbas.parameters.UpdatePushKeyRequest
 import org.sbas.parameters.UserIdRequest
 import org.sbas.parameters.UserRequest
+import org.sbas.services.FirebaseService
 import org.sbas.services.UserService
 import javax.annotation.security.RolesAllowed
 import javax.inject.Inject
@@ -29,6 +30,9 @@ class AdminUserEndpoint {
 
     @Inject
     lateinit var userService: UserService
+
+    @Inject
+    lateinit var firebaseService: FirebaseService
 
     @Operation(summary = "사용자등록 승인/반려", description = "백오피스에서 어드민(전산담당)이 처리하는 사용자 등록 승인/반려 API")
     @POST
@@ -68,8 +72,8 @@ class AdminUserEndpoint {
     @Operation(summary = "push key 등록", description = "firebase push key 등록 API")
     @POST
     @Path("push-key")
-    fun updatePushKey(request: UpdatePushKeyRequest): Response {
-        return Response.ok(userService.updatePushKey(request)).build()
+    fun updatePushKey(request: UpdatePushKeyRequest): Response? {
+        return Response.ok(firebaseService.addPushKey(request.id, request.pushKey)).build()
     }
 
 }

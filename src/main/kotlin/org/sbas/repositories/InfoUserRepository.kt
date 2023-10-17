@@ -12,6 +12,7 @@ import org.sbas.dtos.info.InfoUserListDto
 import org.sbas.dtos.info.InfoUserSearchParam
 import org.sbas.dtos.info.UserDetailResponse
 import org.sbas.entities.info.InfoUser
+import org.sbas.entities.info.UserFcmToken
 import org.sbas.parameters.PageRequest
 import javax.enterprise.context.ApplicationScoped
 import javax.inject.Inject
@@ -106,5 +107,14 @@ class InfoUserRepository : PanacheRepositoryBase<InfoUser, String> {
         }
 
         return infoUserDetail
+    }
+}
+
+@ApplicationScoped
+class UserFcmTokenRepository : PanacheRepositoryBase<UserFcmToken, Long> {
+
+    @Transactional
+    fun findAllByUserId(userId: String): List<UserFcmToken> {
+        return find("userId = '${userId}' and isValid = true").list()
     }
 }

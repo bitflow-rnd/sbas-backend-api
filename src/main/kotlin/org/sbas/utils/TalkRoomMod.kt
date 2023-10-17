@@ -11,7 +11,7 @@ import org.sbas.repositories.TalkMsgRepository
 import org.sbas.repositories.TalkRoomRepository
 import org.sbas.repositories.TalkUserRepository
 import org.sbas.responses.messages.TalkRoomResponse
-import org.sbas.restclients.FirebaseService
+import org.sbas.services.FirebaseService
 import javax.inject.Inject
 import javax.websocket.*
 import javax.websocket.server.PathParam
@@ -123,7 +123,7 @@ class TalkRoomMod {
                 if(chatSockets[it.id?.userId] != null) {
                     chatSockets[it.id?.userId]?.session?.asyncRemote?.sendText(JsonObject.mapFrom(talkRoomResponse).toString())
                 } else {
-                    firebaseService.sendMessage(userId, msg.msg, it.id?.userId!!)
+                    firebaseService.sendMessageMultiDevice(userId, msg.msg, it.id?.userId!!)
                 }
             }
     }

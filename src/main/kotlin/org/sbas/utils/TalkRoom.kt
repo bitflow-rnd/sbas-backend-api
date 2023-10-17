@@ -10,7 +10,7 @@ import org.sbas.entities.talk.arrToJson
 import org.sbas.handlers.FileHandler
 import org.sbas.repositories.*
 import org.sbas.responses.messages.TalkRoomResponse
-import org.sbas.restclients.FirebaseService
+import org.sbas.services.FirebaseService
 import javax.enterprise.context.ApplicationScoped
 import javax.inject.Inject
 import javax.websocket.*
@@ -109,7 +109,7 @@ class TalkRoom {
                 if(chatSockets[it.id?.userId] != null) {
                     TalkRoomList.chatRoomsSockets[it.id?.userId]?.asyncRemote?.sendText(JsonObject.mapFrom(talkRoomResponse).toString())
                 }else {
-                    firebaseService.sendMessage(userId, msg.msg, it.id?.userId!!)
+                    firebaseService.sendMessageMultiDevice(userId, msg.msg, it.id?.userId!!)
                 }
             }
     }
