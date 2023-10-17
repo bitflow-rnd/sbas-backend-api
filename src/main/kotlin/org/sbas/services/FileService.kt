@@ -107,10 +107,13 @@ class FileService {
 
     private fun getFileTypeCd(fileExt: String): String {
         val imageExtensions = setOf("bmp", "jpeg", "jpg", "gif", "png", "pdf")
+        val videoExtensions = setOf("mp4", "avi", "mkv", "wmv", "flv", "mov", "webm", "3gp", "mpeg", "mpg", "ts")
         val fileTypeCd = if (fileExt.lowercase() in imageExtensions) {
             SbasConst.FileTypeCd.IMAGE
-        } else {
+        } else if (fileExt.lowercase() in videoExtensions) {
             SbasConst.FileTypeCd.VIDEO
+        } else {
+            SbasConst.FileTypeCd.ETC
         }
         return fileTypeCd
     }

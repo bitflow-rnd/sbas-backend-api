@@ -82,8 +82,10 @@ class TalkRoomMod {
             .filter { it.tkrmId == tkrmId }
             .forEach {
                 it.session.asyncRemote.sendText(JsonObject.mapFrom(addMsg).toString())
-                firebaseService.sendMessageMultiDevice(userId, message, userId)
             }
+
+        // TODO 하나의 기기로 여러 아이디 로그인 한 경우 알림이 여러번 옴, 자신 제외
+        firebaseService.sendMessageMultiDevice(userId, message, userId)
 
         otherUsers.forEach{
             session.asyncRemote.sendText(it.id?.userId)

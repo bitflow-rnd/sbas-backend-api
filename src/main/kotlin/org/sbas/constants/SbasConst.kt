@@ -21,6 +21,7 @@ object SbasConst {
     object FileTypeCd {
         const val IMAGE = "FLTP0001"
         const val VIDEO = "FLTP0002"
+        const val ETC = "FLTP0003"
     }
 
     /**
