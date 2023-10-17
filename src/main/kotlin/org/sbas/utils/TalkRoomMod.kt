@@ -120,9 +120,8 @@ class TalkRoomMod {
 
         talkUsers
             .forEach{
-                if(chatSockets[it.id?.userId] != null) {
+                if (chatSockets[it.id?.userId] != null) {
                     chatSockets[it.id?.userId]?.session?.asyncRemote?.sendText(JsonObject.mapFrom(talkRoomResponse).toString())
-                } else {
                     firebaseService.sendMessageMultiDevice(userId, msg.msg, it.id?.userId!!)
                 }
             }
