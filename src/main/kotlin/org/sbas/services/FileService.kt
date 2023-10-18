@@ -135,7 +135,7 @@ class FileService {
         return CommonResponse(response)
     }
 
-    fun findPrivateImage(attcId: String): CommonResponse<ByteArray> {
+    fun findPrivateImage(attcId: String): ByteArray {
         val findFile = baseAttcRepository.findByAttcId(attcId) ?: throw NotFoundException("not found")
 
         require(findFile.privYn == "Y") { "not private file, check attcId" }
@@ -143,7 +143,7 @@ class FileService {
 
         val filePath: Path = Paths.get("${findFile.loclPath}/${findFile.fileNm}")
 
-        return CommonResponse(Files.readAllBytes(filePath))
+        return Files.readAllBytes(filePath)
     }
 
     @Transactional
