@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper
 import org.eclipse.microprofile.config.inject.ConfigProperty
 import org.eclipse.microprofile.rest.client.inject.RestClient
 import org.jboss.logging.Logger
+import org.json.JSONArray
 import org.json.JSONObject
 import org.sbas.constants.EgenCmMid
 import org.sbas.constants.enums.SidoCd
@@ -325,11 +326,8 @@ class EgenService {
         infoHospRepository.getEntityManager().merge(input)
     }
 
-
-    @Transactional
     fun saveUsefulSckbdInfo(param: EgenApiEmrrmRltmUsefulSckbdInfoParams) {
 //        val (jsonObjectIntPair, totalCount) = getEmrrmRltmUsefulSckbdInfoInqire(param)
-
         SidoCd.values().forEach {
             if (it.cdNm == "강원도") {
                 param.stage1 = "강원특별자치도"
@@ -338,24 +336,27 @@ class EgenService {
             }
             val (jsonObjectIntPair, _) = getEmrrmRltmUsefulSckbdInfoInqire(param)
             val infoJsonArray = jsonObjectIntPair.getJSONArray("item")
-            var infoBedSaveReq: InfoBedSaveReq
-
-            infoJsonArray.forEach {jsonObject ->
-                infoBedSaveReq = objectMapper.readValue(jsonObject.toString(), InfoBedSaveReq::class.java)
-                val infoHospIds = infoHospRepository.findInfoHospByHpId(infoBedSaveReq.hpid)
-
-                val findInfoBed = infoBedRepository.findByHpid(infoHospIds.hpId)
-                val newEntity = infoBedSaveReq.toEntity(infoHospIds.hospId)
-
-                if (findInfoBed != null) {
-                    infoBedRepository.getEntityManager().merge(newEntity)
-                } else {
-                    infoBedRepository.persist(newEntity)
-                }
-            }
+            saveInfoBedFromJsonArray(infoJsonArray)
         }
     }
 
+    @Transactional
+    fun saveInfoBedFromJsonArray(infoJsonArray: JSONArray) {
+        var infoBedSaveReq: InfoBedSaveReq
+        infoJsonArray.forEach { jsonObject ->
+            infoBedSaveReq = objectMapper.readValue(jsonObject.toString(), InfoBedSaveReq::class.java)
+            val infoHospIds = infoHospRepository.findInfoHospByHpId(infoBedSaveReq.hpid)
+
+            val findInfoBed = infoBedRepository.findByHpid(infoHospIds.hpId)
+            val newEntity = infoBedSaveReq.toEntity(infoHospIds.hospId)
+
+            if (findInfoBed != null) {
+                infoBedRepository.getEntityManager().merge(newEntity)
+            } else {
+                infoBedRepository.persist(newEntity)
+            }
+        }
+    }
 
     private fun extractBody(jsonObject: JSONObject): JSONObject {
         val header = jsonObject.getJSONObject("response").getJSONObject("header")

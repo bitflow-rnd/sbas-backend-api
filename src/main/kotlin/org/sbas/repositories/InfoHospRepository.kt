@@ -33,6 +33,7 @@ class InfoHospRepository : PanacheRepositoryBase<InfoHosp, String> {
             selectMulti(
                 col(InfoHosp::hospId), col(InfoHosp::hpId), col(InfoHosp::dstrCd1),
                 function("fn_get_cd_nm", String::class.java, literal("SIDO"), col(InfoHosp::dstrCd1)),
+                col(InfoHosp::attcId),
             )
             from(entity(InfoHosp::class))
             where(
