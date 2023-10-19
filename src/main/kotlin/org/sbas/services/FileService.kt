@@ -8,13 +8,15 @@ import org.sbas.entities.base.BaseAttc
 import org.sbas.handlers.FileHandler
 import org.sbas.repositories.BaseAttcRepository
 import org.sbas.responses.CommonResponse
-import org.sbas.responses.CommonListResponse
 import org.sbas.responses.messages.FileResponse
 import org.sbas.utils.CustomizedException
 import java.io.File
 import java.io.FileInputStream
 import java.io.IOException
 import java.io.InputStream
+import java.nio.file.Files
+import java.nio.file.Path
+import java.nio.file.Paths
 import javax.enterprise.context.ApplicationScoped
 import javax.inject.Inject
 import javax.transaction.Transactional
@@ -131,6 +133,17 @@ class FileService {
         val response = FileResponse(findFile.fileTypeCd, "$serverdomain/$fileAccessType${findFile.uriPath}/${findFile.fileNm}")
 
         return CommonResponse(response)
+    }
+
+    fun findPrivateImage(attcId: String): ByteArray {
+        val findFile = baseAttcRepository.findByAttcId(attcId) ?: throw NotFoundException("not found")
+
+        require(findFile.privYn == "Y") { "not private file, check attcId" }
+        require(findFile.fileTypeCd == SbasConst.FileTypeCd.IMAGE) { "not image file, check attcId" }
+
+        val filePath: Path = Paths.get("${findFile.loclPath}/${findFile.fileNm}")
+
+        return Files.readAllBytes(filePath)
     }
 
     @Transactional
