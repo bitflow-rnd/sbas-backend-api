@@ -322,8 +322,9 @@ class CommonService {
         val result = TermsDetailResponse(
             termsType = termsType,
             detail = findInfoTerms.get().detail,
-            termsVersion = findInfoTerms.get().id.termsVersion!!,
+            termsVersion = findInfoTerms.get().id.termsVersion,
             termsName = findInfoTerms.get().termsName!!,
+            effectiveDt = findInfoTerms.get().id.effectiveDt,
         )
 
         return CommonResponse(result)

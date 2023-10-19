@@ -5,4 +5,5 @@ data class TermsDetailResponse (
     val termsName: String,
     val termsVersion: String,
     val detail: String,
+    val effectiveDt: String,
 )
