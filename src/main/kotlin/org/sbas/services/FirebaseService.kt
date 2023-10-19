@@ -101,7 +101,14 @@ class FirebaseService {
     @Transactional
     fun addPushKey(userId: String, pushKey: String): CommonResponse<String> {
         val userFcmToken = UserFcmToken(userId = userId, reregistrationToken = pushKey)
-        userFcmTokenRepository.persist(userFcmToken)
+        val findUserFcmTokens = userFcmTokenRepository.findAllByUserId(userId)
+
+        val isDuplicate = findUserFcmTokens.any { it.reregistrationToken == pushKey }
+
+        if (!isDuplicate) {
+            userFcmTokenRepository.persist(userFcmToken)
+        }
+
         return CommonResponse("push key가 등록되었습니다.")
     }
 
