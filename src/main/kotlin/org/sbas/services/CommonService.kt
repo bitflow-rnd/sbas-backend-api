@@ -316,15 +316,16 @@ class CommonService {
      * 약관 상세
      */
     @Transactional
-    fun getTermsDetailByTermsType(termsType: String): CommonResponse<TermsDetailResponse>{
-        val findInfoTerms = termsRepository.findRecentTermsByTermsType(termsType) ?: throw NotFoundException("not found this type terms")
+    fun getTermsDetailByTermsType(termsType: String, termsVersion: String): CommonResponse<TermsDetailResponse>{
+        val findInfoTerms = if(termsVersion == "00") termsRepository.findRecentTermsByTermsType(termsType)
+        else termsRepository.findTermsByTermsTypeAndTermsVersion(termsType, termsVersion)  ?: throw NotFoundException("not found this type terms")
 
         val result = TermsDetailResponse(
             termsType = termsType,
-            detail = findInfoTerms.get().detail,
-            termsVersion = findInfoTerms.get().id.termsVersion,
-            termsName = findInfoTerms.get().termsName!!,
-            effectiveDt = findInfoTerms.get().id.effectiveDt,
+            detail = findInfoTerms.detail,
+            termsVersion = findInfoTerms.id.termsVersion,
+            termsName = findInfoTerms.termsName!!,
+            effectiveDt = findInfoTerms.id.effectiveDt,
         )
 
         return CommonResponse(result)

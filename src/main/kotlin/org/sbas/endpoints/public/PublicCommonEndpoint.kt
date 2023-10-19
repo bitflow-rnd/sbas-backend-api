@@ -108,9 +108,9 @@ class PublicCommonEndpoint {
 
     @Operation(summary = "약관 상세", description = "약관 상세 API")
     @GET
-    @Path("terms/detail/{termsType}")
-    fun getTermsDetailByTermsType(@RestPath termsType: String): Response {
-        return Response.ok(commonService.getTermsDetailByTermsType(termsType)).build()
+    @Path("terms/detail/{termsType}/{termsVersion}")
+    fun getTermsDetailByTermsType(@RestPath termsType: String, @RestPath termsVersion: String): Response {
+        return Response.ok(commonService.getTermsDetailByTermsType(termsType, termsVersion)).build()
     }
 
     @Operation(summary = "공지사항 목록", description = "공지사항 목록 API")
