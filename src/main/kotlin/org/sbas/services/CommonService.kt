@@ -274,7 +274,7 @@ class CommonService {
     fun modTerms(modTermsReq: ModTermsReq): CommonResponse<String> {
         val termsVersion = modTermsReq.termsVersion
             ?: termsRepository.findTermsVersionByTermsType(modTermsReq.termsType)
-        val termsId = InfoTermsId(termsType = modTermsReq.termsType, termsVersion = termsVersion)
+        val termsId = InfoTermsId(termsType = modTermsReq.termsType, termsVersion = termsVersion, effectiveDt = modTermsReq.effectiveDt)
 
         val findTerms = termsRepository.findById(termsId)
             ?: throw NotFoundException("No terms and conditions of this type found")
@@ -289,7 +289,7 @@ class CommonService {
      */
     @Transactional
     fun delTerms(delTermsReq: DelTermsReq): CommonResponse<String> {
-        val termsId = InfoTermsId(termsType = delTermsReq.termsType, termsVersion = delTermsReq.termsVersion)
+        val termsId = InfoTermsId(termsType = delTermsReq.termsType, termsVersion = delTermsReq.termsVersion, effectiveDt = delTermsReq.effectiveDt)
         val findTerms = termsRepository.findById(termsId)
             ?: throw NotFoundException("No terms and conditions of this type found")
 

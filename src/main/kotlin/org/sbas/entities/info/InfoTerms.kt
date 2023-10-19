@@ -25,7 +25,10 @@ data class InfoTermsId(
     var termsType: String, // 01 : 개인정보수집동의, 02 : 서비스이용약관, 03 : 개인정보처리방침
 
     @Column(name = "terms_version", nullable = false, length = 2)
-    var termsVersion: String? = null, // 약관 버전
+    var termsVersion: String, // 약관 버전
+
+    @Column(name = "effective_dt", nullable = false, length = 8)
+    var effectiveDt: String,
 ) : Serializable {
 
     companion object {
