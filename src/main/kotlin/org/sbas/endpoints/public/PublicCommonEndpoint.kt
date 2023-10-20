@@ -63,6 +63,13 @@ class PublicCommonEndpoint {
         return Response.ok(commonService.findBaseCodeList(cdGrpId)).build()
     }
 
+    @Operation(summary = "공통코드 값 조회", description = "특정 코드로 해당 값(cd_nm) 조회")
+    @GET
+    @Path("code/{cdId}")
+    fun code(@RestPath cdId: String): Response {
+        return Response.ok(commonService.findBaseCodeName(cdId)).build()
+    }
+
     @Operation(summary = "시/도 목록", description = "시/도 목록 조회")
     @GET
     @Path("sidos")

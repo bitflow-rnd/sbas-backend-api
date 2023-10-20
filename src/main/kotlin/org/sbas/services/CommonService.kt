@@ -122,6 +122,16 @@ class CommonService {
     }
 
     /**
+     * 공통코드 코드명 조회
+     */
+    @Transactional
+    fun findBaseCodeName(@CacheKey cdId: String): CommonResponse<String> {
+        val findCodeName = baseCodeRepository.findBaseCodeNameByCdId(cdId = cdId) ?: throw NotFoundException("해당 코드명이 없습니다.")
+
+        return CommonResponse(findCodeName)
+    }
+
+    /**
      * 공통코드 등록
      */
     @Transactional
