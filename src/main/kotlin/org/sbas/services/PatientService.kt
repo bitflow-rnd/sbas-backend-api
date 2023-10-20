@@ -286,7 +286,7 @@ class PatientService {
         baseAttcRepository.persist(entity)
 
         // Naver Clova OCR call
-        val res = naverApiHandler.recognizeImage("private${fileDto.uriPath}", fileDto.fileName, entity.attcId)
+        val res = naverApiHandler.recognizeImage(fileDto.uriPath, fileDto.fileName, entity.attcId)
         log.debug("texts are $res")
 
         return CommonResponse(res)
@@ -296,13 +296,13 @@ class PatientService {
     fun readEpidReport(attcId: String): CommonResponse<*> {
         val baseAttc = baseAttcRepository.findByAttcId(attcId) ?: throw NotFoundException("$attcId not found")
 
-        val url = URL("$serverdomain/private${baseAttc.uriPath}/${baseAttc.fileNm}")
+        val url = URL("$serverdomain/${baseAttc.uriPath}/${baseAttc.fileNm}")
 
         return try {
             val inputStream = url.openStream()
             inputStream.close()
 
-            val res = naverApiHandler.recognizeImage("private${baseAttc.uriPath}", baseAttc.fileNm, baseAttc.attcId)
+            val res = naverApiHandler.recognizeImage(baseAttc.uriPath, baseAttc.fileNm, baseAttc.attcId)
             CommonResponse(res)
         } catch (e: IOException) {
             throw NotFoundException("역학조사서 파일이 존재하지 않습니다.")

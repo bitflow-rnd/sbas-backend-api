@@ -52,27 +52,15 @@ class FileService {
      */
     @Transactional
     fun publicFileUpload(param1: String?, param2: MutableList<FileUpload>?): CommonResponse<String> {
-        if (param2.isNullOrEmpty()) {
+        if (param2.isNullOrEmpty() || param2.any { it.size() == 0L }) {
             throw CustomizedException("파일을 등록하세요.", Response.Status.BAD_REQUEST)
         }
 
-        var attcGrpId = ""
+        val attcGrpId = baseAttcRepository.getNextValAttcGrpId()
         param2.forEach {
-            if (it.size() == 0L) {
-                throw CustomizedException("파일을 등록하세요.", Response.Status.BAD_REQUEST)
-            }
-            if(attcGrpId == ""){
-                attcGrpId = baseAttcRepository.getNextValAttcGrpId()
-            }
-
             val fileDto = fileHandler.createPublicFile(it)
-
-            val dotPos = fileDto.fileName.lastIndexOf(".")
-            val fileExt = fileDto.fileName.substring(dotPos + 1).lowercase()
-
-            val fileTypeCd = getFileTypeCd(fileExt)
+            val fileTypeCd = getFileTypeCd(fileDto.fileExt)
             val baseAttc = fileDto.toPublicEntity(attcGrpId = attcGrpId, fileTypeCd = fileTypeCd, rmk = null)
-
             baseAttcRepository.persist(baseAttc)
         }
 
@@ -81,26 +69,15 @@ class FileService {
 
     @Transactional
     fun privateFileUpload(param1: String?, param2: MutableList<FileUpload>?): CommonResponse<String> {
-        if (param2.isNullOrEmpty()) {
+        if (param2.isNullOrEmpty() || param2.any { it.size() == 0L }) {
             throw CustomizedException("파일을 등록하세요.", Response.Status.BAD_REQUEST)
         }
 
-        var attcGrpId = ""
+        val attcGrpId = baseAttcRepository.getNextValAttcGrpId()
         param2.forEach {
-            if (it.size() == 0L) {
-                throw CustomizedException("파일을 등록하세요.", Response.Status.BAD_REQUEST)
-            }
-            if(attcGrpId == ""){
-                attcGrpId = baseAttcRepository.getNextValAttcGrpId()
-            }
             val fileDto = fileHandler.createPrivateFile(it)
-
-            val dotPos = fileDto.fileName.lastIndexOf(".")
-            val fileExt = fileDto.fileName.substring(dotPos + 1).lowercase()
-
-            val fileTypeCd = getFileTypeCd(fileExt)
+            val fileTypeCd = getFileTypeCd(fileDto.fileExt)
             val baseAttc = fileDto.toPrivateEntity(attcGrpId = attcGrpId, fileTypeCd = fileTypeCd, rmk = null)
-
             baseAttcRepository.persist(baseAttc)
         }
 
@@ -110,14 +87,12 @@ class FileService {
     private fun getFileTypeCd(fileExt: String): String {
         val imageExtensions = setOf("bmp", "jpeg", "jpg", "gif", "png", "pdf")
         val videoExtensions = setOf("mp4", "avi", "mkv", "wmv", "flv", "mov", "webm", "3gp", "mpeg", "mpg", "ts")
-        val fileTypeCd = if (fileExt.lowercase() in imageExtensions) {
-            SbasConst.FileTypeCd.IMAGE
-        } else if (fileExt.lowercase() in videoExtensions) {
-            SbasConst.FileTypeCd.VIDEO
-        } else {
-            SbasConst.FileTypeCd.ETC
+
+        return when (fileExt.lowercase()) {
+            in imageExtensions -> SbasConst.FileTypeCd.IMAGE
+            in videoExtensions -> SbasConst.FileTypeCd.VIDEO
+            else -> SbasConst.FileTypeCd.ETC
         }
-        return fileTypeCd
     }
 
     @Transactional

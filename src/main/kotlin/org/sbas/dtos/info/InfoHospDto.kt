@@ -67,11 +67,6 @@ data class InfoHospSaveReq(
     }
 }
 
-data class InfoHospDetailDto(
-    var infoHosp: InfoHosp,
-    var medicCnt: Long,
-)
-
 @NoArg
 data class InfoHospSearchParam(
     @field: QueryParam("hospId") var hospId: String?,
