@@ -2,16 +2,14 @@ package org.sbas.dtos.info
 
 import org.hibernate.validator.constraints.Length
 import org.sbas.entities.info.InfoNotice
-import org.sbas.utils.annotation.NoArg
 import javax.validation.constraints.NotBlank
-import javax.ws.rs.QueryParam
 
 data class RegNoticeReq(
     @field: [NotBlank(message = "제목은 필수 값입니다.") Length(max = 30)]
     val title: String,
     val content: String,
     val isActive: Boolean?,
-    val noticeType: Char,
+    val noticeType: String,
     val startNoticeDt: String,
     val startNoticeTm: String,
     val endNoticeDt: String,
@@ -41,7 +39,7 @@ data class ModNoticeReq(
     val title: String,
     val content: String,
     val isActive: Boolean?,
-    val noticeType: Char,
+    val noticeType: String,
     val startNoticeDt: String,
     val startNoticeTm: String,
     val endNoticeDt: String,

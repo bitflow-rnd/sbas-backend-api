@@ -7,7 +7,6 @@ import org.sbas.entities.info.InfoTermsId
 import org.sbas.entities.info.TermsAgreement
 import org.sbas.entities.info.TermsAgreementId
 import org.sbas.responses.terms.AgreeTermsListResponse
-import java.util.*
 import java.util.Comparator.comparing
 import java.util.stream.Collectors.groupingBy
 import java.util.stream.Collectors.maxBy
