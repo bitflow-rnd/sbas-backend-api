@@ -7,7 +7,7 @@ import org.jboss.resteasy.reactive.RestForm
 import org.jboss.resteasy.reactive.RestPath
 import org.jboss.resteasy.reactive.multipart.FileUpload
 import org.sbas.dtos.info.InfoCrewSearchParam
-import org.sbas.dtos.info.InfoHospDetailRequest
+import org.sbas.dtos.info.InfoHospDetailDto
 import org.sbas.dtos.info.toInfoHospDetail
 import org.sbas.services.OrganiztnService
 import javax.inject.Inject
@@ -15,7 +15,6 @@ import javax.ws.rs.BeanParam
 import javax.ws.rs.GET
 import javax.ws.rs.POST
 import javax.ws.rs.Path
-
 import javax.ws.rs.core.Response
 
 @Tag(name = "기관 관리(사용자 권한용)", description = "로그인 된 사용자(세부권한별 분기) - 기관 등록 및 조회 등")
@@ -56,10 +55,17 @@ class PrivateOrganiztnEndpoint {
         return Response.ok(organiztnService.deleteHospImg(hospId)).build()
     }
 
+    @Operation(summary = "의료기관 정보 조회(E-Gen 데이터 제외)")
+    @GET
+    @Path("medinstinfo/{hospId}")
+    fun medInstInfo(@RestPath("hospId") hospId: String): Response {
+        return Response.ok(organiztnService.findMedInstInfo(hospId)).build()
+    }
+
     @Operation(summary = "의료기관 정보 수정(E-Gen 데이터 제외)")
     @POST
     @Path("mod-medinstinfo")
-    fun modMedInstInfo(hospDetailRequest: InfoHospDetailRequest): Response {
+    fun modMedInstInfo(hospDetailRequest: InfoHospDetailDto): Response {
         val entity = hospDetailRequest.toInfoHospDetail()
         return Response.ok(organiztnService.modMedInstInfo(entity)).build()
     }

@@ -296,6 +296,10 @@ class InfoCntcRepository : PanacheRepositoryBase<InfoCntc, InfoCntcId> {
 @ApplicationScoped
 class InfoBedRepository : PanacheRepositoryBase<InfoBed, String> {
 
+    fun findByHospId(hospId: String): InfoBed? {
+        return find("hospId = '$hospId'").firstResult()
+    }
+
     fun findByHpid(hpid: String): InfoBed? {
         return find("hpid = '$hpid'").firstResult()
     }

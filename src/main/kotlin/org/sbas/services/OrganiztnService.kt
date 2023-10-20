@@ -369,16 +369,24 @@ class OrganiztnService {
     }
 
     @Transactional
+    fun findMedInstInfo(hospId: String): CommonResponse<InfoHospDetailDto> {
+        val hospDetail = infoHospDetailRepository.findById(hospId)
+        checkNotNull(hospDetail) { throw NotFoundException("$hospId not found") }
+        return CommonResponse(hospDetail.toResponse())
+    }
+
+    @Transactional
     fun modMedInstInfo(request: InfoHospDetail): CommonResponse<String> {
-        val infoBed = infoBedRepository.findById(request.hospId)
+        val infoBed = infoBedRepository.findByHospId(request.hospId)
             ?: throw NotFoundException("${request.hospId} not found")
 
         val hospDetail = infoHospDetailRepository.findById(infoBed.hospId)
 
-        checkNotNull(hospDetail) {
+        if (hospDetail == null) {
             infoHospDetailRepository.persist(request)
+        } else {
+            hospDetail.update(request)
         }
-        hospDetail.update(request)
 
         return CommonResponse("성공")
     }

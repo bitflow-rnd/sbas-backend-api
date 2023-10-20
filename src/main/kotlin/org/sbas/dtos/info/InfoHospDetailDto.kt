@@ -4,9 +4,8 @@ import org.sbas.entities.info.FacilityStatus
 import org.sbas.entities.info.InfoHospDetail
 import org.sbas.entities.info.MedicalTeamCount
 
-data class InfoHospDetailRequest(
+data class InfoHospDetailDto(
     val hospId: String,
-    val facilityStatus: FacilityStatus,
     val childBirthYn: Boolean,
     val dialysisYn: Boolean,
     val childYn: Boolean,
@@ -20,7 +19,7 @@ data class InfoHospDetailRequest(
     val mentalPatientMed: Int,
 )
 
-fun InfoHospDetailRequest.toInfoHospDetail(): InfoHospDetail {
+fun InfoHospDetailDto.toInfoHospDetail(): InfoHospDetail {
     return InfoHospDetail(
         hospId = hospId,
         facilityStatus = FacilityStatus(
