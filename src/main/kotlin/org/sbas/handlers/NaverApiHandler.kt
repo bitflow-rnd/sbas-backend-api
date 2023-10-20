@@ -51,7 +51,7 @@ class NaverApiHandler {
             "epidreportimg",
 //            encoded,
             null,
-            "$serverdomain/$uri/$filename"
+            "$serverdomain$uri/$filename"
         )
 
         val now = System.currentTimeMillis()
