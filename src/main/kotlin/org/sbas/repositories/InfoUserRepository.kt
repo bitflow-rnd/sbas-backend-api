@@ -89,7 +89,7 @@ class InfoUserRepository : PanacheRepositoryBase<InfoUser, String> {
         return getEntityManager().createQuery(query, HospMedInfo::class.java).resultList
     }
 
-    fun findInfoUserDetail(userId: String): List<UserDetailResponse> {
+    fun findInfoUserDetail(userId: String?): List<UserDetailResponse> {
         val infoUserDetail = queryFactory.listQuery<UserDetailResponse> {
             selectMulti(
                 col(InfoUser::id), col(InfoUser::userNm), col(InfoUser::gndr), col(InfoUser::telno),
@@ -102,7 +102,7 @@ class InfoUserRepository : PanacheRepositoryBase<InfoUser, String> {
             )
             from(entity(InfoUser::class))
             whereAnd(
-                col(InfoUser::id).equal(userId)
+                userId?.let { col(InfoUser::id).equal(userId) }
             )
         }
 

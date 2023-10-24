@@ -204,10 +204,9 @@ data class InfoPtCheckRequest(
     val ptNm: String,
     val rrno1: String,
     val rrno2: String,
-//    val bascAddr: String,
-//    val dstr1Cd: String?,
-//    val dstr2Cd: String?,
-//    val mpno: String?,
+    val dstr1Cd: String?,
+    val dstr2Cd: String?,
+    val mpno: String?,
 )
 
 data class InfoPtCheckResponse(
@@ -217,7 +216,9 @@ data class InfoPtCheckResponse(
     var rrno2: String,
     var gndr: String? = null,
     var dstr1Cd: String? = null,
+    val dstr1CdNm: String?,
     var dstr2Cd: String? = null,
+    val dstr2CdNm: String?,
     var telno: String? = null,
     var natiCd: NatiCd? = null,
     var dethYn: String?,

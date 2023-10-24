@@ -95,6 +95,7 @@ class PatientService {
             rrno1 = dto.rrno1,
             rrno2 = dto.rrno2,
         )
+        val baseCode = dto.dstr2Cd?.let { baseCodeRepository.findBaseCodeByCdId(it) }
 
         val infoPtResponse = findInfoPt?.let {
             InfoPtCheckResponse(
@@ -104,7 +105,9 @@ class PatientService {
                 rrno1 = it.rrno1,
                 rrno2 = it.rrno2,
                 dstr1Cd = it.dstr1Cd,
+                dstr1CdNm = baseCode?.cdNm?.substring(0, 2),
                 dstr2Cd = it.dstr2Cd,
+                dstr2CdNm = baseCode?.cdNm,
                 telno = it.telno,
                 natiCd = it.natiCd,
                 dethYn = it.dethYn,

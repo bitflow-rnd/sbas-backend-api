@@ -1,23 +1,20 @@
 package org.sbas.endpoints.test
 
-import org.eclipse.microprofile.jwt.JsonWebToken
 import org.eclipse.microprofile.openapi.annotations.tags.Tag
 import org.jboss.logging.Logger
 import org.sbas.handlers.GeocodingHandler
-import org.sbas.services.FirebaseService
 import org.sbas.restparameters.NaverGeocodingApiParams
 import org.sbas.restresponses.NaverGeocodingApiResponse
 import org.sbas.restresponses.NaverReverseGeocodingApiResponse
-import org.sbas.services.TestUserService
+import org.sbas.services.FirebaseService
 import javax.annotation.security.PermitAll
-import javax.annotation.security.RolesAllowed
 import javax.inject.Inject
 import javax.validation.Valid
 import javax.ws.rs.GET
 import javax.ws.rs.POST
 import javax.ws.rs.Path
 import javax.ws.rs.QueryParam
-import javax.ws.rs.core.*
+import javax.ws.rs.core.SecurityContext
 
 
 @Tag(name = "테스트", description = "내맘대로 테스트")
@@ -28,9 +25,6 @@ class SbasTestEndpoint {
     lateinit var log: Logger
 
     @Inject
-    lateinit var serv1: TestUserService
-
-    @Inject
     lateinit var geoHandler: GeocodingHandler
 
     @Inject
@@ -39,14 +33,14 @@ class SbasTestEndpoint {
     @Inject
     lateinit var firebaseService: FirebaseService
 
-    @GET
-    @Path("user")
-    @RolesAllowed("USER", "ADMIN")
-    fun getUser(): Response {
-        return Response.ok(object {
-            val token: JsonWebToken = serv1.getUser()
-        }).build()
-    }
+//    @GET
+//    @Path("user")
+//    @RolesAllowed("USER", "ADMIN")
+//    fun getUser(): Response {
+//        return Response.ok(object {
+//            val token: JsonWebToken = serv1.getUser()
+//        }).build()
+//    }
 
     @POST
     @Path("geocoding-test")
