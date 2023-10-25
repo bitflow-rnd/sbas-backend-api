@@ -40,7 +40,7 @@ class InfoPtRepository : PanacheRepositoryBase<InfoPt, String> {
 
         val query = "select new org.sbas.dtos.info.InfoPtSearchDto(pt.ptId, br.id.bdasSeq, pt.ptNm, pt.gndr, pt.rrno1, " +
                 "pt.dstr1Cd, fn_get_cd_nm('SIDO', pt.dstr1Cd), pt.dstr2Cd, fn_get_cd_nm('SIDO'||pt.dstr1Cd, pt.dstr2Cd), " +
-                "bap.hospId, ih.dutyName, pt.mpno, pt.natiCd, pt.natiNm, br.bedStatCd, pt.updtDttm, pt.rgstDttm, " +
+                "bap.hospId, ih.dutyName, pt.mpno, pt.natiCd, pt.natiNm, br.bedStatCd, pt.rgstDttm, pt.updtDttm, " +
                 "br.ptTypeCd, br.svrtTypeCd, br.undrDsesCd, fn_get_age(pt.rrno1, pt.rrno2)) " +
                 "from InfoPt pt " +
                 "left join BdasReq br on pt.ptId = br.id.ptId " +
