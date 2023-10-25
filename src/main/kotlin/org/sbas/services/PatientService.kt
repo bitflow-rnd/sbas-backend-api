@@ -161,6 +161,8 @@ class PatientService {
         val bdasReq = bdasReqRepository.findByPtIdAndBdasSeq(ptId, bdasSeq)
         val bedStatCd = bdasReq?.bedStatCd
 
+        val baseCode = infoPt.dstr2Cd?.let { baseCodeRepository.findBaseCodeByCdId(it) }
+
         val infoPtBasicInfo = InfoPtBasicInfo(
             ptId = infoPt.ptId,
             ptNm = infoPt.ptNm,
@@ -168,6 +170,10 @@ class PatientService {
             age = infoPtRepository.getAge(infoPt.rrno1, infoPt.rrno2),
             rrno1 = infoPt.rrno1,
             rrno2 = infoPt.rrno2,
+            dstr1Cd = infoPt.dstr1Cd,
+            dstr1CdNm = baseCode?.cdNm?.substring(0, 2),
+            dstr2Cd = infoPt.dstr2Cd,
+            dstr2CdNm = baseCode?.cdNm,
             bascAddr = infoPt.bascAddr,
             detlAddr = infoPt.detlAddr,
             dethYn = infoPt.dethYn,
