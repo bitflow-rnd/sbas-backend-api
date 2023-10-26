@@ -176,6 +176,7 @@ class PatientService {
             dstr2CdNm = baseCode?.cdNm,
             bascAddr = infoPt.bascAddr,
             detlAddr = infoPt.detlAddr,
+            zip = infoPt.zip,
             dethYn = infoPt.dethYn,
             natiCd = infoPt.natiCd,
             natiNm = infoPt.natiNm,

@@ -151,6 +151,7 @@ data class InfoPtBasicInfo(
     val dstr2CdNm: String?,
     val bascAddr: String?,
     val detlAddr: String?,
+    val zip: String?,
     val dethYn: String?,
     val natiCd: NatiCd?,
     val natiNm: String?,
