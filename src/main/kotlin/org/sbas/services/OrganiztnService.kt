@@ -118,7 +118,8 @@ class OrganiztnService {
         hospBasicInfo.dutyEmcls = bassInfo.getString("dutyEmcls")
         hospBasicInfo.dutyEmclsName = bassInfo.getString("dutyEmclsName")
 
-        val hospDetailInfo = findHospDetailInfo(hpId)
+        val (hospDetailInfo, attcId) = findHospDetailInfo(hpId)
+        hospBasicInfo.attcId = attcId
 
         val hospMedInfo = findHospMedInfo(hpId)
 
@@ -334,7 +335,7 @@ class OrganiztnService {
         return CommonResponse("이미지 삭제 성공")
     }
 
-    private fun findHospDetailInfo(hpId: String): HospDetailInfo {
+    private fun findHospDetailInfo(hpId: String): Pair<HospDetailInfo, String?> {
         val infoHosp = infoHospRepository.findInfoHospByHpId(hpId)
 
         val stage1 = if (infoHosp.dstrCd1Nm == "강원도") {
@@ -357,7 +358,9 @@ class OrganiztnService {
             it.getString("hpid") == hpId
         } as JSONObject
 
-        return objectMapper.readValue(detailInfo.toString(), HospDetailInfo::class.java)
+        val hospDetailInfo = objectMapper.readValue(detailInfo.toString(), HospDetailInfo::class.java)
+
+        return Pair(hospDetailInfo, infoHosp.attcId)
     }
 
     @Transactional
@@ -366,16 +369,24 @@ class OrganiztnService {
     }
 
     @Transactional
+    fun findMedInstInfo(hospId: String): CommonResponse<InfoHospDetailDto> {
+        val hospDetail = infoHospDetailRepository.findById(hospId)
+        checkNotNull(hospDetail) { throw NotFoundException("$hospId not found") }
+        return CommonResponse(hospDetail.toResponse())
+    }
+
+    @Transactional
     fun modMedInstInfo(request: InfoHospDetail): CommonResponse<String> {
-        val infoBed = infoBedRepository.findById(request.hospId)
+        val infoBed = infoBedRepository.findByHospId(request.hospId)
             ?: throw NotFoundException("${request.hospId} not found")
 
         val hospDetail = infoHospDetailRepository.findById(infoBed.hospId)
 
-        checkNotNull(hospDetail) {
+        if (hospDetail == null) {
             infoHospDetailRepository.persist(request)
+        } else {
+            hospDetail.update(request)
         }
-        hospDetail.update(request)
 
         return CommonResponse("성공")
     }

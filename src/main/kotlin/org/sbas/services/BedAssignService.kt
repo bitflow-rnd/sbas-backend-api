@@ -14,7 +14,6 @@ import org.sbas.responses.CommonListResponse
 import org.sbas.responses.CommonResponse
 import org.sbas.responses.patient.DiseaseInfoResponse
 import org.sbas.responses.patient.TransInfoResponse
-import org.sbas.restclients.FirebaseService
 import org.sbas.restparameters.NaverGeocodingApiParams
 import org.sbas.utils.CustomizedException
 import javax.enterprise.context.ApplicationScoped
@@ -129,15 +128,8 @@ class BedAssignService {
 
         // 푸쉬 알람 보내기
         bdasUsers.forEach {
-            log.debug("registerBedRequestInfo bdasUsers >>> ${it.id}")
-            try {
-                firebaseService.sendMessage("${findInfoPt.ptNm}님 병상요청", "신규 병상요청", it.id)
-            } catch (e: Exception) {
-                log.warn(e.printStackTrace())
-                return CommonResponse("병상 요청")
-            }
+            firebaseService.sendMessageMultiDevice("${findInfoPt.ptNm}님 병상요청", "신규 병상요청", it.id)
         }
-//        firebaseService.sendMessage("${bdasReq.rgstUserId!!} ${BedStatCd.BAST0003.cdNm}", "${bdasReqDprtInfo.msg}", "TEST-APR-1")
 
         return CommonResponse("병상 요청 성공")
     }
@@ -178,11 +170,7 @@ class BedAssignService {
                     )
                     bdasReqAprvRepository.persist(entity)
                     findBdasReq.changeBedStatTo(BedStatCd.BAST0004.name)
-                    try {
-                        firebaseService.sendMessage("${findInfoPt.ptNm}님 전원요청", "가용 병상 확인해 주시기 바랍니다.", infoHosp.userId)
-                    } catch (e: Exception) {
-                        log.warn(e.printStackTrace())
-                    }
+                    firebaseService.sendMessageMultiDevice("${findInfoPt.ptNm}님 전원요청", "가용 병상 확인해 주시기 바랍니다.", infoHosp.userId)
                 }
 
             } else if (findBdasReq.inhpAsgnYn == "Y") { // 원내 배정 승인
@@ -204,9 +192,6 @@ class BedAssignService {
     fun getAvalHospList(ptId: String, bdasSeq: Int): CommonResponse<*> {
         val findBdasReq =
             bdasReqRepository.findByPtIdAndBdasSeq(ptId, bdasSeq) ?: throw NotFoundException("bdasReq not found")
-
-        val findBdasReqAprv =
-            bdasReqAprvRepository.findReqAprvListByPtIdAndBdasSeq(ptId, bdasSeq)
 
         val dstrCd1 = findBdasReq.reqDstr1Cd
         val dstrCd2: String? = findBdasReq.reqDstr2Cd
@@ -288,7 +273,7 @@ class BedAssignService {
             // 모든 병원이 배정불가인 경우
             val refusedBdasAprv = bdasAprvRepository.findRefusedBdasAprv(saveRequest.ptId, saveRequest.bdasSeq)
             if (bdasReqAprvList.size == refusedBdasAprv.size) {
-                firebaseService.sendMessage(
+                firebaseService.sendMessageMultiDevice(
                     "${findInfoPt.ptNm}님 병상배정",
                     "모든 병원이 배정 불가 처리되었습니다. 재요청 바랍니다.",
                     bdasReqAprvList[0].rgstUserId!!
@@ -328,7 +313,7 @@ class BedAssignService {
             else -> "병상 배정이 불가처리되었습니다."
         }
 
-        firebaseService.sendMessage("${findInfoPt.ptNm}님 병상배정", msg, bdasReqAprvList[0].rgstUserId!!)
+        firebaseService.sendMessageMultiDevice("${findInfoPt.ptNm}님 병상배정", msg, bdasReqAprvList[0].rgstUserId!!)
 
 //        // 지역코드로 병상배정반 찾기
 //        val bdasUsers = infoUserRepository.findBdasUserByReqDstrCd(findBdasReq.reqDstr1Cd, findBdasReq.reqDstr2Cd)

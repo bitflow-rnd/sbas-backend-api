@@ -1,5 +1,6 @@
 package org.sbas.entities.info
 
+import org.sbas.dtos.info.InfoHospDetailDto
 import org.sbas.entities.CommonEntity
 import javax.persistence.Column
 import javax.persistence.Embeddable
@@ -24,6 +25,23 @@ class InfoHospDetail(
     fun update(request: InfoHospDetail) {
         this.facilityStatus = request.facilityStatus
         this.medicalTeamCount = request.medicalTeamCount
+    }
+
+    fun toResponse(): InfoHospDetailDto {
+        return InfoHospDetailDto(
+            hospId = this.hospId,
+            childBirthYn = this.facilityStatus.childBirthYn,
+            dialysisYn = this.facilityStatus.dialysisYn,
+            childYn = this.facilityStatus.childYn,
+            nursingHospitalYn = this.facilityStatus.nursingHospitalYn,
+            mentalPatientYn = this.facilityStatus.mentalPatientYn,
+            negativePressureRoomYn = this.facilityStatus.negativePressureRoomYn,
+            childBirthMed = this.medicalTeamCount.childBirthMed,
+            dialysisMed = this.medicalTeamCount.dialysisMed,
+            childMed = this.medicalTeamCount.childMed,
+            nursingHospitalMed = this.medicalTeamCount.nursingHospitalMed,
+            mentalPatientMed = this.medicalTeamCount.mentalPatientMed,
+        )
     }
 }
 

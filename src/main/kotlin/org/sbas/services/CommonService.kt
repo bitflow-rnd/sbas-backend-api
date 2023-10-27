@@ -122,6 +122,16 @@ class CommonService {
     }
 
     /**
+     * 공통코드 코드명 조회
+     */
+    @Transactional
+    fun findBaseCodeName(@CacheKey cdId: String): CommonResponse<String> {
+        val findCodeName = baseCodeRepository.findBaseCodeNameByCdId(cdId = cdId) ?: throw NotFoundException("해당 코드명이 없습니다.")
+
+        return CommonResponse(findCodeName)
+    }
+
+    /**
      * 공통코드 등록
      */
     @Transactional
@@ -274,7 +284,7 @@ class CommonService {
     fun modTerms(modTermsReq: ModTermsReq): CommonResponse<String> {
         val termsVersion = modTermsReq.termsVersion
             ?: termsRepository.findTermsVersionByTermsType(modTermsReq.termsType)
-        val termsId = InfoTermsId(termsType = modTermsReq.termsType, termsVersion = termsVersion)
+        val termsId = InfoTermsId(termsType = modTermsReq.termsType, termsVersion = termsVersion, effectiveDt = modTermsReq.effectiveDt)
 
         val findTerms = termsRepository.findById(termsId)
             ?: throw NotFoundException("No terms and conditions of this type found")
@@ -289,7 +299,7 @@ class CommonService {
      */
     @Transactional
     fun delTerms(delTermsReq: DelTermsReq): CommonResponse<String> {
-        val termsId = InfoTermsId(termsType = delTermsReq.termsType, termsVersion = delTermsReq.termsVersion)
+        val termsId = InfoTermsId(termsType = delTermsReq.termsType, termsVersion = delTermsReq.termsVersion, effectiveDt = delTermsReq.effectiveDt)
         val findTerms = termsRepository.findById(termsId)
             ?: throw NotFoundException("No terms and conditions of this type found")
 
@@ -316,14 +326,16 @@ class CommonService {
      * 약관 상세
      */
     @Transactional
-    fun getTermsDetailByTermsType(termsType: String): CommonResponse<TermsDetailResponse>{
-        val findInfoTerms = termsRepository.findRecentTermsByTermsType(termsType) ?: throw NotFoundException("not found this type terms")
+    fun getTermsDetailByTermsType(termsType: String, termsVersion: String): CommonResponse<TermsDetailResponse>{
+        val findInfoTerms = if(termsVersion == "00") termsRepository.findRecentTermsByTermsType(termsType)
+        else termsRepository.findTermsByTermsTypeAndTermsVersion(termsType, termsVersion)  ?: throw NotFoundException("not found this type terms")
 
         val result = TermsDetailResponse(
             termsType = termsType,
-            detail = findInfoTerms.get().detail,
-            termsVersion = findInfoTerms.get().id.termsVersion!!,
-            termsName = findInfoTerms.get().termsName!!,
+            detail = findInfoTerms.detail,
+            termsVersion = findInfoTerms.id.termsVersion,
+            termsName = findInfoTerms.termsName!!,
+            effectiveDt = findInfoTerms.id.effectiveDt,
         )
 
         return CommonResponse(result)

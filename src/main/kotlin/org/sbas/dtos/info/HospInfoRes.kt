@@ -15,6 +15,7 @@ data class HospInfoRes(
 @NoArg
 data class HospBasicInfo(
     var hpid: String?,
+    var attcId: String?,
     var dutyName: String?,
     var dutyAddr: String?,
     var dutyTel1: String?, // 대표전화1

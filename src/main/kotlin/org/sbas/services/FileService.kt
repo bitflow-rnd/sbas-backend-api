@@ -8,13 +8,15 @@ import org.sbas.entities.base.BaseAttc
 import org.sbas.handlers.FileHandler
 import org.sbas.repositories.BaseAttcRepository
 import org.sbas.responses.CommonResponse
-import org.sbas.responses.CommonListResponse
 import org.sbas.responses.messages.FileResponse
 import org.sbas.utils.CustomizedException
 import java.io.File
 import java.io.FileInputStream
 import java.io.IOException
 import java.io.InputStream
+import java.nio.file.Files
+import java.nio.file.Path
+import java.nio.file.Paths
 import javax.enterprise.context.ApplicationScoped
 import javax.inject.Inject
 import javax.transaction.Transactional
@@ -50,27 +52,15 @@ class FileService {
      */
     @Transactional
     fun publicFileUpload(param1: String?, param2: MutableList<FileUpload>?): CommonResponse<String> {
-        if (param2.isNullOrEmpty()) {
+        if (param2.isNullOrEmpty() || param2.any { it.size() == 0L }) {
             throw CustomizedException("파일을 등록하세요.", Response.Status.BAD_REQUEST)
         }
 
-        var attcGrpId = ""
+        val attcGrpId = baseAttcRepository.getNextValAttcGrpId()
         param2.forEach {
-            if (it.size() == 0L) {
-                throw CustomizedException("파일을 등록하세요.", Response.Status.BAD_REQUEST)
-            }
-            if(attcGrpId == ""){
-                attcGrpId = baseAttcRepository.getNextValAttcGrpId()
-            }
-
             val fileDto = fileHandler.createPublicFile(it)
-
-            val dotPos = fileDto.fileName.lastIndexOf(".")
-            val fileExt = fileDto.fileName.substring(dotPos + 1).lowercase()
-
-            val fileTypeCd = getFileTypeCd(fileExt)
+            val fileTypeCd = getFileTypeCd(fileDto.fileExt)
             val baseAttc = fileDto.toPublicEntity(attcGrpId = attcGrpId, fileTypeCd = fileTypeCd, rmk = null)
-
             baseAttcRepository.persist(baseAttc)
         }
 
@@ -79,26 +69,15 @@ class FileService {
 
     @Transactional
     fun privateFileUpload(param1: String?, param2: MutableList<FileUpload>?): CommonResponse<String> {
-        if (param2.isNullOrEmpty()) {
+        if (param2.isNullOrEmpty() || param2.any { it.size() == 0L }) {
             throw CustomizedException("파일을 등록하세요.", Response.Status.BAD_REQUEST)
         }
 
-        var attcGrpId = ""
+        val attcGrpId = baseAttcRepository.getNextValAttcGrpId()
         param2.forEach {
-            if (it.size() == 0L) {
-                throw CustomizedException("파일을 등록하세요.", Response.Status.BAD_REQUEST)
-            }
-            if(attcGrpId == ""){
-                attcGrpId = baseAttcRepository.getNextValAttcGrpId()
-            }
             val fileDto = fileHandler.createPrivateFile(it)
-
-            val dotPos = fileDto.fileName.lastIndexOf(".")
-            val fileExt = fileDto.fileName.substring(dotPos + 1).lowercase()
-
-            val fileTypeCd = getFileTypeCd(fileExt)
+            val fileTypeCd = getFileTypeCd(fileDto.fileExt)
             val baseAttc = fileDto.toPrivateEntity(attcGrpId = attcGrpId, fileTypeCd = fileTypeCd, rmk = null)
-
             baseAttcRepository.persist(baseAttc)
         }
 
@@ -107,12 +86,13 @@ class FileService {
 
     private fun getFileTypeCd(fileExt: String): String {
         val imageExtensions = setOf("bmp", "jpeg", "jpg", "gif", "png", "pdf")
-        val fileTypeCd = if (fileExt.lowercase() in imageExtensions) {
-            SbasConst.FileTypeCd.IMAGE
-        } else {
-            SbasConst.FileTypeCd.VIDEO
+        val videoExtensions = setOf("mp4", "avi", "mkv", "wmv", "flv", "mov", "webm", "3gp", "mpeg", "mpg", "ts")
+
+        return when (fileExt.lowercase()) {
+            in imageExtensions -> SbasConst.FileTypeCd.IMAGE
+            in videoExtensions -> SbasConst.FileTypeCd.VIDEO
+            else -> SbasConst.FileTypeCd.ETC
         }
-        return fileTypeCd
     }
 
     @Transactional
@@ -130,15 +110,28 @@ class FileService {
         return CommonResponse(response)
     }
 
+    fun findPrivateImage(attcId: String): ByteArray {
+        val findFile = baseAttcRepository.findByAttcId(attcId) ?: throw NotFoundException("not found")
+
+        require(findFile.privYn == "Y") { "not private file, check attcId" }
+        require(findFile.fileTypeCd == SbasConst.FileTypeCd.IMAGE) { "not image file, check attcId" }
+
+        val filePath: Path = Paths.get("${findFile.loclPath}/${findFile.fileNm}")
+
+        return Files.readAllBytes(filePath)
+    }
+
     @Transactional
     fun publicFileDownload(attcGrpId: String, attcId: String): Response {
         val baseAttc = baseAttcRepository.findByAttcGrpIdAndAttcId(attcGrpId, attcId) ?: throw NotFoundException("baseAttc not found")
 
-//        val filePath = "${baseAttc.loclPath}/${baseAttc.fileNm}"
-        val filePath = "/public${baseAttc.uriPath}/${baseAttc.fileNm}"
+        val filePath = "${baseAttc.loclPath}/${baseAttc.fileNm}"
+//        val filePath = "/public${baseAttc.uriPath}/${baseAttc.fileNm}"
         val file = File(filePath)
         log.debug(file)
 
+        log.debug("file exists >>> ${file.exists()}")
+        log.debug("file canRead >>> ${file.canRead()}")
         // 파일이 존재하거나 읽을 수 있을 때
         if (file.exists() && file.canRead()) {
             try {

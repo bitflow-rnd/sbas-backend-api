@@ -63,6 +63,13 @@ class PublicCommonEndpoint {
         return Response.ok(commonService.findBaseCodeList(cdGrpId)).build()
     }
 
+    @Operation(summary = "공통코드 값 조회", description = "특정 코드로 해당 값(cd_nm) 조회")
+    @GET
+    @Path("code/{cdId}")
+    fun code(@RestPath cdId: String): Response {
+        return Response.ok(commonService.findBaseCodeName(cdId)).build()
+    }
+
     @Operation(summary = "시/도 목록", description = "시/도 목록 조회")
     @GET
     @Path("sidos")
@@ -108,9 +115,9 @@ class PublicCommonEndpoint {
 
     @Operation(summary = "약관 상세", description = "약관 상세 API")
     @GET
-    @Path("terms/detail/{termsType}")
-    fun getTermsDetailByTermsType(@RestPath termsType: String): Response {
-        return Response.ok(commonService.getTermsDetailByTermsType(termsType)).build()
+    @Path("terms/detail/{termsType}/{termsVersion}")
+    fun getTermsDetailByTermsType(@RestPath termsType: String, @RestPath termsVersion: String): Response {
+        return Response.ok(commonService.getTermsDetailByTermsType(termsType, termsVersion)).build()
     }
 
     @Operation(summary = "공지사항 목록", description = "공지사항 목록 API")

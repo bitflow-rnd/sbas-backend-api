@@ -34,30 +34,30 @@ class FileHandler {
      * 전체 공개 권한 파일 업로드
      */
     fun createPublicFile(fileUpload: FileUpload): FileDto {
-        val fileNameWithExt = getFileNameWithExt(fileUpload)
+        val (fileName, fileExt) = getFilenameAndExt(fileUpload)
         val localPath = getLocalPath(UPLOAD_PATH_LOCAL_PUBLIC)
-        val uriPath = "/$UPLOAD_PATH_MIDDLE/${StringUtils.getYyyyMM()}"
+        val uriPath = "/public/$UPLOAD_PATH_MIDDLE/${StringUtils.getYyyyMM()}"
 
-        val file = makeFileWithPath(fileNameWithExt, UPLOAD_PATH_LOCAL_PUBLIC)
+        val file = makeFileWithPath("$fileName.$fileExt", UPLOAD_PATH_LOCAL_PUBLIC)
         log.debug("file uploaded at ${file.absolutePath}")
         file.writeBytes(fileUpload.uploadedFile().readBytes())
 
-        return FileDto(fileName = fileNameWithExt, localPath = localPath, uriPath = uriPath)
+        return FileDto(fileName = "$fileName.$fileExt", fileExt = fileExt, localPath = localPath, uriPath = uriPath)
     }
 
     /**
      * 사용자 공개 권한 파일 업로드
      */
     fun createPrivateFile(fileUpload: FileUpload): FileDto {
-        val fileNameWithExt = getFileNameWithExt(fileUpload)
+        val (fileName, fileExt) = getFilenameAndExt(fileUpload)
         val localPath = getLocalPath(UPLOAD_PATH_LOCAL_PRIVATE)
-        val uriPath = "/$UPLOAD_PATH_MIDDLE/${StringUtils.getYyyyMM()}"
+        val uriPath = "/private/$UPLOAD_PATH_MIDDLE/${StringUtils.getYyyyMM()}"
 
-        val file = makeFileWithPath(fileNameWithExt, UPLOAD_PATH_LOCAL_PRIVATE)
+        val file = makeFileWithPath("$fileName.$fileExt", UPLOAD_PATH_LOCAL_PRIVATE)
         log.debug("file uploaded at ${file.absolutePath}")
         file.writeBytes(fileUpload.uploadedFile().readBytes())
 
-        return FileDto(fileName = fileNameWithExt, localPath = localPath, uriPath = uriPath)
+        return FileDto(fileName = "$fileName.$fileExt", fileExt = fileExt, localPath = localPath, uriPath = uriPath)
     }
 
     fun moveFilePublicToPrivate(publcLocalPath: String, filename: String): Boolean {
@@ -103,12 +103,12 @@ class FileHandler {
         return localPath
     }
 
-    private fun getFileNameWithExt(fileUpload: FileUpload): String {
+    private fun getFilenameAndExt(fileUpload: FileUpload): Pair<Long, String> {
         val fileName = Instant.now().toEpochMilli()
 
         val dotPos = fileUpload.fileName().lastIndexOf(".")
         val fileExt = fileUpload.fileName().substring(dotPos + 1).lowercase()
 
-        return "$fileName.$fileExt"
+        return Pair(fileName, fileExt)
     }
 }

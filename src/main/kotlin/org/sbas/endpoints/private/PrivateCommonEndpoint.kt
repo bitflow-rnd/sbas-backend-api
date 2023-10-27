@@ -53,6 +53,15 @@ class PrivateCommonEndpoint {
         return Response.ok(fileService.privateFileUpload(param1, param2)).build()
     }
 
+    @Operation(summary = "이미지 조회 (권한별 공개 파일)", description = "private 이미지 조회(바이트 스트림으로 반환)")
+    @GET
+    @Path("image/{attcId}")
+    @Produces(MediaType.APPLICATION_OCTET_STREAM)
+    fun getPrivateImage(@RestPath attcId: String): Response? {
+        val imageBytes = fileService.findPrivateImage(attcId)
+        return Response.ok(imageBytes).build()
+    }
+
     @Operation(summary = "서비스이용약관 동의", description = "")
     @POST
     @Path("svcusgterm/{param}")

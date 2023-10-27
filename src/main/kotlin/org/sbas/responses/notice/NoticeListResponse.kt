@@ -4,7 +4,7 @@ data class NoticeListResponse(
     val noticeId: String,
     val title: String,
     val content: String,
-    val noticeType: Char,
+    val noticeType: String,
     val startNoticeDt: String,
     val isRead: Boolean,
     val hasFile: Boolean,

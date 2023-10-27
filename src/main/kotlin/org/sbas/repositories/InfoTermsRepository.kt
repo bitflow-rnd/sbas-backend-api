@@ -7,7 +7,6 @@ import org.sbas.entities.info.InfoTermsId
 import org.sbas.entities.info.TermsAgreement
 import org.sbas.entities.info.TermsAgreementId
 import org.sbas.responses.terms.AgreeTermsListResponse
-import java.util.*
 import java.util.Comparator.comparing
 import java.util.stream.Collectors.groupingBy
 import java.util.stream.Collectors.maxBy
@@ -20,7 +19,7 @@ class InfoTermsRepository : PanacheRepositoryBase<InfoTerms, InfoTermsId> {
     fun findTermsVersionByTermsType(termsType: String): String {
         val resultList = find("terms_type = '$termsType'").list()
 
-        val maxVersion = resultList.maxByOrNull { it.id.termsVersion?.toIntOrNull() ?: 0 }
+        val maxVersion = resultList.maxByOrNull { it.id.termsVersion.toIntOrNull() ?: 0 }
         return maxVersion?.id?.termsVersion ?: "00"
     }
 
@@ -32,10 +31,11 @@ class InfoTermsRepository : PanacheRepositoryBase<InfoTerms, InfoTermsId> {
         return find("terms_type = '$termsType' and terms_version = '$termsVersion'").firstResult()
     }
 
-    fun findRecentTermsByTermsType(termsType: String): Optional<InfoTerms> {
+    fun findRecentTermsByTermsType(termsType: String): InfoTerms {
         return find("terms_type = '$termsType'")
                 .stream()
-                .collect(maxBy(comparing { it.id.termsVersion.toString() }))
+                .collect(maxBy(comparing { it.id.termsVersion }))
+                .get()
     }
 
 }

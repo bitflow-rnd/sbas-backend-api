@@ -9,10 +9,11 @@ data class RegTermsReq(
     @field: [NotBlank(message = "약관 타입을 설정해 주세요.") Length(max = 2)]
     val termsType: String,
     val detail: String,
+    val effectiveDt: String,
 ) {
 
     fun toEntity(version: String): InfoTerms {
-        var id = InfoTermsId(termsType = termsType, termsVersion = version)
+        var id = InfoTermsId(termsType = termsType, termsVersion = version, effectiveDt = effectiveDt)
 
         var termsName = ""
 
@@ -32,6 +33,7 @@ data class ModTermsReq(
     val termsType: String,
     val termsVersion: String?,
     val detail: String,
+    val effectiveDt: String,
 )
 
 data class DelTermsReq(
@@ -39,6 +41,7 @@ data class DelTermsReq(
     val termsType: String,
     @field: [NotBlank(message = "약관 버전을 설정해 주세요.") Length(max = 2)]
     val termsVersion: String,
+    val effectiveDt: String
 )
 
 data class TermsAgreeReq(

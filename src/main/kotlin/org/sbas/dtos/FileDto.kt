@@ -5,6 +5,7 @@ import org.sbas.utils.StringUtils
 
 data class FileDto(
     val fileName: String,
+    val fileExt: String,
     val localPath: String,
     val uriPath: String
 ) {

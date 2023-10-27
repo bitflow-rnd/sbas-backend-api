@@ -25,8 +25,8 @@ class InfoNotice(
     @Column(name = "is_active", nullable = false)
     var isActive: Boolean? = null, // 활성화 여부(true = 활성, false = 비활성)
 
-    @Column(name = "notice_type", nullable = false, length = 1)
-    var noticeType: Char, // 공지 타입(B = 일반, N = 공지)
+    @Column(name = "notice_type", nullable = false, length = 8)
+    var noticeType: String, // 공지 타입(NOTC0001 = 일반, NOTC0002 = 공지)
 
     @Column(name = "start_notice_dt", nullable = false, length = 8)
     var startNoticeDt: String, // 공지 시작 날짜

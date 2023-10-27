@@ -1,8 +1,10 @@
 package org.sbas.schedulers
 
 import io.quarkus.scheduler.Scheduled
+import io.quarkus.scheduler.Scheduled.Schedules
 import kotlinx.coroutines.*
 import org.jboss.logging.Logger
+import org.sbas.restparameters.EgenApiEmrrmRltmUsefulSckbdInfoParams
 import org.sbas.services.EgenService
 import javax.enterprise.context.ApplicationScoped
 import javax.enterprise.context.control.ActivateRequestContext
@@ -31,6 +33,25 @@ class SbasScheduler {
         log.info("scheduler has started job")
         val res = egenService.syncHospitalInfos();
         log.info("scheduler has finished job, success = $res")
+    }
+
+    @Schedules(
+        value = [
+            Scheduled(cron = "0 10 10 1/1 * ? *"),
+            Scheduled(cron = "0 10 14 1/1 * ? *"),
+            Scheduled(cron = "0 10 17 1/1 * ? *"),
+        ]
+    )
+    fun updateHospitalBedInfos() {
+        val param = EgenApiEmrrmRltmUsefulSckbdInfoParams(
+            stage1 = null,
+            stage2 = null,
+            pageNo = null,
+            numOfRows = "100",
+        )
+        log.info("scheduler has started job")
+        egenService.saveUsefulSckbdInfo(param);
+        log.info("scheduler has finished job, success")
     }
 
 //    @Scheduled(every = "24h")

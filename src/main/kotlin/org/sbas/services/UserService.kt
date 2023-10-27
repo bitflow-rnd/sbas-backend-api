@@ -268,27 +268,10 @@ class UserService {
     @Transactional
     fun getAllUsers(pageRequest: PageRequest): CommonResponse<PagingListDto> {
         // TODO 응답 수정
-        val findUsers = userRepository.findAllUsers(pageRequest)
-        findUsers.map {
-            userRepository.getEntityManager().detach(it)
-            it.jobCd = PmgrTypeCd.valueOf(it.jobCd).cdNm
-            it.dutyDstr1Cd = SidoCd.valueOf("SIDO${it.dutyDstr1Cd}").cdNm
-        }
+        val findUsers = userRepository.findInfoUserDetail(null)
         val totalCnt = userRepository.count()
-        val response = PagingListDto(totalCnt, findUsers as MutableList<InfoUser>)
+        val response = PagingListDto(totalCnt, findUsers)
         return CommonResponse(response)
-    }
-
-    /**
-     * firebase push key 등록
-     */
-    @Transactional
-    fun updatePushKey(request: UpdatePushKeyRequest): CommonResponse<String> {
-        val findUser = userRepository.findByUserId(request.id) ?: throw CustomizedException("Not Found User", Response.Status.NOT_FOUND)
-
-        findUser.pushKey = request.pushKey
-
-        return CommonResponse("push key가 등록되었습니다.")
     }
 
     /**

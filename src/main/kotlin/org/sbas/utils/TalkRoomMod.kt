@@ -11,7 +11,7 @@ import org.sbas.repositories.TalkMsgRepository
 import org.sbas.repositories.TalkRoomRepository
 import org.sbas.repositories.TalkUserRepository
 import org.sbas.responses.messages.TalkRoomResponse
-import org.sbas.restclients.FirebaseService
+import org.sbas.services.FirebaseService
 import javax.inject.Inject
 import javax.websocket.*
 import javax.websocket.server.PathParam
@@ -84,6 +84,9 @@ class TalkRoomMod {
                 it.session.asyncRemote.sendText(JsonObject.mapFrom(addMsg).toString())
             }
 
+        // TODO 하나의 기기로 여러 아이디 로그인 한 경우 알림이 여러번 옴, 자신 제외
+        firebaseService.sendMessageMultiDevice(userId, message, userId)
+
         otherUsers.forEach{
             session.asyncRemote.sendText(it.id?.userId)
         }
@@ -120,10 +123,9 @@ class TalkRoomMod {
 
         talkUsers
             .forEach{
-                if(chatSockets[it.id?.userId] != null) {
+                if (chatSockets[it.id?.userId] != null) {
                     chatSockets[it.id?.userId]?.session?.asyncRemote?.sendText(JsonObject.mapFrom(talkRoomResponse).toString())
-                } else {
-                    firebaseService.sendMessage(userId, msg.msg, it.id?.userId!!)
+                    firebaseService.sendMessageMultiDevice(userId, msg.msg, it.id?.userId!!)
                 }
             }
     }

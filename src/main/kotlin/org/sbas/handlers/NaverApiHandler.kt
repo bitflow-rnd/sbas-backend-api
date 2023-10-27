@@ -51,7 +51,7 @@ class NaverApiHandler {
             "epidreportimg",
 //            encoded,
             null,
-            "$serverdomain/$uri/$filename"
+            "$serverdomain$uri/$filename"
         )
 
         val now = System.currentTimeMillis()
@@ -79,7 +79,7 @@ class NaverApiHandler {
 
         val rrno = nullHandledMap["주민등록번호"]
         val address = nullHandledMap["주소"]
-        val splitAddress = splitAddress(address!!)
+        val splitAddress = splitAddressUsingNaver(address!!)
 
         return EpidResult(
             rcptPhc = nullHandledMap["수신보건소"],
@@ -136,8 +136,8 @@ class NaverApiHandler {
         addrList[0] = StringUtils.getKakaoSidoName(addrList[0])
 
         val roadNameIdx = addrList.indexOfFirst { it.endsWith("길") || it.endsWith("로") }
-        val baseAddr = addrList.subList(0, roadNameIdx + 2).joinToString(" ")
-        val dtlAddr = addrList.subList(roadNameIdx + 2, addrList.size).joinToString(" ")
+        val baseAddr = addrList.subList(0, roadNameIdx + 2).joinToString(" ").trimIndent()
+        val dtlAddr = addrList.subList(roadNameIdx + 2, addrList.size).joinToString(" ").trimIndent()
 
         // 기본 주소로 네이버 주소 검색 api 이용
         val geocoding = geocodingHandler.getGeocoding(NaverGeocodingApiParams(query = baseAddr))
@@ -151,18 +151,50 @@ class NaverApiHandler {
         }
 
         // 코드
-        val dstrCd1 = StringUtils.getDstrCd1(addrList[0])
-        val baseCode = baseCodeRepository.findByDstr1CdAndCdNm(dstrCd1, addrList[1])
+        val dstr1Cd = StringUtils.getDstrCd1(addrList[0])
+        val baseCode = baseCodeRepository.findByDstr1CdAndCdNm(dstr1Cd, addrList[1])
             ?: throw NotFoundException("baseCode not found")
         val dstr2Cd = baseCode.id.cdId
 
         return AddressMap(
-            dstr1Cd = dstrCd1,
+            dstr1Cd = dstr1Cd,
             dstr2Cd = dstr2Cd,
             baseAddr = baseAddr,
             dtlAddr = dtlAddr.ifBlank { null },
             fullAddr = fullAddr,
             zip = zip,
+        )
+    }
+
+    private fun splitAddressUsingNaver(address: String): AddressMap {
+        val geocodingAddress = geocodingHandler.getGeocoding(NaverGeocodingApiParams(query = address)).addresses
+        val resultMap: Map<String, String>
+        if (geocodingAddress.isNullOrEmpty()) {
+            return AddressMap(
+                dstr1Cd = null,
+                dstr2Cd = null,
+                baseAddr = null,
+                dtlAddr = null,
+                fullAddr = null,
+                zip = null,
+            )
+        } else {
+            resultMap = geocodingAddress[0].addressElements!!.associate {
+                it.types!![0] to it.longName!!
+            }
+        }
+        val dstr1Cd = StringUtils.getDstrCd1(resultMap["SIDO"]!!)
+        val baseCode = baseCodeRepository.findByDstr1CdAndCdNm(dstr1Cd, resultMap["SIGUGUN"]!!)
+            ?: throw NotFoundException("baseCode not found")
+        val dstr2Cd = baseCode.id.cdId
+
+        return AddressMap(
+            dstr1Cd = dstr1Cd,
+            dstr2Cd = dstr2Cd,
+            baseAddr = geocodingAddress[0].roadAddress,
+            dtlAddr = null,
+            fullAddr = null,
+            zip = resultMap["POSTAL_CODE"],
         )
     }
 

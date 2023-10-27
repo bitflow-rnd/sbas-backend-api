@@ -10,6 +10,7 @@ import kotlinx.coroutines.runBlocking
 import org.sbas.dtos.bdas.BdasListSearchParam
 import org.sbas.dtos.info.*
 import org.sbas.entities.info.InfoUser
+import org.sbas.entities.info.UserFcmToken
 import org.sbas.parameters.PageRequest
 import java.time.Instant
 import javax.enterprise.context.ApplicationScoped
@@ -104,7 +105,7 @@ class InfoUserRepository : PanacheRepositoryBase<InfoUser, String> {
         return getEntityManager().createQuery(query, HospMedInfo::class.java).resultList
     }
 
-    fun findInfoUserDetail(userId: String): List<UserDetailResponse> {
+    fun findInfoUserDetail(userId: String?): List<UserDetailResponse> {
         val infoUserDetail = queryFactory.listQuery<UserDetailResponse> {
             selectMulti(
                 col(InfoUser::id), col(InfoUser::userNm), col(InfoUser::gndr), col(InfoUser::telno),
@@ -117,10 +118,19 @@ class InfoUserRepository : PanacheRepositoryBase<InfoUser, String> {
             )
             from(entity(InfoUser::class))
             whereAnd(
-                col(InfoUser::id).equal(userId)
+                userId?.let { col(InfoUser::id).equal(userId) }
             )
         }
 
         return infoUserDetail
+    }
+}
+
+@ApplicationScoped
+class UserFcmTokenRepository : PanacheRepositoryBase<UserFcmToken, Long> {
+
+    @Transactional
+    fun findAllByUserId(userId: String): List<UserFcmToken> {
+        return find("userId = '${userId}' and isValid = true").list()
     }
 }

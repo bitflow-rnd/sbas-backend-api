@@ -95,6 +95,7 @@ class PatientService {
             rrno1 = dto.rrno1,
             rrno2 = dto.rrno2,
         )
+        val baseCode = dto.dstr2Cd?.let { baseCodeRepository.findBaseCodeByCdId(it) }
 
         val infoPtResponse = findInfoPt?.let {
             InfoPtCheckResponse(
@@ -104,7 +105,9 @@ class PatientService {
                 rrno1 = it.rrno1,
                 rrno2 = it.rrno2,
                 dstr1Cd = it.dstr1Cd,
+                dstr1CdNm = baseCode?.rmk,
                 dstr2Cd = it.dstr2Cd,
+                dstr2CdNm = baseCode?.cdNm,
                 telno = it.telno,
                 natiCd = it.natiCd,
                 dethYn = it.dethYn,
@@ -158,6 +161,8 @@ class PatientService {
         val bdasReq = bdasReqRepository.findByPtIdAndBdasSeq(ptId, bdasSeq)
         val bedStatCd = bdasReq?.bedStatCd
 
+        val baseCode = infoPt.dstr2Cd?.let { baseCodeRepository.findBaseCodeByCdId(it) }
+
         val infoPtBasicInfo = InfoPtBasicInfo(
             ptId = infoPt.ptId,
             ptNm = infoPt.ptNm,
@@ -165,8 +170,13 @@ class PatientService {
             age = infoPtRepository.getAge(infoPt.rrno1, infoPt.rrno2),
             rrno1 = infoPt.rrno1,
             rrno2 = infoPt.rrno2,
+            dstr1Cd = infoPt.dstr1Cd,
+            dstr1CdNm = baseCode?.rmk,
+            dstr2Cd = infoPt.dstr2Cd,
+            dstr2CdNm = baseCode?.cdNm,
             bascAddr = infoPt.bascAddr,
             detlAddr = infoPt.detlAddr,
+            zip = infoPt.zip,
             dethYn = infoPt.dethYn,
             natiCd = infoPt.natiCd,
             natiNm = infoPt.natiNm,
@@ -286,7 +296,7 @@ class PatientService {
         baseAttcRepository.persist(entity)
 
         // Naver Clova OCR call
-        val res = naverApiHandler.recognizeImage("private${fileDto.uriPath}", fileDto.fileName, entity.attcId)
+        val res = naverApiHandler.recognizeImage(fileDto.uriPath, fileDto.fileName, entity.attcId)
         log.debug("texts are $res")
 
         return CommonResponse(res)
@@ -296,13 +306,13 @@ class PatientService {
     fun readEpidReport(attcId: String): CommonResponse<*> {
         val baseAttc = baseAttcRepository.findByAttcId(attcId) ?: throw NotFoundException("$attcId not found")
 
-        val url = URL("$serverdomain/private${baseAttc.uriPath}/${baseAttc.fileNm}")
+        val url = URL("$serverdomain/${baseAttc.uriPath}/${baseAttc.fileNm}")
 
         return try {
             val inputStream = url.openStream()
             inputStream.close()
 
-            val res = naverApiHandler.recognizeImage("private${baseAttc.uriPath}", baseAttc.fileNm, baseAttc.attcId)
+            val res = naverApiHandler.recognizeImage(baseAttc.uriPath, baseAttc.fileNm, baseAttc.attcId)
             CommonResponse(res)
         } catch (e: IOException) {
             throw NotFoundException("역학조사서 파일이 존재하지 않습니다.")
