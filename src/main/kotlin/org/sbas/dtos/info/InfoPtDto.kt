@@ -34,6 +34,8 @@ data class InfoPtDto(
     val bascAddr: String,
     val detlAddr: String?,
     val zip: String?,
+    val undrDsesCd: List<UndrDsesCd>?,
+    val undrDsesEtc: String?,
 
     val addr: String?,
 ) {
@@ -62,6 +64,8 @@ data class InfoPtDto(
             } else {
                 this.natiNm
             },
+            undrDsesCd = undrDsesCd,
+            undrDsesEtc = undrDsesEtc,
         )
     }
 }
@@ -162,9 +166,9 @@ data class InfoPtBasicInfo(
     val attcId: String?,
     val bedStatCd: String?,
     val bedStatNm: String?,
-    val undrDsesCd: List<String>?,
+    val undrDsesCd: List<UndrDsesCd>?,
 ) {
-    val undrDsesCdNm: List<String>? = undrDsesCd?.map { UndrDsesCd.valueOf(it).cdNm }
+    val undrDsesCdNm: List<String>? = undrDsesCd?.map { it.cdNm }
 }
 
 /**

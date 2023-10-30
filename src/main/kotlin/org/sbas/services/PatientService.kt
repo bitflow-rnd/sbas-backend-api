@@ -187,7 +187,7 @@ class PatientService {
             attcId = infoPt.attcId,
             bedStatCd = bedStatCd,
             bedStatNm = bedStatCd?.let { BedStatCd.valueOf(it).cdNm },
-            undrDsesCd = bdasReq?.undrDsesCd?.split(";"),
+            undrDsesCd = infoPt.undrDsesCd,
         )
 
         return CommonResponse(infoPtBasicInfo)

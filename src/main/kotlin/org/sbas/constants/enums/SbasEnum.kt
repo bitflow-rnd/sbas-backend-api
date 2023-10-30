@@ -1,5 +1,10 @@
 package org.sbas.constants.enums
 
+interface SbasEnum {
+    val code: String
+    val cdNm: String
+}
+
 /**
  * 사용자 상태 코드
  */
@@ -41,21 +46,21 @@ enum class SvrtTypeCd(val cdNm: String) {
 /**
  * 기저질환 유형 코드
  */
-enum class UndrDsesCd(val cdNm: String) {
-    UDDS0001("고혈압"),
-    UDDS0002("당뇨"),
-    UDDS0003("고지혈증"),
-    UDDS0004("심혈관"),
-    UDDS0005("뇌혈관"),
-    UDDS0006("암"),
-    UDDS0007("만성폐질환"),
-    UDDS0008("폐렴"),
-    UDDS0009("신장질환"),
-    UDDS0010("정신질환"),
-    UDDS0011("결핵"),
-    UDDS0012("천식등알레르기"),
-    UDDS0013("면역력저하자"),
-    UDDS0014("기타"),
+enum class UndrDsesCd(override val code: String, override val cdNm: String) : SbasEnum {
+    UDDS0001("UDDS0001", "고혈압"),
+    UDDS0002("UDDS0002", "당뇨"),
+    UDDS0003("UDDS0003", "고지혈증"),
+    UDDS0004("UDDS0004", "심혈관"),
+    UDDS0005("UDDS0005", "뇌혈관"),
+    UDDS0006("UDDS0006", "암"),
+    UDDS0007("UDDS0007", "만성폐질환"),
+    UDDS0008("UDDS0008", "폐렴"),
+    UDDS0009("UDDS0009", "신장질환"),
+    UDDS0010("UDDS0010", "정신질환"),
+    UDDS0011("UDDS0011", "결핵"),
+    UDDS0012("UDDS0012", "천식등알레르기"),
+    UDDS0013("UDDS0013", "면역력저하자"),
+    UDDS0014("UDDS0014", "기타"),
 }
 
 enum class TimeLineStatCd(val cdNm: String) {

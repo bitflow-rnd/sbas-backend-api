@@ -2,8 +2,9 @@ package org.sbas.entities.info
 
 import org.hibernate.annotations.GenericGenerator
 import org.hibernate.annotations.Parameter
-import org.sbas.constants.enums.BedStatCd
+import org.sbas.constants.UndrDsesCdConverter
 import org.sbas.constants.enums.NatiCd
+import org.sbas.constants.enums.UndrDsesCd
 import org.sbas.dtos.info.InfoPtDto
 import org.sbas.entities.CommonEntity
 import org.sbas.entities.StringPrefixedSequenceIdGenerator
@@ -74,6 +75,13 @@ class InfoPt(
 
     @Column(name = "nati_nm", length = 20)
     var natiNm: String? = null, // 국적 이름
+
+    @Column(name = "undr_dses_cd", nullable = true, length = 512)
+    @Convert(converter = UndrDsesCdConverter::class)
+    var undrDsesCd: List<UndrDsesCd>? = null, // 기저 질환 코드
+
+    @Column(name = "undr_dses_etc", nullable = true, length = 50)
+    var undrDsesEtc: String? = null, // 기저 질환 기타
 ) : CommonEntity(), Serializable {
 
     @Id
