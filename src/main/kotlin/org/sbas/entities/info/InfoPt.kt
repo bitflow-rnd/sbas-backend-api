@@ -118,6 +118,8 @@ class InfoPt(
         this.detlAddr = infoPtDto.detlAddr
         this.zip = infoPtDto.zip
         this.natiNm = infoPtDto.natiNm
+        this.undrDsesCd = infoPtDto.undrDsesCd
+        this.undrDsesEtc = infoPtDto.undrDsesEtc
     }
 
     companion object {
