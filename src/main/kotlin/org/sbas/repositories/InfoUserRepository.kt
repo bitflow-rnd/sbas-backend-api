@@ -114,7 +114,7 @@ class InfoUserRepository : PanacheRepositoryBase<InfoUser, String> {
                 function("fn_get_cd_nm", String::class.java, literal("SIDO"), col(InfoUser::dutyDstr1Cd)),
                 col(InfoUser::dutyDstr2Cd),
                 function("fn_get_dstr_cd2_nm", String::class.java, col(InfoUser::dutyDstr1Cd), col(InfoUser::dutyDstr2Cd)),
-                col(InfoUser::btDt), col(InfoUser::authCd), col(InfoUser::attcId),
+                col(InfoUser::btDt), col(InfoUser::authCd), col(InfoUser::attcId), col(InfoUser::userStatCd)
             )
             from(entity(InfoUser::class))
             whereAnd(

@@ -9,6 +9,8 @@ data class TransInfoResponse(
     val dprtDstrTypeCdNm: String,
     val dprtDstrBascAddr: String?,
     val dprtDstrDetlAddr: String?,
+    val dprtDstrLat: String?,
+    val dprtDstrLon: String?,
     val nok1Telno: String?,
     val nok2Telno: String?,
     val inhpAsgnYn: String,

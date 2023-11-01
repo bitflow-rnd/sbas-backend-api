@@ -558,6 +558,8 @@ class BedAssignService {
             dprtDstrTypeCdNm = DprtTypeCd.valueOf(findBdasReq.dprtDstrTypeCd).cdNm,
             dprtDstrBascAddr = findBdasReq.dprtDstrBascAddr,
             dprtDstrDetlAddr = findBdasReq.dprtDstrDetlAddr,
+            dprtDstrLat = findBdasReq.dprtDstrLat,
+            dprtDstrLon = findBdasReq.dprtDstrLon,
             nok1Telno = findBdasReq.nok1Telno,
             nok2Telno = findBdasReq.nok2Telno,
             inhpAsgnYn = findBdasReq.inhpAsgnYn,

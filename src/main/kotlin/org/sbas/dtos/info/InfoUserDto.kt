@@ -66,6 +66,7 @@ data class UserDetailResponse(
     val btDt: String,
     val authCd: String,
     val attcId: String?,
+    val userStatCd: UserStatCd?,
 ) {
     val jobCdNm = PmgrTypeCd.valueOf(jobCd).cdNm
     val authCdNm = DtpmTypeCd.valueOf(authCd).cdNm
