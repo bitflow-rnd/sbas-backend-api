@@ -80,6 +80,15 @@ data class AvalHospListResponse(
     val gnbdSvrt: Int, // hv24 56
     val gnbdSmsv: Int, // hv25
     val gnbdModr: Int, // hv26
+    val ventilator: String?,
+    val ventilatorPreemie: String?,
+    val incubator: String?,
+    val ecmo: String?,
+    val highPressureOxygen: String?,
+    val ct: String?,
+    val mri: String?,
+    val bloodVesselImaging: String?,
+    val bodyTemperatureControl: String?,
 ) {
     val tagList: MutableList<String>
         get() {

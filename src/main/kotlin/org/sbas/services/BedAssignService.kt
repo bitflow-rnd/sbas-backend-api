@@ -217,6 +217,15 @@ class BedAssignService {
                 gnbdSvrt = it.gnbdSvrt, // hv24 56
                 gnbdSmsv = it.gnbdSmsv, // hv25
                 gnbdModr = it.gnbdModr, // hv26
+                ventilator = it.ventilator,
+                ventilatorPreemie = it.ventilatorPreemie,
+                incubator = it.incubator,
+                ecmo = it.ecmo,
+                highPressureOxygen = it.highPressureOxygen,
+                ct = it.ct,
+                mri = it.mri,
+                bloodVesselImaging = it.bloodVesselImaging,
+                bodyTemperatureControl = it.bodyTemperatureControl,
             )
 //        }.filter { response -> response.hospId !in findBdasReqAprv.map { it.reqHospId } }
         }

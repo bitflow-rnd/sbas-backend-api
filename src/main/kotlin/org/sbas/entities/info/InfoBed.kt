@@ -50,31 +50,31 @@ class InfoBed(
     var npibLbrInft: Int? = null,
 
     @Column(name = "ventilator")
-    var ventilator: String? = null,
+    var ventilator: String? = null, // 인공호흡기
 
     @Column(name = "ventilator_preemie")
-    var ventilatorPreemie: String? = null,
+    var ventilatorPreemie: String? = null, // 인공호흡기 조산아
 
     @Column(name = "incubator")
-    var incubator: String? = null,
+    var incubator: String? = null, // 인큐베이터
 
     @Column(name = "ecmo")
-    var ecmo: String? = null,
+    var ecmo: String? = null, // ECMO
 
     @Column(name = "high_pressure_oxygen")
-    var highPressureOxygen: String? = null,
+    var highPressureOxygen: String? = null, // 고압산소치료기
 
     @Column(name = "ct")
-    var ct: String? = null,
+    var ct: String? = null, // CT
 
     @Column(name = "mri")
-    var mri: String? = null,
+    var mri: String? = null, // MRI
 
     @Column(name = "blood_vessel_imaging")
-    var bloodVesselImaging: String? = null,
+    var bloodVesselImaging: String? = null, // 혈관촬영기
 
     @Column(name = "body_temperature_control")
-    var bodyTemperatureControl: String? = null,
+    var bodyTemperatureControl: String? = null, // 중심체온조절유도기
 
     @Column
     var emrgncyNrmlBed: Int?, // hvec - 일반(응급실일반병상)
