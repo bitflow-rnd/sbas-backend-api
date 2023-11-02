@@ -7,11 +7,13 @@ import org.sbas.constants.enums.AdmsStatCd
 import org.sbas.constants.enums.TimeLineStatCd
 import org.sbas.dtos.bdas.*
 import org.sbas.entities.bdas.*
+import org.sbas.responses.patient.DestinationInfo
 import java.time.Instant
 import javax.enterprise.context.ApplicationScoped
 import javax.inject.Inject
 import javax.persistence.EntityManager
 import javax.persistence.TypedQuery
+import javax.ws.rs.NotFoundException
 
 @ApplicationScoped
 class BdasEsvyRepository : PanacheRepositoryBase<BdasEsvy, String> {
@@ -29,11 +31,11 @@ class BdasReqRepository : PanacheRepositoryBase<BdasReq, BdasReqId> {
     @Inject
     private lateinit var queryFactory: QueryFactory
 
-    fun findByPtIdAndBdasSeq(ptId: String, bdasSeq: Int): BdasReq? {
+    fun findByPtIdAndBdasSeq(ptId: String, bdasSeq: Int): BdasReq {
         return find(
             "pt_id = '${ptId}' and bdas_seq = $bdasSeq",
             Sort.by("bdas_seq", Sort.Direction.Descending)
-        ).firstResult()
+        ).firstResult() ?: throw NotFoundException("$ptId $bdasSeq 병상요청 정보가 없습니다.")
     }
 
     fun queryForBdasList(cond: String?, offset: Int?): TypedQuery<BdasListDto> {
@@ -227,10 +229,29 @@ class BdasAprvRepository : PanacheRepositoryBase<BdasAprv, BdasAprvId> {
     fun findBdasAprvList(ptId: String, bdasSeq: Int): List<BdasAprv> {
         return find("select ba from BdasAprv ba where exists (select 1 from BdasAprv ba where ba.id.ptId = '$ptId' and ba.id.bdasSeq = $bdasSeq)").list()
     }
+
+    fun findDestinationInfo(ptId: String, bdasSeq: Int): DestinationInfo {
+        val query = """
+            select new org.sbas.responses.patient.DestinationInfo(ba.hospId, ih.dutyName, ih.dutyTel1, ih.dutyAddr, 
+            ih.wgs84Lat, ih.wgs84Lon, ba.roomNm, ba.deptNm, ba.spclNm, ba.msg) 
+            from BdasAprv ba 
+            inner join InfoHosp ih on ba.hospId = ih.hospId 
+            where ba.id.ptId = '${ptId}' and ba.id.bdasSeq = $bdasSeq and ba.aprvYn = 'Y'
+        """.trimIndent()
+
+        return entityManager.createQuery(query, DestinationInfo::class.java).singleResult
+    }
 }
 
 @ApplicationScoped
 class BdasTrnsRepository : PanacheRepositoryBase<BdasTrns, BdasTrnsId> {
+
+    fun findByPtIdAndBdasSeq(ptId: String, bdasSeq: Int): BdasTrns {
+        return find(
+            "pt_id = '${ptId}' and bdas_seq = $bdasSeq",
+            Sort.by("bdas_seq", Sort.Direction.Descending)
+        ).firstResult() ?: throw NotFoundException("$ptId $bdasSeq 이송정보가 없습니다.")
+    }
 
     fun findSuspendTimeLineInfo(ptId: String, bdasSeq: Int): MutableList<CompleteTimeLine> {
         val query = "select new org.sbas.dtos.bdas.CompleteTimeLine('이송중', " +

@@ -159,7 +159,7 @@ class PatientService {
         val infoPt = infoPtRepository.findById(ptId) ?: throw NotFoundException("$ptId not found")
         val bdasSeq = bdasEsvyRepository.findByPtIdWithLatestBdasSeq(ptId)?.bdasSeq ?: -1
         val bdasReq = bdasReqRepository.findByPtIdAndBdasSeq(ptId, bdasSeq)
-        val bedStatCd = bdasReq?.bedStatCd
+        val bedStatCd = bdasReq.bedStatCd
 
         val baseCode = infoPt.dstr2Cd?.let { baseCodeRepository.findBaseCodeByCdId(it) }
 

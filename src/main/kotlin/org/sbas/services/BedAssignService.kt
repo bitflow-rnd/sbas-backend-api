@@ -3,7 +3,6 @@ package org.sbas.services
 import org.eclipse.microprofile.jwt.JsonWebToken
 import org.jboss.logging.Logger
 import org.sbas.constants.enums.BedStatCd
-import org.sbas.constants.enums.DprtTypeCd
 import org.sbas.constants.enums.TimeLineStatCd
 import org.sbas.dtos.bdas.*
 import org.sbas.dtos.info.InfoCrewSaveReq
@@ -14,6 +13,7 @@ import org.sbas.responses.CommonListResponse
 import org.sbas.responses.CommonResponse
 import org.sbas.responses.patient.DiseaseInfoResponse
 import org.sbas.responses.patient.TransInfoResponse
+import org.sbas.responses.patient.toTransInfoResponse
 import org.sbas.restparameters.NaverGeocodingApiParams
 import org.sbas.utils.CustomizedException
 import javax.enterprise.context.ApplicationScoped
@@ -140,7 +140,6 @@ class BedAssignService {
     @Transactional
     fun reqConfirm(saveRequest: BdasReqAprvSaveRequest): CommonResponse<String> {
         val findBdasReq = bdasReqRepository.findByPtIdAndBdasSeq(saveRequest.ptId, saveRequest.bdasSeq)
-            ?: throw NotFoundException("bdasReq not found")
 
         val bdasReqAprvs =
             bdasReqAprvRepository.findReqAprvListByPtIdAndBdasSeq(saveRequest.ptId, saveRequest.bdasSeq)
@@ -191,7 +190,7 @@ class BedAssignService {
     @Transactional
     fun getAvalHospList(ptId: String, bdasSeq: Int): CommonResponse<*> {
         val findBdasReq =
-            bdasReqRepository.findByPtIdAndBdasSeq(ptId, bdasSeq) ?: throw NotFoundException("bdasReq not found")
+            bdasReqRepository.findByPtIdAndBdasSeq(ptId, bdasSeq)
 
         val dstrCd1 = findBdasReq.reqDstr1Cd
         val dstrCd2: String? = findBdasReq.reqDstr2Cd
@@ -252,7 +251,6 @@ class BedAssignService {
     @Transactional
     fun asgnConfirm(saveRequest: BdasAprvSaveRequest): CommonResponse<*> {
         val findBdasReq = bdasReqRepository.findByPtIdAndBdasSeq(saveRequest.ptId, saveRequest.bdasSeq)
-            ?: throw NotFoundException("bdasReq not found")
         val findInfoUser = infoUserRepository.findByUserId(jwt.name) ?: throw NotFoundException("user not found")
         val findInfoPt = infoPtRepository.findById(saveRequest.ptId) ?: throw NotFoundException("${saveRequest.ptId} not found")
 
@@ -343,7 +341,6 @@ class BedAssignService {
     @Transactional
     fun confirmTrans(saveRequest: BdasTrnsSaveRequest): CommonResponse<String> {
         val findBdasReq = bdasReqRepository.findByPtIdAndBdasSeq(saveRequest.ptId, saveRequest.bdasSeq)
-            ?: throw NotFoundException("bdasReq not found")
         val bdasAprvList = bdasAprvRepository.findBdasAprvList(saveRequest.ptId, saveRequest.bdasSeq)
         if (bdasAprvList.isEmpty()) {
             throw CustomizedException("의료진 승인 정보가 없습니다.", Response.Status.BAD_REQUEST)
@@ -403,7 +400,6 @@ class BedAssignService {
     @Transactional
     fun confirmHosp(saveRequest: BdasAdmsSaveRequest): CommonResponse<String> {
         val findBdasReq = bdasReqRepository.findByPtIdAndBdasSeq(saveRequest.ptId, saveRequest.bdasSeq)
-            ?: throw NotFoundException("bdasReq not found")
         val findBdasAdms = bdasAdmsRepository.findByIdOrderByAdmsSeqDesc(saveRequest.ptId, saveRequest.bdasSeq)
 
         val entity = if (findBdasAdms == null) {
@@ -471,7 +467,7 @@ class BedAssignService {
     @Transactional
     fun getTimeLine(ptId: String, bdasSeq: Int): CommonResponse<*> {
         val findBdasReq =
-            bdasReqRepository.findByPtIdAndBdasSeq(ptId, bdasSeq) ?: throw NotFoundException("병상배정 정보가 없습니다.")
+            bdasReqRepository.findByPtIdAndBdasSeq(ptId, bdasSeq)
         val bedStatCd = findBdasReq.bedStatCd
         val timeLineList = mutableListOf<TimeLine>()
 
@@ -556,27 +552,10 @@ class BedAssignService {
     @Transactional
     fun findTransInfo(ptId: String, bdasSeq: Int): CommonResponse<TransInfoResponse> {
         val findBdasReq = bdasReqRepository.findByPtIdAndBdasSeq(ptId, bdasSeq)
-            ?: throw NotFoundException("$ptId $bdasSeq not found")
+        val findBdasTrns = bdasTrnsRepository.findByPtIdAndBdasSeq(ptId, bdasSeq)
+        val destinationInfo = bdasAprvRepository.findDestinationInfo(ptId, bdasSeq)
 
-        val transInfoResponse = TransInfoResponse(
-            ptId = findBdasReq.id.ptId,
-            bdasSeq = findBdasReq.id.bdasSeq,
-            reqDstr1Cd = findBdasReq.reqDstr1Cd,
-            reqDstr1CdNm = baseCodeRepository.findBaseCodeByCdId(findBdasReq.reqDstr1Cd)?.cdNm!!,
-            dprtDstrTypeCd = findBdasReq.dprtDstrTypeCd,
-            dprtDstrTypeCdNm = DprtTypeCd.valueOf(findBdasReq.dprtDstrTypeCd).cdNm,
-            dprtDstrBascAddr = findBdasReq.dprtDstrBascAddr,
-            dprtDstrDetlAddr = findBdasReq.dprtDstrDetlAddr,
-            dprtDstrLat = findBdasReq.dprtDstrLat,
-            dprtDstrLon = findBdasReq.dprtDstrLon,
-            nok1Telno = findBdasReq.nok1Telno,
-            nok2Telno = findBdasReq.nok2Telno,
-            inhpAsgnYn = findBdasReq.inhpAsgnYn,
-            deptNm = findBdasReq.deptNm,
-            spclNm = findBdasReq.spclNm,
-            chrgTelno = findBdasReq.chrgTelno,
-            msg = findBdasReq.msg,
-        )
+        val transInfoResponse = findBdasReq.toTransInfoResponse(findBdasTrns, destinationInfo)
 
         return CommonResponse(transInfoResponse)
     }
