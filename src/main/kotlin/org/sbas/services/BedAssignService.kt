@@ -552,7 +552,7 @@ class BedAssignService {
     @Transactional
     fun findTransInfo(ptId: String, bdasSeq: Int): CommonResponse<TransInfoResponse> {
         val findBdasReq = bdasReqRepository.findByPtIdAndBdasSeq(ptId, bdasSeq)
-        val findBdasTrns = bdasTrnsRepository.findByPtIdAndBdasSeq(ptId, bdasSeq)
+        val findBdasTrns = bdasTrnsRepository.findByPtIdAndBdasSeqWithNull(ptId, bdasSeq)
         val destinationInfo = bdasAprvRepository.findDestinationInfo(ptId, bdasSeq)
 
         val transInfoResponse = findBdasReq.toTransInfoResponse(findBdasTrns, destinationInfo)

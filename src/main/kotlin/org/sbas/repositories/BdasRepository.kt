@@ -230,7 +230,7 @@ class BdasAprvRepository : PanacheRepositoryBase<BdasAprv, BdasAprvId> {
         return find("select ba from BdasAprv ba where exists (select 1 from BdasAprv ba where ba.id.ptId = '$ptId' and ba.id.bdasSeq = $bdasSeq)").list()
     }
 
-    fun findDestinationInfo(ptId: String, bdasSeq: Int): DestinationInfo {
+    fun findDestinationInfo(ptId: String, bdasSeq: Int): DestinationInfo? {
         val query = """
             select new org.sbas.responses.patient.DestinationInfo(ba.hospId, ih.dutyName, ba.chrgTelno, ih.dutyAddr, 
             ih.wgs84Lat, ih.wgs84Lon, ba.roomNm, ba.deptNm, ba.spclNm, ba.msg) 
@@ -246,11 +246,11 @@ class BdasAprvRepository : PanacheRepositoryBase<BdasAprv, BdasAprvId> {
 @ApplicationScoped
 class BdasTrnsRepository : PanacheRepositoryBase<BdasTrns, BdasTrnsId> {
 
-    fun findByPtIdAndBdasSeq(ptId: String, bdasSeq: Int): BdasTrns {
+    fun findByPtIdAndBdasSeqWithNull(ptId: String, bdasSeq: Int): BdasTrns? {
         return find(
             "pt_id = '${ptId}' and bdas_seq = $bdasSeq",
             Sort.by("bdas_seq", Sort.Direction.Descending)
-        ).firstResult() ?: throw NotFoundException("$ptId $bdasSeq 이송정보가 없습니다.")
+        ).firstResult()
     }
 
     fun findSuspendTimeLineInfo(ptId: String, bdasSeq: Int): MutableList<CompleteTimeLine> {

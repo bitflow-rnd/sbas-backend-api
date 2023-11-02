@@ -26,7 +26,7 @@ data class TransInfoResponse(
     val vecno: String?,
     val chfTelno: String?,
     val crewNm: String?,
-    val destinationInfo: DestinationInfo,
+    val destinationInfo: DestinationInfo?,
 )
 
 data class DestinationInfo(
@@ -42,7 +42,7 @@ data class DestinationInfo(
     val msg: String?,
 )
 
-fun BdasReq.toTransInfoResponse(bdasTrns: BdasTrns, destinationInfo: DestinationInfo): TransInfoResponse {
+fun BdasReq.toTransInfoResponse(bdasTrns: BdasTrns?, destinationInfo: DestinationInfo?): TransInfoResponse {
     return TransInfoResponse(
         ptId = this.id.ptId,
         bdasSeq = this.id.bdasSeq,
@@ -58,13 +58,13 @@ fun BdasReq.toTransInfoResponse(bdasTrns: BdasTrns, destinationInfo: Destination
         nok2Telno = this.nok2Telno,
         inhpAsgnYn = this.inhpAsgnYn,
         msg = this.msg,
-        ambsNm = bdasTrns.ambsNm,
-        vecno = bdasTrns.vecno,
-        chfTelno = bdasTrns.chfTelno,
+        ambsNm = bdasTrns?.ambsNm,
+        vecno = bdasTrns?.vecno,
+        chfTelno = bdasTrns?.chfTelno,
         crewNm = listOfNotNull(
-            bdasTrns.crew1Nm?.takeIf { it.isNotEmpty() },
-            bdasTrns.crew2Nm?.takeIf { it.isNotEmpty() },
-            bdasTrns.crew3Nm?.takeIf { it.isNotEmpty() },
+            bdasTrns?.crew1Nm?.takeIf { it.isNotEmpty() },
+            bdasTrns?.crew2Nm?.takeIf { it.isNotEmpty() },
+            bdasTrns?.crew3Nm?.takeIf { it.isNotEmpty() },
         ).joinToString(", "),
         destinationInfo = destinationInfo,
     )
