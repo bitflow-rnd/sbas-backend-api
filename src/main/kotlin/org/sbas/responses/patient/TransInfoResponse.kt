@@ -32,7 +32,7 @@ data class TransInfoResponse(
 data class DestinationInfo(
     val hospId: String,
     val hospNm: String,
-    val hospTelno: String,
+    val chrgTelno: String?,
     val hospAddr: String,
     val destinationLat: String,
     val destinationLon: String,

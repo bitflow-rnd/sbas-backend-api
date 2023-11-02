@@ -232,7 +232,7 @@ class BdasAprvRepository : PanacheRepositoryBase<BdasAprv, BdasAprvId> {
 
     fun findDestinationInfo(ptId: String, bdasSeq: Int): DestinationInfo {
         val query = """
-            select new org.sbas.responses.patient.DestinationInfo(ba.hospId, ih.dutyName, ih.dutyTel1, ih.dutyAddr, 
+            select new org.sbas.responses.patient.DestinationInfo(ba.hospId, ih.dutyName, ba.chrgTelno, ih.dutyAddr, 
             ih.wgs84Lat, ih.wgs84Lon, ba.roomNm, ba.deptNm, ba.spclNm, ba.msg) 
             from BdasAprv ba 
             inner join InfoHosp ih on ba.hospId = ih.hospId 
