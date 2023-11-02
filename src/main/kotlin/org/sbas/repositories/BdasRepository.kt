@@ -239,7 +239,8 @@ class BdasAprvRepository : PanacheRepositoryBase<BdasAprv, BdasAprvId> {
             where ba.id.ptId = '${ptId}' and ba.id.bdasSeq = $bdasSeq and ba.aprvYn = 'Y'
         """.trimIndent()
 
-        return entityManager.createQuery(query, DestinationInfo::class.java).singleResult
+        val result = entityManager.createQuery(query, DestinationInfo::class.java).resultList
+        return if (result.isEmpty()) null else result[0]
     }
 }
 
