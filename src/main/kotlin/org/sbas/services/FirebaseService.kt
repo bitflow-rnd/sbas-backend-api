@@ -41,7 +41,7 @@ class FirebaseService {
                 FileInputStream("C:\\www\\dev.smartbas.org\\public\\firebase\\serviceAccountKey.json")
             val options = FirebaseOptions.builder()
                 .setCredentials(GoogleCredentials.fromStream(serviceAccount))
-                .setStorageBucket("sbas-4c928.appspot.com")
+                .setStorageBucket("smart-bed-allocation-system")
                 .build()
 
             FirebaseApp.initializeApp(options)
