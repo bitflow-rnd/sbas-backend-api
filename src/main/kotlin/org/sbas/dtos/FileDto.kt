@@ -38,3 +38,8 @@ data class FileDto(
         )
     }
 }
+
+data class AttcIdResponse(
+    val attcGrpId: String,
+    val attcId: List<String>,
+)

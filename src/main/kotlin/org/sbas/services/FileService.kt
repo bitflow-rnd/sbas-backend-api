@@ -4,6 +4,7 @@ import org.eclipse.microprofile.config.inject.ConfigProperty
 import org.jboss.logging.Logger
 import org.jboss.resteasy.reactive.multipart.FileUpload
 import org.sbas.constants.SbasConst
+import org.sbas.dtos.AttcIdResponse
 import org.sbas.entities.base.BaseAttc
 import org.sbas.handlers.FileHandler
 import org.sbas.repositories.BaseAttcRepository
@@ -68,20 +69,22 @@ class FileService {
     }
 
     @Transactional
-    fun privateFileUpload(param1: String?, param2: MutableList<FileUpload>?): CommonResponse<String> {
+    fun privateFileUpload(param1: String?, param2: MutableList<FileUpload>?): CommonResponse<AttcIdResponse> {
         if (param2.isNullOrEmpty() || param2.any { it.size() == 0L }) {
             throw CustomizedException("파일을 등록하세요.", Response.Status.BAD_REQUEST)
         }
 
         val attcGrpId = baseAttcRepository.getNextValAttcGrpId()
-        param2.forEach {
+        val baseAttcList = param2.map {
             val fileDto = fileHandler.createPrivateFile(it)
             val fileTypeCd = getFileTypeCd(fileDto.fileExt)
             val baseAttc = fileDto.toPrivateEntity(attcGrpId = attcGrpId, fileTypeCd = fileTypeCd, rmk = null)
-            baseAttcRepository.persist(baseAttc)
+            baseAttc
         }
+        baseAttcRepository.persist(baseAttcList)
+        val attcIdList = baseAttcList.map { it.attcId }
 
-        return CommonResponse(attcGrpId)
+        return CommonResponse(AttcIdResponse(attcGrpId, attcIdList))
     }
 
     private fun getFileTypeCd(fileExt: String): String {
