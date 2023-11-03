@@ -65,7 +65,7 @@ fun BdasReq.toTransInfoResponse(bdasTrns: BdasTrns?, destinationInfo: Destinatio
             bdasTrns?.crew1Nm?.takeIf { it.isNotEmpty() },
             bdasTrns?.crew2Nm?.takeIf { it.isNotEmpty() },
             bdasTrns?.crew3Nm?.takeIf { it.isNotEmpty() },
-        ).joinToString(", "),
+        ).joinToString(", ").takeIf { it.isNotEmpty() },
         destinationInfo = destinationInfo,
     )
 }
