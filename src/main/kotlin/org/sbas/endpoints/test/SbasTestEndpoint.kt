@@ -46,6 +46,7 @@ class SbasTestEndpoint {
     @Path("geocoding-test")
     @PermitAll
     fun geocodingTest(@Valid params: NaverGeocodingApiParams): NaverGeocodingApiResponse{
+        // test
         return geoHandler.getGeocoding(params)
     }
 
