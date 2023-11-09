@@ -25,6 +25,7 @@ class InfoUser(
     @Column(name = "user_ci", nullable = false, length = 300)
     var userCi: String? = null, // 사용자 CI
 
+    @Deprecated("user_fcm_token 를 사용하게끔 변경, 삭제예정")
     @Column(name = "push_key", nullable = false, length = 300)
     var pushKey: String? = null, // Push Key
 
