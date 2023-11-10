@@ -1,5 +1,6 @@
 package org.sbas.endpoints.test
 
+import org.eclipse.microprofile.openapi.annotations.parameters.RequestBody
 import org.eclipse.microprofile.openapi.annotations.tags.Tag
 import org.jboss.logging.Logger
 import org.sbas.handlers.GeocodingHandler
@@ -46,6 +47,7 @@ class SbasTestEndpoint {
     @Path("geocoding-test")
     @PermitAll
     fun geocodingTest(@Valid params: NaverGeocodingApiParams): NaverGeocodingApiResponse{
+        // test
         return geoHandler.getGeocoding(params)
     }
 
@@ -58,13 +60,13 @@ class SbasTestEndpoint {
 
     @GET
     @Path("firebase-test")
-    fun firebaseTest() {
+    fun firebaseTest(@QueryParam("to") to: String, @QueryParam("msg") msg: String) {
         val registrationTokens: List<String> = listOf(
             "ewtRdFsYS3WdxtMKBhdYcT:APA91bGbTkGl9IYjdhdpvK0zxI58vobXWrJDlU6U939MExYyc-Q1EUovecgYQnotRTCTJeR-t7CjTx5jEKqO7tAw5quijUXh8R9L5HJuLvEKTmsV6fLFHHcTlEmQFXAFACbp86PubPep",
             "cEhrwWmnTC6D-asdLGnio7:APA91bEAPMX_aadsfasdfasdfasdfXpETomYkRlV36AP07QmiFuxw9o5-HB8fqDIJVMxW1-xaqDspq9NhLfJZFWoij90HBrRtyX0AvAX995L_rU3oX_gv6gVlDURFVe0Hx0pDYc5ynUNO4CWdKISX6glsnxau"
         )
 //        firebaseService.sendMessage("jiseongtak", "123123", "jiseongtak")
-        firebaseService.sendMessageMultiDevice("test", "testbody", "jiseongtak")
+        firebaseService.sendMessageMultiDevice("test", msg, to)
     }
 
 }
