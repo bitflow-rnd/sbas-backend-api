@@ -140,6 +140,7 @@ class BedAssignService {
     @Transactional
     fun reqConfirm(saveRequest: BdasReqAprvSaveRequest): CommonResponse<String> {
         val findBdasReq = bdasReqRepository.findByPtIdAndBdasSeq(saveRequest.ptId, saveRequest.bdasSeq)
+            ?: throw NotFoundException("${saveRequest.ptId} ${saveRequest.bdasSeq} 병상요청 정보가 없습니다.")
 
         val bdasReqAprvs =
             bdasReqAprvRepository.findReqAprvListByPtIdAndBdasSeq(saveRequest.ptId, saveRequest.bdasSeq)
@@ -190,7 +191,7 @@ class BedAssignService {
     @Transactional
     fun getAvalHospList(ptId: String, bdasSeq: Int): CommonResponse<*> {
         val findBdasReq =
-            bdasReqRepository.findByPtIdAndBdasSeq(ptId, bdasSeq)
+            bdasReqRepository.findByPtIdAndBdasSeq(ptId, bdasSeq) ?: throw NotFoundException("$ptId $bdasSeq 병상요청 정보가 없습니다.")
 
         val dstrCd1 = findBdasReq.reqDstr1Cd
         val dstrCd2: String? = findBdasReq.reqDstr2Cd
@@ -251,6 +252,7 @@ class BedAssignService {
     @Transactional
     fun asgnConfirm(saveRequest: BdasAprvSaveRequest): CommonResponse<*> {
         val findBdasReq = bdasReqRepository.findByPtIdAndBdasSeq(saveRequest.ptId, saveRequest.bdasSeq)
+            ?: throw NotFoundException("${saveRequest.ptId} ${saveRequest.bdasSeq} 병상요청 정보가 없습니다.")
         val findInfoUser = infoUserRepository.findByUserId(jwt.name) ?: throw NotFoundException("user not found")
         val findInfoPt = infoPtRepository.findById(saveRequest.ptId) ?: throw NotFoundException("${saveRequest.ptId} not found")
 
@@ -341,6 +343,7 @@ class BedAssignService {
     @Transactional
     fun confirmTrans(saveRequest: BdasTrnsSaveRequest): CommonResponse<String> {
         val findBdasReq = bdasReqRepository.findByPtIdAndBdasSeq(saveRequest.ptId, saveRequest.bdasSeq)
+            ?: throw NotFoundException("${saveRequest.ptId} ${saveRequest.bdasSeq} 병상요청 정보가 없습니다.")
         val bdasAprvList = bdasAprvRepository.findBdasAprvList(saveRequest.ptId, saveRequest.bdasSeq)
         if (bdasAprvList.isEmpty()) {
             throw CustomizedException("의료진 승인 정보가 없습니다.", Response.Status.BAD_REQUEST)
@@ -400,6 +403,7 @@ class BedAssignService {
     @Transactional
     fun confirmHosp(saveRequest: BdasAdmsSaveRequest): CommonResponse<String> {
         val findBdasReq = bdasReqRepository.findByPtIdAndBdasSeq(saveRequest.ptId, saveRequest.bdasSeq)
+            ?: throw NotFoundException("${saveRequest.ptId} ${saveRequest.bdasSeq} 병상요청 정보가 없습니다.")
         val findBdasAdms = bdasAdmsRepository.findByIdOrderByAdmsSeqDesc(saveRequest.ptId, saveRequest.bdasSeq)
 
         val entity = if (findBdasAdms == null) {
@@ -466,8 +470,8 @@ class BedAssignService {
 
     @Transactional
     fun getTimeLine(ptId: String, bdasSeq: Int): CommonResponse<*> {
-        val findBdasReq =
-            bdasReqRepository.findByPtIdAndBdasSeq(ptId, bdasSeq)
+        val findBdasReq = bdasReqRepository.findByPtIdAndBdasSeq(ptId, bdasSeq)
+            ?: throw NotFoundException("$ptId $bdasSeq 병상요청 정보가 없습니다.")
         val bedStatCd = findBdasReq.bedStatCd
         val timeLineList = mutableListOf<TimeLine>()
 
@@ -552,6 +556,7 @@ class BedAssignService {
     @Transactional
     fun findTransInfo(ptId: String, bdasSeq: Int): CommonResponse<TransInfoResponse> {
         val findBdasReq = bdasReqRepository.findByPtIdAndBdasSeq(ptId, bdasSeq)
+            ?: throw NotFoundException("$ptId $bdasSeq 병상요청 정보가 없습니다.")
         val findBdasTrns = bdasTrnsRepository.findByPtIdAndBdasSeqWithNull(ptId, bdasSeq)
         val destinationInfo = bdasAprvRepository.findDestinationInfo(ptId, bdasSeq)
 

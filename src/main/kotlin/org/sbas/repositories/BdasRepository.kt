@@ -31,11 +31,11 @@ class BdasReqRepository : PanacheRepositoryBase<BdasReq, BdasReqId> {
     @Inject
     private lateinit var queryFactory: QueryFactory
 
-    fun findByPtIdAndBdasSeq(ptId: String, bdasSeq: Int): BdasReq {
+    fun findByPtIdAndBdasSeq(ptId: String, bdasSeq: Int): BdasReq? {
         return find(
             "pt_id = '${ptId}' and bdas_seq = $bdasSeq",
             Sort.by("bdas_seq", Sort.Direction.Descending)
-        ).firstResult() ?: throw NotFoundException("$ptId $bdasSeq 병상요청 정보가 없습니다.")
+        ).firstResult()
     }
 
     fun queryForBdasList(cond: String?, offset: Int?): TypedQuery<BdasListDto> {
@@ -147,6 +147,11 @@ class BdasReqRepository : PanacheRepositoryBase<BdasReq, BdasReqId> {
 
 @ApplicationScoped
 class BdasReqAprvRepository : PanacheRepositoryBase<BdasReqAprv, BdasReqAprvId> {
+
+    fun save(bdasReqAprv: BdasReqAprv): BdasReqAprv {
+        persistAndFlush(bdasReqAprv)
+        return bdasReqAprv
+    }
 
     fun findTimeLineInfo(ptId: String, bdasSeq: Int): MutableList<CompleteTimeLine> {
         val query =
