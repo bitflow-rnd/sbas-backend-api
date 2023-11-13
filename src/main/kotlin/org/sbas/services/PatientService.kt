@@ -192,6 +192,7 @@ class PatientService {
             bedStatCd = bedStatCd,
             bedStatNm = bedStatCd.let { BedStatCd.valueOf(it).cdNm },
             undrDsesCd = infoPt.undrDsesCd,
+            undrDsesEtc = infoPt.undrDsesEtc,
         )
 
         return CommonResponse(infoPtBasicInfo)

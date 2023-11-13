@@ -167,6 +167,7 @@ data class InfoPtBasicInfo(
     val bedStatCd: String?,
     val bedStatNm: String?,
     val undrDsesCd: List<UndrDsesCd>?,
+    val undrDsesEtc: String?,
 ) {
     val undrDsesCdNm: List<String>? = undrDsesCd?.map { it.cdNm }
 }
