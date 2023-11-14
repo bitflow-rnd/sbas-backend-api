@@ -65,17 +65,15 @@ class NubisonAiSeverityAnalysisHandler {
              * data[]: 모델 추론 값 리스트. 입력한 값 날짜 순으로 출력. ex) 2022-03-21, 2022-03-22, 2022-03-22, 2022-03-24
              */
             val response = nubisonAiSeverityAnalysisRestClient.infer(requestBody)
-            val OUTPUTS_ROW_COUNT = 4
             val dateFormat = DateTimeFormatter.ofPattern("yyyyMMdd")
             for ((requestRowIndex, value) in svrtCollList.withIndex()) {
-                for (outputsDataIndex in 0..<OUTPUTS_ROW_COUNT) {
                     val svrtAnlyRow = SvrtAnly(
                         SvrtAnlyId(
                             ptId = value.id!!.ptId,
                             hospId = value.id!!.hospId,
                             rgstSeq = value.id!!.rgstSeq,
                             msreDt = value.id!!.msreDt,
-                            collSeq = outputsDataIndex + (OUTPUTS_ROW_COUNT * requestRowIndex) + 1, // +1 is to start from 1, not from 0
+                            collSeq = requestRowIndex + 1, // +1 is to start from 1, not from 0
                             anlyDt = StringUtils.getYyyyMmDd(),
                             anlySeq = currentAnlySeq
                         ),
@@ -83,11 +81,34 @@ class NubisonAiSeverityAnalysisHandler {
                         collDt = value.rsltDt,
                         collTm = value.rsltTm,
                         anlyTm = StringUtils.getHhMmSs(),
-                        prdtDt = LocalDate.parse(value.id!!.msreDt, dateFormat).plusDays(outputsDataIndex.toLong())
+                        prdtDt = LocalDate.parse(value.id!!.msreDt, dateFormat)
                             .format(dateFormat),
-                        svrtProb = "%.3f".format(response.outputs[outputsDataIndex].data[requestRowIndex]),
+                        svrtProbMean = "%.3f".format(response.outputs[0].data[requestRowIndex]),
+                        svrtProbStd = "%.3f".format(response.outputs[1].data[requestRowIndex])
                     )
                     svrtService.saveSvrtAnly(svrtAnlyRow)
+                if (requestRowIndex == (svrtCollList.size - 1)) {
+                    for (plusIndex in 1..3) {
+                        val svrtAnlyRow = SvrtAnly(
+                            SvrtAnlyId(
+                                ptId = value.id!!.ptId,
+                                hospId = value.id!!.hospId,
+                                rgstSeq = value.id!!.rgstSeq,
+                                msreDt = value.id!!.msreDt,
+                                collSeq = requestRowIndex + plusIndex + 1, // +1 is to start from 1, not from 0
+                                anlyDt = StringUtils.getYyyyMmDd(),
+                                anlySeq = currentAnlySeq
+                            ),
+                            pid = pid,
+                            collDt = value.rsltDt,
+                            collTm = value.rsltTm,
+                            anlyTm = StringUtils.getHhMmSs(),
+                            prdtDt = LocalDate.parse(value.id!!.msreDt, dateFormat).plusDays(plusIndex.toLong()).format(dateFormat),
+                            svrtProbMean = "%.3f".format(response.outputs[0].data[requestRowIndex + plusIndex]),
+                            svrtProbStd = "%.3f".format(response.outputs[1].data[requestRowIndex + plusIndex])
+                        )
+                        svrtService.saveSvrtAnly(svrtAnlyRow)
+                    }
                 }
             }
             return response
