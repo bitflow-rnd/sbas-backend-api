@@ -14,6 +14,6 @@ import javax.ws.rs.Produces
 interface NubisonAiSeverityAnalysisRestClient {
 
     @POST
-    @Path("/seldon/inference/knuh/v2/models/infer")
+    @Path("/seldon/inference-stag/knuh-v3/v2/models/infer")
     fun infer(body: String) : NubisonAiSeverityAnalysisResponse
 }
