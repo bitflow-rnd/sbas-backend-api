@@ -55,10 +55,11 @@ class InfoHospRepository : PanacheRepositoryBase<InfoHosp, String> {
     fun findInfoHosps(param: InfoHospSearchParam): MutableList<InfoHospListDto> {
         val query2 = jpql {
             val medicalStaffCount = select<Long>(
-                count(path(InfoUser::id))
+                count(path(InfoUser::id)),
             ).from(
                 entity(InfoUser::class),
-                join(InfoBed::class).on(path(InfoUser::instId).eq(path(InfoBed::hospId)))
+            ).where(
+                path(InfoUser::instId).eq(path(InfoBed::hospId)),
             ).asSubquery()
 
             selectNew<InfoHospListDto>(
