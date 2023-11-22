@@ -1,17 +1,22 @@
 package org.sbas.repositories
 
 import com.linecorp.kotlinjdsl.QueryFactory
+import com.linecorp.kotlinjdsl.dsl.jpql.jpql
 import com.linecorp.kotlinjdsl.listQuery
-import com.linecorp.kotlinjdsl.query.spec.ExpressionOrderSpec
 import com.linecorp.kotlinjdsl.querydsl.CriteriaQueryDsl
 import com.linecorp.kotlinjdsl.querydsl.expression.col
-import com.linecorp.kotlinjdsl.subquery
+import com.linecorp.kotlinjdsl.render.jpql.JpqlRenderContext
+import com.linecorp.kotlinjdsl.support.hibernate.extension.createQuery
 import io.quarkus.hibernate.orm.panache.kotlin.PanacheRepositoryBase
 import org.jboss.logging.Logger
 import org.sbas.dtos.info.*
-import org.sbas.entities.info.*
+import org.sbas.entities.info.InfoBed
+import org.sbas.entities.info.InfoHosp
+import org.sbas.entities.info.InfoHospDetail
+import org.sbas.entities.info.InfoUser
 import javax.enterprise.context.ApplicationScoped
 import javax.inject.Inject
+import javax.persistence.EntityManager
 
 @ApplicationScoped
 class InfoHospRepository : PanacheRepositoryBase<InfoHosp, String> {
@@ -21,6 +26,12 @@ class InfoHospRepository : PanacheRepositoryBase<InfoHosp, String> {
 
     @Inject
     private lateinit var queryFactory: QueryFactory
+
+    @Inject
+    private lateinit var entityManager: EntityManager
+
+    @Inject
+    private lateinit var context: JpqlRenderContext
 
     fun findInfoHospByHospId(hospId: String): InfoHosp? {
         return find("hosp_id = '$hospId'").firstResult()
@@ -38,45 +49,47 @@ class InfoHospRepository : PanacheRepositoryBase<InfoHosp, String> {
                 col(InfoHosp::hpId).equal(hpId)
             )
         }
-
         return infoHospId[0]
     }
 
     fun findInfoHosps(param: InfoHospSearchParam): MutableList<InfoHospListDto> {
-        val infoHosps = queryFactory.listQuery<InfoHospListDto> {
-            val medicalStaffCount = queryFactory.subquery {
-                select(
-                    count(col(InfoUser::id))
-                )
-                from(entity(InfoUser::class))
-                groupBy(col(InfoUser::id))
-                where(col(InfoUser::instId).equal(col(InfoBed::hospId)))
-            }
-            selectMulti(
-                col(InfoHosp::hospId), col(InfoHosp::hpId), col(InfoHosp::dutyName), col(InfoHosp::dutyDivNam),
-                col(InfoHosp::dstrCd1), col(InfoHosp::dstrCd2), col(InfoHosp::dutyTel1), col(InfoHosp::dutyTel1), col(InfoBed::updtDttm),
-                col(InfoBed::gnbdIcu), col(InfoBed::npidIcu), col(InfoBed::gnbdSvrt),
-                col(InfoBed::gnbdSmsv), col(InfoBed::gnbdModr),
-                col(InfoBed::ventilator), col(InfoBed::ventilatorPreemie), col(InfoBed::incubator), col(InfoBed::ecmo),
-                col(InfoBed::highPressureOxygen), col(InfoBed::ct), col(InfoBed::mri), col(InfoBed::highPressureOxygen),
-                col(InfoBed::bodyTemperatureControl),
-                col(InfoBed::emrgncyNrmlBed), col(InfoBed::ngtvIsltnChild), col(InfoBed::nrmlIsltnChild),
-                col(InfoBed::nrmlChildBed), col(InfoBed::emrgncyNrmlIsltnBed), medicalStaffCount
-            )
-            from(entity(InfoHosp::class))
-            join(entity(InfoBed::class), on { col(InfoHosp::hospId).equal(col(InfoBed::hospId)) })
-            limit(15)
-            param.page?.run { offset(this.minus(1).times(15)) }
-            whereAnd(param)
-            orderBy(
-                ExpressionOrderSpec(col(InfoBed::gnbdSvrt), ascending = false),
-                ExpressionOrderSpec(col(InfoBed::gnbdIcu), ascending = false),
-                ExpressionOrderSpec(col(InfoBed::npidIcu), ascending = false),
-                ExpressionOrderSpec(col(InfoHosp::hospId), ascending = true),
+        val query2 = jpql {
+            val medicalStaffCount = select<Long>(
+                count(path(InfoUser::id))
+            ).from(
+                entity(InfoUser::class),
+                join(InfoBed::class).on(path(InfoUser::instId).eq(path(InfoBed::hospId)))
+            ).asSubquery()
+
+            selectNew<InfoHospListDto>(
+                path(InfoHosp::hospId), path(InfoHosp::hpId), path(InfoHosp::dutyName), path(InfoHosp::dutyDivNam),
+                path(InfoHosp::dstrCd1), path(InfoHosp::dstrCd2), path(InfoHosp::dutyTel1), path(InfoHosp::dutyTel1), path(InfoBed::updtDttm),
+                path(InfoBed::gnbdIcu), path(InfoBed::npidIcu), path(InfoBed::gnbdSvrt), path(InfoBed::gnbdSmsv), path(InfoBed::gnbdModr),
+                path(InfoBed::ventilator), path(InfoBed::ventilatorPreemie), path(InfoBed::incubator), path(InfoBed::ecmo), path(InfoBed::highPressureOxygen),
+                path(InfoBed::ct), path(InfoBed::mri), path(InfoBed::highPressureOxygen), path(InfoBed::bodyTemperatureControl),
+                path(InfoBed::emrgncyNrmlBed), path(InfoBed::ngtvIsltnChild), path(InfoBed::nrmlIsltnChild),
+                path(InfoBed::nrmlChildBed), path(InfoBed::emrgncyNrmlIsltnBed), medicalStaffCount,
+            ).from(
+                entity(InfoHosp::class),
+                join(InfoBed::class).on(path(InfoHosp::hospId).eq(path(InfoBed::hospId)))
+            ).whereAnd(
+                param.hospId?.run { path(InfoHosp::hospId).like("%$this%") },
+                param.dutyName?.run { path(InfoHosp::dutyName).like("%$this%") },
+                param.dstrCd1?.run { path(InfoHosp::dstrCd1).equal(this) },
+                param.dstrCd2?.run { path(InfoHosp::dstrCd2).equal(this) },
+                param.dutyDivNam?.run { path(InfoHosp::dutyDivNam).`in`(this) },
+            ).orderBy(
+                path(InfoBed::gnbdSvrt).desc(),
+                path(InfoBed::gnbdIcu).desc(),
+                path(InfoBed::npidIcu).desc(),
+                path(InfoHosp::hospId).asc(),
             )
         }
 
-        return infoHosps.toMutableList()
+        val offset = param.page?.run { this.minus(1).times(15) } ?: 0
+        val createQuery = entityManager.createQuery(query2, context).setMaxResults(15).setFirstResult(offset)
+
+        return createQuery.resultList
     }
 
     fun countInfoHosps(param: InfoHospSearchParam): Int {

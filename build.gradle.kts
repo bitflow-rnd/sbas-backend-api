@@ -43,6 +43,12 @@ dependencies {
     implementation("com.fasterxml.jackson.module:jackson-module-kotlin:2.14.3")
     implementation("com.google.firebase:firebase-admin:9.1.1")
     implementation("com.linecorp.kotlin-jdsl:hibernate-kotlin-jdsl:2.2.1.RELEASE")
+
+    implementation(enforcedPlatform("org.jetbrains.kotlin:kotlin-stdlib:1.9.10"))
+    implementation("com.linecorp.kotlin-jdsl:hibernate-javax-support:3.0.2")
+    implementation("com.linecorp.kotlin-jdsl:jpql-dsl:3.0.2")
+    implementation("com.linecorp.kotlin-jdsl:jpql-render:3.0.2")
+
     testImplementation("io.quarkus:quarkus-junit5")
     testImplementation("io.rest-assured:rest-assured")
 }
