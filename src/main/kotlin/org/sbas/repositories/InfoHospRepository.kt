@@ -5,13 +5,11 @@ import com.linecorp.kotlinjdsl.listQuery
 import com.linecorp.kotlinjdsl.query.spec.ExpressionOrderSpec
 import com.linecorp.kotlinjdsl.querydsl.CriteriaQueryDsl
 import com.linecorp.kotlinjdsl.querydsl.expression.col
+import com.linecorp.kotlinjdsl.subquery
 import io.quarkus.hibernate.orm.panache.kotlin.PanacheRepositoryBase
 import org.jboss.logging.Logger
 import org.sbas.dtos.info.*
-import org.sbas.entities.info.InfoBed
-import org.sbas.entities.info.InfoHosp
-import org.sbas.entities.info.InfoHospDetail
-import org.sbas.entities.info.InfoUser
+import org.sbas.entities.info.*
 import javax.enterprise.context.ApplicationScoped
 import javax.inject.Inject
 
@@ -46,6 +44,14 @@ class InfoHospRepository : PanacheRepositoryBase<InfoHosp, String> {
 
     fun findInfoHosps(param: InfoHospSearchParam): MutableList<InfoHospListDto> {
         val infoHosps = queryFactory.listQuery<InfoHospListDto> {
+            val medicalStaffCount = queryFactory.subquery {
+                select(
+                    count(col(InfoUser::id))
+                )
+                from(entity(InfoUser::class))
+                groupBy(col(InfoUser::id))
+                where(col(InfoUser::instId).equal(col(InfoBed::hospId)))
+            }
             selectMulti(
                 col(InfoHosp::hospId), col(InfoHosp::hpId), col(InfoHosp::dutyName), col(InfoHosp::dutyDivNam),
                 col(InfoHosp::dstrCd1), col(InfoHosp::dstrCd2), col(InfoHosp::dutyTel1), col(InfoHosp::dutyTel1), col(InfoBed::updtDttm),
@@ -55,7 +61,7 @@ class InfoHospRepository : PanacheRepositoryBase<InfoHosp, String> {
                 col(InfoBed::highPressureOxygen), col(InfoBed::ct), col(InfoBed::mri), col(InfoBed::highPressureOxygen),
                 col(InfoBed::bodyTemperatureControl),
                 col(InfoBed::emrgncyNrmlBed), col(InfoBed::ngtvIsltnChild), col(InfoBed::nrmlIsltnChild),
-                col(InfoBed::nrmlChildBed), col(InfoBed::emrgncyNrmlIsltnBed),
+                col(InfoBed::nrmlChildBed), col(InfoBed::emrgncyNrmlIsltnBed), medicalStaffCount
             )
             from(entity(InfoHosp::class))
             join(entity(InfoBed::class), on { col(InfoHosp::hospId).equal(col(InfoBed::hospId)) })
@@ -63,7 +69,10 @@ class InfoHospRepository : PanacheRepositoryBase<InfoHosp, String> {
             param.page?.run { offset(this.minus(1).times(15)) }
             whereAnd(param)
             orderBy(
-                ExpressionOrderSpec(col(InfoHosp::hospId), ascending = false),
+                ExpressionOrderSpec(col(InfoBed::gnbdSvrt), ascending = false),
+                ExpressionOrderSpec(col(InfoBed::gnbdIcu), ascending = false),
+                ExpressionOrderSpec(col(InfoBed::npidIcu), ascending = false),
+                ExpressionOrderSpec(col(InfoHosp::hospId), ascending = true),
             )
         }
 

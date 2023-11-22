@@ -20,19 +20,19 @@ class InfoBed(
     var hpId: String,
 
     @Column(name = "gnbd_icu")
-    var gnbdIcu: Int? = null,
+    var gnbdIcu: Int? = null,  // hv22 - 감염병 전담병상 중환자실
 
     @Column(name = "npib_icu")
-    var npidIcu: Int? = null,
+    var npidIcu: Int? = null, // hv23 - 감염병 전담병상 중환자실 내 음압격리병상
 
     @Column(name = "gnbd_svrt")
-    var gnbdSvrt: Int? = null,
+    var gnbdSvrt: Int? = null, // hv24 - [감염] 중증 병상
 
     @Column(name = "gnbd_smsv")
-    var gnbdSmsv: Int? = null,
+    var gnbdSmsv: Int? = null, // hv25 - [감염] 준-중증 병상
 
     @Column(name = "gnbd_modr")
-    var gnbdModr: Int? = null,
+    var gnbdModr: Int? = null, // hv26 - [감염] 중등증 병상
 
     @Column(name = "coht_bed")
     var cohtBed: Int? = null,
