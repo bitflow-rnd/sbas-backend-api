@@ -149,6 +149,7 @@ class InfoHospRepository : PanacheRepositoryBase<InfoHosp, String> {
             from(entity(InfoHosp::class))
             whereAnd(
                 col(InfoHosp::dutyDivNam).equal("보건소"),
+                col(InfoHosp::dutyName).like("%보건소"),
                 dstrCd1?.run { col(InfoHosp::dstrCd1).equal(this) },
                 dstrCd2?.run { col(InfoHosp::dstrCd2).equal(this) },
             )
