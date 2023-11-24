@@ -4,6 +4,7 @@ import com.linecorp.kotlinjdsl.QueryFactory
 import com.linecorp.kotlinjdsl.QueryFactoryImpl
 import com.linecorp.kotlinjdsl.query.creator.CriteriaQueryCreatorImpl
 import com.linecorp.kotlinjdsl.query.creator.SubqueryCreatorImpl
+import com.linecorp.kotlinjdsl.render.jpql.JpqlRenderContext
 import javax.enterprise.context.ApplicationScoped
 import javax.enterprise.inject.Produces
 import javax.inject.Inject
@@ -23,5 +24,10 @@ class KotlinJdslConfig {
             subqueryCreator = SubqueryCreatorImpl()
         )
         return queryFactory
+    }
+
+    @Produces
+    fun jpqlRenderContext(): JpqlRenderContext {
+        return JpqlRenderContext()
     }
 }

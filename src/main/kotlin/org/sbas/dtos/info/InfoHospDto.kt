@@ -109,7 +109,12 @@ data class InfoHospListDto(
     var nrmlIsltnChild: Int?, // hv16 - 소아 일반격리
     var nrmlChildBed: Int?, // hv28 - 소아
     var emrgncyNrmlIsltnBed: Int?, // hv30 - 응급실 일반 격리 병상
-)
+    var medicalStaffCount: Long?,
+) {
+    init {
+        medicalStaffCount = medicalStaffCount ?: 0
+    }
+}
 
 data class InfoHospWithUser(
     val hospId: String,
