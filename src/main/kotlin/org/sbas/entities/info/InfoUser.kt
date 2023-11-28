@@ -56,8 +56,8 @@ class InfoUser(
     @Column(name = "duty_dstr_1_cd", nullable = false, length = 8)
     var dutyDstr1Cd: String, // 근무 지역 코드 (시도)
 
-    @Column(name = "duty_dstr_2_cd", nullable = false, length = 8)
-    var dutyDstr2Cd: String, // 근무 지역 코드 (시군구)
+    @Column(name = "duty_dstr_2_cd", nullable = true, length = 8)
+    var dutyDstr2Cd: String?, // 근무 지역 코드 (시군구)
 
     @Column(name = "attc_id", length = 12)
     var attcId: String? = null, // 첨부 ID
