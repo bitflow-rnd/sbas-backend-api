@@ -194,7 +194,7 @@ class UserService {
      * @param userId
      */
     @Transactional
-    fun checkUserId(userId: String): Pair<Boolean, String> {
+    fun checkUserId(userId: String?): Pair<Boolean, String> {
         return when {
             userRepository.existByUserId(userId) -> Pair(true, "이미 사용중인 아이디입니다.")
             else -> Pair(false, "사용 가능한 아이디입니다.")

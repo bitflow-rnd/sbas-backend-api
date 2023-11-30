@@ -36,8 +36,8 @@ class PublicUserEndpoint {
     @Operation(summary = "사용자 아이디 중복 조회", description = "")
     @POST
     @Path("existid")
-    fun existid(userId: String): CommonResponse<*> {
-        val (res, message) = userService.checkUserId(userId)
+    fun existid(requestMap: Map<String, String>): CommonResponse<*> {
+        val (res, message) = userService.checkUserId(requestMap["userId"])
         return CommonResponse(SbasConst.ResCode.SUCCESS, message, res)
     }
 
