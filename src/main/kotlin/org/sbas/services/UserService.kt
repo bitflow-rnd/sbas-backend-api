@@ -225,6 +225,9 @@ class UserService {
             findUser.pwErrCnt!! >= 5 -> {
                 throw CustomizedException("비밀번호 불일치 5회 발생", Response.Status.FORBIDDEN)
             }
+            findUser.userStatCd == UserStatCd.URST0002 -> {
+                CommonResponse(SbasConst.ResCode.FAIL_VALIDATION, "사용자 요청이 승인되지 않았습니다.", null)
+            }
             findUser.pw == loginRequest.pw -> {
                 findUser.pwErrCnt = 0
                 CommonResponse(TokenUtils.generateUserToken(findUser.id, findUser.userNm))
