@@ -226,7 +226,7 @@ class UserService {
                 throw CustomizedException("비밀번호 불일치 5회 발생", Response.Status.FORBIDDEN)
             }
             findUser.pw == loginRequest.pw && findUser.userStatCd == UserStatCd.URST0001 -> {
-                CommonResponse(SbasConst.ResCode.FAIL_VALIDATION, "사용자 요청이 승인되지 않았습니다.", null)
+                CommonResponse(SbasConst.ResCode.FAIL_VALIDATION, "사용자 요청이 승인되지 않았습니다.${findUser.userStatCd}", null)
             }
             findUser.pw == loginRequest.pw && findUser.userStatCd != UserStatCd.URST0001 -> {
                 findUser.pwErrCnt = 0
