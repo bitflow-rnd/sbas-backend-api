@@ -194,7 +194,7 @@ class UserService {
      * @param userId
      */
     @Transactional
-    fun checkUserId(userId: String): Pair<Boolean, String> {
+    fun checkUserId(userId: String?): Pair<Boolean, String> {
         return when {
             userRepository.existByUserId(userId) -> Pair(true, "이미 사용중인 아이디입니다.")
             else -> Pair(false, "사용 가능한 아이디입니다.")
@@ -225,7 +225,10 @@ class UserService {
             findUser.pwErrCnt!! >= 5 -> {
                 throw CustomizedException("비밀번호 불일치 5회 발생", Response.Status.FORBIDDEN)
             }
-            findUser.pw == loginRequest.pw -> {
+            findUser.pw == loginRequest.pw && findUser.userStatCd == UserStatCd.URST0001 -> {
+                CommonResponse(SbasConst.ResCode.FAIL_VALIDATION, "사용자 요청이 승인되지 않았습니다.", null)
+            }
+            findUser.pw == loginRequest.pw && findUser.userStatCd != UserStatCd.URST0001 -> {
                 findUser.pwErrCnt = 0
                 CommonResponse(TokenUtils.generateUserToken(findUser.id, findUser.userNm))
             }

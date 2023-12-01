@@ -72,7 +72,7 @@ class InfoUserRepository : PanacheRepositoryBase<InfoUser, String> {
 
     fun findId(infoUser: InfoUser): InfoUser? = find("select u from InfoUser u where u.userNm = '${infoUser.userNm}' and u.telno = '${infoUser.telno}'").firstResult()
 
-    fun existByUserId(userId: String): Boolean {
+    fun existByUserId(userId: String?): Boolean {
         return count("user_id = '$userId'") == 1L
     }
 

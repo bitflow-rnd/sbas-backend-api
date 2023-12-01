@@ -61,8 +61,8 @@ data class UserDetailResponse(
     val instNm: String,
     val dutyDstr1Cd: String,
     val dutyDstr1CdNm: String,
-    val dutyDstr2Cd: String,
-    val dutyDstr2CdNm: String,
+    val dutyDstr2Cd: String?,
+    val dutyDstr2CdNm: String?,
     val btDt: String,
     val authCd: String,
     val attcId: String?,
@@ -125,8 +125,7 @@ data class InfoUserSaveReq(
     @field: [NotBlank Size(min = 1, max = 8)]
     val dutyDstr1Cd: String,
 
-    @field: [NotBlank Size(min = 1, max = 8)]
-    val dutyDstr2Cd: String,
+    val dutyDstr2Cd: String?,
 
     @field: Size(max = 12)
     val attcId: String?,
@@ -202,8 +201,7 @@ data class InfoUserUpdateReq(
     @field: [NotBlank Size(min = 1, max = 8)]
     val dutyDstr1Cd: String,
 
-    @field: [NotBlank Size(min = 1, max = 8)]
-    val dutyDstr2Cd: String,
+    val dutyDstr2Cd: String?,
 
     @field: [Size(min = 1, max = 12)]
     val attcId: String?,
