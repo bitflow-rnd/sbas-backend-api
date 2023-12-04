@@ -74,12 +74,12 @@ class TalkMsgRepository : PanacheRepositoryBase<TalkMsg, TalkMsgId> {
     }
 
     @Transactional
-    fun insertFile(file: String?, tkrmId: String, userId: String): TalkMsg{
+    fun insertFile(msg: String?, file: String?, tkrmId: String, userId: String): TalkMsg{
         val recentMsgSeq = findRecentlyMsg(tkrmId)
         val insertFile = TalkMsg(
             id = TalkMsgId(tkrmId, (recentMsgSeq?.id?.msgSeq ?: 0) + 1, 1),
             histCd = "1",
-            msg = "사진",
+            msg = msg ?: "",
             attcId = file,
             rgstUserId = userId,
             rgstDttm = Instant.now(),

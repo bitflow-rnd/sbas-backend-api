@@ -66,16 +66,30 @@ class TalkRoomMod {
             chatSockets[this.userId] = this // WebSocket 연결을 Map에 추가
             return
         }
-
         var addMsg: TalkMsg
         val otherUsers: MutableList<TalkUser>
-        log.debug("data >>> $data")
-        val idx = data.indexOf("|")
-        val userId = data.substring(0, idx)
-        val message = data.substring(idx+1)
-        runBlocking(Dispatchers.IO) {
-            addMsg = talkMsgRepository.insertMessage(message, tkrmId, userId)
-            otherUsers = talkUserRepository.findOtherUsersByTkrmId(tkrmId, userId) as MutableList<TalkUser>
+        var message: String?
+
+        if(data.contains("attcId:")) {
+            log.debug("data >>> $data")
+            val idx = data.indexOf("|")
+            val msgIdx = data.lastIndexOf("|")
+            val userId = data.substring(0, idx)
+            message = data.substring(msgIdx+1)
+            val attcId = data.substring(idx+8, msgIdx)
+            runBlocking(Dispatchers.IO) {
+                addMsg = talkMsgRepository.insertFile(message, attcId, tkrmId, userId)
+                otherUsers = talkUserRepository.findOtherUsersByTkrmId(tkrmId, userId) as MutableList<TalkUser>
+            }
+        }else {
+            log.debug("data >>> $data")
+            val idx = data.indexOf("|")
+            val userId = data.substring(0, idx)
+            message = data.substring(idx + 1)
+            runBlocking(Dispatchers.IO) {
+                addMsg = talkMsgRepository.insertMessage(message, tkrmId, userId)
+                otherUsers = talkUserRepository.findOtherUsersByTkrmId(tkrmId, userId) as MutableList<TalkUser>
+            }
         }
 
         chatSockets.values // 모든 WebSocket 연결에 메시지 전송
