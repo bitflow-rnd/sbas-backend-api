@@ -1,9 +1,11 @@
 package org.sbas.utils
 
+import com.google.gson.Gson
 import io.vertx.core.json.JsonObject
 import kotlinx.coroutines.*
 import org.jboss.logging.Logger
 import org.json.JSONArray
+import org.sbas.dtos.AttcIdResponse
 import org.sbas.dtos.TalkMsgDto
 import org.sbas.entities.talk.TalkMsg
 import org.sbas.entities.talk.TalkUser
@@ -79,7 +81,8 @@ class TalkRoomMod {
             message = data.substring(msgIdx+1)
             val attcId = data.substring(idx+8, msgIdx)
             runBlocking(Dispatchers.IO) {
-                addMsg = talkMsgRepository.insertFile(message, attcId.substring(0,11), tkrmId, userId)
+                val attcIdResponse: AttcIdResponse = Gson().fromJson(attcId, AttcIdResponse::class.java)
+                addMsg = talkMsgRepository.insertFile(message, attcIdResponse.attcGrpId, tkrmId, userId)
                 otherUsers = talkUserRepository.findOtherUsersByTkrmId(tkrmId, userId) as MutableList<TalkUser>
             }
         }else {
