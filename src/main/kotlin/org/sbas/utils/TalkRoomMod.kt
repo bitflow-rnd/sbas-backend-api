@@ -79,7 +79,7 @@ class TalkRoomMod {
             message = data.substring(msgIdx+1)
             val attcId = data.substring(idx+8, msgIdx)
             runBlocking(Dispatchers.IO) {
-                addMsg = talkMsgRepository.insertFile(message, attcId, tkrmId, userId)
+                addMsg = talkMsgRepository.insertFile(message, attcId.substring(0,11), tkrmId, userId)
                 otherUsers = talkUserRepository.findOtherUsersByTkrmId(tkrmId, userId) as MutableList<TalkUser>
             }
         }else {
