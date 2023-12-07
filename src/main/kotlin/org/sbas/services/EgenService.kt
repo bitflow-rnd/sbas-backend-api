@@ -127,8 +127,7 @@ class EgenService {
      * 병‧의원별 기본정보 조회
      */
     fun getHsptlBassInfoInqire(param: EgenApiBassInfoParams): JSONObject {
-        val jsonObject = try {
-            JSONObject(
+        val jsonObject = JSONObject(
                 egenRestClient.getHsptlBassInfoInqire(
                     serviceKey = serviceKey,
                     hpId = param.hpId,
@@ -136,10 +135,6 @@ class EgenService {
                     numOfRows = param.numOfRows
                 )
             )
-        }catch (e: Exception) {
-            throw CustomizedException("no items", Response.Status.NOT_FOUND)
-        }
-
         return extractBody(jsonObject)
     }
 
@@ -320,7 +315,7 @@ class EgenService {
 
                 pageRepository.saveCurrentPage("hosp", i)
             }
-        }catch(e: Exception) {
+        } catch (e: Exception) {
             saveHospitalByScheduler()
         }
 
