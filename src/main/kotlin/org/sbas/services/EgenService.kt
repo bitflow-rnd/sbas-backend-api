@@ -133,7 +133,6 @@ class EgenService {
                 numOfRows = param.numOfRows
             )
         )
-        log.warn(jsonObject)
         return extractBody(jsonObject)
     }
 

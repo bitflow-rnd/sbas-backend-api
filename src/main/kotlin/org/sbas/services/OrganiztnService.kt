@@ -100,10 +100,12 @@ class OrganiztnService {
     fun findInfoHospById(@CacheKey hpId: String) : CommonResponse<HospInfoRes> {
         val jsonObject = egenService.getHsptlBassInfoInqire(param = EgenApiBassInfoParams(hpId = hpId))
 
-        val item = jsonObject.getJSONObject("item")
-        if(item.isEmpty) {
+        if(jsonObject.getJSONObject("items").isEmpty) {
             throw CustomizedException("no items", Response.Status.NOT_FOUND)
         }
+
+        val item = jsonObject.getJSONObject("item")
+
         val hospBasicInfo = objectMapper.readValue(item.toString(), HospBasicInfo::class.java)
 
         val (jsonObject2, totalCount) = egenService.getHsptlMdcncListInfoInqire(param = EgenApiListInfoParams(qn = hospBasicInfo.dutyName))
