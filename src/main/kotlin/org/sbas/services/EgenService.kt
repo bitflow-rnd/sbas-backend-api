@@ -5,6 +5,7 @@ import org.eclipse.microprofile.config.inject.ConfigProperty
 import org.eclipse.microprofile.rest.client.inject.RestClient
 import org.jboss.logging.Logger
 import org.json.JSONArray
+import org.json.JSONException
 import org.json.JSONObject
 import org.sbas.constants.EgenCmMid
 import org.sbas.constants.enums.SidoCd
@@ -138,7 +139,7 @@ class EgenService {
 
         try {
             return extractBody(jsonObject)
-        }catch (e: Exception) {
+        }catch (e: JSONException) {
             throw CustomizedException("egen 병원 상세 데이터 없음", Response.Status.NOT_FOUND)
         }
 
