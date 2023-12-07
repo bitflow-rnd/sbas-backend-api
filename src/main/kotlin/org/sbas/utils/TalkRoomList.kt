@@ -4,6 +4,7 @@ import io.vertx.core.json.JsonObject
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.runBlocking
 import org.jboss.logging.Logger
+import org.json.JSONArray
 import org.sbas.entities.talk.TalkUser
 import org.sbas.repositories.TalkRoomRepository
 import org.sbas.repositories.TalkUserRepository
@@ -42,7 +43,7 @@ class TalkRoomList {
     fun onOpen(session: Session, @PathParam("userId") userId: String) {
         updateTalkRooms(userId)
 
-        val sendObject = arrToJson(talkRooms)
+        val sendObject = JSONArray(talkRooms).toString()
 
         session.asyncRemote.sendText(sendObject)
 

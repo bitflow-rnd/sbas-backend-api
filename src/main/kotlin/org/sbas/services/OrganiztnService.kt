@@ -372,10 +372,9 @@ class OrganiztnService {
     }
 
     @Transactional
-    fun findMedInstInfo(hospId: String): CommonResponse<InfoHospDetailDto> {
+    fun findMedInstInfo(hospId: String): CommonResponse<InfoHospDetailDto?> {
         val hospDetail = infoHospDetailRepository.findById(hospId)
-        checkNotNull(hospDetail) { throw NotFoundException("$hospId not found") }
-        return CommonResponse(hospDetail.toResponse())
+        return CommonResponse(hospDetail?.toResponse())
     }
 
     @Transactional

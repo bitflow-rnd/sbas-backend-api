@@ -52,20 +52,22 @@ class FileService {
      * 전체 공개 권한 파일 업로드
      */
     @Transactional
-    fun publicFileUpload(param1: String?, param2: MutableList<FileUpload>?): CommonResponse<String> {
+    fun publicFileUpload(param1: String?, param2: MutableList<FileUpload>?): CommonResponse<AttcIdResponse> {
         if (param2.isNullOrEmpty() || param2.any { it.size() == 0L }) {
             throw CustomizedException("파일을 등록하세요.", Response.Status.BAD_REQUEST)
         }
 
         val attcGrpId = baseAttcRepository.getNextValAttcGrpId()
-        param2.forEach {
+        val baseAttcList = param2.map {
             val fileDto = fileHandler.createPublicFile(it)
             val fileTypeCd = getFileTypeCd(fileDto.fileExt)
             val baseAttc = fileDto.toPublicEntity(attcGrpId = attcGrpId, fileTypeCd = fileTypeCd, rmk = null)
-            baseAttcRepository.persist(baseAttc)
+            baseAttc
         }
+        baseAttcRepository.persist(baseAttcList)
+        val attcIdList = baseAttcList.map { it.attcId }
 
-        return CommonResponse(attcGrpId)
+        return CommonResponse(AttcIdResponse(attcGrpId, attcIdList))
     }
 
     @Transactional

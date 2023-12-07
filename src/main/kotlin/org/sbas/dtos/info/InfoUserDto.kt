@@ -61,12 +61,13 @@ data class UserDetailResponse(
     val instNm: String,
     val dutyDstr1Cd: String,
     val dutyDstr1CdNm: String,
-    val dutyDstr2Cd: String,
-    val dutyDstr2CdNm: String,
+    val dutyDstr2Cd: String?,
+    val dutyDstr2CdNm: String?,
     val btDt: String,
     val authCd: String,
     val attcId: String?,
     val userStatCd: UserStatCd?,
+    val updtDttm: Instant,
 ) {
     val jobCdNm = PmgrTypeCd.valueOf(jobCd).cdNm
     val authCdNm = DtpmTypeCd.valueOf(authCd).cdNm
@@ -106,10 +107,10 @@ data class InfoUserSaveReq(
     @field: [Size(min = 1, max = 8) NotBlank ValidEnum(enumClass = PmgrTypeCd::class)]
     val jobCd: String,
 
-    @field: Size(min = 1, max = 8)
+    @field: Size(max = 8)
     val ocpCd: String?,
 
-    @field: [Size(min = 1) ValidEnum(enumClass = PtTypeCd::class, isNullable = true)]
+    @field: ValidEnum(enumClass = PtTypeCd::class, isNullable = true)
     val ptTypeCd: String?,
 
     @field: [NotBlank Size(min = 1, max = 8) ValidEnum(enumClass = InstTypeCd::class)]
@@ -124,10 +125,9 @@ data class InfoUserSaveReq(
     @field: [NotBlank Size(min = 1, max = 8)]
     val dutyDstr1Cd: String,
 
-    @field: [NotBlank Size(min = 1, max = 8)]
-    val dutyDstr2Cd: String,
+    val dutyDstr2Cd: String?,
 
-    @field: [Size(min = 1, max = 12)]
+    @field: Size(max = 12)
     val attcId: String?,
 
     @field: [NotBlank
@@ -201,8 +201,7 @@ data class InfoUserUpdateReq(
     @field: [NotBlank Size(min = 1, max = 8)]
     val dutyDstr1Cd: String,
 
-    @field: [NotBlank Size(min = 1, max = 8)]
-    val dutyDstr2Cd: String,
+    val dutyDstr2Cd: String?,
 
     @field: [Size(min = 1, max = 12)]
     val attcId: String?,
