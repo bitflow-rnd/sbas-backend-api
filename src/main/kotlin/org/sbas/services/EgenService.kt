@@ -20,9 +20,11 @@ import org.sbas.restparameters.EgenApiBassInfoParams
 import org.sbas.restparameters.EgenApiEmrrmRltmUsefulSckbdInfoParams
 import org.sbas.restparameters.EgenApiLcInfoParams
 import org.sbas.restparameters.EgenApiListInfoParams
+import org.sbas.utils.CustomizedException
 import javax.enterprise.context.ApplicationScoped
 import javax.inject.Inject
 import javax.transaction.Transactional
+import javax.ws.rs.core.Response
 
 
 /**
@@ -133,6 +135,8 @@ class EgenService {
                 numOfRows = param.numOfRows
             )
         )
+        log.warn(jsonObject.getJSONObject("items"))
+        throw CustomizedException("no items", Response.Status.NOT_FOUND)
         return extractBody(jsonObject)
     }
 

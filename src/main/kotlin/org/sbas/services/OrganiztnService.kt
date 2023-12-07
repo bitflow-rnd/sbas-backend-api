@@ -100,9 +100,6 @@ class OrganiztnService {
     fun findInfoHospById(@CacheKey hpId: String) : CommonResponse<HospInfoRes> {
         val jsonObject = egenService.getHsptlBassInfoInqire(param = EgenApiBassInfoParams(hpId = hpId))
 
-        log.warn(jsonObject)
-        throw CustomizedException("no items", Response.Status.NOT_FOUND)
-
         if(jsonObject.getJSONObject("items").equals("")) {
             throw CustomizedException("no items", Response.Status.NOT_FOUND)
         }
