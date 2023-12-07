@@ -101,6 +101,8 @@ class OrganiztnService {
     fun findInfoHospById(@CacheKey hpId: String) : CommonResponse<HospInfoRes> {
         val jsonObject = egenService.getHsptlBassInfoInqire(param = EgenApiBassInfoParams(hpId = hpId))
 
+        log.warn(jsonObject)
+
         val item = jsonObject.getJSONObject("item")
 
         val hospBasicInfo = objectMapper.readValue(item.toString(), HospBasicInfo::class.java)
