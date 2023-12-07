@@ -135,9 +135,11 @@ class EgenService {
                 numOfRows = param.numOfRows
             )
         )
-        log.warn(jsonObject.getJSONObject("items"))
-        throw CustomizedException("no items", Response.Status.NOT_FOUND)
-        return extractBody(jsonObject)
+        try {
+            return extractBody(jsonObject)
+        }catch (e: Exception) {
+            throw CustomizedException("no items", Response.Status.NOT_FOUND)
+        }
     }
 
     /**
