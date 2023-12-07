@@ -101,11 +101,7 @@ class OrganiztnService {
     fun findInfoHospById(@CacheKey hpId: String) : CommonResponse<HospInfoRes> {
         val jsonObject = egenService.getHsptlBassInfoInqire(param = EgenApiBassInfoParams(hpId = hpId))
 
-        val item = try {
-            jsonObject.getJSONObject("item")
-        }catch (e: JSONException) {
-            throw CustomizedException("egen 병원 상세 데이터 없음", Response.Status.NOT_FOUND)
-        }
+        val item = jsonObject.getJSONObject("item")
 
         val hospBasicInfo = objectMapper.readValue(item.toString(), HospBasicInfo::class.java)
 

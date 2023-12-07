@@ -364,7 +364,11 @@ class EgenService {
 
     private fun extractBody(jsonObject: JSONObject): JSONObject {
         val header = jsonObject.getJSONObject("response").getJSONObject("header")
-        return jsonObject.getJSONObject("response").getJSONObject("body").getJSONObject("items")
+        try {
+            return jsonObject.getJSONObject("response").getJSONObject("body").getJSONObject("items")
+        }catch (e: JSONException) {
+            throw CustomizedException("no items", Response.Status.NOT_FOUND)
+        }
     }
 
     private fun extractTotalCount(jsonObject: JSONObject): Int {
