@@ -365,6 +365,7 @@ class EgenService {
     private fun extractBody(jsonObject: JSONObject): JSONObject {
         val header = jsonObject.getJSONObject("response").getJSONObject("header")
         try {
+            log.warn(jsonObject.getJSONObject("response").getJSONObject("body").getJSONObject("items"))
             return jsonObject.getJSONObject("response").getJSONObject("body").getJSONObject("items")
         }catch (e: JSONException) {
             throw CustomizedException("no items", Response.Status.NOT_FOUND)
