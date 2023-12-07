@@ -6,6 +6,7 @@ import io.quarkus.cache.CacheResult
 import org.jboss.logging.Logger
 import org.jboss.resteasy.reactive.RestResponse
 import org.jboss.resteasy.reactive.multipart.FileUpload
+import org.json.JSONException
 import org.json.JSONObject
 import org.sbas.constants.SbasConst
 import org.sbas.dtos.info.*
@@ -100,7 +101,11 @@ class OrganiztnService {
     fun findInfoHospById(@CacheKey hpId: String) : CommonResponse<HospInfoRes> {
         val jsonObject = egenService.getHsptlBassInfoInqire(param = EgenApiBassInfoParams(hpId = hpId))
 
-        val item = jsonObject.getJSONObject("item")
+        val item = try {
+            jsonObject.getJSONObject("item")
+        }catch (e: JSONException) {
+            throw CustomizedException("egen 병원 상세 데이터 없음", Response.Status.NOT_FOUND)
+        }
 
         val hospBasicInfo = objectMapper.readValue(item.toString(), HospBasicInfo::class.java)
 

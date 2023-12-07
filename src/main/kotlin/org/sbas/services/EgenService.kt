@@ -137,12 +137,7 @@ class EgenService {
                 )
             )
 
-        try {
-            return extractBody(jsonObject)
-        }catch (e: JSONException) {
-            throw CustomizedException("egen 병원 상세 데이터 없음", Response.Status.NOT_FOUND)
-        }
-
+        return extractBody(jsonObject)
     }
 
     /**
