@@ -127,7 +127,8 @@ class EgenService {
      * 병‧의원별 기본정보 조회
      */
     fun getHsptlBassInfoInqire(param: EgenApiBassInfoParams): JSONObject {
-        val jsonObject = JSONObject(
+        val jsonObject = try {
+            JSONObject(
                 egenRestClient.getHsptlBassInfoInqire(
                     serviceKey = serviceKey,
                     hpId = param.hpId,
@@ -135,6 +136,9 @@ class EgenService {
                     numOfRows = param.numOfRows
                 )
             )
+        }catch (e: Exception) {
+            throw CustomizedException("egen 병원 상세 데이터 없음", Response.Status.NOT_FOUND)
+        }
         return extractBody(jsonObject)
     }
 
