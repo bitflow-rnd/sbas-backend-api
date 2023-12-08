@@ -1,9 +1,11 @@
 package org.sbas.utils
 
+import com.google.gson.Gson
 import io.vertx.core.json.JsonObject
 import kotlinx.coroutines.*
 import org.jboss.logging.Logger
 import org.json.JSONArray
+import org.sbas.dtos.AttcIdResponse
 import org.sbas.dtos.TalkMsgDto
 import org.sbas.entities.talk.TalkMsg
 import org.sbas.entities.talk.TalkUser
@@ -69,13 +71,29 @@ class TalkRoomMod {
 
         var addMsg: TalkMsg
         val otherUsers: MutableList<TalkUser>
-        log.debug("data >>> $data")
-        val idx = data.indexOf("|")
-        val userId = data.substring(0, idx)
-        val message = data.substring(idx+1)
-        runBlocking(Dispatchers.IO) {
-            addMsg = talkMsgRepository.insertMessage(message, tkrmId, userId)
-            otherUsers = talkUserRepository.findOtherUsersByTkrmId(tkrmId, userId) as MutableList<TalkUser>
+        var message: String?
+
+        if(data.contains("attcId:")) {
+            log.debug("data >>> $data")
+            val idx = data.indexOf("|")
+            val msgIdx = data.lastIndexOf("|")
+            val userId = data.substring(0, idx)
+            message = data.substring(msgIdx+1)
+            val attcId = data.substring(idx+8, msgIdx)
+            runBlocking(Dispatchers.IO) {
+                val attcIdResponse: AttcIdResponse = Gson().fromJson(attcId, AttcIdResponse::class.java)
+                addMsg = talkMsgRepository.insertFile(message, attcIdResponse.attcGrpId, tkrmId, userId)
+                otherUsers = talkUserRepository.findOtherUsersByTkrmId(tkrmId, userId) as MutableList<TalkUser>
+            }
+        }else {
+            log.debug("data >>> $data")
+            val idx = data.indexOf("|")
+            val userId = data.substring(0, idx)
+            message = data.substring(idx + 1)
+            runBlocking(Dispatchers.IO) {
+                addMsg = talkMsgRepository.insertMessage(message, tkrmId, userId)
+                otherUsers = talkUserRepository.findOtherUsersByTkrmId(tkrmId, userId) as MutableList<TalkUser>
+            }
         }
 
         chatSockets.values // 모든 WebSocket 연결에 메시지 전송

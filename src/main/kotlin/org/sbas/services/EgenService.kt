@@ -5,6 +5,7 @@ import org.eclipse.microprofile.config.inject.ConfigProperty
 import org.eclipse.microprofile.rest.client.inject.RestClient
 import org.jboss.logging.Logger
 import org.json.JSONArray
+import org.json.JSONException
 import org.json.JSONObject
 import org.sbas.constants.EgenCmMid
 import org.sbas.constants.enums.SidoCd
@@ -20,9 +21,11 @@ import org.sbas.restparameters.EgenApiBassInfoParams
 import org.sbas.restparameters.EgenApiEmrrmRltmUsefulSckbdInfoParams
 import org.sbas.restparameters.EgenApiLcInfoParams
 import org.sbas.restparameters.EgenApiListInfoParams
+import org.sbas.utils.CustomizedException
 import javax.enterprise.context.ApplicationScoped
 import javax.inject.Inject
 import javax.transaction.Transactional
+import javax.ws.rs.core.Response
 
 
 /**
@@ -126,13 +129,14 @@ class EgenService {
      */
     fun getHsptlBassInfoInqire(param: EgenApiBassInfoParams): JSONObject {
         val jsonObject = JSONObject(
-            egenRestClient.getHsptlBassInfoInqire(
-                serviceKey = serviceKey,
-                hpId = param.hpId,
-                pageNo = param.pageNo,
-                numOfRows = param.numOfRows
+                egenRestClient.getHsptlBassInfoInqire(
+                    serviceKey = serviceKey,
+                    hpId = param.hpId,
+                    pageNo = param.pageNo,
+                    numOfRows = param.numOfRows
+                )
             )
-        )
+
         return extractBody(jsonObject)
     }
 
@@ -313,7 +317,7 @@ class EgenService {
 
                 pageRepository.saveCurrentPage("hosp", i)
             }
-        }catch(e: Exception) {
+        } catch (e: Exception) {
             saveHospitalByScheduler()
         }
 
@@ -360,7 +364,11 @@ class EgenService {
 
     private fun extractBody(jsonObject: JSONObject): JSONObject {
         val header = jsonObject.getJSONObject("response").getJSONObject("header")
-        return jsonObject.getJSONObject("response").getJSONObject("body").getJSONObject("items")
+        try {
+            return jsonObject.getJSONObject("response").getJSONObject("body").getJSONObject("items")
+        }catch (e: JSONException) {
+            throw CustomizedException("no items", Response.Status.NOT_FOUND)
+        }
     }
 
     private fun extractTotalCount(jsonObject: JSONObject): Int {

@@ -18,7 +18,7 @@ data class InfoPtDto(
     )]
     val rrno1: String,
     @field: [NotBlank Pattern(
-        regexp = "[1-9]", message = "주민등록번호 뒷자리 첫번째 숫자를 확인해주세요"
+        regexp = "[1-4]|[1-4]\\d{6}", message = "주민등록번호 뒷자리를 확인해주세요"
     )] val rrno2: String,
     @field: NotBlank val dethYn: String,
     @field: NotNull val natiCd: NatiCd,
