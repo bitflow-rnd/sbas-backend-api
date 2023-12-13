@@ -60,7 +60,7 @@ class TalkRoomMod {
         session.asyncRemote.sendText(sendObject)
     }
 
-    @OnMessage
+    @OnMessage(maxMessageSize = 52428800)
     fun onMessage(session: Session, data: String, @PathParam("tkrmId") tkrmId: String) {
 
         if (data.startsWith("hello|")) {
