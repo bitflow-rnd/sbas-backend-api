@@ -52,7 +52,7 @@ class TalkRoomMod {
 
         this.session = session
         this.tkrmId = tkrmId
-        session.maxBinaryMessageBufferSize=5242880
+        session.maxTextMessageBufferSize=5242880
 
         updateTalkMsg(tkrmId)
 
