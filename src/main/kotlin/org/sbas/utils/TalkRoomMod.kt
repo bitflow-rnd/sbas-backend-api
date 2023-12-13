@@ -49,10 +49,8 @@ class TalkRoomMod {
 
     @OnOpen
     fun onOpen(session: Session, @PathParam("tkrmId") tkrmId: String) {
-
         this.session = session
         this.tkrmId = tkrmId
-        session.maxTextMessageBufferSize=5242880
 
         updateTalkMsg(tkrmId)
 
