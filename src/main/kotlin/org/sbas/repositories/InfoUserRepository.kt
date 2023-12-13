@@ -36,18 +36,36 @@ class InfoUserRepository : PanacheRepositoryBase<InfoUser, String> {
         val (cond, offset) = conditionAndOffset(param)
 
         val query = "select new org.sbas.dtos.info.InfoUserListDto(iu.id, iu.dutyDstr1Cd, fn_get_cd_nm('SIDO', iu.dutyDstr1Cd), " +
-                "iu.instTypeCd, iu.instNm, iu.userNm, iu.jobCd, iu.authCd, iu.rgstDttm, iu.userStatCd, iu.rgstUserId) " +
-                "from InfoUser iu " +
-                "where " + "$cond " + "order by iu.updtDttm desc"
+            "iu.instTypeCd, iu.instNm, iu.userNm, iu.jobCd, iu.authCd, iu.rgstDttm, iu.userStatCd, iu.rgstUserId) " +
+            "from InfoUser iu " +
+            "where " + "$cond " + "order by iu.updtDttm desc"
 
         return entityManager.createQuery(query, InfoUserListDto::class.java).setMaxResults(15).setFirstResult(offset).resultList
+    }
+
+    fun findContactedInfoUserListByUserId(userId: String): List<InfoUserListDto> {
+
+        val query = """
+            select new org.sbas.dtos.info.InfoUserListDto(
+            iu.id, iu.dutyDstr1Cd, fn_get_cd_nm('SIDO', iu.dutyDstr1Cd),
+            iu.instTypeCd, iu.instNm, iu.userNm, iu.jobCd, iu.authCd,
+            iu.rgstDttm, iu.userStatCd, iu.rgstUserId
+        )
+        from InfoUser iu
+        join InfoCntc ic on ic.id.mbrId = iu.id
+        where ic.id.userId = '$userId'
+        order by iu.updtDttm desc
+            """
+
+        return entityManager.createQuery(query, InfoUserListDto::class.java).resultList
     }
 
     private fun conditionAndOffset(param: InfoUserSearchParam): Pair<String, Int> {
         var cond = param.userNm?.run { " (iu.userNm like '%$this%' " } ?: " (1=1"
         cond += param.telno?.run { " or iu.telno like '%$this%') " } ?: ")"
 
-        cond += param.ptTypeCd?.run { " and fn_like_any(iu.ptTypeCd, '{%${this.split(',').joinToString("%, %")}%}') = true " } ?: ""
+        cond += param.ptTypeCd?.run { " and fn_like_any(iu.ptTypeCd, '{%${this.split(',').joinToString("%, %")}%}') = true " }
+            ?: ""
         cond += param.instTypeCd?.run { " and iu.instTypeCd in ('${this.split(',').joinToString("', '")}') " } ?: ""
         cond += param.userStatCdStr?.run { " and iu.userStatCd in ('${this.split(',').joinToString("', '")}') " } ?: ""
 
@@ -69,7 +87,6 @@ class InfoUserRepository : PanacheRepositoryBase<InfoUser, String> {
     }
 
 
-
     fun findId(infoUser: InfoUser): InfoUser? = find("select u from InfoUser u where u.userNm = '${infoUser.userNm}' and u.telno = '${infoUser.telno}'").firstResult()
 
     fun existByUserId(userId: String?): Boolean {
@@ -83,7 +100,7 @@ class InfoUserRepository : PanacheRepositoryBase<InfoUser, String> {
     fun findAllUsers(pageRequest: PageRequest): List<InfoUser> {
         val page = pageRequest.page ?: 1
         val size = pageRequest.size ?: 10
-        return find("order by id").page(page-1, size).list()
+        return find("order by id").page(page - 1, size).list()
     }
 
     fun findBdasUserByReqDstrCd(dstrCd1: String?, dstrCd2: String?): List<InfoUser> {
@@ -97,10 +114,10 @@ class InfoUserRepository : PanacheRepositoryBase<InfoUser, String> {
 
     fun findMedicalInfoUser(hpId: String): MutableList<HospMedInfo> {
         val query = "select new org.sbas.dtos.info.HospMedInfo(iu.id, iu.dutyDstr1Cd, iu.ocpCd, " +
-                "iu.userNm, iu.ptTypeCd, iu.jobCd, iu.authCd, iu.rgstDttm, iu.updtDttm, iu.userStatCd) " +
-                "from InfoUser iu " +
-                "join InfoBed ib on ib.hospId = iu.instId " +
-                "where ib.hpId = '$hpId' "
+            "iu.userNm, iu.ptTypeCd, iu.jobCd, iu.authCd, iu.rgstDttm, iu.updtDttm, iu.userStatCd) " +
+            "from InfoUser iu " +
+            "join InfoBed ib on ib.hospId = iu.instId " +
+            "where ib.hpId = '$hpId' "
 
         return getEntityManager().createQuery(query, HospMedInfo::class.java).resultList
     }

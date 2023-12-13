@@ -123,17 +123,31 @@ class PrivateUserEndpoint {
         return Response.ok(userService.getAllUsers(pageRequest)).build()
     }
 
-    @Operation(summary = "", description = "")
+    @Operation(summary = "사용자 검색 목록", description = "사용자 검색 목록 API(filter O)")
     @GET
-    @Path("search")
+    @Path("users")
     fun search(): Response {
         return Response.ok().build()
     }
 
-    @Operation(summary = "즐겨찾기 등록", description = "내 연락처에 즐겨찾기로 등록 API")
+    @Operation(summary = "연락처 등록", description = "연락처 등록 API")
     @POST
-    @Path("reg-favorite")
-    fun regFavorite(@Valid request: InfoCntcDto): Response {
-        return Response.ok(userService.regFavorite(request)).build()
+    @Path("reg-contact")
+    fun regContact(@Valid request:InfoCntcDto): Response {
+        return Response.ok(userService.regContact(request)).build()
+    }
+
+    @Operation(summary = "즐겨찾기 등록/취소", description = "내 연락처에 즐겨찾기 등록/취소 API")
+    @POST
+    @Path("mod-favorite")
+    fun modFavorite(@Valid request: InfoCntcDto): Response {
+        return Response.ok(userService.modFavorite(request)).build()
+    }
+
+    @Operation(summary = "즐겨찾기 사용자 목록", description = "즐겨찾기 사용자 목록 API")
+    @GET
+    @Path("contact-users")
+    fun getContactUsers(): Response {
+        return Response.ok(userService.getContactUsers()).build()
     }
 }

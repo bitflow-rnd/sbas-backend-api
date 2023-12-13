@@ -37,16 +37,16 @@ class UserService {
     private lateinit var log: Logger
 
     @Inject
-    private lateinit var userRepository : InfoUserRepository
+    private lateinit var userRepository: InfoUserRepository
 
     @Inject
-    private lateinit var cntcRepository : InfoCntcRepository
+    private lateinit var cntcRepository: InfoCntcRepository
 
     @RestClient
-    private lateinit var naverSensClient : NaverSensRestClient
+    private lateinit var naverSensClient: NaverSensRestClient
 
     @Inject
-    private lateinit var jwt : JsonWebToken
+    private lateinit var jwt: JsonWebToken
 
     @ConfigProperty(name = "restclient.naversens.serviceid")
     private lateinit var naversensserviceid: String
@@ -123,7 +123,7 @@ class UserService {
     @CacheResult(cacheName = "smsCache")
     fun getSmsNumber(@CacheKey phoneNumber: String): String {
         var rand = ""
-        for(i: Int in 0..5){
+        for (i: Int in 0..5) {
             rand += ('0'..'9').random()
         }
 
@@ -145,6 +145,7 @@ class UserService {
             number == checkCertNoRequest.certNo -> {
                 CommonResponse("인증 성공")
             }
+
             else -> {
                 throw CustomizedException("유효하지 않은 인증번호입니다.", Response.Status.NOT_ACCEPTABLE)
             }
@@ -166,7 +167,7 @@ class UserService {
 
     @Transactional
     fun modifyPw(modifyPwRequest: ModifyPwRequest): CommonResponse<String> {
-        if(jwt.name != modifyPwRequest.id) return CommonResponse("token id와 id가 일치하지 않습니다.")
+        if (jwt.name != modifyPwRequest.id) return CommonResponse("token id와 id가 일치하지 않습니다.")
 
         val findUser = userRepository.findByUserId(modifyPwRequest.id)
             ?: throw CustomizedException("유저 정보가 없습니다.", Response.Status.NOT_FOUND)
@@ -179,7 +180,7 @@ class UserService {
 
     @Transactional
     fun modifyTelno(modifyTelnoRequest: ModifyTelnoRequest): CommonResponse<String> {
-        if(jwt.name != modifyTelnoRequest.id) return CommonResponse("token id와 id가 일치하지 않습니다.")
+        if (jwt.name != modifyTelnoRequest.id) return CommonResponse("token id와 id가 일치하지 않습니다.")
 
         val findUser = userRepository.findByUserId(modifyTelnoRequest.id)
             ?: throw CustomizedException("유저 정보가 없습니다.", Response.Status.NOT_FOUND)
@@ -217,7 +218,7 @@ class UserService {
      * 로그인
      */
     @Transactional
-    fun login(loginRequest: LoginRequest): CommonResponse<String>{
+    fun login(loginRequest: LoginRequest): CommonResponse<String> {
         val findUser = userRepository.findByUserId(loginRequest.id)
             ?: throw CustomizedException("등록된 ID가 없습니다.", Response.Status.NOT_FOUND)
 
@@ -225,13 +226,16 @@ class UserService {
             findUser.pwErrCnt!! >= 5 -> {
                 throw CustomizedException("비밀번호 불일치 5회 발생", Response.Status.FORBIDDEN)
             }
+
             findUser.pw == loginRequest.pw && findUser.userStatCd == UserStatCd.URST0001 -> {
                 CommonResponse(SbasConst.ResCode.FAIL_VALIDATION, "사용자 요청이 승인되지 않았습니다.", null)
             }
+
             findUser.pw == loginRequest.pw && findUser.userStatCd != UserStatCd.URST0001 -> {
                 findUser.pwErrCnt = 0
                 CommonResponse(TokenUtils.generateUserToken(findUser.id, findUser.userNm))
             }
+
             else -> {
                 findUser.plusPasswordErrorCount()
                 throw CustomizedException("사용자 정보가 일치하지 않습니다.", Response.Status.BAD_REQUEST)
@@ -254,8 +258,8 @@ class UserService {
      * 사용자 정보 수정
      */
     @Transactional
-    fun modifyInfo(request: InfoUserUpdateReq) : CommonResponse<String> {
-        if(jwt.name != request.id) return CommonResponse("token id와 id가 일치하지 않습니다.")
+    fun modifyInfo(request: InfoUserUpdateReq): CommonResponse<String> {
+        if (jwt.name != request.id) return CommonResponse("token id와 id가 일치하지 않습니다.")
 
         val findUser = userRepository.findByUserId(request.id)
             ?: throw CustomizedException("등록된 ID가 없습니다.", Response.Status.NOT_FOUND)
@@ -281,7 +285,7 @@ class UserService {
      * 나와 관련된 사용자 조회
      */
     @Transactional
-    fun getMyUsers() : CommonResponse<List<InfoCntc>>{
+    fun getMyUsers(): CommonResponse<List<InfoCntc>> {
         val result = cntcRepository.getMyUsers(jwt.name)
         return CommonResponse(result)
     }
@@ -290,7 +294,7 @@ class UserService {
      * 사용자 상세
      */
     @Transactional
-    fun getMyUserDetail(mbrId: String) : CommonResponse<UserDetailResponse> {
+    fun getMyUserDetail(mbrId: String): CommonResponse<UserDetailResponse> {
         val userDetail = userRepository.findInfoUserDetail(mbrId)
 
         check(userDetail.isNotEmpty()) { throw NotFoundException("$mbrId not found") }
@@ -299,18 +303,39 @@ class UserService {
     }
 
     /**
-     * 즐겨찾기 등록
+     * 연락처 등록
      */
     @Transactional
-    fun regFavorite(request: InfoCntcDto) : CommonResponse<InfoCntc> {
+    fun regContact(request: InfoCntcDto): CommonResponse<String> {
         val findHistSeq = cntcRepository.getHistSeq(request.id) ?: 0
-        val histCd = if(findHistSeq<1) 1 else findHistSeq + 1
-
-        val infoCntc = request.toEntity(histCd)
+        val infoCntc = request.toEntity(findHistSeq + 1)
 
         cntcRepository.persist(infoCntc)
 
-        return CommonResponse(infoCntc)
+        return CommonResponse("${request.mbrId} 연락처 등록")
+    }
+
+    /**
+     * 즐겨찾기 등록
+     */
+    @Transactional
+    fun modFavorite(request: InfoCntcDto): CommonResponse<InfoCntc> {
+        val findCntc = cntcRepository.findInfoCntcByUserIdAndMbrId(request.id, request.mbrId)
+            ?: throw CustomizedException("해당 연락처를 찾을 수 없습니다.", Response.Status.NOT_FOUND)
+
+        findCntc.cntcType = request.cntcType
+
+        return CommonResponse(findCntc)
+    }
+
+    /**
+     * 즐겨찾기 사용자 목록 조회
+     */
+    @Transactional
+    fun getContactUsers(): CommonResponse<List<InfoUserListDto>> {
+        val list = userRepository.findContactedInfoUserListByUserId(jwt.name)
+
+        return CommonResponse(list)
     }
 
 }
