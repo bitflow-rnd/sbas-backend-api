@@ -304,6 +304,18 @@ class UserService {
     }
 
     /**
+     * 사용자 목록 조회
+     */
+    @Transactional
+    fun getUsersFromUser(param: InfoUserSearchFromUserParam): CommonListResponse<InfoUserListDto> {
+        val list = userRepository.findInfoUsersFromUser(param)
+        list.forEach { it.userStatCdNm = it.userStatCd!!.cdNm }
+        val count = userRepository.countInfoUsersFromUser(param)
+
+        return CommonListResponse(list, count.toInt())
+    }
+
+    /**
      * 즐겨찾기 등록
      */
     @Transactional

@@ -45,6 +45,19 @@ data class InfoUserSearchParam(
 ) {
 }
 
+@NoArg
+data class InfoUserSearchFromUserParam(
+    @field: QueryParam("dstr1Cd") var dstr1Cd: String?,
+    @field: QueryParam("dstr2Cd") var dstr2Cd: String?,
+    @field: QueryParam("userNm") var userNm: String?,
+    @field: QueryParam("telno") var telno: String?,
+    @field: QueryParam("instNm") var instNm: String?,
+    @field: QueryParam("instTypeCd") var instTypeCd: String?,
+    @field: QueryParam("ptTypeCd") var ptTypeCd: String?,
+    @field: QueryParam("page") var page: Int?,
+    @field: QueryParam("userStatCdStr") var userStatCdStr: String?
+)
+
 /**
  * 사용자 상세 정보
  */

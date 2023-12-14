@@ -5,6 +5,8 @@ import org.eclipse.microprofile.openapi.annotations.tags.Tag
 import org.jboss.logging.Logger
 import org.jboss.resteasy.reactive.RestPath
 import org.sbas.dtos.info.InfoCntcDto
+import org.sbas.dtos.info.InfoUserSearchFromUserParam
+import org.sbas.dtos.info.InfoUserSearchParam
 import org.sbas.dtos.info.InfoUserUpdateReq
 import org.sbas.parameters.ModifyPwRequest
 import org.sbas.parameters.ModifyTelnoRequest
@@ -126,8 +128,8 @@ class PrivateUserEndpoint {
     @Operation(summary = "사용자 검색 목록", description = "사용자 검색 목록 API(filter O)")
     @GET
     @Path("users")
-    fun search(): Response {
-        return Response.ok().build()
+    fun search(@BeanParam request: InfoUserSearchFromUserParam): Response {
+        return Response.ok(userService.getUsersFromUser(request)).build()
     }
 
     @Operation(summary = "즐겨찾기 등록", description = "내 연락처에 즐겨찾기 등록 API")
