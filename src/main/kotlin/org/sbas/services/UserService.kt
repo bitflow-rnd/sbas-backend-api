@@ -319,11 +319,11 @@ class UserService {
      * 즐겨찾기 등록
      */
     @Transactional
-    fun modFavorite(request: InfoCntcDto): CommonResponse<InfoCntc> {
+    fun regFavorite(request: InfoCntcDto): CommonResponse<InfoCntc> {
         val findCntc = cntcRepository.findInfoCntcByUserIdAndMbrId(request.id, request.mbrId)
             ?: throw CustomizedException("해당 연락처를 찾을 수 없습니다.", Response.Status.NOT_FOUND)
 
-        findCntc.cntcType = request.cntcType
+        cntcRepository.persist(findCntc)
 
         return CommonResponse(findCntc)
     }

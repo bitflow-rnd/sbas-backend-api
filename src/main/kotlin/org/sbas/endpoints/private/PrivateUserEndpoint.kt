@@ -130,18 +130,11 @@ class PrivateUserEndpoint {
         return Response.ok().build()
     }
 
-    @Operation(summary = "연락처 등록", description = "연락처 등록 API")
+    @Operation(summary = "즐겨찾기 등록", description = "내 연락처에 즐겨찾기 등록 API")
     @POST
-    @Path("reg-contact")
-    fun regContact(@Valid request:InfoCntcDto): Response {
-        return Response.ok(userService.regContact(request)).build()
-    }
-
-    @Operation(summary = "즐겨찾기 등록/취소", description = "내 연락처에 즐겨찾기 등록/취소 API")
-    @POST
-    @Path("mod-favorite")
-    fun modFavorite(@Valid request: InfoCntcDto): Response {
-        return Response.ok(userService.modFavorite(request)).build()
+    @Path("reg-favorite")
+    fun regFavorite(@Valid request: InfoCntcDto): Response {
+        return Response.ok(userService.regFavorite(request)).build()
     }
 
     @Operation(summary = "즐겨찾기 사용자 목록", description = "즐겨찾기 사용자 목록 API")
