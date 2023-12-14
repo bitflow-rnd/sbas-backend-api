@@ -12,6 +12,7 @@ import org.sbas.constants.enums.UserStatCd
 import org.sbas.dtos.*
 import org.sbas.dtos.info.*
 import org.sbas.entities.info.InfoCntc
+import org.sbas.entities.info.InfoCntcId
 import org.sbas.entities.info.InfoUser
 import org.sbas.parameters.*
 import org.sbas.repositories.InfoCntcRepository
@@ -303,29 +304,24 @@ class UserService {
     }
 
     /**
-     * 연락처 등록
-     */
-    @Transactional
-    fun regContact(request: InfoCntcDto): CommonResponse<String> {
-        val findHistSeq = cntcRepository.getHistSeq(request.id) ?: 0
-        val infoCntc = request.toEntity(findHistSeq + 1)
-
-        cntcRepository.persist(infoCntc)
-
-        return CommonResponse("${request.mbrId} 연락처 등록")
-    }
-
-    /**
      * 즐겨찾기 등록
      */
     @Transactional
     fun regFavorite(request: InfoCntcDto): CommonResponse<InfoCntc> {
-        val findCntc = cntcRepository.findInfoCntcByUserIdAndMbrId(request.id, request.mbrId)
-            ?: throw CustomizedException("해당 연락처를 찾을 수 없습니다.", Response.Status.NOT_FOUND)
+        val histSeq = cntcRepository.getHistSeq(request.id) ?: 0
 
-        cntcRepository.persist(findCntc)
+        //유저 존재 확인
+        userRepository.findByUserId(request.mbrId) ?: throw CustomizedException("해당 유저를 찾을 수 없습니다.", Response.Status.NOT_FOUND)
 
-        return CommonResponse(findCntc)
+        val insertCntc = InfoCntc(id = InfoCntcId(
+            userId = request.id,
+            histCd = "1",
+            histSeq = histSeq + 1,
+            mbrId = request.mbrId))
+
+        cntcRepository.persist(insertCntc)
+
+        return CommonResponse(insertCntc)
     }
 
     /**
@@ -336,6 +332,18 @@ class UserService {
         val list = userRepository.findContactedInfoUserListByUserId(jwt.name)
 
         return CommonResponse(list)
+    }
+
+    /**
+     * 즐겨찾기 삭제
+     */
+    @Transactional
+    fun delFavorite(request: InfoCntcDto): CommonResponse<String> {
+        val findCntc = cntcRepository.findInfoCntcByUserIdAndMbrId(request.id, request.mbrId) ?: throw CustomizedException("즐겨찾기에 등록되어 있지 않습니다.", Response.Status.NOT_FOUND)
+
+        cntcRepository.delete(findCntc)
+
+        return CommonResponse("즐겨찾기에서 삭제되었습니다.")
     }
 
 }

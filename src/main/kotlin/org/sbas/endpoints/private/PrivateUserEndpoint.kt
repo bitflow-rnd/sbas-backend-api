@@ -143,4 +143,11 @@ class PrivateUserEndpoint {
     fun getContactUsers(): Response {
         return Response.ok(userService.getContactUsers()).build()
     }
+
+    @Operation(summary = "즐겨찾기 삭제", description = "즐겨찾기 삭제 API")
+    @POST
+    @Path("del-favorite")
+    fun delFavorite(@Valid request: InfoCntcDto): Response {
+        return Response.ok(userService.delFavorite(request)).build()
+    }
 }
