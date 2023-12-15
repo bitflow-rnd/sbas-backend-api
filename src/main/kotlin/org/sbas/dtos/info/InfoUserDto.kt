@@ -28,7 +28,7 @@ data class InfoUserListDto(
 )
 
 data class FavoriteListDto(
-    var userId: String,
+    var id: String,
     var dutyDstr1Cd: String?,
     val dutyDstr1CdNm: String?,
     val instTypeCd: String?,
