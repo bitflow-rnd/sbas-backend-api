@@ -75,8 +75,7 @@ data class BdasReqSvrInfo(
     @field: NotBlank
     val ptId: String,
     val ptTypeCd: String?,
-    @field: NotBlank
-    val undrDsesCd: String,
+    val undrDsesCd: String?,
     @field: [NotBlank ValidEnum(enumClass = ReqBedTypeCd::class)]
     val reqBedTypeCd: String,
     @field: NotBlank
