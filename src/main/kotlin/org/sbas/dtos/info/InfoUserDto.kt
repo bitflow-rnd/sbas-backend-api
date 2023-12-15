@@ -27,6 +27,21 @@ data class InfoUserListDto(
     var userStatCdNm: String?,
 )
 
+data class FavoriteListDto(
+    var userId: String,
+    var dutyDstr1Cd: String?,
+    val dutyDstr1CdNm: String?,
+    val instTypeCd: String?,
+    var instNm: String?,
+    var userNm: String?,
+    var jobCd: String?,
+    var authCd: String?,
+    var rgstDttm: Instant,
+    var userStatCd: UserStatCd?,
+    var userStatCdNm: String?,
+    var ocpCd: String?,
+)
+
 /**
  * 사용자 목록 검색 parameters
  */
@@ -44,6 +59,19 @@ data class InfoUserSearchParam(
     @field: QueryParam("userStatCdStr") var userStatCdStr: String?
 ) {
 }
+
+@NoArg
+data class InfoUserSearchFromUserParam(
+    @field: QueryParam("dstr1Cd") var dstr1Cd: String?,
+    @field: QueryParam("dstr2Cd") var dstr2Cd: String?,
+    @field: QueryParam("userNm") var userNm: String?,
+    @field: QueryParam("telno") var telno: String?,
+    @field: QueryParam("instNm") var instNm: String?,
+    @field: QueryParam("instTypeCd") var instTypeCd: String?,
+    @field: QueryParam("ptTypeCd") var ptTypeCd: String?,
+    @field: QueryParam("page") var page: Int?,
+    @field: QueryParam("userStatCdStr") var userStatCdStr: String?
+)
 
 /**
  * 사용자 상세 정보

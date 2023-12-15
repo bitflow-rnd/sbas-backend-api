@@ -12,9 +12,6 @@ import javax.persistence.*
 class InfoCntc(
     @EmbeddedId
     var id: InfoCntcId,
-
-    @Column(name = "cntc_type", nullable = false, length = 8)
-    var cntcType: String, // 연락처 유형
 ) : CommonEntity()
 
 @Embeddable

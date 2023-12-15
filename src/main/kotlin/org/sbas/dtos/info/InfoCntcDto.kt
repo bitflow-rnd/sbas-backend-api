@@ -5,7 +5,6 @@ import org.sbas.entities.info.InfoCntcId
 
 data class InfoCntcDto (
     var id: String,
-    var cntcType: String,
     var mbrId: String,
 )
 fun InfoCntcDto.toEntity(histSeq: Int) : InfoCntc{
@@ -16,7 +15,6 @@ fun InfoCntcDto.toEntity(histSeq: Int) : InfoCntc{
         mbrId = mbrId,
     )
     return InfoCntc(
-        id = infoCntcId,
-        cntcType = cntcType
+        id = infoCntcId
     )
 }

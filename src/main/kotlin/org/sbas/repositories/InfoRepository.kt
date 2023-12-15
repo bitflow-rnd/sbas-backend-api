@@ -291,6 +291,8 @@ class InfoCntcRepository : PanacheRepositoryBase<InfoCntc, InfoCntcId> {
 
     fun getMyUsers(userId: String) = find("from InfoCntc where id.userId = '$userId'").list()
 
+    fun findInfoCntcByUserIdAndMbrId(userId: String, mbrId: String) = find("from InfoCntc where id.userId = '$userId' and id.mbrId = '$mbrId'").firstResult()
+
 }
 
 @ApplicationScoped

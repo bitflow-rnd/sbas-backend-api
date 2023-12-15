@@ -5,6 +5,8 @@ import org.eclipse.microprofile.openapi.annotations.tags.Tag
 import org.jboss.logging.Logger
 import org.jboss.resteasy.reactive.RestPath
 import org.sbas.dtos.info.InfoCntcDto
+import org.sbas.dtos.info.InfoUserSearchFromUserParam
+import org.sbas.dtos.info.InfoUserSearchParam
 import org.sbas.dtos.info.InfoUserUpdateReq
 import org.sbas.parameters.ModifyPwRequest
 import org.sbas.parameters.ModifyTelnoRequest
@@ -123,17 +125,31 @@ class PrivateUserEndpoint {
         return Response.ok(userService.getAllUsers(pageRequest)).build()
     }
 
-    @Operation(summary = "", description = "")
+    @Operation(summary = "사용자 검색 목록", description = "사용자 검색 목록 API(filter O)")
     @GET
-    @Path("search")
-    fun search(): Response {
-        return Response.ok().build()
+    @Path("users")
+    fun search(@BeanParam request: InfoUserSearchFromUserParam): Response {
+        return Response.ok(userService.getUsersFromUser(request)).build()
     }
 
-    @Operation(summary = "즐겨찾기 등록", description = "내 연락처에 즐겨찾기로 등록 API")
+    @Operation(summary = "즐겨찾기 등록", description = "내 연락처에 즐겨찾기 등록 API")
     @POST
     @Path("reg-favorite")
     fun regFavorite(@Valid request: InfoCntcDto): Response {
         return Response.ok(userService.regFavorite(request)).build()
+    }
+
+    @Operation(summary = "즐겨찾기 사용자 목록", description = "즐겨찾기 사용자 목록 API")
+    @GET
+    @Path("contact-users")
+    fun getContactUsers(): Response {
+        return Response.ok(userService.getContactUsers()).build()
+    }
+
+    @Operation(summary = "즐겨찾기 삭제", description = "즐겨찾기 삭제 API")
+    @POST
+    @Path("del-favorite")
+    fun delFavorite(@Valid request: InfoCntcDto): Response {
+        return Response.ok(userService.delFavorite(request)).build()
     }
 }
