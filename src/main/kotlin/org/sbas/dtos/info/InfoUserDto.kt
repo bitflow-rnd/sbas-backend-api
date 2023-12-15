@@ -27,6 +27,21 @@ data class InfoUserListDto(
     var userStatCdNm: String?,
 )
 
+data class FavoriteListDto(
+    var userId: String,
+    var dutyDstr1Cd: String?,
+    val dutyDstr1CdNm: String?,
+    val instTypeCd: String?,
+    var instNm: String?,
+    var userNm: String?,
+    var jobCd: String?,
+    var authCd: String?,
+    var rgstDttm: Instant,
+    var userStatCd: UserStatCd?,
+    var userStatCdNm: String?,
+    var ocpCd: String?,
+)
+
 /**
  * 사용자 목록 검색 parameters
  */
