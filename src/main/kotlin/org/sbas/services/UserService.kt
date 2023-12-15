@@ -340,9 +340,8 @@ class UserService {
      * 즐겨찾기 사용자 목록 조회
      */
     @Transactional
-    fun getContactUsers(): CommonListResponse<FavoriteListDto> {
+    fun getContactUsers(): CommonListResponse<InfoUser> {
         val list = userRepository.findContactedInfoUserListByUserId(jwt.name)
-        list.forEach { it.userStatCdNm = it.userStatCd!!.cdNm }
         val count = list.size
 
         return CommonListResponse(list, count)
