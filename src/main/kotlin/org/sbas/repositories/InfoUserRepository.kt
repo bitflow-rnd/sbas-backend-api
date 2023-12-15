@@ -54,21 +54,17 @@ class InfoUserRepository : PanacheRepositoryBase<InfoUser, String> {
         return entityManager.createQuery(query, InfoUserListDto::class.java).setMaxResults(15).setFirstResult(offset).resultList
     }
 
-    fun findContactedInfoUserListByUserId(userId: String): List<FavoriteListDto> {
+    fun findContactedInfoUserListByUserId(userId: String): List<InfoUser> {
 
         val query = """
-            select new org.sbas.dtos.info.FavoriteListDto(
-            iu.id, iu.dutyDstr1Cd, fn_get_cd_nm('SIDO', iu.dutyDstr1Cd),
-            iu.instTypeCd, iu.instNm, iu.userNm, iu.jobCd, iu.authCd,
-            iu.rgstDttm, iu.userStatCd, iu.rgstUserId, iu.ocpCd
-        )
+            select iu
         from InfoUser iu
         join InfoCntc ic on ic.id.mbrId = iu.id
         where ic.id.userId = '$userId'
         order by iu.updtDttm desc
             """
 
-        return entityManager.createQuery(query, FavoriteListDto::class.java).resultList
+        return entityManager.createQuery(query, InfoUser::class.java).resultList
     }
 
     private fun conditionAndOffset(param: InfoUserSearchParam): Pair<String, Int> {
