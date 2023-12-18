@@ -55,7 +55,8 @@ data class InfoUserSearchFromUserParam(
     @field: QueryParam("instTypeCd") var instTypeCd: String?,
     @field: QueryParam("ptTypeCd") var ptTypeCd: String?,
     @field: QueryParam("page") var page: Int?,
-    @field: QueryParam("userStatCdStr") var userStatCdStr: String?
+    @field: QueryParam("userStatCdStr") var userStatCdStr: String?,
+    @field: QueryParam("myInstTypeCd") var myInstTypeCd: String?,
 )
 
 /**
@@ -81,6 +82,7 @@ data class UserDetailResponse(
     val attcId: String?,
     val userStatCd: UserStatCd?,
     val updtDttm: Instant,
+    val isFavorite: Boolean = false,
 ) {
     val jobCdNm = PmgrTypeCd.valueOf(jobCd).cdNm
     val authCdNm = DtpmTypeCd.valueOf(authCd).cdNm
