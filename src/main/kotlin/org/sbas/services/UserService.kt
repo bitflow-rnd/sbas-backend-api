@@ -276,7 +276,7 @@ class UserService {
     @Transactional
     fun getAllUsers(pageRequest: PageRequest): CommonResponse<PagingListDto> {
         // TODO 응답 수정
-        val findUsers = userRepository.findInfoUserDetail(null)
+        val findUsers = userRepository.findInfoUserDetail()
         val totalCnt = userRepository.count()
         val response = PagingListDto(totalCnt, findUsers)
         return CommonResponse(response)
@@ -296,7 +296,7 @@ class UserService {
      */
     @Transactional
     fun getMyUserDetail(mbrId: String): CommonResponse<UserDetailResponse> {
-        val userDetail = userRepository.findInfoUserDetail(mbrId)
+        val userDetail = userRepository.findInfoUserDetail()
 
         check(userDetail.isNotEmpty()) { throw NotFoundException("$mbrId not found") }
 

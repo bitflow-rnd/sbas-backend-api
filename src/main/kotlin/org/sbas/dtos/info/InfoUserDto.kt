@@ -54,8 +54,8 @@ data class InfoUserSearchFromUserParam(
     @field: QueryParam("instNm") var instNm: String?,
     @field: QueryParam("instTypeCd") var instTypeCd: String?,
     @field: QueryParam("ptTypeCd") var ptTypeCd: String?,
-    @field: QueryParam("page") var page: Int?,
-    @field: QueryParam("userStatCdStr") var userStatCdStr: String?
+    @field: QueryParam("userStatCdStr") var userStatCdStr: String?,
+    @field: QueryParam("myInstTypeCd") var myInstTypeCd: String?,
 )
 
 /**
