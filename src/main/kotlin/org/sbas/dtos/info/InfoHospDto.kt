@@ -76,8 +76,11 @@ data class InfoHospSearchParam(
     @field: QueryParam("page") var page: Int? = 0,
     @field: QueryParam("dutyDivNams") var dutyDivNams: String?,
 ) {
-    val pageSize: Int = 10
-    var dutyDivNam: MutableList<String>? = mutableListOf()
+    val dutyDivNam: MutableList<String>?
+        get() {
+            val splitList = dutyDivNams?.split(";")
+            return if (splitList.isNullOrEmpty()) null else splitList.toMutableList()
+        }
 }
 
 data class InfoHospListDto(
