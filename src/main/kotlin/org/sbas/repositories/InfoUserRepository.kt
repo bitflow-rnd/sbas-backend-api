@@ -40,7 +40,7 @@ class InfoUserRepository : PanacheRepositoryBase<InfoUser, String> {
     }
 
     fun findInfoUsersFromUser(param : InfoUserSearchFromUserParam): List<InfoUserListDto> {
-        val (cond, offset) = conditionAndOffsetFromUser(param)
+        val cond = conditionAndOffsetFromUser(param)
 
         var query = """
             select new org.sbas.dtos.info.InfoUserListDto(iu.id, iu.dutyDstr1Cd, fn_get_cd_nm('SIDO', iu.dutyDstr1Cd),
@@ -53,7 +53,7 @@ class InfoUserRepository : PanacheRepositoryBase<InfoUser, String> {
         }
         query += " iu.userStatCd != 'URST0003' and $cond order by iu.updtDttm desc"
 
-        return entityManager.createQuery(query, InfoUserListDto::class.java).setMaxResults(15).setFirstResult(offset).resultList
+        return entityManager.createQuery(query, InfoUserListDto::class.java).resultList
     }
 
     fun findContactedInfoUserListByUserId(userId: String): List<InfoUser> {
@@ -87,7 +87,7 @@ class InfoUserRepository : PanacheRepositoryBase<InfoUser, String> {
         return Pair(cond, offset)
     }
 
-    private fun conditionAndOffsetFromUser(param: InfoUserSearchFromUserParam): Pair<String, Int> {
+    private fun conditionAndOffsetFromUser(param: InfoUserSearchFromUserParam): String {
         var cond = param.userNm?.run { " (iu.userNm like '%$this%' " } ?: " (1=1"
         cond += param.telno?.run { " and iu.telno like '%$this%') " } ?: ")"
 
@@ -99,9 +99,7 @@ class InfoUserRepository : PanacheRepositoryBase<InfoUser, String> {
         cond += param.dstr2Cd?.run { " and iu.dutyDstr2Cd like '%$this%' " } ?: ""
         cond += param.instNm?.run { " and iu.instNm like '%$this%' " } ?: ""
 
-        val offset = param.page?.run { this.minus(1).times(15) } ?: 0
-
-        return Pair(cond, offset)
+        return cond
     }
 
     fun countInfoUserList(param: InfoUserSearchParam): Long {
@@ -113,7 +111,7 @@ class InfoUserRepository : PanacheRepositoryBase<InfoUser, String> {
     }
 
     fun countInfoUsersFromUser(param: InfoUserSearchFromUserParam): Long {
-        val (cond, _) = conditionAndOffsetFromUser(param)
+        val cond = conditionAndOffsetFromUser(param)
 
         var query = "select count(iu.id) from InfoUser iu where"
 
