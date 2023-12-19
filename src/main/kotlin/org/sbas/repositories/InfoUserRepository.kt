@@ -45,13 +45,13 @@ class InfoUserRepository : PanacheRepositoryBase<InfoUser, String> {
         var query = """
             select new org.sbas.dtos.info.InfoUserListDto(iu.id, iu.dutyDstr1Cd, fn_get_cd_nm('SIDO', iu.dutyDstr1Cd),
              iu.instTypeCd, iu.instNm, iu.userNm, iu.jobCd, iu.authCd, iu.rgstDttm, iu.userStatCd, iu.rgstUserId)
-              from InfoUser iu where
+              from InfoUser iu where 1=1
         """.trimIndent()
 
         if(param.myInstTypeCd != "ORGN0005") {
-            query += " iu.userStatCd != 'URST0001' and"
+            query += " and iu.userStatCd != 'URST0001' and"
         }
-        query += " iu.userStatCd != 'URST0003' and $cond order by iu.updtDttm desc"
+        query += " and iu.userStatCd != 'URST0003' and $cond order by iu.updtDttm desc"
 
         return entityManager.createQuery(query, InfoUserListDto::class.java).resultList
     }
@@ -113,13 +113,13 @@ class InfoUserRepository : PanacheRepositoryBase<InfoUser, String> {
     fun countInfoUsersFromUser(param: InfoUserSearchFromUserParam): Long {
         val cond = conditionAndOffsetFromUser(param)
 
-        var query = "select count(iu.id) from InfoUser iu where"
+        var query = "select count(iu.id) from InfoUser iu where 1=1"
 
         if(param.myInstTypeCd != "ORGN0005") {
-            query += " iu.userStatCd != 'URST0001' and"
+            query += " and iu.userStatCd != 'URST0001' and"
         }
 
-        query += " iu.userStatCd != 'URST0003' and $cond"
+        query += " and iu.userStatCd != 'URST0003' and $cond"
 
         return entityManager.createQuery(query).singleResult as Long
     }
@@ -176,6 +176,25 @@ class InfoUserRepository : PanacheRepositoryBase<InfoUser, String> {
         }
 
         return infoUserDetail
+    }
+
+    fun findInfoUserById(userId: String): UserDetailResponse {
+        val infoUserDetail = queryFactory.listQuery<UserDetailResponse> {
+            selectMulti(
+                col(InfoUser::id), col(InfoUser::userNm), col(InfoUser::gndr), col(InfoUser::telno),
+                col(InfoUser::jobCd), col(InfoUser::ocpCd), col(InfoUser::ptTypeCd),
+                col(InfoUser::instTypeCd), col(InfoUser::instId), col(InfoUser::instNm), col(InfoUser::dutyDstr1Cd),
+                function("fn_get_cd_nm", String::class.java, literal("SIDO"), col(InfoUser::dutyDstr1Cd)),
+                col(InfoUser::dutyDstr2Cd),
+                function("fn_get_dstr_cd2_nm", String::class.java, col(InfoUser::dutyDstr1Cd), col(InfoUser::dutyDstr2Cd)),
+                col(InfoUser::btDt), col(InfoUser::authCd), col(InfoUser::attcId), col(InfoUser::userStatCd), col(InfoUser::updtDttm),
+            )
+            from(entity(InfoUser::class))
+            where(
+               col(InfoUser::id).equal(userId)
+            )
+        }
+        return infoUserDetail.first()
     }
 }
 

@@ -111,10 +111,10 @@ class PrivateUserEndpoint {
         return Response.ok(userService.getMyUsers()).build()
     }
 
-    @Operation(summary = "사용자 상세")
+    @Operation(summary = "사용자 상세 리스트")
     @GET
     @Path("user/{mbrId}")
-    fun getMyUserDetail(@RestPath mbrId: String): Response{
+    fun getUserDetail(@RestPath mbrId: String): Response{
         return Response.ok(userService.getMyUserDetail(mbrId)).build()
     }
 

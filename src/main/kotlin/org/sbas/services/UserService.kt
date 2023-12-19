@@ -296,11 +296,9 @@ class UserService {
      */
     @Transactional
     fun getMyUserDetail(mbrId: String): CommonResponse<UserDetailResponse> {
-        val userDetail = userRepository.findInfoUserDetail()
+        val userDetail = userRepository.findInfoUserById(mbrId)
 
-        check(userDetail.isNotEmpty()) { throw NotFoundException("$mbrId not found") }
-
-        return CommonResponse(userDetail.first())
+        return CommonResponse(userDetail)
     }
 
     /**
