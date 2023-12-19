@@ -28,7 +28,7 @@ data class InfoUserListDto(
     var userStatCdNm: String?,
     var instId: String?,
     var ocpCd: String?,
-    var isFavorite: Boolean = false,
+    var isFavorite: Boolean?,
 )
 
 /**
