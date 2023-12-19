@@ -88,11 +88,13 @@ data class UserDetailResponse(
     val jobCdNm = PmgrTypeCd.valueOf(jobCd).cdNm
     val authCdNm = DtpmTypeCd.valueOf(authCd).cdNm
     val instTypeCdNm = InstTypeCd.valueOf(instTypeCd).cdNm
+    var isFavorite: Boolean = false
     val ptTypeCdNm: List<String>?
         get() {
             val list = ptTypeCd?.split(";")
             return list?.map { PtTypeCd.valueOf(it).cdNm }
         }
+
 }
 
 /**

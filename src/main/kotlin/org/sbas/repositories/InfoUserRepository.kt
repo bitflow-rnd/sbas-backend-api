@@ -5,6 +5,7 @@ import com.linecorp.kotlinjdsl.listQuery
 import com.linecorp.kotlinjdsl.querydsl.expression.col
 import io.quarkus.hibernate.orm.panache.kotlin.PanacheRepositoryBase
 import kotlinx.coroutines.runBlocking
+import org.eclipse.microprofile.jwt.JsonWebToken
 import org.sbas.dtos.info.*
 import org.sbas.entities.info.InfoUser
 import org.sbas.entities.info.UserFcmToken
@@ -22,6 +23,12 @@ class InfoUserRepository : PanacheRepositoryBase<InfoUser, String> {
 
     @Inject
     private lateinit var queryFactory: QueryFactory
+
+    @Inject
+    private lateinit var jwt: JsonWebToken
+
+    @Inject
+    private lateinit var cntcRepository: InfoCntcRepository
 
     @Transactional
     fun findByUserId(userId: String) = runBlocking { find("id", userId).firstResult() }
@@ -194,7 +201,12 @@ class InfoUserRepository : PanacheRepositoryBase<InfoUser, String> {
                col(InfoUser::id).equal(userId)
             )
         }
-        return infoUserDetail.first()
+        val isFavorite = cntcRepository.findInfoCntcByUserIdAndMbrId(jwt.name, userId) != null
+
+        val result = infoUserDetail.first()
+        result.isFavorite = isFavorite
+
+        return result
     }
 }
 
