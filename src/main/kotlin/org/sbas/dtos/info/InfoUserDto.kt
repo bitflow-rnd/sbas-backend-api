@@ -25,6 +25,7 @@ data class InfoUserListDto(
     var rgstDttm: Instant,
     var userStatCd: UserStatCd?,
     var userStatCdNm: String?,
+    var instId: String?,
 )
 
 /**

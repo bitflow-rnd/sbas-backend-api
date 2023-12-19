@@ -32,7 +32,7 @@ class InfoUserRepository : PanacheRepositoryBase<InfoUser, String> {
         val (cond, offset) = conditionAndOffset(param)
 
         val query = "select new org.sbas.dtos.info.InfoUserListDto(iu.id, iu.dutyDstr1Cd, fn_get_cd_nm('SIDO', iu.dutyDstr1Cd), " +
-            "iu.instTypeCd, iu.instNm, iu.userNm, iu.jobCd, iu.authCd, iu.rgstDttm, iu.userStatCd, iu.rgstUserId) " +
+            "iu.instTypeCd, iu.instNm, iu.userNm, iu.jobCd, iu.authCd, iu.rgstDttm, iu.userStatCd, iu.rgstUserId, iu.instId) " +
             "from InfoUser iu " +
             "where " + "$cond " + "order by iu.updtDttm desc"
 
@@ -44,7 +44,7 @@ class InfoUserRepository : PanacheRepositoryBase<InfoUser, String> {
 
         var query = """
             select new org.sbas.dtos.info.InfoUserListDto(iu.id, iu.dutyDstr1Cd, fn_get_cd_nm('SIDO', iu.dutyDstr1Cd),
-             iu.instTypeCd, iu.instNm, iu.userNm, iu.jobCd, iu.authCd, iu.rgstDttm, iu.userStatCd, iu.rgstUserId)
+             iu.instTypeCd, iu.instNm, iu.userNm, iu.jobCd, iu.authCd, iu.rgstDttm, iu.userStatCd, iu.rgstUserId, iu.instId)
               from InfoUser iu where 1=1
         """.trimIndent()
 
