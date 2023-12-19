@@ -116,7 +116,7 @@ class InfoUserRepository : PanacheRepositoryBase<InfoUser, String> {
         var query = "select count(iu.id) from InfoUser iu where 1=1"
 
         if(param.myInstTypeCd != "ORGN0005") {
-            query += " and iu.userStatCd != 'URST0001' and"
+            query += " and iu.userStatCd != 'URST0001'"
         }
 
         query += " and iu.userStatCd != 'URST0003' and $cond"
