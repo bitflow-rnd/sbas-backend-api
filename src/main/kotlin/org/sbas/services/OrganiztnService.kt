@@ -78,18 +78,9 @@ class OrganiztnService {
      */
     @Transactional
     fun findInfoHospList(param: InfoHospSearchParam): CommonResponse<*> {
-        val dutyDivNam = mutableListOf<String>()
-        param.dutyDivNams?.let {
-            dutyDivNam.addAll(it.split(";"))
-        }
-        if (dutyDivNam.isEmpty()) {
-            param.dutyDivNam = null
-        } else {
-            param.dutyDivNam = dutyDivNam
-        }
-
         val findHosp = infoHospRepository.findInfoHosps(param)
         val count = infoHospRepository.countInfoHosps(param)
+
         log.debug(count)
         return CommonListResponse(findHosp, count)
     }

@@ -71,11 +71,9 @@ class FirebaseService {
         log.debug("Sent message with ID: $messageId")
     }
 
+    @Transactional
     fun sendMessageMultiDevice(title: String, body: String?, userId: String) {
-        val pushKeys: List<UserFcmToken>
-        runBlocking(Dispatchers.IO) {
-            pushKeys = userFcmTokenRepository.findAllByUserId(userId)
-        }
+        val pushKeys: List<UserFcmToken> = userFcmTokenRepository.findAllByUserId(userId)
 
         val tokens = pushKeys.map { it.reregistrationToken }
 
