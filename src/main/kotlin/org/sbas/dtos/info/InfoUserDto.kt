@@ -18,6 +18,7 @@ data class InfoUserListDto(
     var dutyDstr1Cd: String?,
     val dutyDstr1CdNm: String?,
     var instTypeCd: String?,
+    var telno: String?,
     var instNm: String?,
     var userNm: String?,
     var jobCd: String?,
@@ -26,6 +27,7 @@ data class InfoUserListDto(
     var userStatCd: UserStatCd?,
     var userStatCdNm: String?,
     var instId: String?,
+    var ocpCd: String?,
 )
 
 /**
