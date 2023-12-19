@@ -51,8 +51,8 @@ class InfoUserRepository : PanacheRepositoryBase<InfoUser, String> {
 
         var query = """
             select new org.sbas.dtos.info.InfoUserListDto(iu.id, iu.dutyDstr1Cd, fn_get_cd_nm('SIDO', iu.dutyDstr1Cd), iu.telno,
-             iu.instTypeCd, iu.instNm, iu.userNm, iu.jobCd, iu.authCd, iu.rgstDttm, iu.userStatCd, iu.rgstUserId, iu.instId, iu.ocpCd)
-              from InfoUser iu where 1=1
+             iu.instTypeCd, iu.instNm, iu.userNm, iu.jobCd, iu.authCd, iu.rgstDttm, iu.userStatCd, iu.rgstUserId, iu.instId, iu.ocpCd, false)
+              from InfoUser iu where iu.id != '${jwt.name}'
         """.trimIndent()
 
         if(param.myInstTypeCd != "ORGN0005") {
@@ -60,7 +60,14 @@ class InfoUserRepository : PanacheRepositoryBase<InfoUser, String> {
         }
         query += " and iu.userStatCd != 'URST0003' and $cond order by iu.updtDttm desc"
 
-        return entityManager.createQuery(query, InfoUserListDto::class.java).resultList
+        val userList = entityManager.createQuery(query, InfoUserListDto::class.java).resultList
+
+        userList.forEach{
+            it.isFavorite = cntcRepository.findInfoCntcByUserIdAndMbrId(jwt.name, it.userId) != null
+        }
+
+        return userList
+
     }
 
     fun findContactedInfoUserListByUserId(userId: String): List<InfoUser> {
@@ -120,7 +127,7 @@ class InfoUserRepository : PanacheRepositoryBase<InfoUser, String> {
     fun countInfoUsersFromUser(param: InfoUserSearchFromUserParam): Long {
         val cond = conditionAndOffsetFromUser(param)
 
-        var query = "select count(iu.id) from InfoUser iu where 1=1"
+        var query = "select count(iu.id) from InfoUser iu where iu.id != '${jwt.name}'"
 
         if(param.myInstTypeCd != "ORGN0005") {
             query += " and iu.userStatCd != 'URST0001'"
