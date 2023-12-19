@@ -49,7 +49,7 @@ class InfoUserRepository : PanacheRepositoryBase<InfoUser, String> {
         """.trimIndent()
 
         if(param.myInstTypeCd != "ORGN0005") {
-            query += " and iu.userStatCd != 'URST0001' and"
+            query += " and iu.userStatCd != 'URST0001'"
         }
         query += " and iu.userStatCd != 'URST0003' and $cond order by iu.updtDttm desc"
 
