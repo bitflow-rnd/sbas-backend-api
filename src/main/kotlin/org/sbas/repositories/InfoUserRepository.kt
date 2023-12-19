@@ -70,17 +70,24 @@ class InfoUserRepository : PanacheRepositoryBase<InfoUser, String> {
 
     }
 
-    fun findContactedInfoUserListByUserId(userId: String): List<InfoUser> {
+    fun findContactedInfoUserListByUserId(userId: String): List<InfoUserListDto> {
 
         val query = """
-            select iu
+            select new org.sbas.dtos.info.InfoUserListDto(iu.id, iu.dutyDstr1Cd, fn_get_cd_nm('SIDO', iu.dutyDstr1Cd), iu.telno,
+            iu.instTypeCd, iu.instNm, iu.userNm, iu.jobCd, iu.authCd, iu.rgstDttm, iu.userStatCd, iu.rgstUserId, iu.instId, iu.ocpCd, false)
         from InfoUser iu
         join InfoCntc ic on ic.id.mbrId = iu.id
         where ic.id.userId = '$userId'
         order by iu.updtDttm desc
             """
 
-        return entityManager.createQuery(query, InfoUser::class.java).resultList
+        val userList = entityManager.createQuery(query, InfoUserListDto::class.java).resultList
+
+        userList.forEach{
+            it.isFavorite = cntcRepository.findInfoCntcByUserIdAndMbrId(jwt.name, it.userId) != null
+        }
+
+        return userList
     }
 
     private fun conditionAndOffset(param: InfoUserSearchParam): Pair<String, Int> {
