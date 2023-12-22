@@ -5,10 +5,10 @@ import org.sbas.constants.enums.*
 import org.sbas.entities.info.InfoPt
 import org.sbas.utils.annotation.NoArg
 import java.time.Instant
-import javax.validation.constraints.NotBlank
-import javax.validation.constraints.NotNull
-import javax.validation.constraints.Pattern
-import javax.ws.rs.QueryParam
+import jakarta.validation.constraints.NotBlank
+import jakarta.validation.constraints.NotNull
+import jakarta.validation.constraints.Pattern
+import jakarta.ws.rs.QueryParam
 
 data class InfoPtDto(
     @field: NotBlank val ptNm: String,

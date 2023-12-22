@@ -9,11 +9,11 @@ import org.sbas.dtos.bdas.*
 import org.sbas.entities.bdas.*
 import org.sbas.responses.patient.DestinationInfo
 import java.time.Instant
-import javax.enterprise.context.ApplicationScoped
-import javax.inject.Inject
-import javax.persistence.EntityManager
-import javax.persistence.TypedQuery
-import javax.ws.rs.NotFoundException
+import jakarta.enterprise.context.ApplicationScoped
+import jakarta.inject.Inject
+import jakarta.persistence.EntityManager
+import jakarta.persistence.TypedQuery
+import jakarta.ws.rs.NotFoundException
 
 @ApplicationScoped
 class BdasEsvyRepository : PanacheRepositoryBase<BdasEsvy, String> {
@@ -111,7 +111,7 @@ class BdasReqRepository : PanacheRepositoryBase<BdasReq, BdasReqId> {
         return try {
             val query = "SELECT iu.instNm from InfoUser iu where iu.id in ($subQuery)"
             entityManager.createQuery(query).singleResult as String
-        } catch (ex: javax.persistence.NoResultException) {
+        } catch (ex: jakarta.persistence.NoResultException) {
             // 예외 처리: 결과가 없을 때 빈 문자열을 반환
             ""
         }

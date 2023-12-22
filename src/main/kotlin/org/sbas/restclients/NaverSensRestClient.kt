@@ -5,10 +5,10 @@ import org.eclipse.microprofile.rest.client.inject.RegisterRestClient
 import org.sbas.restparameters.NaverSmsMsgApiParams
 import org.sbas.restresponses.NaverSmsMsgApiResponse
 import org.sbas.utils.headerFactory.RequestNaverSmsHeaderFactory
-import javax.validation.Valid
-import javax.ws.rs.POST
-import javax.ws.rs.Path
-import javax.ws.rs.PathParam
+import jakarta.validation.Valid
+import jakarta.ws.rs.POST
+import jakarta.ws.rs.Path
+import jakarta.ws.rs.PathParam
 
 
 /**

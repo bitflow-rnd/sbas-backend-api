@@ -6,9 +6,9 @@ import org.sbas.dtos.TalkMsgDto
 import org.sbas.entities.talk.*
 import org.sbas.responses.messages.TalkRoomResponse
 import java.time.Instant
-import javax.enterprise.context.ApplicationScoped
-import javax.inject.Inject
-import javax.transaction.Transactional
+import jakarta.enterprise.context.ApplicationScoped
+import jakarta.inject.Inject
+import jakarta.transaction.Transactional
 
 @ApplicationScoped
 class TalkUserRepository : PanacheRepositoryBase<TalkUser, TalkUserId>{

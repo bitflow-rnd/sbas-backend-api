@@ -1,7 +1,7 @@
 package org.sbas.restparameters
 
 import com.fasterxml.jackson.annotation.JsonProperty
-import javax.validation.constraints.NotNull
+import jakarta.validation.constraints.NotNull
 
 data class NaverGeocodingApiParams (
 

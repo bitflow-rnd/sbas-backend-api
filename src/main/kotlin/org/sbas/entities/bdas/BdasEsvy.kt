@@ -3,7 +3,7 @@ package org.sbas.entities.bdas
 import org.hibernate.annotations.DynamicUpdate
 import org.sbas.entities.CommonEntity
 import java.io.Serializable
-import javax.persistence.*
+import jakarta.persistence.*
 
 /**
  * 역학조사서 정보

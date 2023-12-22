@@ -4,8 +4,8 @@ import org.eclipse.microprofile.openapi.annotations.OpenAPIDefinition
 import org.eclipse.microprofile.openapi.annotations.info.Contact
 import org.eclipse.microprofile.openapi.annotations.info.Info
 import org.eclipse.microprofile.openapi.annotations.info.License
-import javax.ws.rs.ApplicationPath
-import javax.ws.rs.core.Application
+import jakarta.ws.rs.ApplicationPath
+import jakarta.ws.rs.core.Application
 
 // Testable at http://localhost:8080/q/swagger-ui
 @OpenAPIDefinition(

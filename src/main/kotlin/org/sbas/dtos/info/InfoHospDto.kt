@@ -4,7 +4,7 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties
 import org.sbas.entities.info.InfoHosp
 import org.sbas.utils.annotation.NoArg
 import java.time.Instant
-import javax.ws.rs.QueryParam
+import jakarta.ws.rs.QueryParam
 
 @NoArg
 @JsonIgnoreProperties(ignoreUnknown = true)

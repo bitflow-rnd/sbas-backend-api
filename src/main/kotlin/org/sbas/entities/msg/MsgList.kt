@@ -3,7 +3,7 @@ package org.sbas.entities.msg
 import org.sbas.entities.CommonEntity
 import java.io.Serializable
 import java.math.BigDecimal
-import javax.persistence.*
+import jakarta.persistence.*
 
 /**
  * 환자별 메시지

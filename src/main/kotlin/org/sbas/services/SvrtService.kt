@@ -11,9 +11,9 @@ import org.sbas.repositories.SvrtCollRepository
 import org.sbas.repositories.SvrtPtRepository
 import org.sbas.responses.CommonResponse
 import org.sbas.utils.StringUtils.Companion.getYyyyMmDdWithHyphen
-import javax.enterprise.context.ApplicationScoped
-import javax.inject.Inject
-import javax.transaction.Transactional
+import jakarta.enterprise.context.ApplicationScoped
+import jakarta.inject.Inject
+import jakarta.transaction.Transactional
 
 @ApplicationScoped
 class SvrtService {

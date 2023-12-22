@@ -10,8 +10,8 @@ import org.sbas.responses.terms.AgreeTermsListResponse
 import java.util.Comparator.comparing
 import java.util.stream.Collectors.groupingBy
 import java.util.stream.Collectors.maxBy
-import javax.enterprise.context.ApplicationScoped
-import javax.inject.Inject
+import jakarta.enterprise.context.ApplicationScoped
+import jakarta.inject.Inject
 
 @ApplicationScoped
 class InfoTermsRepository : PanacheRepositoryBase<InfoTerms, InfoTermsId> {

@@ -4,7 +4,7 @@ import org.sbas.dtos.info.InfoCrewDto
 import org.sbas.dtos.info.InfoCrewUpdateReq
 import org.sbas.entities.CommonEntity
 import java.io.Serializable
-import javax.persistence.*
+import jakarta.persistence.*
 
 /**
  * 구급대원 정보

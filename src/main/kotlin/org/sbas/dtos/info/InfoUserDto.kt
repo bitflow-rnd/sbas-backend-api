@@ -5,10 +5,10 @@ import org.sbas.entities.info.InfoUser
 import org.sbas.utils.annotation.NoArg
 import org.sbas.utils.annotation.ValidEnum
 import java.time.Instant
-import javax.validation.constraints.NotBlank
-import javax.validation.constraints.Pattern
-import javax.validation.constraints.Size
-import javax.ws.rs.QueryParam
+import jakarta.validation.constraints.NotBlank
+import jakarta.validation.constraints.Pattern
+import jakarta.validation.constraints.Size
+import jakarta.ws.rs.QueryParam
 
 /**
  * 사용자 목록 조회 DTO

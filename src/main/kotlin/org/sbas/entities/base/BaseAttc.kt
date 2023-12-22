@@ -5,7 +5,7 @@ import org.hibernate.annotations.Parameter
 import org.sbas.entities.CommonEntity
 import org.sbas.entities.StringPrefixedSequenceIdGenerator
 import java.io.Serializable
-import javax.persistence.*
+import jakarta.persistence.*
 
 /**
  * 첨부 파일 정보

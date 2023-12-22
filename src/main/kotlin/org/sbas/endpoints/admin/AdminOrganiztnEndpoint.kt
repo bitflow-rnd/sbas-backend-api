@@ -6,12 +6,12 @@ import org.jboss.logging.Logger
 import org.jboss.resteasy.reactive.RestPath
 import org.sbas.dtos.info.*
 import org.sbas.services.OrganiztnService
-import javax.inject.Inject
-import javax.validation.Valid
-import javax.ws.rs.GET
-import javax.ws.rs.POST
-import javax.ws.rs.Path
-import javax.ws.rs.core.Response
+import jakarta.inject.Inject
+import jakarta.validation.Valid
+import jakarta.ws.rs.GET
+import jakarta.ws.rs.POST
+import jakarta.ws.rs.Path
+import jakarta.ws.rs.core.Response
 
 @Tag(name = "기관 관리(어드민 권한용)", description = "System Admin 사용자 - 기관 등록, 수정, 삭제 등")
 //@RolesAllowed("USER")

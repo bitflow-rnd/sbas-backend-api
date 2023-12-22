@@ -1,5 +1,5 @@
 plugins {
-    val kotlinVersion = "1.9.10"
+    val kotlinVersion = "1.9.21"
     java
     kotlin("jvm") version kotlinVersion
     kotlin("plugin.allopen") version kotlinVersion
@@ -32,7 +32,7 @@ dependencies {
     implementation("io.quarkus:quarkus-logging-json")
     implementation("io.quarkus:quarkus-smallrye-jwt-build")
     implementation("io.quarkus:quarkus-jdbc-postgresql")
-    implementation("org.json:json:20230227")
+    implementation("org.json:json:20231013")
     implementation("io.quarkus:quarkus-websockets")
     implementation("io.quarkus:quarkus-arc")
     implementation("io.quarkus:quarkus-hibernate-orm")
@@ -42,12 +42,13 @@ dependencies {
 
     implementation("com.fasterxml.jackson.module:jackson-module-kotlin:2.14.3")
     implementation("com.google.firebase:firebase-admin:9.1.1")
-    implementation("com.linecorp.kotlin-jdsl:hibernate-kotlin-jdsl:2.2.1.RELEASE")
+//    implementation("com.linecorp.kotlin-jdsl:hibernate-kotlin-jdsl:2.2.1.RELEASE")
+    implementation("com.linecorp.kotlin-jdsl:hibernate-kotlin-jdsl-jakarta:2.2.1.RELEASE")
 
-    implementation(enforcedPlatform("org.jetbrains.kotlin:kotlin-stdlib:1.9.10"))
-    implementation("com.linecorp.kotlin-jdsl:hibernate-javax-support:3.0.2")
-    implementation("com.linecorp.kotlin-jdsl:jpql-dsl:3.0.2")
-    implementation("com.linecorp.kotlin-jdsl:jpql-render:3.0.2")
+
+    implementation("com.linecorp.kotlin-jdsl:hibernate-support:3.2.0")
+    implementation("com.linecorp.kotlin-jdsl:jpql-dsl:3.2.0")
+    implementation("com.linecorp.kotlin-jdsl:jpql-render:3.2.0")
 
     testImplementation("io.quarkus:quarkus-junit5")
     testImplementation("io.rest-assured:rest-assured")
@@ -62,17 +63,19 @@ java {
 }
 
 noArg {
-    annotation("javax.persistence.Entity")
-    annotation("javax.persistence.Embeddable")
-    annotation("javax.persistence.MappedSuperclass")
+    annotation("jakarta.persistence.Entity")
+    annotation("jakarta.persistence.Embeddable")
+    annotation("jakarta.persistence.MappedSuperclass")
     annotation("org.sbas.utils.annotation.NoArg")
 }
 
 allOpen {
-    annotation("javax.enterprise.context.ApplicationScoped")
-    annotation("javax.persistence.Entity")
-    annotation("javax.persistence.Embeddable")
-    annotation("javax.persistence.MappedSuperclass")
+    annotation("jakarta.ws.rs.Path")
+    annotation("jakarta.enterprise.context.ApplicationScoped")
+    annotation("jakarta.persistence.Entity")
+    annotation("jakarta.persistence.Embeddable")
+    annotation("jakarta.persistence.MappedSuperclass")
+    annotation("io.quarkus.test.junit.QuarkusTest")
 }
 
 tasks.withType<Test> {

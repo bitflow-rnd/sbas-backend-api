@@ -5,9 +5,9 @@ import org.eclipse.microprofile.rest.client.ext.ClientHeadersFactory
 import org.jose4j.base64url.internal.apache.commons.codec.binary.Base64
 import javax.crypto.Mac
 import javax.crypto.spec.SecretKeySpec
-import javax.enterprise.context.ApplicationScoped
-import javax.ws.rs.core.MultivaluedHashMap
-import javax.ws.rs.core.MultivaluedMap
+import jakarta.enterprise.context.ApplicationScoped
+import jakarta.ws.rs.core.MultivaluedHashMap
+import jakarta.ws.rs.core.MultivaluedMap
 
 @ApplicationScoped
 class RequestNaverSmsHeaderFactory : ClientHeadersFactory{

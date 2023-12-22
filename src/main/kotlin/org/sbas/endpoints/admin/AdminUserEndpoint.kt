@@ -10,14 +10,14 @@ import org.sbas.parameters.UserIdRequest
 import org.sbas.parameters.UserRequest
 import org.sbas.services.FirebaseService
 import org.sbas.services.UserService
-import javax.annotation.security.RolesAllowed
-import javax.inject.Inject
-import javax.validation.Valid
-import javax.ws.rs.BeanParam
-import javax.ws.rs.GET
-import javax.ws.rs.POST
-import javax.ws.rs.Path
-import javax.ws.rs.core.Response
+import jakarta.annotation.security.RolesAllowed
+import jakarta.inject.Inject
+import jakarta.validation.Valid
+import jakarta.ws.rs.BeanParam
+import jakarta.ws.rs.GET
+import jakarta.ws.rs.POST
+import jakarta.ws.rs.Path
+import jakarta.ws.rs.core.Response
 
 @Tag(name = "사용자 관리(어드민 권한용)", description = "System Admin 사용자 - 사용자 등록, 수정, 삭제 등")
 @RolesAllowed("USER")

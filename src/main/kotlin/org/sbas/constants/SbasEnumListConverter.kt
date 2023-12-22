@@ -1,8 +1,9 @@
 package org.sbas.constants
 
+import org.sbas.constants.enums.PtTypeCd
 import org.sbas.constants.enums.SbasEnum
 import org.sbas.constants.enums.UndrDsesCd
-import javax.persistence.AttributeConverter
+import jakarta.persistence.AttributeConverter
 
 open class SbasEnumListConverter<T : SbasEnum>(private val enumClass: Class<T>) : AttributeConverter<List<T>, String> {
 

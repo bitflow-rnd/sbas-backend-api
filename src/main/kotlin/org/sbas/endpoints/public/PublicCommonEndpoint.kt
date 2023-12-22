@@ -10,12 +10,12 @@ import org.sbas.dtos.info.NoticeListReq
 import org.sbas.entities.info.NoticeReadStatusId
 import org.sbas.services.CommonService
 import org.sbas.services.FileService
-import javax.annotation.security.PermitAll
-import javax.inject.Inject
-import javax.ws.rs.*
-import javax.ws.rs.core.MediaType
-import javax.ws.rs.core.Response
-import javax.ws.rs.core.SecurityContext
+import jakarta.annotation.security.PermitAll
+import jakarta.inject.Inject
+import jakarta.ws.rs.*
+import jakarta.ws.rs.core.MediaType
+import jakarta.ws.rs.core.Response
+import jakarta.ws.rs.core.SecurityContext
 
 
 @Tag(name = "공통 조회(공개 권한용)", description = "비 로그인 사용자 - 코드조회 등")

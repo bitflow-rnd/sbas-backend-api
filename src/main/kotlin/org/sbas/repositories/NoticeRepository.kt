@@ -10,8 +10,8 @@ import org.sbas.responses.notice.NoticeListResponse
 import org.sbas.utils.StringUtils
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
-import javax.enterprise.context.ApplicationScoped
-import javax.inject.Inject
+import jakarta.enterprise.context.ApplicationScoped
+import jakarta.inject.Inject
 
 @ApplicationScoped
 class NoticeRepository : PanacheRepositoryBase<InfoNotice, String> {

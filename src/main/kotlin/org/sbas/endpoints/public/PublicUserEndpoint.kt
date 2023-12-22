@@ -11,13 +11,13 @@ import org.sbas.parameters.LoginRequest
 import org.sbas.parameters.SmsSendRequest
 import org.sbas.responses.CommonResponse
 import org.sbas.services.UserService
-import javax.annotation.security.PermitAll
-import javax.inject.Inject
-import javax.validation.Valid
-import javax.ws.rs.POST
-import javax.ws.rs.Path
-import javax.ws.rs.core.Response
-import javax.ws.rs.core.SecurityContext
+import jakarta.annotation.security.PermitAll
+import jakarta.inject.Inject
+import jakarta.validation.Valid
+import jakarta.ws.rs.POST
+import jakarta.ws.rs.Path
+import jakarta.ws.rs.core.Response
+import jakarta.ws.rs.core.SecurityContext
 
 @Tag(name = "사용자 관리(공개 권한용)", description = "비 로그인 사용자 - 가입요청, 인증요청 등")
 @Path("v1/public/user")

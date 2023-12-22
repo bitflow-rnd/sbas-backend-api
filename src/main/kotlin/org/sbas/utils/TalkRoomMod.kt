@@ -14,10 +14,10 @@ import org.sbas.repositories.TalkRoomRepository
 import org.sbas.repositories.TalkUserRepository
 import org.sbas.responses.messages.TalkRoomResponse
 import org.sbas.services.FirebaseService
-import javax.inject.Inject
-import javax.websocket.*
-import javax.websocket.server.PathParam
-import javax.websocket.server.ServerEndpoint
+import jakarta.inject.Inject
+import jakarta.websocket.*
+import jakarta.websocket.server.PathParam
+import jakarta.websocket.server.ServerEndpoint
 
 
 @ServerEndpoint("/chat-rooms/room/{tkrmId}")

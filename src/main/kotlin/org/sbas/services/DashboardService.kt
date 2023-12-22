@@ -3,9 +3,9 @@ package org.sbas.services
 import org.jboss.logging.Logger
 import org.sbas.repositories.*
 import java.time.Instant
-import javax.enterprise.context.ApplicationScoped
-import javax.inject.Inject
-import javax.transaction.Transactional
+import jakarta.enterprise.context.ApplicationScoped
+import jakarta.inject.Inject
+import jakarta.transaction.Transactional
 
 
 /**

@@ -7,7 +7,7 @@ import org.sbas.entities.StringPrefixedSequenceIdGenerator
 import org.sbas.responses.notice.NoticeListResponse
 import java.io.Serial
 import java.io.Serializable
-import javax.persistence.*
+import jakarta.persistence.*
 
 /**
  * 공지사항 정보

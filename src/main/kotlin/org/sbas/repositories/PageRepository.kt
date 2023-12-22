@@ -2,8 +2,8 @@ package org.sbas.repositories
 
 import io.quarkus.hibernate.orm.panache.kotlin.PanacheRepositoryBase
 import org.sbas.entities.info.SavePage
-import javax.enterprise.context.ApplicationScoped
-import javax.transaction.Transactional
+import jakarta.enterprise.context.ApplicationScoped
+import jakarta.transaction.Transactional
 
 @ApplicationScoped
 class PageRepository : PanacheRepositoryBase<SavePage, String> {
