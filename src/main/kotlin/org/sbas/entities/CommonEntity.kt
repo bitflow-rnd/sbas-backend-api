@@ -3,7 +3,7 @@ package org.sbas.entities
 import org.hibernate.annotations.CreationTimestamp
 import org.hibernate.annotations.UpdateTimestamp
 import java.time.Instant
-import javax.persistence.*
+import jakarta.persistence.*
 
 @MappedSuperclass
 @EntityListeners(CommonEntityListener::class)
