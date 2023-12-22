@@ -17,6 +17,7 @@ data class InfoUserListDto(
     var userId: String,
     var dutyDstr1Cd: String?,
     val dutyDstr1CdNm: String?,
+    var telno: String?,
     var instTypeCd: String?,
     var instNm: String?,
     var userNm: String?,
@@ -25,6 +26,9 @@ data class InfoUserListDto(
     var rgstDttm: Instant,
     var userStatCd: UserStatCd?,
     var userStatCdNm: String?,
+    var instId: String?,
+    var ocpCd: String?,
+    var isFavorite: Boolean?,
 )
 
 /**
@@ -54,8 +58,8 @@ data class InfoUserSearchFromUserParam(
     @field: QueryParam("instNm") var instNm: String?,
     @field: QueryParam("instTypeCd") var instTypeCd: String?,
     @field: QueryParam("ptTypeCd") var ptTypeCd: String?,
-    @field: QueryParam("page") var page: Int?,
-    @field: QueryParam("userStatCdStr") var userStatCdStr: String?
+    @field: QueryParam("userStatCdStr") var userStatCdStr: String?,
+    @field: QueryParam("myInstTypeCd") var myInstTypeCd: String?,
 )
 
 /**
@@ -85,11 +89,13 @@ data class UserDetailResponse(
     val jobCdNm = PmgrTypeCd.valueOf(jobCd).cdNm
     val authCdNm = DtpmTypeCd.valueOf(authCd).cdNm
     val instTypeCdNm = InstTypeCd.valueOf(instTypeCd).cdNm
+    var isFavorite: Boolean = false
     val ptTypeCdNm: List<String>?
         get() {
             val list = ptTypeCd?.split(";")
             return list?.map { PtTypeCd.valueOf(it).cdNm }
         }
+
 }
 
 /**

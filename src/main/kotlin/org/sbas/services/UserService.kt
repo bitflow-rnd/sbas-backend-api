@@ -276,7 +276,7 @@ class UserService {
     @Transactional
     fun getAllUsers(pageRequest: PageRequest): CommonResponse<PagingListDto> {
         // TODO 응답 수정
-        val findUsers = userRepository.findInfoUserDetail(null)
+        val findUsers = userRepository.findInfoUserDetail()
         val totalCnt = userRepository.count()
         val response = PagingListDto(totalCnt, findUsers)
         return CommonResponse(response)
@@ -296,11 +296,9 @@ class UserService {
      */
     @Transactional
     fun getMyUserDetail(mbrId: String): CommonResponse<UserDetailResponse> {
-        val userDetail = userRepository.findInfoUserDetail(mbrId)
+        val userDetail = userRepository.findInfoUserById(mbrId)
 
-        check(userDetail.isNotEmpty()) { throw NotFoundException("$mbrId not found") }
-
-        return CommonResponse(userDetail.first())
+        return CommonResponse(userDetail)
     }
 
     /**
@@ -340,7 +338,7 @@ class UserService {
      * 즐겨찾기 사용자 목록 조회
      */
     @Transactional
-    fun getContactUsers(): CommonListResponse<InfoUser> {
+    fun getContactUsers(): CommonListResponse<InfoUserListDto> {
         val list = userRepository.findContactedInfoUserListByUserId(jwt.name)
         val count = list.size
 
