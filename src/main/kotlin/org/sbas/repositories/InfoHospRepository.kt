@@ -69,7 +69,9 @@ class InfoHospRepository : PanacheRepositoryBase<InfoHosp, String> {
                 path(InfoBed::ventilator), path(InfoBed::ventilatorPreemie), path(InfoBed::incubator), path(InfoBed::ecmo), path(InfoBed::highPressureOxygen),
                 path(InfoBed::ct), path(InfoBed::mri), path(InfoBed::highPressureOxygen), path(InfoBed::bodyTemperatureControl),
                 path(InfoBed::emrgncyNrmlBed), path(InfoBed::ngtvIsltnChild), path(InfoBed::nrmlIsltnChild),
-                path(InfoBed::nrmlChildBed), path(InfoBed::emrgncyNrmlIsltnBed), medicalStaffCount,
+                path(InfoBed::nrmlChildBed), path(InfoBed::emrgncyNgtvIsltnBed), path(InfoBed::emrgncyNrmlIsltnBed),
+                path(InfoBed::isltnMedAreaNgtvIsltnBed), path(InfoBed::isltnMedAreaNrmlIsltnBed),
+                medicalStaffCount,
             ).from(
                 entity(InfoHosp::class),
                 join(InfoBed::class).on(path(InfoHosp::hospId).eq(path(InfoBed::hospId)))

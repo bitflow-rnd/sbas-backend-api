@@ -35,19 +35,19 @@ class InfoBed(
     var gnbdModr: Int? = null, // hv26 - [감염] 중등증 병상
 
     @Column(name = "coht_bed")
-    var cohtBed: Int? = null,
+    var cohtBed: Int? = null, // 코호트 격리구역 가용 병상수
 
     @Column(name = "npib_svrt")
-    var npibSvrt: Int? = null,
+    var npibSvrt: Int? = null, // 가용 음압격리 병상수 (중증)
 
     @Column(name = "npib_smsv")
-    var npibSmsv: Int? = null,
+    var npibSmsv: Int? = null, // 가용 음압격리 병상수 (준중증)
 
     @Column(name = "npib_modr")
-    var npibModr: Int? = null,
+    var npibModr: Int? = null, // 가용 음압격리 병상수 (중등증)
 
     @Column(name = "npib_lbr_inft")
-    var npibLbrInft: Int? = null,
+    var npibLbrInft: Int? = null, // 가용 음압격리 병상수 (산모 및 신생아)
 
     @Column(name = "ventilator")
     var ventilator: String? = null, // 인공호흡기
@@ -90,6 +90,15 @@ class InfoBed(
 
     @Column
     var emrgncyNrmlIsltnBed: Int?, // hv30 - 응급실 일반 격리 병상
+
+    @Column(name = "emrgncy_ngtv_isltn_bed")
+    var emrgncyNgtvIsltnBed: Int?, // hv29 - 응급실 음압 격리 병상
+
+    @Column(name = "isltn_med_area_ngtv_isltn_bed")
+    var isltnMedAreaNgtvIsltnBed: Int?, // hv13 - 격리 진료 구역 음압 격리 병상
+
+    @Column(name = "isltn_med_area_nrml_isltn_bed")
+    var isltnMedAreaNrmlIsltnBed: Int?, // hv14 - 격리 진료 구역 일반 격리 병상
 
 ) : CommonEntity(), Serializable {
     companion object {

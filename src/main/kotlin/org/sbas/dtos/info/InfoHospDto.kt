@@ -98,20 +98,24 @@ data class InfoHospListDto(
     val gnbdSvrt: Int, // hv24 56
     val gnbdSmsv: Int, // hv25
     val gnbdModr: Int, // hv26
-    var ventilator: String?,
-    var ventilatorPreemie: String?,
-    var incubator: String?,
-    var ecmo: String?,
-    var highPressureOxygen: String?,
-    var ct: String?,
-    var mri: String?,
-    var bloodVesselImaging: String?,
-    var bodyTemperatureControl: String?,
-    var emrgncyNrmlBed: Int?, // hvec - 일반(응급실일반병상)
-    var ngtvIsltnChild: Int?, // hv15 - 소아 음압격리
-    var nrmlIsltnChild: Int?, // hv16 - 소아 일반격리
-    var nrmlChildBed: Int?, // hv28 - 소아
-    var emrgncyNrmlIsltnBed: Int?, // hv30 - 응급실 일반 격리 병상
+    val ventilator: String?,
+    val ventilatorPreemie: String?,
+    val incubator: String?,
+    val ecmo: String?,
+    val highPressureOxygen: String?,
+    val ct: String?,
+    val mri: String?,
+    val bloodVesselImaging: String?,
+    val bodyTemperatureControl: String?,
+    val emrgncyNrmlBed: Int?, // hvec - 일반(응급실일반병상)
+    val ngtvIsltnChild: Int?, // hv15 - 소아 음압격리
+    val nrmlIsltnChild: Int?, // hv16 - 소아 일반격리
+    val nrmlChildBed: Int?, // hv28 - 소아
+    val emrgncyNgtvIsltnBed: Int?, // hv29 - 응급실 음압 격리 병상
+    val emrgncyNrmlIsltnBed: Int?, // hv30 - 응급실 일반 격리 병상
+    val isltnMedAreaNgtvIsltnBed: Int?, // hv13 - 격리 진료 구역 음압 격리 병상
+    val isltnMedAreaNrmlIsltnBed: Int?, // hv14 - 격리 진료 구역 일반 격리 병상
+
     var medicalStaffCount: Long?,
 ) {
     init {
