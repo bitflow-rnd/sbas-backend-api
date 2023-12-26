@@ -10,8 +10,8 @@ import org.sbas.responses.notice.NoticeListResponse
 import org.sbas.utils.StringUtils
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
-import javax.enterprise.context.ApplicationScoped
-import javax.inject.Inject
+import jakarta.enterprise.context.ApplicationScoped
+import jakarta.inject.Inject
 
 @ApplicationScoped
 class NoticeRepository : PanacheRepositoryBase<InfoNotice, String> {
@@ -25,7 +25,7 @@ class NoticeRepository : PanacheRepositoryBase<InfoNotice, String> {
     fun findAllNoticeList(noticeListReq: NoticeListReq): List<NoticeListResponse> {
         val page = noticeListReq.page ?: 1
         val size = noticeListReq.size ?: 10
-        val findList = find("order by start_notice_tm").page(page - 1, size).list()
+        val findList = find("order by startNoticeTm").page(page - 1, size).list()
 
         val today = StringUtils.getYyyyMmDd()
 

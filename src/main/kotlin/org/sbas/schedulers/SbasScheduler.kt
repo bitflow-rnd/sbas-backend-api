@@ -6,9 +6,9 @@ import kotlinx.coroutines.*
 import org.jboss.logging.Logger
 import org.sbas.restparameters.EgenApiEmrrmRltmUsefulSckbdInfoParams
 import org.sbas.services.EgenService
-import javax.enterprise.context.ApplicationScoped
-import javax.enterprise.context.control.ActivateRequestContext
-import javax.inject.Inject
+import jakarta.enterprise.context.ApplicationScoped
+import jakarta.enterprise.context.control.ActivateRequestContext
+import jakarta.inject.Inject
 
 /**
  * 시간 주기적인 반복작업 수행

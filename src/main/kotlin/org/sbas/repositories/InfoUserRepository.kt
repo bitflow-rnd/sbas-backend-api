@@ -10,10 +10,10 @@ import org.sbas.dtos.info.*
 import org.sbas.entities.info.InfoUser
 import org.sbas.entities.info.UserFcmToken
 import org.sbas.parameters.PageRequest
-import javax.enterprise.context.ApplicationScoped
-import javax.inject.Inject
-import javax.persistence.EntityManager
-import javax.transaction.Transactional
+import jakarta.enterprise.context.ApplicationScoped
+import jakarta.inject.Inject
+import jakarta.persistence.EntityManager
+import jakarta.transaction.Transactional
 
 @ApplicationScoped
 class InfoUserRepository : PanacheRepositoryBase<InfoUser, String> {
@@ -149,7 +149,7 @@ class InfoUserRepository : PanacheRepositoryBase<InfoUser, String> {
     fun findId(infoUser: InfoUser): InfoUser? = find("select u from InfoUser u where u.userNm = '${infoUser.userNm}' and u.telno = '${infoUser.telno}'").firstResult()
 
     fun existByUserId(userId: String?): Boolean {
-        return count("user_id = '$userId'") == 1L
+        return count("id = '$userId'") == 1L
     }
 
     fun existByTelNo(telno: String): Boolean {
@@ -164,9 +164,9 @@ class InfoUserRepository : PanacheRepositoryBase<InfoUser, String> {
 
     fun findBdasUserByReqDstrCd(dstrCd1: String?, dstrCd2: String?): List<InfoUser> {
         val query = if (dstrCd2 != null) {
-            "duty_dstr_1_cd = '$dstrCd1' and duty_dstr_2_cd = '$dstrCd2' and (job_cd = 'PMGR0002' OR job_cd like '병상승인%')"
+            "dutyDstr1Cd = '$dstrCd1' and dutyDstr2Cd = '$dstrCd2' and (jobCd = 'PMGR0002' OR jobCd like '병상승인%')"
         } else {
-            "duty_dstr_1_cd = '$dstrCd1' and (job_cd = 'PMGR0002' OR job_cd like '병상승인%')"
+            "dutyDstr1Cd = '$dstrCd1' and (jobCd = 'PMGR0002' OR jobCd like '병상승인%')"
         }
         return find(query).list()
     }

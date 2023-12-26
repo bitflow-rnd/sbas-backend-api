@@ -1,10 +1,10 @@
 package org.sbas.entities
 
 import org.eclipse.microprofile.jwt.JsonWebToken
-import javax.enterprise.context.ApplicationScoped
-import javax.inject.Inject
-import javax.persistence.PrePersist
-import javax.persistence.PreUpdate
+import jakarta.enterprise.context.ApplicationScoped
+import jakarta.inject.Inject
+import jakarta.persistence.PrePersist
+import jakarta.persistence.PreUpdate
 
 @ApplicationScoped
 class CommonEntityListener {

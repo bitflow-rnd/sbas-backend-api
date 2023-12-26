@@ -14,9 +14,9 @@ import org.sbas.entities.info.InfoBed
 import org.sbas.entities.info.InfoHosp
 import org.sbas.entities.info.InfoHospDetail
 import org.sbas.entities.info.InfoUser
-import javax.enterprise.context.ApplicationScoped
-import javax.inject.Inject
-import javax.persistence.EntityManager
+import jakarta.enterprise.context.ApplicationScoped
+import jakarta.inject.Inject
+import jakarta.persistence.EntityManager
 
 @ApplicationScoped
 class InfoHospRepository : PanacheRepositoryBase<InfoHosp, String> {
@@ -34,7 +34,7 @@ class InfoHospRepository : PanacheRepositoryBase<InfoHosp, String> {
     private lateinit var context: JpqlRenderContext
 
     fun findInfoHospByHospId(hospId: String): InfoHosp? {
-        return find("hosp_id = '$hospId'").firstResult()
+        return find("hospId = '$hospId'").firstResult()
     }
 
     fun findInfoHospByHpId(hpId: String): InfoHospId {
@@ -69,7 +69,9 @@ class InfoHospRepository : PanacheRepositoryBase<InfoHosp, String> {
                 path(InfoBed::ventilator), path(InfoBed::ventilatorPreemie), path(InfoBed::incubator), path(InfoBed::ecmo), path(InfoBed::highPressureOxygen),
                 path(InfoBed::ct), path(InfoBed::mri), path(InfoBed::highPressureOxygen), path(InfoBed::bodyTemperatureControl),
                 path(InfoBed::emrgncyNrmlBed), path(InfoBed::ngtvIsltnChild), path(InfoBed::nrmlIsltnChild),
-                path(InfoBed::nrmlChildBed), path(InfoBed::emrgncyNrmlIsltnBed), medicalStaffCount,
+                path(InfoBed::nrmlChildBed), path(InfoBed::emrgncyNgtvIsltnBed), path(InfoBed::emrgncyNrmlIsltnBed),
+                path(InfoBed::isltnMedAreaNgtvIsltnBed), path(InfoBed::isltnMedAreaNrmlIsltnBed), path(InfoBed::cohtBed),
+                medicalStaffCount,
             ).from(
                 entity(InfoHosp::class),
                 join(InfoBed::class).on(path(InfoHosp::hospId).eq(path(InfoBed::hospId)))

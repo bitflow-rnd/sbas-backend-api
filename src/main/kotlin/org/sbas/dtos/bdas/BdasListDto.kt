@@ -5,7 +5,7 @@ import com.fasterxml.jackson.annotation.JsonProperty
 import org.sbas.constants.enums.*
 import org.sbas.utils.annotation.NoArg
 import java.time.Instant
-import javax.ws.rs.QueryParam
+import jakarta.ws.rs.QueryParam
 
 data class BdasListDto(
     val ptId: String,

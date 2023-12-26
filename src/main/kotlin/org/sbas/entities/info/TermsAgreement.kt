@@ -2,7 +2,7 @@ package org.sbas.entities.info
 
 import org.sbas.entities.CommonEntity
 import java.io.Serializable
-import javax.persistence.*
+import jakarta.persistence.*
 
 @Entity
 @Table(name = "terms_agreement")

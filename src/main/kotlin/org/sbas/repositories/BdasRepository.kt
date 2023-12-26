@@ -9,16 +9,16 @@ import org.sbas.dtos.bdas.*
 import org.sbas.entities.bdas.*
 import org.sbas.responses.patient.DestinationInfo
 import java.time.Instant
-import javax.enterprise.context.ApplicationScoped
-import javax.inject.Inject
-import javax.persistence.EntityManager
-import javax.persistence.TypedQuery
-import javax.ws.rs.NotFoundException
+import jakarta.enterprise.context.ApplicationScoped
+import jakarta.inject.Inject
+import jakarta.persistence.EntityManager
+import jakarta.persistence.TypedQuery
+import jakarta.ws.rs.NotFoundException
 
 @ApplicationScoped
 class BdasEsvyRepository : PanacheRepositoryBase<BdasEsvy, String> {
     fun findByPtIdWithLatestBdasSeq(ptId: String): BdasEsvy? {
-        return find("pt_id = '${ptId}'", Sort.by("bdas_seq", Sort.Direction.Descending)).firstResult()
+        return find("ptId = '${ptId}'", Sort.by("bdasSeq", Sort.Direction.Descending)).firstResult()
     }
 }
 
@@ -33,8 +33,8 @@ class BdasReqRepository : PanacheRepositoryBase<BdasReq, BdasReqId> {
 
     fun findByPtIdAndBdasSeq(ptId: String, bdasSeq: Int): BdasReq? {
         return find(
-            "pt_id = '${ptId}' and bdas_seq = $bdasSeq",
-            Sort.by("bdas_seq", Sort.Direction.Descending)
+            "id.ptId = '${ptId}' and id.bdasSeq = $bdasSeq",
+            Sort.by("id.bdasSeq", Sort.Direction.Descending)
         ).firstResult()
     }
 
@@ -111,7 +111,7 @@ class BdasReqRepository : PanacheRepositoryBase<BdasReq, BdasReqId> {
         return try {
             val query = "SELECT iu.instNm from InfoUser iu where iu.id in ($subQuery)"
             entityManager.createQuery(query).singleResult as String
-        } catch (ex: javax.persistence.NoResultException) {
+        } catch (ex: jakarta.persistence.NoResultException) {
             // 예외 처리: 결과가 없을 때 빈 문자열을 반환
             ""
         }
@@ -254,8 +254,8 @@ class BdasTrnsRepository : PanacheRepositoryBase<BdasTrns, BdasTrnsId> {
 
     fun findByPtIdAndBdasSeqWithNull(ptId: String, bdasSeq: Int): BdasTrns? {
         return find(
-            "pt_id = '${ptId}' and bdas_seq = $bdasSeq",
-            Sort.by("bdas_seq", Sort.Direction.Descending)
+            "id.ptId = '${ptId}' and id.bdasSeq = $bdasSeq",
+            Sort.by("id.bdasSeq", Sort.Direction.Descending)
         ).firstResult()
     }
 
@@ -294,8 +294,8 @@ class BdasAdmsRepository : PanacheRepositoryBase<BdasAdms, BdasAdmsId> {
 
     fun findByIdOrderByAdmsSeqDesc(ptId: String, bdasSeq: Int): BdasAdms? {
         return find(
-            "pt_id = '$ptId' and bdas_seq = $bdasSeq",
-            Sort.by("adms_seq", Sort.Direction.Descending)
+            "id.ptId = '$ptId' and id.bdasSeq = $bdasSeq",
+            Sort.by("id.admsSeq", Sort.Direction.Descending)
         ).firstResult()
     }
 

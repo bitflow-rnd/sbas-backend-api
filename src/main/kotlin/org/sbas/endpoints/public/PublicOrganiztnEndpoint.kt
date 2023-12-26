@@ -8,12 +8,12 @@ import org.jboss.resteasy.reactive.RestPath
 import org.sbas.dtos.info.FireStatnSearchParam
 import org.sbas.dtos.info.InfoHospSearchParam
 import org.sbas.services.OrganiztnService
-import javax.inject.Inject
-import javax.ws.rs.BeanParam
-import javax.ws.rs.GET
-import javax.ws.rs.Path
-import javax.ws.rs.QueryParam
-import javax.ws.rs.core.Response
+import jakarta.inject.Inject
+import jakarta.ws.rs.BeanParam
+import jakarta.ws.rs.GET
+import jakarta.ws.rs.Path
+import jakarta.ws.rs.QueryParam
+import jakarta.ws.rs.core.Response
 
 @Tag(name = "기관 조회(공개 권한용)", description = "비 로그인 사용자 - 기관 정보 조회")
 @Path("v1/public/organ")

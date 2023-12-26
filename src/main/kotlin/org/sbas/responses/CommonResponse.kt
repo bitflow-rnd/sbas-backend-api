@@ -3,8 +3,8 @@ package org.sbas.responses
 import com.fasterxml.jackson.annotation.JsonIgnore
 import org.eclipse.microprofile.openapi.annotations.media.Schema
 import org.sbas.constants.SbasConst
-import javax.validation.constraints.NotEmpty
-import javax.validation.constraints.NotNull
+import jakarta.validation.constraints.NotEmpty
+import jakarta.validation.constraints.NotNull
 
 open class CommonResponse<T>(
     @NotNull

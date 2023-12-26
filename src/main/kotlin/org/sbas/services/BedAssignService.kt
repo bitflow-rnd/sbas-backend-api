@@ -16,11 +16,11 @@ import org.sbas.responses.patient.TransInfoResponse
 import org.sbas.responses.patient.toTransInfoResponse
 import org.sbas.restparameters.NaverGeocodingApiParams
 import org.sbas.utils.CustomizedException
-import javax.enterprise.context.ApplicationScoped
-import javax.inject.Inject
-import javax.transaction.Transactional
-import javax.ws.rs.NotFoundException
-import javax.ws.rs.core.Response
+import jakarta.enterprise.context.ApplicationScoped
+import jakarta.inject.Inject
+import jakarta.transaction.Transactional
+import jakarta.ws.rs.NotFoundException
+import jakarta.ws.rs.core.Response
 import kotlin.math.acos
 import kotlin.math.cos
 import kotlin.math.roundToInt

@@ -2,11 +2,11 @@ package org.sbas.utils
 
 import io.smallrye.jwt.build.Jwt
 import org.eclipse.microprofile.jwt.JsonWebToken
-import javax.ws.rs.InternalServerErrorException
-import javax.ws.rs.Produces
-import javax.ws.rs.core.Context
-import javax.ws.rs.core.MediaType
-import javax.ws.rs.core.SecurityContext
+import jakarta.ws.rs.InternalServerErrorException
+import jakarta.ws.rs.Produces
+import jakarta.ws.rs.core.Context
+import jakarta.ws.rs.core.MediaType
+import jakarta.ws.rs.core.SecurityContext
 
 
 /**

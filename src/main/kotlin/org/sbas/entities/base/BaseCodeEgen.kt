@@ -2,9 +2,9 @@ package org.sbas.entities.base
 
 import org.sbas.entities.CommonEntity
 import java.io.Serializable
-import javax.persistence.*
-import javax.validation.constraints.NotNull
-import javax.validation.constraints.Size
+import jakarta.persistence.*
+import jakarta.validation.constraints.NotNull
+import jakarta.validation.constraints.Size
 
 /**
  * E-GEN 기초 코드

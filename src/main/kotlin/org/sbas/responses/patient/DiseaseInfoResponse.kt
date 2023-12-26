@@ -3,7 +3,7 @@ package org.sbas.responses.patient
 import org.sbas.entities.bdas.BdasEsvy
 import org.sbas.entities.bdas.BdasReq
 import org.sbas.repositories.BaseCodeRepository
-import javax.inject.Inject
+import jakarta.inject.Inject
 
 class DiseaseInfoResponse(
     var rcptPhc: String? = null,//담당보건소

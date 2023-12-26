@@ -27,7 +27,10 @@ data class InfoBedSaveReq(
     val hv15: Int?,
     val hv16: Int?,
     val hv28: Int?,
+    val hv29: Int?,
     val hv30: Int?,
+    val hv13: Int?,
+    val hv14: Int?,
 ) {
     fun toEntity(hospId: String): InfoBed {
         return InfoBed(
@@ -56,7 +59,10 @@ data class InfoBedSaveReq(
             ngtvIsltnChild = hv15 ?: 0,
             nrmlIsltnChild = hv16 ?: 0,
             nrmlChildBed = hv28 ?: 0,
+            emrgncyNgtvIsltnBed = hv29 ?: 0,
             emrgncyNrmlIsltnBed = hv30 ?: 0,
+            isltnMedAreaNgtvIsltnBed = hv13 ?: 0,
+            isltnMedAreaNrmlIsltnBed = hv14 ?: 0,
         )
     }
 }

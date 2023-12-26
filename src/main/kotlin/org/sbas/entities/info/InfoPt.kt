@@ -10,7 +10,7 @@ import org.sbas.entities.CommonEntity
 import org.sbas.entities.StringPrefixedSequenceIdGenerator
 import java.io.Serial
 import java.io.Serializable
-import javax.persistence.*
+import jakarta.persistence.*
 
 /**
  * 환자 기본 정보

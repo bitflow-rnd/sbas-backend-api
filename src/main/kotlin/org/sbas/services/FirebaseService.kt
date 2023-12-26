@@ -17,11 +17,11 @@ import org.sbas.repositories.InfoUserRepository
 import org.sbas.repositories.UserFcmTokenRepository
 import org.sbas.responses.CommonResponse
 import java.io.FileInputStream
-import javax.enterprise.context.ApplicationScoped
-import javax.enterprise.event.Observes
-import javax.inject.Inject
-import javax.transaction.Transactional
-import javax.ws.rs.NotFoundException
+import jakarta.enterprise.context.ApplicationScoped
+import jakarta.enterprise.event.Observes
+import jakarta.inject.Inject
+import jakarta.transaction.Transactional
+import jakarta.ws.rs.NotFoundException
 
 @ApplicationScoped
 class FirebaseService {

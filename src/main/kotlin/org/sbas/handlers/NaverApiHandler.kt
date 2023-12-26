@@ -14,9 +14,9 @@ import org.sbas.restparameters.NaverOcrApiParams
 import org.sbas.restparameters.OcrApiImagesParam
 import org.sbas.restresponses.FieldName
 import org.sbas.utils.StringUtils
-import javax.enterprise.context.ApplicationScoped
-import javax.inject.Inject
-import javax.ws.rs.NotFoundException
+import jakarta.enterprise.context.ApplicationScoped
+import jakarta.inject.Inject
+import jakarta.ws.rs.NotFoundException
 
 
 /**

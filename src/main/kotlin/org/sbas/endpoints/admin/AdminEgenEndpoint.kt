@@ -9,11 +9,11 @@ import org.sbas.restparameters.EgenApiEmrrmRltmUsefulSckbdInfoParams
 import org.sbas.restparameters.EgenApiLcInfoParams
 import org.sbas.restparameters.EgenApiListInfoParams
 import org.sbas.services.EgenService
-import javax.annotation.security.RolesAllowed
-import javax.inject.Inject
-import javax.ws.rs.*
-import javax.ws.rs.core.MediaType
-import javax.ws.rs.core.Response
+import jakarta.annotation.security.RolesAllowed
+import jakarta.inject.Inject
+import jakarta.ws.rs.*
+import jakarta.ws.rs.core.MediaType
+import jakarta.ws.rs.core.Response
 
 @Tag(name = "E-Gen 연동 관리(어드민 권한용)", description = "System Admin 사용자 - E-Gen API를 통한 데이터 동기화, 등록, 수정, 삭제 등")
 //@RolesAllowed("ADMIN")

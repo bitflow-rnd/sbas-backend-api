@@ -12,14 +12,14 @@ import org.sbas.parameters.ModifyPwRequest
 import org.sbas.parameters.ModifyTelnoRequest
 import org.sbas.parameters.PageRequest
 import org.sbas.services.UserService
-import javax.inject.Inject
-import javax.validation.Valid
-import javax.ws.rs.BeanParam
-import javax.ws.rs.GET
-import javax.ws.rs.POST
-import javax.ws.rs.Path
-import javax.ws.rs.core.Response
-import javax.ws.rs.core.SecurityContext
+import jakarta.inject.Inject
+import jakarta.validation.Valid
+import jakarta.ws.rs.BeanParam
+import jakarta.ws.rs.GET
+import jakarta.ws.rs.POST
+import jakarta.ws.rs.Path
+import jakarta.ws.rs.core.Response
+import jakarta.ws.rs.core.SecurityContext
 
 @Tag(name = "사용자 관리(사용자 권한용)", description = "로그인 된 사용자(세부권한별 분기) - 로그아웃, 개인정보 수정, 알림메시지 조회 등")
 @Path("v1/private/user")

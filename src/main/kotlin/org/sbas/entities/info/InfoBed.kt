@@ -3,10 +3,10 @@ package org.sbas.entities.info
 import org.sbas.entities.CommonEntity
 import java.io.Serial
 import java.io.Serializable
-import javax.persistence.Column
-import javax.persistence.Entity
-import javax.persistence.Id
-import javax.persistence.Table
+import jakarta.persistence.Column
+import jakarta.persistence.Entity
+import jakarta.persistence.Id
+import jakarta.persistence.Table
 
 @Entity
 @Table(name = "info_bed")
@@ -35,19 +35,19 @@ class InfoBed(
     var gnbdModr: Int? = null, // hv26 - [감염] 중등증 병상
 
     @Column(name = "coht_bed")
-    var cohtBed: Int? = null,
+    var cohtBed: Int? = null, // 코호트 격리구역 가용 병상수
 
     @Column(name = "npib_svrt")
-    var npibSvrt: Int? = null,
+    var npibSvrt: Int? = null, // 가용 음압격리 병상수 (중증)
 
     @Column(name = "npib_smsv")
-    var npibSmsv: Int? = null,
+    var npibSmsv: Int? = null, // 가용 음압격리 병상수 (준중증)
 
     @Column(name = "npib_modr")
-    var npibModr: Int? = null,
+    var npibModr: Int? = null, // 가용 음압격리 병상수 (중등증)
 
     @Column(name = "npib_lbr_inft")
-    var npibLbrInft: Int? = null,
+    var npibLbrInft: Int? = null, // 가용 음압격리 병상수 (산모 및 신생아)
 
     @Column(name = "ventilator")
     var ventilator: String? = null, // 인공호흡기
@@ -91,43 +91,83 @@ class InfoBed(
     @Column
     var emrgncyNrmlIsltnBed: Int?, // hv30 - 응급실 일반 격리 병상
 
+    @Column(name = "emrgncy_ngtv_isltn_bed")
+    var emrgncyNgtvIsltnBed: Int?, // hv29 - 응급실 음압 격리 병상
+
+    @Column(name = "isltn_med_area_ngtv_isltn_bed")
+    var isltnMedAreaNgtvIsltnBed: Int?, // hv13 - 격리 진료 구역 음압 격리 병상
+
+    @Column(name = "isltn_med_area_nrml_isltn_bed")
+    var isltnMedAreaNrmlIsltnBed: Int?, // hv14 - 격리 진료 구역 일반 격리 병상
+
 ) : CommonEntity(), Serializable {
     companion object {
         @Serial
         private const val serialVersionUID: Long = 4876653874697519726L
     }
-//
-//    override fun equals(other: Any?): Boolean {
-//        if (this === other) return true
-//        if (other !is InfoBed) return false
-//
-//        if (hospId != other.hospId) return false
-//        if (hpId != other.hpId) return false
-//        if (gnbdIcu != other.gnbdIcu) return false
-//        if (npidIcu != other.npidIcu) return false
-//        if (gnbdSvrt != other.gnbdSvrt) return false
-//        if (gnbdSmsv != other.gnbdSmsv) return false
-//        if (gnbdModr != other.gnbdModr) return false
-//        if (cohtBed != other.cohtBed) return false
-//        if (npibSvrt != other.npibSvrt) return false
-//        if (npibSmsv != other.npibSmsv) return false
-//        if (npibModr != other.npibModr) return false
-//        return npibLbrInft == other.npibLbrInft
-//    }
-//
-//    override fun hashCode(): Int {
-//        var result = hospId.hashCode()
-//        result = 31 * result + hpId.hashCode()
-//        result = 31 * result + (gnbdIcu ?: 0)
-//        result = 31 * result + (npidIcu ?: 0)
-//        result = 31 * result + (gnbdSvrt ?: 0)
-//        result = 31 * result + (gnbdSmsv ?: 0)
-//        result = 31 * result + (gnbdModr ?: 0)
-//        result = 31 * result + (cohtBed ?: 0)
-//        result = 31 * result + (npibSvrt ?: 0)
-//        result = 31 * result + (npibSmsv ?: 0)
-//        result = 31 * result + (npibModr ?: 0)
-//        result = 31 * result + (npibLbrInft ?: 0)
-//        return result
-//    }
+
+    override fun equals(other: Any?): Boolean {
+        if (this === other) return true
+        if (other !is InfoBed) return false
+
+        if (hospId != other.hospId) return false
+        if (hpId != other.hpId) return false
+        if (gnbdIcu != other.gnbdIcu) return false
+        if (npidIcu != other.npidIcu) return false
+        if (gnbdSvrt != other.gnbdSvrt) return false
+        if (gnbdSmsv != other.gnbdSmsv) return false
+        if (gnbdModr != other.gnbdModr) return false
+        if (cohtBed != other.cohtBed) return false
+        if (npibSvrt != other.npibSvrt) return false
+        if (npibSmsv != other.npibSmsv) return false
+        if (npibModr != other.npibModr) return false
+        if (npibLbrInft != other.npibLbrInft) return false
+        if (ventilator != other.ventilator) return false
+        if (ventilatorPreemie != other.ventilatorPreemie) return false
+        if (incubator != other.incubator) return false
+        if (ecmo != other.ecmo) return false
+        if (highPressureOxygen != other.highPressureOxygen) return false
+        if (ct != other.ct) return false
+        if (mri != other.mri) return false
+        if (bloodVesselImaging != other.bloodVesselImaging) return false
+        if (bodyTemperatureControl != other.bodyTemperatureControl) return false
+        if (emrgncyNrmlBed != other.emrgncyNrmlBed) return false
+        if (ngtvIsltnChild != other.ngtvIsltnChild) return false
+        if (nrmlIsltnChild != other.nrmlIsltnChild) return false
+        if (nrmlChildBed != other.nrmlChildBed) return false
+        if (emrgncyNrmlIsltnBed != other.emrgncyNrmlIsltnBed) return false
+
+        return true
+    }
+
+    override fun hashCode(): Int {
+        var result = hospId.hashCode()
+        result = 31 * result + hpId.hashCode()
+        result = 31 * result + (gnbdIcu ?: 0)
+        result = 31 * result + (npidIcu ?: 0)
+        result = 31 * result + (gnbdSvrt ?: 0)
+        result = 31 * result + (gnbdSmsv ?: 0)
+        result = 31 * result + (gnbdModr ?: 0)
+        result = 31 * result + (cohtBed ?: 0)
+        result = 31 * result + (npibSvrt ?: 0)
+        result = 31 * result + (npibSmsv ?: 0)
+        result = 31 * result + (npibModr ?: 0)
+        result = 31 * result + (npibLbrInft ?: 0)
+        result = 31 * result + (ventilator?.hashCode() ?: 0)
+        result = 31 * result + (ventilatorPreemie?.hashCode() ?: 0)
+        result = 31 * result + (incubator?.hashCode() ?: 0)
+        result = 31 * result + (ecmo?.hashCode() ?: 0)
+        result = 31 * result + (highPressureOxygen?.hashCode() ?: 0)
+        result = 31 * result + (ct?.hashCode() ?: 0)
+        result = 31 * result + (mri?.hashCode() ?: 0)
+        result = 31 * result + (bloodVesselImaging?.hashCode() ?: 0)
+        result = 31 * result + (bodyTemperatureControl?.hashCode() ?: 0)
+        result = 31 * result + (emrgncyNrmlBed ?: 0)
+        result = 31 * result + (ngtvIsltnChild ?: 0)
+        result = 31 * result + (nrmlIsltnChild ?: 0)
+        result = 31 * result + (nrmlChildBed ?: 0)
+        result = 31 * result + (emrgncyNrmlIsltnBed ?: 0)
+        return result
+    }
+
 }

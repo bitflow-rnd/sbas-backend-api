@@ -5,8 +5,8 @@ import org.sbas.entities.bdas.BdasAdms
 import org.sbas.entities.bdas.BdasAdmsId
 import org.sbas.utils.StringUtils
 import org.sbas.utils.annotation.ValidEnum
-import javax.validation.constraints.NotBlank
-import javax.validation.constraints.NotNull
+import jakarta.validation.constraints.NotBlank
+import jakarta.validation.constraints.NotNull
 
 data class BdasAdmsSaveRequest(
     @field: NotBlank val ptId: String,

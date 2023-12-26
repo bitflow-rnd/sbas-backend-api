@@ -6,8 +6,8 @@ import org.hibernate.engine.spi.SharedSessionContractImplementor
 import org.hibernate.id.enhanced.SequenceStyleGenerator
 import org.hibernate.internal.util.config.ConfigurationHelper
 import org.hibernate.service.ServiceRegistry
-import org.hibernate.type.LongType
 import org.hibernate.type.Type
+import org.hibernate.type.spi.TypeConfiguration
 import java.io.Serializable
 import java.util.*
 
@@ -26,7 +26,7 @@ class StringPrefixedSequenceIdGenerator : SequenceStyleGenerator() {
 
     @Throws(MappingException::class)
     override fun configure(type: Type?, params: Properties?, serviceRegistry: ServiceRegistry?) {
-        super.configure(LongType.INSTANCE, params, serviceRegistry)
+        super.configure(TypeConfiguration().basicTypeRegistry.getRegisteredType(Long::class.java), params, serviceRegistry)
         valuePrefix = ConfigurationHelper.getString(
             VALUE_PREFIX_PARAMETER,
             params, VALUE_PREFIX_DEFAULT

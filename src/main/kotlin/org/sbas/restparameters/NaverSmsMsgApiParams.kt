@@ -1,6 +1,6 @@
 package org.sbas.restparameters
 
-import javax.validation.constraints.NotNull
+import jakarta.validation.constraints.NotNull
 
 data class NaverSmsMsgApiParams(
 
