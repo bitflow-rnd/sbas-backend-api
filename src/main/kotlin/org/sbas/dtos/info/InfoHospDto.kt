@@ -115,6 +115,7 @@ data class InfoHospListDto(
     val emrgncyNrmlIsltnBed: Int?, // hv30 - 응급실 일반 격리 병상
     val isltnMedAreaNgtvIsltnBed: Int?, // hv13 - 격리 진료 구역 음압 격리 병상
     val isltnMedAreaNrmlIsltnBed: Int?, // hv14 - 격리 진료 구역 일반 격리 병상
+    val cohtBed: Int?,
 
     var medicalStaffCount: Long?,
 ) {
