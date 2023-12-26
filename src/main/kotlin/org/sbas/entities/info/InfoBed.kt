@@ -96,38 +96,69 @@ class InfoBed(
         @Serial
         private const val serialVersionUID: Long = 4876653874697519726L
     }
-//
-//    override fun equals(other: Any?): Boolean {
-//        if (this === other) return true
-//        if (other !is InfoBed) return false
-//
-//        if (hospId != other.hospId) return false
-//        if (hpId != other.hpId) return false
-//        if (gnbdIcu != other.gnbdIcu) return false
-//        if (npidIcu != other.npidIcu) return false
-//        if (gnbdSvrt != other.gnbdSvrt) return false
-//        if (gnbdSmsv != other.gnbdSmsv) return false
-//        if (gnbdModr != other.gnbdModr) return false
-//        if (cohtBed != other.cohtBed) return false
-//        if (npibSvrt != other.npibSvrt) return false
-//        if (npibSmsv != other.npibSmsv) return false
-//        if (npibModr != other.npibModr) return false
-//        return npibLbrInft == other.npibLbrInft
-//    }
-//
-//    override fun hashCode(): Int {
-//        var result = hospId.hashCode()
-//        result = 31 * result + hpId.hashCode()
-//        result = 31 * result + (gnbdIcu ?: 0)
-//        result = 31 * result + (npidIcu ?: 0)
-//        result = 31 * result + (gnbdSvrt ?: 0)
-//        result = 31 * result + (gnbdSmsv ?: 0)
-//        result = 31 * result + (gnbdModr ?: 0)
-//        result = 31 * result + (cohtBed ?: 0)
-//        result = 31 * result + (npibSvrt ?: 0)
-//        result = 31 * result + (npibSmsv ?: 0)
-//        result = 31 * result + (npibModr ?: 0)
-//        result = 31 * result + (npibLbrInft ?: 0)
-//        return result
-//    }
+
+    override fun equals(other: Any?): Boolean {
+        if (this === other) return true
+        if (other !is InfoBed) return false
+
+        if (hospId != other.hospId) return false
+        if (hpId != other.hpId) return false
+        if (gnbdIcu != other.gnbdIcu) return false
+        if (npidIcu != other.npidIcu) return false
+        if (gnbdSvrt != other.gnbdSvrt) return false
+        if (gnbdSmsv != other.gnbdSmsv) return false
+        if (gnbdModr != other.gnbdModr) return false
+        if (cohtBed != other.cohtBed) return false
+        if (npibSvrt != other.npibSvrt) return false
+        if (npibSmsv != other.npibSmsv) return false
+        if (npibModr != other.npibModr) return false
+        if (npibLbrInft != other.npibLbrInft) return false
+        if (ventilator != other.ventilator) return false
+        if (ventilatorPreemie != other.ventilatorPreemie) return false
+        if (incubator != other.incubator) return false
+        if (ecmo != other.ecmo) return false
+        if (highPressureOxygen != other.highPressureOxygen) return false
+        if (ct != other.ct) return false
+        if (mri != other.mri) return false
+        if (bloodVesselImaging != other.bloodVesselImaging) return false
+        if (bodyTemperatureControl != other.bodyTemperatureControl) return false
+        if (emrgncyNrmlBed != other.emrgncyNrmlBed) return false
+        if (ngtvIsltnChild != other.ngtvIsltnChild) return false
+        if (nrmlIsltnChild != other.nrmlIsltnChild) return false
+        if (nrmlChildBed != other.nrmlChildBed) return false
+        if (emrgncyNrmlIsltnBed != other.emrgncyNrmlIsltnBed) return false
+
+        return true
+    }
+
+    override fun hashCode(): Int {
+        var result = hospId.hashCode()
+        result = 31 * result + hpId.hashCode()
+        result = 31 * result + (gnbdIcu ?: 0)
+        result = 31 * result + (npidIcu ?: 0)
+        result = 31 * result + (gnbdSvrt ?: 0)
+        result = 31 * result + (gnbdSmsv ?: 0)
+        result = 31 * result + (gnbdModr ?: 0)
+        result = 31 * result + (cohtBed ?: 0)
+        result = 31 * result + (npibSvrt ?: 0)
+        result = 31 * result + (npibSmsv ?: 0)
+        result = 31 * result + (npibModr ?: 0)
+        result = 31 * result + (npibLbrInft ?: 0)
+        result = 31 * result + (ventilator?.hashCode() ?: 0)
+        result = 31 * result + (ventilatorPreemie?.hashCode() ?: 0)
+        result = 31 * result + (incubator?.hashCode() ?: 0)
+        result = 31 * result + (ecmo?.hashCode() ?: 0)
+        result = 31 * result + (highPressureOxygen?.hashCode() ?: 0)
+        result = 31 * result + (ct?.hashCode() ?: 0)
+        result = 31 * result + (mri?.hashCode() ?: 0)
+        result = 31 * result + (bloodVesselImaging?.hashCode() ?: 0)
+        result = 31 * result + (bodyTemperatureControl?.hashCode() ?: 0)
+        result = 31 * result + (emrgncyNrmlBed ?: 0)
+        result = 31 * result + (ngtvIsltnChild ?: 0)
+        result = 31 * result + (nrmlIsltnChild ?: 0)
+        result = 31 * result + (nrmlChildBed ?: 0)
+        result = 31 * result + (emrgncyNrmlIsltnBed ?: 0)
+        return result
+    }
+
 }
