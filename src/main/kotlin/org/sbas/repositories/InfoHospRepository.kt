@@ -34,7 +34,7 @@ class InfoHospRepository : PanacheRepositoryBase<InfoHosp, String> {
     private lateinit var context: JpqlRenderContext
 
     fun findInfoHospByHospId(hospId: String): InfoHosp? {
-        return find("hosp_id = '$hospId'").firstResult()
+        return find("hospId = '$hospId'").firstResult()
     }
 
     fun findInfoHospByHpId(hpId: String): InfoHospId {

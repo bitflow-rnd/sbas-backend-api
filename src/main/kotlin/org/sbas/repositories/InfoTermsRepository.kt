@@ -17,22 +17,22 @@ import jakarta.inject.Inject
 class InfoTermsRepository : PanacheRepositoryBase<InfoTerms, InfoTermsId> {
 
     fun findTermsVersionByTermsType(termsType: String): String {
-        val resultList = find("terms_type = '$termsType'").list()
+        val resultList = find("id.termsType = '$termsType'").list()
 
         val maxVersion = resultList.maxByOrNull { it.id.termsVersion.toIntOrNull() ?: 0 }
         return maxVersion?.id?.termsVersion ?: "00"
     }
 
     fun findTermsListByTermsType(termsType: String): List<InfoTerms> {
-        return find("terms_type = '$termsType'").list()
+        return find("id.termsType = '$termsType'").list()
     }
 
     fun findTermsByTermsTypeAndTermsVersion(termsType: String, termsVersion: String): InfoTerms? {
-        return find("terms_type = '$termsType' and terms_version = '$termsVersion'").firstResult()
+        return find("id.termsType = '$termsType' and id.termsVersion = '$termsVersion'").firstResult()
     }
 
     fun findRecentTermsByTermsType(termsType: String): InfoTerms {
-        return find("terms_type = '$termsType'")
+        return find("id.termsType = '$termsType'")
                 .stream()
                 .collect(maxBy(comparing { it.id.termsVersion }))
                 .get()
@@ -54,7 +54,7 @@ class TermsAgreementRepository : PanacheRepositoryBase<TermsAgreement, TermsAgre
 
         if (termsType == "00") {
             val latestAgreeTerms =
-                find("user_id = '$userId' and agree_yn = 'Y'")
+                find("id.userId = '$userId' and agreeYn = 'Y'")
                     .stream()
                     .collect(groupingBy({ it.id.termsType }, maxBy(comparing { it.id.termsVersion })))
                     ?: return result
@@ -76,7 +76,7 @@ class TermsAgreementRepository : PanacheRepositoryBase<TermsAgreement, TermsAgre
             }
         } else {
             val latestAgreeTerms =
-                find("user_id = '$userId' and terms_type = '$termsType' and agree_yn = 'Y'")
+                find("id.userId = '$userId' and id.termsType = '$termsType' and agreeYn = 'Y'")
                     .stream()
                     .collect(maxBy(comparing { it.id.termsVersion }))
                     ?: return result

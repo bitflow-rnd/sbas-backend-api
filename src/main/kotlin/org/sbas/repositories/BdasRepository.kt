@@ -18,7 +18,7 @@ import jakarta.ws.rs.NotFoundException
 @ApplicationScoped
 class BdasEsvyRepository : PanacheRepositoryBase<BdasEsvy, String> {
     fun findByPtIdWithLatestBdasSeq(ptId: String): BdasEsvy? {
-        return find("pt_id = '${ptId}'", Sort.by("bdas_seq", Sort.Direction.Descending)).firstResult()
+        return find("ptId = '${ptId}'", Sort.by("bdasSeq", Sort.Direction.Descending)).firstResult()
     }
 }
 
@@ -33,8 +33,8 @@ class BdasReqRepository : PanacheRepositoryBase<BdasReq, BdasReqId> {
 
     fun findByPtIdAndBdasSeq(ptId: String, bdasSeq: Int): BdasReq? {
         return find(
-            "pt_id = '${ptId}' and bdas_seq = $bdasSeq",
-            Sort.by("bdas_seq", Sort.Direction.Descending)
+            "id.ptId = '${ptId}' and id.bdasSeq = $bdasSeq",
+            Sort.by("id.bdasSeq", Sort.Direction.Descending)
         ).firstResult()
     }
 
@@ -254,8 +254,8 @@ class BdasTrnsRepository : PanacheRepositoryBase<BdasTrns, BdasTrnsId> {
 
     fun findByPtIdAndBdasSeqWithNull(ptId: String, bdasSeq: Int): BdasTrns? {
         return find(
-            "pt_id = '${ptId}' and bdas_seq = $bdasSeq",
-            Sort.by("bdas_seq", Sort.Direction.Descending)
+            "id.ptId = '${ptId}' and id.bdasSeq = $bdasSeq",
+            Sort.by("id.bdasSeq", Sort.Direction.Descending)
         ).firstResult()
     }
 
@@ -294,8 +294,8 @@ class BdasAdmsRepository : PanacheRepositoryBase<BdasAdms, BdasAdmsId> {
 
     fun findByIdOrderByAdmsSeqDesc(ptId: String, bdasSeq: Int): BdasAdms? {
         return find(
-            "pt_id = '$ptId' and bdas_seq = $bdasSeq",
-            Sort.by("adms_seq", Sort.Direction.Descending)
+            "id.ptId = '$ptId' and id.bdasSeq = $bdasSeq",
+            Sort.by("id.admsSeq", Sort.Direction.Descending)
         ).firstResult()
     }
 

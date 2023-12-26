@@ -5,6 +5,9 @@ import org.hibernate.boot.model.FunctionContributor
 import org.hibernate.dialect.function.StandardSQLFunction
 import org.hibernate.type.StandardBasicTypes
 
+/**
+ * 새로 만든 DB 함수를 JPQL 에서 사용하려면 아래의 클래스에 등록해줘야 합니다.
+ */
 class CustomFunctionDistributor : FunctionContributor {
 
     override fun contributeFunctions(functionContributions: FunctionContributions) {

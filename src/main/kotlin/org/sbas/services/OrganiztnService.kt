@@ -222,7 +222,7 @@ class OrganiztnService {
      * 구급대원 조회
      */
     @Transactional
-    fun findFireman(instId: String, crewId: String): CommonResponse<InfoCrewDto> {
+    fun findFireman(instId: String, crewId: Int): CommonResponse<InfoCrewDto> {
         val findInfoCrew = infoCrewRepository.findInfoCrew(instId, crewId)
             ?: throw CustomizedException("해당 구급대원이 없습니다.", RestResponse.Status.NOT_FOUND)
 

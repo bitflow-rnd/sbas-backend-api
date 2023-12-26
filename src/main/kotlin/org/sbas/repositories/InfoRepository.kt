@@ -29,10 +29,10 @@ class InfoPtRepository : PanacheRepositoryBase<InfoPt, String> {
     private lateinit var log: Logger
 
     fun findByPtNmAndRrno(ptNm: String, rrno1: String, rrno2: String): InfoPt? =
-        find("pt_nm = '$ptNm' AND rrno_1 = '$rrno1' AND rrno_2 = '$rrno2'").firstResult()
+        find("ptNm = '$ptNm' AND rrno1 = '$rrno1' AND rrno2 = '$rrno2'").firstResult()
 
     fun findByDstrCd(dstr1Cd: String, dstr2Cd: String): List<InfoPt> {
-        return find("dstr_1_cd = '$dstr1Cd' and dstr_2_cd = '$dstr2Cd'").list()
+        return find("dstr1Cd = '$dstr1Cd' and dstr2Cd = '$dstr2Cd'").list()
     }
 
     fun findInfoPtList(param: InfoPtSearchParam): List<InfoPtSearchDto> {
@@ -170,12 +170,12 @@ class InfoCrewRepository : PanacheRepositoryBase<InfoCrew, InfoCrewId> {
         return infoCrewList.toMutableList()
     }
 
-    fun findInfoCrew(instId: String, crewId: String): InfoCrew? {
-        return find("inst_id = '$instId' and crew_id = '$crewId'").firstResult()
+    fun findInfoCrew(instId: String, crewId: Int): InfoCrew? {
+        return find("id.instId = '$instId' and id.crewId = $crewId").firstResult()
     }
 
     fun findLatestCrewId(instId: String): Int? {
-        return find("inst_id = '$instId'", Sort.by("crew_id", Sort.Direction.Descending))
+        return find("id.instId = '$instId'", Sort.by("id.crewId", Sort.Direction.Descending))
             .firstResult()?.id?.crewId
     }
 }
@@ -254,7 +254,7 @@ class InfoInstRepository : PanacheRepositoryBase<InfoInst, String> {
     }
 
     fun findLatestFireStatInstId(): String? {
-        return find("inst_type_cd = 'ORGN0002'", Sort.by("inst_id", Sort.Direction.Descending)).firstResult()?.id
+        return find("instTypeCd = 'ORGN0002'", Sort.by("id", Sort.Direction.Descending)).firstResult()?.id
     }
 
     fun findFireStatnDtoByInstId(instId: String): FireStatnDto? {
@@ -269,7 +269,7 @@ class InfoInstRepository : PanacheRepositoryBase<InfoInst, String> {
     }
 
     fun findFireStatn(instId: String): InfoInst? {
-        return find("inst_type_cd = 'ORGN0002' and inst_id = '$instId'").firstResult()
+        return find("instTypeCd = 'ORGN0002' and id = '$instId'").firstResult()
     }
 
     private fun CriteriaQueryDsl<*>.fireStatnsWhereAnd(param: FireStatnSearchParam) {
