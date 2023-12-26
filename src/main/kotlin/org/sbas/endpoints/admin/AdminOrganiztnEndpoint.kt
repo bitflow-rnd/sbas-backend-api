@@ -48,7 +48,7 @@ class AdminOrganiztnEndpoint{
     @Operation(summary = "구급대원 조회", description = "구급대원 상세 조회 API")
     @GET
     @Path("fireman/{instId}/{crewId}")
-    fun getFireman(@RestPath instId: String, @RestPath crewId: String): Response {
+    fun getFireman(@RestPath instId: String, @RestPath crewId: Int): Response {
         return Response.ok(organiztnService.findFireman(instId, crewId)).build()
     }
 

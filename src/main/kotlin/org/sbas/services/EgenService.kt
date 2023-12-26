@@ -351,7 +351,7 @@ class EgenService {
             infoBedSaveReq = objectMapper.readValue(jsonObject.toString(), InfoBedSaveReq::class.java)
             val infoHospIds = infoHospRepository.findInfoHospByHpId(infoBedSaveReq.hpid)
 
-            val findInfoBed = infoBedRepository.findByHpid(infoHospIds.hpId)
+            val findInfoBed = infoBedRepository.findByHpId(infoHospIds.hpId)
             val newEntity = infoBedSaveReq.toEntity(infoHospIds.hospId)
 
             if (findInfoBed != null) {

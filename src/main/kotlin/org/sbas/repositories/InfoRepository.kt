@@ -302,7 +302,7 @@ class InfoBedRepository : PanacheRepositoryBase<InfoBed, String> {
         return find("hospId = '$hospId'").firstResult()
     }
 
-    fun findByHpid(hpid: String): InfoBed? {
-        return find("hpid = '$hpid'").firstResult()
+    fun findByHpId(hpId: String): InfoBed? {
+        return find("hpId = '$hpId'").firstResult()
     }
 }
