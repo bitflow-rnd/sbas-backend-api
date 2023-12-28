@@ -71,6 +71,9 @@ class BedAssignService {
     private lateinit var infoInstRepository: InfoInstRepository
 
     @Inject
+    private lateinit var activityHistoryRepository: UserActivityHistoryRepository
+
+    @Inject
     private lateinit var geoHandler: GeocodingHandler
 
     @Inject
@@ -131,6 +134,8 @@ class BedAssignService {
             firebaseService.sendMessageMultiDevice("${findInfoPt.ptNm}님 병상요청", "신규 병상요청", it.id)
         }
 
+        activityHistoryRepository.save(saveRequest.toActivityHistory(bdasReq.rgstUserId))
+
         return CommonResponse("병상 요청 성공")
     }
 
@@ -181,6 +186,8 @@ class BedAssignService {
         } else {
             throw CustomizedException("aprvYn 값이 올바르지 않습니다.", Response.Status.INTERNAL_SERVER_ERROR)
         }
+
+        activityHistoryRepository.save(saveRequest.toActivityHistory(jwt.name))
 
         return CommonResponse("승인 성공")
     }

@@ -12,6 +12,8 @@ import kotlinx.coroutines.runBlocking
 import org.eclipse.microprofile.jwt.JsonWebToken
 import org.sbas.dtos.info.*
 import org.sbas.entities.info.InfoUser
+import org.sbas.entities.info.UserActivityHistory
+import org.sbas.entities.info.UserActivityHistoryId
 import org.sbas.entities.info.UserFcmToken
 import org.sbas.parameters.PageRequest
 
@@ -232,5 +234,18 @@ class UserFcmTokenRepository : PanacheRepositoryBase<UserFcmToken, Long> {
     @Transactional
     fun findAllByUserId(userId: String): List<UserFcmToken> {
         return find("userId = '${userId}' and isValid = true").list()
+    }
+}
+
+@ApplicationScoped
+class UserActivityHistoryRepository : PanacheRepositoryBase<UserActivityHistory, UserActivityHistoryId> {
+
+    fun save(userActivityHistory: UserActivityHistory): UserActivityHistory {
+        persist(userActivityHistory)
+        return userActivityHistory
+    }
+
+    fun findAllByUserId(userId: String): List<UserActivityHistory> {
+        return find("id.userId = $userId").list()
     }
 }

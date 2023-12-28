@@ -9,8 +9,9 @@ import org.sbas.utils.StringUtils
 import org.sbas.utils.annotation.ValidEnum
 import jakarta.validation.Valid
 import jakarta.validation.constraints.NotBlank
-import jakarta.validation.constraints.NotEmpty
 import jakarta.validation.constraints.Pattern
+import org.sbas.entities.info.UserActivityHistory
+import org.sbas.entities.info.UserActivityHistoryId
 
 /**
  * 병상 요청 DTO
@@ -59,6 +60,16 @@ data class BdasReqSaveRequest(
             chrgTelno = dprtInfo.chrgTelno,
             msg = dprtInfo.msg,
             bedStatCd = BedStatCd.BAST0003.name,
+        )
+    }
+
+    fun toActivityHistory(userId: String): UserActivityHistory {
+        return UserActivityHistory(
+            id = UserActivityHistoryId(
+                userId = userId,
+                ptId = svrInfo.ptId,
+            ),
+            activityDetail = "병상요청",
         )
     }
 

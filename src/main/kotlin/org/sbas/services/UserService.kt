@@ -27,8 +27,8 @@ import org.sbas.utils.TokenUtils
 import jakarta.enterprise.context.ApplicationScoped
 import jakarta.inject.Inject
 import jakarta.transaction.Transactional
-import jakarta.ws.rs.NotFoundException
 import jakarta.ws.rs.core.Response
+import org.sbas.repositories.UserActivityHistoryRepository
 
 
 @ApplicationScoped
@@ -42,6 +42,9 @@ class UserService {
 
     @Inject
     private lateinit var cntcRepository: InfoCntcRepository
+
+    @Inject
+    private lateinit var activityHistoryRepository: UserActivityHistoryRepository
 
     @RestClient
     private lateinit var naverSensClient: NaverSensRestClient
@@ -357,4 +360,10 @@ class UserService {
         return CommonResponse("즐겨찾기에서 삭제되었습니다.")
     }
 
+    fun getActivityHistory() {
+        val histories = activityHistoryRepository.findAllByUserId("")
+        histories.map {
+
+        }
+    }
 }
