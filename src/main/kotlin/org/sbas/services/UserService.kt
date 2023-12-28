@@ -161,7 +161,7 @@ class UserService {
             ?: throw CustomizedException("선택한 유저 ID가 없습니다.", Response.Status.NOT_FOUND)
 
         findUser.userStatCd = UserStatCd.URST0006
-        findUser.updtUserId = request.adminId
+        findUser.updtUserId = request.adminId!!
 
         return CommonResponse("${request.id} 계정을 삭제하였습니다.")
     }
