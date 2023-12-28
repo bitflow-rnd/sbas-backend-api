@@ -1,19 +1,19 @@
 package org.sbas.repositories
 
-import com.linecorp.kotlinjdsl.QueryFactory
-import com.linecorp.kotlinjdsl.listQuery
-import com.linecorp.kotlinjdsl.querydsl.expression.col
+import com.linecorp.kotlinjdsl.dsl.jpql.jpql
+import com.linecorp.kotlinjdsl.render.jpql.JpqlRenderContext
+import com.linecorp.kotlinjdsl.support.hibernate.extension.createQuery
 import io.quarkus.hibernate.orm.panache.kotlin.PanacheRepositoryBase
+import jakarta.enterprise.context.ApplicationScoped
+import jakarta.inject.Inject
+import jakarta.persistence.EntityManager
+import jakarta.transaction.Transactional
 import kotlinx.coroutines.runBlocking
 import org.eclipse.microprofile.jwt.JsonWebToken
 import org.sbas.dtos.info.*
 import org.sbas.entities.info.InfoUser
 import org.sbas.entities.info.UserFcmToken
 import org.sbas.parameters.PageRequest
-import jakarta.enterprise.context.ApplicationScoped
-import jakarta.inject.Inject
-import jakarta.persistence.EntityManager
-import jakarta.transaction.Transactional
 
 @ApplicationScoped
 class InfoUserRepository : PanacheRepositoryBase<InfoUser, String> {
@@ -22,7 +22,7 @@ class InfoUserRepository : PanacheRepositoryBase<InfoUser, String> {
     private lateinit var entityManager: EntityManager
 
     @Inject
-    private lateinit var queryFactory: QueryFactory
+    private lateinit var context: JpqlRenderContext
 
     @Inject
     private lateinit var jwt: JsonWebToken
@@ -182,39 +182,41 @@ class InfoUserRepository : PanacheRepositoryBase<InfoUser, String> {
     }
 
     fun findInfoUserDetail(): List<UserDetailResponse> {
-
-        val infoUserDetail = queryFactory.listQuery<UserDetailResponse> {
-            selectMulti(
-                col(InfoUser::id), col(InfoUser::userNm), col(InfoUser::gndr), col(InfoUser::telno),
-                col(InfoUser::jobCd), col(InfoUser::ocpCd), col(InfoUser::ptTypeCd),
-                col(InfoUser::instTypeCd), col(InfoUser::instId), col(InfoUser::instNm), col(InfoUser::dutyDstr1Cd),
-                function("fn_get_cd_nm", String::class.java, literal("SIDO"), col(InfoUser::dutyDstr1Cd)),
-                col(InfoUser::dutyDstr2Cd),
-                function("fn_get_dstr_cd2_nm", String::class.java, col(InfoUser::dutyDstr1Cd), col(InfoUser::dutyDstr2Cd)),
-                col(InfoUser::btDt), col(InfoUser::authCd), col(InfoUser::attcId), col(InfoUser::userStatCd), col(InfoUser::updtDttm),
+        val query = jpql {
+            selectNew<UserDetailResponse>(
+                path(InfoUser::id), path(InfoUser::userNm), path(InfoUser::gndr), path(InfoUser::telno),
+                path(InfoUser::jobCd), path(InfoUser::ocpCd), path(InfoUser::ptTypeCd),
+                path(InfoUser::instTypeCd), path(InfoUser::instId), path(InfoUser::instNm), path(InfoUser::dutyDstr1Cd),
+                function(String::class, "fn_get_cd_nm", stringLiteral("SIDO"), path(InfoUser::dutyDstr1Cd)),
+                path(InfoUser::dutyDstr2Cd),
+                function(String::class, "fn_get_dstr_cd2_nm", path(InfoUser::dutyDstr1Cd), path(InfoUser::dutyDstr2Cd)),
+                path(InfoUser::btDt), path(InfoUser::authCd), path(InfoUser::attcId), path(InfoUser::userStatCd), path(InfoUser::updtDttm),
+            ).from(
+                entity(InfoUser::class)
             )
-            from(entity(InfoUser::class))
         }
 
-        return infoUserDetail
+        return entityManager.createQuery(query, context).resultList
     }
 
     fun findInfoUserById(userId: String): UserDetailResponse {
-        val infoUserDetail = queryFactory.listQuery<UserDetailResponse> {
-            selectMulti(
-                col(InfoUser::id), col(InfoUser::userNm), col(InfoUser::gndr), col(InfoUser::telno),
-                col(InfoUser::jobCd), col(InfoUser::ocpCd), col(InfoUser::ptTypeCd),
-                col(InfoUser::instTypeCd), col(InfoUser::instId), col(InfoUser::instNm), col(InfoUser::dutyDstr1Cd),
-                function("fn_get_cd_nm", String::class.java, literal("SIDO"), col(InfoUser::dutyDstr1Cd)),
-                col(InfoUser::dutyDstr2Cd),
-                function("fn_get_dstr_cd2_nm", String::class.java, col(InfoUser::dutyDstr1Cd), col(InfoUser::dutyDstr2Cd)),
-                col(InfoUser::btDt), col(InfoUser::authCd), col(InfoUser::attcId), col(InfoUser::userStatCd), col(InfoUser::updtDttm),
-            )
-            from(entity(InfoUser::class))
-            where(
-               col(InfoUser::id).equal(userId)
+        val query = jpql {
+            selectNew<UserDetailResponse>(
+                path(InfoUser::id), path(InfoUser::userNm), path(InfoUser::gndr), path(InfoUser::telno),
+                path(InfoUser::jobCd), path(InfoUser::ocpCd), path(InfoUser::ptTypeCd),
+                path(InfoUser::instTypeCd), path(InfoUser::instId), path(InfoUser::instNm), path(InfoUser::dutyDstr1Cd),
+                function(String::class, "fn_get_cd_nm", stringLiteral("SIDO"), path(InfoUser::dutyDstr1Cd)),
+                path(InfoUser::dutyDstr2Cd),
+                function(String::class, "fn_get_dstr_cd2_nm", path(InfoUser::dutyDstr1Cd), path(InfoUser::dutyDstr2Cd)),
+                path(InfoUser::btDt), path(InfoUser::authCd), path(InfoUser::attcId), path(InfoUser::userStatCd), path(InfoUser::updtDttm),
+            ).from(
+                entity(InfoUser::class)
+            ).whereAnd(
+                path(InfoUser::id).eq(userId)
             )
         }
+
+        val infoUserDetail = entityManager.createQuery(query, context).resultList
         val isFavorite = cntcRepository.findInfoCntcByUserIdAndMbrId(jwt.name, userId) != null
 
         val result = infoUserDetail.first()

@@ -42,9 +42,6 @@ dependencies {
 
     implementation("com.fasterxml.jackson.module:jackson-module-kotlin:2.14.3")
     implementation("com.google.firebase:firebase-admin:9.1.1")
-//    implementation("com.linecorp.kotlin-jdsl:hibernate-kotlin-jdsl:2.2.1.RELEASE")
-    implementation("com.linecorp.kotlin-jdsl:hibernate-kotlin-jdsl-jakarta:2.2.1.RELEASE")
-
 
     implementation("com.linecorp.kotlin-jdsl:hibernate-support:3.2.0")
     implementation("com.linecorp.kotlin-jdsl:jpql-dsl:3.2.0")

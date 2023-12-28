@@ -98,7 +98,7 @@ class OrganiztnService {
 
         val hospBasicInfo = objectMapper.readValue(item.toString(), HospBasicInfo::class.java)
 
-        val (jsonObject2, totalCount) = egenService.getHsptlMdcncListInfoInqire(param = EgenApiListInfoParams(qn = hospBasicInfo.dutyName))
+        val (jsonObject2, totalCount) = egenService.getHsptlMdcncListInfoInqire(param = EgenApiListInfoParams(qn = hospBasicInfo.dutyName?.replace("\\s".toRegex(), "")))
         val bassInfo = if (totalCount == 1) {
             jsonObject2.getJSONObject("item")
         } else {

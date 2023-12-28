@@ -1,19 +1,17 @@
 package org.sbas.repositories
 
-import com.linecorp.kotlinjdsl.QueryFactory
 import io.quarkus.hibernate.orm.panache.kotlin.PanacheRepositoryBase
 import io.quarkus.panache.common.Sort
+import jakarta.enterprise.context.ApplicationScoped
+import jakarta.inject.Inject
+import jakarta.persistence.EntityManager
+import jakarta.persistence.TypedQuery
 import org.sbas.constants.enums.AdmsStatCd
 import org.sbas.constants.enums.TimeLineStatCd
 import org.sbas.dtos.bdas.*
 import org.sbas.entities.bdas.*
 import org.sbas.responses.patient.DestinationInfo
 import java.time.Instant
-import jakarta.enterprise.context.ApplicationScoped
-import jakarta.inject.Inject
-import jakarta.persistence.EntityManager
-import jakarta.persistence.TypedQuery
-import jakarta.ws.rs.NotFoundException
 
 @ApplicationScoped
 class BdasEsvyRepository : PanacheRepositoryBase<BdasEsvy, String> {
@@ -27,9 +25,6 @@ class BdasReqRepository : PanacheRepositoryBase<BdasReq, BdasReqId> {
 
     @Inject
     private lateinit var entityManager: EntityManager
-
-    @Inject
-    private lateinit var queryFactory: QueryFactory
 
     fun findByPtIdAndBdasSeq(ptId: String, bdasSeq: Int): BdasReq? {
         return find(
