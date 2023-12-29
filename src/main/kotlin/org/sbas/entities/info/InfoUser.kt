@@ -94,7 +94,7 @@ class InfoUser(
     }
     
     // 처음 사용자 등록할 때 사용
-    fun setRgstAndUpdtUserIdTo(userId: String?) {
+    fun setRgstAndUpdtUserIdTo(userId: String) {
         rgstUserId = userId
         updtUserId = userId
     }

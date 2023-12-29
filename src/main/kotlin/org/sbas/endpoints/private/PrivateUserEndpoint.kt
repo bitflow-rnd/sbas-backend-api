@@ -152,4 +152,11 @@ class PrivateUserEndpoint {
     fun delFavorite(@Valid request: InfoCntcDto): Response {
         return Response.ok(userService.delFavorite(request)).build()
     }
+
+    @Operation(summary = "사용자 활동 내역 목록", description = "사용자 활동 내역 목록 API")
+    @GET
+    @Path("activity-history/{userId}")
+    fun activityHistory(@RestPath userId: String): Response {
+        return Response.ok(userService.getActivityHistory(userId)).build()
+    }
 }

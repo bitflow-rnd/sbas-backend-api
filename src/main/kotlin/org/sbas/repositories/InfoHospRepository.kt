@@ -1,31 +1,24 @@
 package org.sbas.repositories
 
-import com.linecorp.kotlinjdsl.QueryFactory
 import com.linecorp.kotlinjdsl.dsl.jpql.jpql
-import com.linecorp.kotlinjdsl.listQuery
-import com.linecorp.kotlinjdsl.querydsl.CriteriaQueryDsl
-import com.linecorp.kotlinjdsl.querydsl.expression.col
 import com.linecorp.kotlinjdsl.render.jpql.JpqlRenderContext
 import com.linecorp.kotlinjdsl.support.hibernate.extension.createQuery
 import io.quarkus.hibernate.orm.panache.kotlin.PanacheRepositoryBase
+import jakarta.enterprise.context.ApplicationScoped
+import jakarta.inject.Inject
+import jakarta.persistence.EntityManager
 import org.jboss.logging.Logger
 import org.sbas.dtos.info.*
 import org.sbas.entities.info.InfoBed
 import org.sbas.entities.info.InfoHosp
 import org.sbas.entities.info.InfoHospDetail
 import org.sbas.entities.info.InfoUser
-import jakarta.enterprise.context.ApplicationScoped
-import jakarta.inject.Inject
-import jakarta.persistence.EntityManager
 
 @ApplicationScoped
 class InfoHospRepository : PanacheRepositoryBase<InfoHosp, String> {
 
     @Inject
     private lateinit var log:Logger
-
-    @Inject
-    private lateinit var queryFactory: QueryFactory
 
     @Inject
     private lateinit var entityManager: EntityManager
@@ -38,18 +31,19 @@ class InfoHospRepository : PanacheRepositoryBase<InfoHosp, String> {
     }
 
     fun findInfoHospByHpId(hpId: String): InfoHospId {
-        val infoHospId = queryFactory.listQuery<InfoHospId> {
-            selectMulti(
-                col(InfoHosp::hospId), col(InfoHosp::hpId), col(InfoHosp::dstrCd1),
-                function("fn_get_cd_nm", String::class.java, literal("SIDO"), col(InfoHosp::dstrCd1)),
-                col(InfoHosp::attcId),
-            )
-            from(entity(InfoHosp::class))
-            where(
-                col(InfoHosp::hpId).equal(hpId)
+        val query = jpql {
+            selectNew<InfoHospId>(
+                path(InfoHosp::hospId), path(InfoHosp::hpId), path(InfoHosp::dstrCd1),
+                function(String::class, "fn_get_cd_nm", stringLiteral("SIDO"), path(InfoHosp::dstrCd1)),
+                path(InfoHosp::attcId),
+            ).from(
+                entity(InfoHosp::class)
+            ).where(
+                path(InfoHosp::hpId).eq(hpId)
             )
         }
-        return infoHospId[0]
+
+        return entityManager.createQuery(query, context).singleResult
     }
 
     fun findInfoHosps(param: InfoHospSearchParam): MutableList<InfoHospListDto> {
@@ -96,97 +90,106 @@ class InfoHospRepository : PanacheRepositoryBase<InfoHosp, String> {
     }
 
     fun countInfoHosps(param: InfoHospSearchParam): Int {
-        val count = queryFactory.listQuery<Long> {
-            selectMulti(count(entity(InfoHosp::class)))
-            from(entity(InfoHosp::class))
-            join(entity(InfoBed::class), on { col(InfoHosp::hospId).equal(col(InfoBed::hospId)) })
-            whereAnd(param)
+        val query = jpql {
+            select(
+                count(entity(InfoHosp::class))
+            ).from(
+                entity(InfoHosp::class),
+                join(InfoBed::class).on(path(InfoHosp::hospId).eq(path(InfoBed::hospId)))
+            ).whereAnd(
+                param.hospId?.run { path(InfoHosp::hospId).like("%$this%") },
+                param.dutyName?.run { path(InfoHosp::dutyName).like("%$this%") },
+                param.dstrCd1?.run { path(InfoHosp::dstrCd1).equal(this) },
+                param.dstrCd2?.run { path(InfoHosp::dstrCd2).equal(this) },
+                param.dutyDivNam?.run { path(InfoHosp::dutyDivNam).`in`(this) },
+            )
         }
-        return count[0].toInt()
+
+        return entityManager.createQuery(query, context).singleResult.toInt()
     }
 
     fun findByHospIdList(hospList: List<String>): MutableList<InfoHospWithUser> {
-        val infoHospList = queryFactory.listQuery<InfoHospWithUser> {
-            selectMulti(
-                col(InfoHosp::hospId), col(InfoHosp::dutyName),
-                col(InfoUser::instId), col(InfoUser::instNm), col(InfoUser::id)
-            )
-            from(entity(InfoHosp::class))
-            join(entity(InfoUser::class), on { col(InfoHosp::hospId).equal(col(InfoUser::instId)) })
-            whereAnd(
-                col(InfoUser::instId).`in`(hospList),
-                col(InfoUser::jobCd).equal("PMGR0003"),
+        val query = jpql {
+            selectNew<InfoHospWithUser>(
+                path(InfoHosp::hospId), path(InfoHosp::dutyName),
+                path(InfoUser::instId), path(InfoUser::instNm), path(InfoUser::id)
+            ).from(
+                entity(InfoHosp::class),
+                join(InfoUser::class).on(path(InfoHosp::hospId).eq(path(InfoUser::instId)))
+            ).whereAnd(
+                path(InfoUser::instId).`in`(hospList),
+                path(InfoUser::jobCd).eq("PMGR0003"),
             )
         }
 
-        return infoHospList.toMutableList()
+        return entityManager.createQuery(query, context).resultList
     }
 
     fun findAvalHospListByDstrCd1(dstrCd1: String): MutableList<AvalHospDto> {
-        val list = queryFactory.listQuery<AvalHospDto> {
-            selectMulti(
-                col(InfoHosp::hospId), col(InfoHosp::dutyName), col(InfoHosp::wgs84Lon), col(InfoHosp::wgs84Lat),
-                col(InfoHosp::dutyAddr), col(InfoBed::gnbdIcu), col(InfoBed::npidIcu), col(InfoBed::gnbdSvrt),
-                col(InfoBed::gnbdSmsv), col(InfoBed::gnbdModr),
-                col(InfoBed::ventilator), col(InfoBed::ventilatorPreemie), col(InfoBed::incubator), col(InfoBed::ecmo),
-                col(InfoBed::highPressureOxygen), col(InfoBed::ct), col(InfoBed::mri), col(InfoBed::highPressureOxygen),
-                col(InfoBed::bodyTemperatureControl),
-            )
-            from(entity(InfoHosp::class))
-            join(entity(InfoBed::class), on { col(InfoHosp::hospId).equal(col(InfoBed::hospId)) })
-            whereAnd(
-                col(InfoHosp::dstrCd1).equal(dstrCd1),
+        val query = jpql {
+            selectNew<AvalHospDto>(
+                path(InfoHosp::hospId), path(InfoHosp::dutyName), path(InfoHosp::wgs84Lon), path(InfoHosp::wgs84Lat),
+                path(InfoHosp::dutyAddr), path(InfoBed::gnbdIcu), path(InfoBed::npidIcu), path(InfoBed::gnbdSvrt),
+                path(InfoBed::gnbdSmsv), path(InfoBed::gnbdModr),
+                path(InfoBed::ventilator), path(InfoBed::ventilatorPreemie), path(InfoBed::incubator), path(InfoBed::ecmo),
+                path(InfoBed::highPressureOxygen), path(InfoBed::ct), path(InfoBed::mri), path(InfoBed::highPressureOxygen),
+                path(InfoBed::bodyTemperatureControl),
+            ).from(
+                entity(InfoHosp::class),
+                join(InfoBed::class).on(path(InfoHosp::hospId).eq(path(InfoBed::hospId)))
+            ).whereAnd(
+                path(InfoHosp::dstrCd1).eq(dstrCd1),
             )
         }
 
-        return list.toMutableList()
+        return entityManager.createQuery(query, context).resultList
     }
 
     fun findPubHealthCenter(dstrCd1: String?, dstrCd2: String?): List<InfoInstResponse> {
-        val healthCenterList = queryFactory.listQuery<InfoInstResponse> {
-            selectMulti(
-                col(InfoHosp::hospId), literal("ORGN0003"), col(InfoHosp::dutyName),
-                col(InfoHosp::dstrCd1), col(InfoHosp::dstrCd2),
-            )
-            from(entity(InfoHosp::class))
-            whereAnd(
-                col(InfoHosp::dutyDivNam).equal("보건소"),
-                col(InfoHosp::dutyName).like("%보건소"),
-                dstrCd1?.run { col(InfoHosp::dstrCd1).equal(this) },
-                dstrCd2?.run { col(InfoHosp::dstrCd2).equal(this) },
+        val query = jpql {
+            selectNew<InfoInstResponse>(
+                path(InfoHosp::hospId), stringLiteral("ORGN0003"), path(InfoHosp::dutyName),
+                path(InfoHosp::dstrCd1), path(InfoHosp::dstrCd2),
+            ).from(
+                entity(InfoHosp::class)
+            ).whereAnd(
+                path(InfoHosp::dutyDivNam).eq("보건소"),
+                path(InfoHosp::dutyName).like("%보건소"),
+                dstrCd1?.run { path(InfoHosp::dstrCd1).equal(this) },
+                dstrCd2?.run { path(InfoHosp::dstrCd2).equal(this) },
             )
         }
 
-        return healthCenterList
+        return entityManager.createQuery(query, context).resultList
     }
 
     fun findMediOrgan(dstrCd1: String?, dstrCd2: String?): List<InfoInstResponse> {
-        val list = queryFactory.listQuery<InfoInstResponse> {
-            selectMulti(
-                col(InfoHosp::hospId), literal("ORGN0004"), col(InfoHosp::dutyName),
-                col(InfoHosp::dstrCd1), col(InfoHosp::dstrCd2),
-            )
-            from(entity(InfoHosp::class))
-            join(entity(InfoBed::class), on { col(InfoHosp::hospId).equal(col(InfoBed::hospId)) })
-            whereAnd(
-                dstrCd1?.run { col(InfoHosp::dstrCd1).equal(this) },
-                dstrCd2?.run { col(InfoHosp::dstrCd2).equal(this) },
+        val query = jpql {
+            selectNew<InfoInstResponse>(
+                path(InfoHosp::hospId), stringLiteral("ORGN0004"), path(InfoHosp::dutyName),
+                path(InfoHosp::dstrCd1), path(InfoHosp::dstrCd2),
+            ).from(
+                entity(InfoHosp::class),
+                join(InfoBed::class).on(path(InfoHosp::hospId).equal(path(InfoBed::hospId)))
+            ).whereAnd(
+                dstrCd1?.run { path(InfoHosp::dstrCd1).equal(this) },
+                dstrCd2?.run { path(InfoHosp::dstrCd2).equal(this) },
             )
         }
 
-        return list.toMutableList()
+        return entityManager.createQuery(query, context).resultList
     }
 
 
-    private fun CriteriaQueryDsl<*>.whereAnd(param: InfoHospSearchParam) {
-        whereAnd(
-            param.hospId?.run { col(InfoHosp::hospId).like("%$this%") },
-            param.dutyName?.run { col(InfoHosp::dutyName).like("%$this%") },
-            param.dstrCd1?.run { col(InfoHosp::dstrCd1).equal(this) },
-            param.dstrCd2?.run { col(InfoHosp::dstrCd2).equal(this) },
-            param.dutyDivNam?.run { col(InfoHosp::dutyDivNam).`in`(this) },
-        )
-    }
+//    private fun CriteriaQueryDsl<*>.whereAnd(param: InfoHospSearchParam) {
+//        whereAnd(
+//            param.hospId?.run { col(InfoHosp::hospId).like("%$this%") },
+//            param.dutyName?.run { col(InfoHosp::dutyName).like("%$this%") },
+//            param.dstrCd1?.run { col(InfoHosp::dstrCd1).equal(this) },
+//            param.dstrCd2?.run { col(InfoHosp::dstrCd2).equal(this) },
+//            param.dutyDivNam?.run { col(InfoHosp::dutyDivNam).`in`(this) },
+//        )
+//    }
 }
 
 @ApplicationScoped

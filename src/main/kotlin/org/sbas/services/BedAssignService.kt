@@ -71,6 +71,9 @@ class BedAssignService {
     private lateinit var infoInstRepository: InfoInstRepository
 
     @Inject
+    private lateinit var activityHistoryRepository: UserActivityHistoryRepository
+
+    @Inject
     private lateinit var geoHandler: GeocodingHandler
 
     @Inject
@@ -131,6 +134,8 @@ class BedAssignService {
             firebaseService.sendMessageMultiDevice("${findInfoPt.ptNm}님 병상요청", "신규 병상요청", it.id)
         }
 
+        activityHistoryRepository.save(saveRequest.toActivityHistory(bdasReq.rgstUserId))
+
         return CommonResponse("병상 요청 성공")
     }
 
@@ -145,7 +150,7 @@ class BedAssignService {
         val bdasReqAprvs =
             bdasReqAprvRepository.findReqAprvListByPtIdAndBdasSeq(saveRequest.ptId, saveRequest.bdasSeq)
 
-        val requestUser = infoUserRepository.findByUserId(findBdasReq.rgstUserId!!)
+        val requestUser = infoUserRepository.findByUserId(findBdasReq.rgstUserId)
             ?: throw NotFoundException("user not found")
 
         val findInfoPt = infoPtRepository.findById(saveRequest.ptId) ?: throw NotFoundException("${saveRequest.ptId} not found")
@@ -181,6 +186,8 @@ class BedAssignService {
         } else {
             throw CustomizedException("aprvYn 값이 올바르지 않습니다.", Response.Status.INTERNAL_SERVER_ERROR)
         }
+
+        activityHistoryRepository.save(saveRequest.toActivityHistory(jwt.name))
 
         return CommonResponse("승인 성공")
     }
@@ -285,7 +292,7 @@ class BedAssignService {
                 firebaseService.sendMessageMultiDevice(
                     "${findInfoPt.ptNm}님 병상배정",
                     "모든 병원이 배정 불가 처리되었습니다. 재요청 바랍니다.",
-                    bdasReqAprvList[0].rgstUserId!!
+                    bdasReqAprvList[0].rgstUserId
                 )
                 //            findBdasReq.changeBedStatTo(BedStatCd.BAST0008.name)
                 findBdasReq.changeBedStatTo(BedStatCd.BAST0003.name)
@@ -322,7 +329,7 @@ class BedAssignService {
             else -> "병상 배정이 불가처리되었습니다."
         }
 
-        firebaseService.sendMessageMultiDevice("${findInfoPt.ptNm}님 병상배정", msg, bdasReqAprvList[0].rgstUserId!!)
+        firebaseService.sendMessageMultiDevice("${findInfoPt.ptNm}님 병상배정", msg, bdasReqAprvList[0].rgstUserId)
 
 //        // 지역코드로 병상배정반 찾기
 //        val bdasUsers = infoUserRepository.findBdasUserByReqDstrCd(findBdasReq.reqDstr1Cd, findBdasReq.reqDstr2Cd)

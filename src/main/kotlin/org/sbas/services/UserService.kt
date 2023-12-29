@@ -27,8 +27,8 @@ import org.sbas.utils.TokenUtils
 import jakarta.enterprise.context.ApplicationScoped
 import jakarta.inject.Inject
 import jakarta.transaction.Transactional
-import jakarta.ws.rs.NotFoundException
 import jakarta.ws.rs.core.Response
+import org.sbas.repositories.UserActivityHistoryRepository
 
 
 @ApplicationScoped
@@ -42,6 +42,9 @@ class UserService {
 
     @Inject
     private lateinit var cntcRepository: InfoCntcRepository
+
+    @Inject
+    private lateinit var activityHistoryRepository: UserActivityHistoryRepository
 
     @RestClient
     private lateinit var naverSensClient: NaverSensRestClient
@@ -161,7 +164,7 @@ class UserService {
             ?: throw CustomizedException("선택한 유저 ID가 없습니다.", Response.Status.NOT_FOUND)
 
         findUser.userStatCd = UserStatCd.URST0006
-        findUser.updtUserId = request.adminId
+        findUser.updtUserId = request.adminId!!
 
         return CommonResponse("${request.id} 계정을 삭제하였습니다.")
     }
@@ -357,4 +360,8 @@ class UserService {
         return CommonResponse("즐겨찾기에서 삭제되었습니다.")
     }
 
+    fun getActivityHistory(userId: String): List<UserActivityHistoryResponse> {
+        val histories = activityHistoryRepository.findAllByUserId("administrator")
+        return histories
+    }
 }
