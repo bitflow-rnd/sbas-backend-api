@@ -8,8 +8,9 @@ import java.io.Serializable
 @Entity
 @Table(name = "user_activity_history")
 class UserActivityHistory(
+    @Id
     @EmbeddedId
-    var id: UserActivityHistoryId,
+    val id: UserActivityHistoryId,
 
     @Column(name = "activity_detail")
     var activityDetail: String?,
@@ -18,10 +19,10 @@ class UserActivityHistory(
 @Embeddable
 data class UserActivityHistoryId(
     @Column(name = "pt_id", nullable = false)
-    var ptId: String,
+    val ptId: String,
 
     @Column(name = "user_id", nullable = false)
-    var userId: String,
+    val userId: String,
 ) : Serializable {
     companion object {
         @Serial

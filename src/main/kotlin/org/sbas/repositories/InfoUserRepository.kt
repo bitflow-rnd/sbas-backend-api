@@ -11,10 +11,7 @@ import jakarta.transaction.Transactional
 import kotlinx.coroutines.runBlocking
 import org.eclipse.microprofile.jwt.JsonWebToken
 import org.sbas.dtos.info.*
-import org.sbas.entities.info.InfoUser
-import org.sbas.entities.info.UserActivityHistory
-import org.sbas.entities.info.UserActivityHistoryId
-import org.sbas.entities.info.UserFcmToken
+import org.sbas.entities.info.*
 import org.sbas.parameters.PageRequest
 
 @ApplicationScoped
@@ -240,12 +237,37 @@ class UserFcmTokenRepository : PanacheRepositoryBase<UserFcmToken, Long> {
 @ApplicationScoped
 class UserActivityHistoryRepository : PanacheRepositoryBase<UserActivityHistory, UserActivityHistoryId> {
 
+    @Inject
+    private lateinit var entityManager: EntityManager
+
+    @Inject
+    private lateinit var context: JpqlRenderContext
+
     fun save(userActivityHistory: UserActivityHistory): UserActivityHistory {
         persist(userActivityHistory)
         return userActivityHistory
     }
 
-    fun findAllByUserId(userId: String): List<UserActivityHistory> {
-        return find("id.userId = $userId").list()
+    fun findAllByUserId(userId: String): List<UserActivityHistoryResponse> {
+        val query = jpql {
+            selectNew<UserActivityHistoryResponse>(
+                path(UserActivityHistory::id)(UserActivityHistoryId::userId),
+                path(UserActivityHistory::id)(UserActivityHistoryId::ptId),
+                path(InfoPt::ptNm),
+                intLiteral(0),
+                path(InfoPt::dstr1Cd),
+                function(String::class, "fn_get_cd_nm", stringLiteral("SIDO"), path(InfoPt::dstr1Cd)),
+                path(InfoPt::dstr2Cd),
+                function(String::class, "fn_get_dstr_cd2_nm", path(InfoPt::dstr1Cd), path(InfoPt::dstr2Cd)),
+                path(UserActivityHistory::rgstDttm),
+            ).from(
+                entity(UserActivityHistory::class),
+                join(InfoPt::class).on(path(UserActivityHistory::id)(UserActivityHistoryId::ptId).eq(path(InfoPt::ptId)))
+            ).whereAnd(
+                path(UserActivityHistory::id)(UserActivityHistoryId::userId).eq(userId)
+            )
+        }
+
+        return entityManager.createQuery(query, context).resultList
     }
 }

@@ -360,10 +360,8 @@ class UserService {
         return CommonResponse("즐겨찾기에서 삭제되었습니다.")
     }
 
-    fun getActivityHistory() {
-        val histories = activityHistoryRepository.findAllByUserId("")
-        histories.map {
-
-        }
+    fun getActivityHistory(userId: String): List<UserActivityHistoryResponse> {
+        val histories = activityHistoryRepository.findAllByUserId("administrator")
+        return histories
     }
 }
