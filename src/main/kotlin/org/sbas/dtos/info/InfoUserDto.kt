@@ -14,7 +14,7 @@ import jakarta.ws.rs.QueryParam
  * 사용자 목록 조회 DTO
  */
 data class InfoUserListDto(
-    var userId: String,
+    var id: String,
     var dutyDstr1Cd: String?,
     val dutyDstr1CdNm: String?,
     var telno: String?,

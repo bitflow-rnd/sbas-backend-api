@@ -62,7 +62,7 @@ class InfoUserRepository : PanacheRepositoryBase<InfoUser, String> {
         val userList = entityManager.createQuery(query, InfoUserListDto::class.java).resultList
 
         userList.forEach{
-            it.isFavorite = cntcRepository.findInfoCntcByUserIdAndMbrId(jwt.name, it.userId) != null
+            it.isFavorite = cntcRepository.findInfoCntcByUserIdAndMbrId(jwt.name, it.id) != null
         }
 
         return userList
@@ -83,7 +83,7 @@ class InfoUserRepository : PanacheRepositoryBase<InfoUser, String> {
         val userList = entityManager.createQuery(query, InfoUserListDto::class.java).resultList
 
         userList.forEach{
-            it.isFavorite = cntcRepository.findInfoCntcByUserIdAndMbrId(jwt.name, it.userId) != null
+            it.isFavorite = cntcRepository.findInfoCntcByUserIdAndMbrId(jwt.name, it.id) != null
         }
 
         return userList
