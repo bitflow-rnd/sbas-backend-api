@@ -11,5 +11,6 @@ data class UserActivityHistoryResponse(
     val dstr1CdNm: String?,
     val dstr2Cd: String?,
     val dstr2CdNm: String?,
+    val activityDetail: String?,
     val rgstDttm: Instant,
 )
