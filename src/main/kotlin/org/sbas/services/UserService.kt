@@ -338,7 +338,7 @@ class UserService {
 
         cntcRepository.persist(insertCntc)
 
-        return CommonResponse(insertCntc)
+        return CommonResponse("즐겨찾기에 등록되었습니다.", insertCntc)
     }
 
     /**
