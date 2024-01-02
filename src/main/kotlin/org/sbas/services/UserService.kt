@@ -357,7 +357,8 @@ class UserService {
      */
     @Transactional
     fun delFavorite(request: InfoCntcDto): CommonResponse<String> {
-        val findCntc = cntcRepository.findInfoCntcByUserIdAndMbrId(request.id, request.mbrId) ?: throw CustomizedException("즐겨찾기에 등록되어 있지 않습니다.", Response.Status.NOT_FOUND)
+        val findCntc = cntcRepository.findInfoCntcByUserIdAndMbrId(request.id, request.mbrId)
+            ?: return CommonResponse(SbasConst.ResCode.FAIL, "즐겨찾기에 등록되어 있지 않습니다.", null)
 
         cntcRepository.delete(findCntc)
 
