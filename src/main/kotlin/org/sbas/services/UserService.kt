@@ -323,6 +323,8 @@ class UserService {
     fun regFavorite(request: InfoCntcDto): CommonResponse<InfoCntc> {
         val histSeq = cntcRepository.getHistSeq(request.id) ?: 0
 
+        if(cntcRepository.findInfoCntcByUserIdAndMbrId(request.id, request.mbrId) != null) throw CustomizedException("이미 즐겨찾기에 등록되어 있습니다.", Response.Status.BAD_REQUEST)
+
         //유저 존재 확인
         userRepository.findByUserId(request.mbrId) ?: throw CustomizedException("해당 유저를 찾을 수 없습니다.", Response.Status.NOT_FOUND)
 
