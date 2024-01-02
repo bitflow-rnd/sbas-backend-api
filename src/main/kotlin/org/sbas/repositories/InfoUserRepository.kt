@@ -253,7 +253,7 @@ class UserActivityHistoryRepository : PanacheRepositoryBase<UserActivityHistory,
             selectNew<UserActivityHistoryResponse>(
                 path(UserActivityHistory::id)(UserActivityHistoryId::userId),
                 path(UserActivityHistory::id)(UserActivityHistoryId::ptId),
-                path(InfoPt::ptNm),
+                path(InfoPt::ptNm), path(InfoPt::gndr),
                 function(String::class, "fn_get_age", path(InfoPt::rrno1), path(InfoPt::rrno2)),
                 path(InfoPt::dstr1Cd),
                 function(String::class, "fn_get_cd_nm", stringLiteral("SIDO"), path(InfoPt::dstr1Cd)),
@@ -263,7 +263,7 @@ class UserActivityHistoryRepository : PanacheRepositoryBase<UserActivityHistory,
                 path(UserActivityHistory::rgstDttm),
             ).from(
                 entity(UserActivityHistory::class),
-                join(InfoPt::class).on(path(UserActivityHistory::id)(UserActivityHistoryId::ptId).eq(path(InfoPt::ptId)))
+                join(InfoPt::class).on(path(UserActivityHistory::id)(UserActivityHistoryId::ptId).eq(path(InfoPt::ptId))),
             ).whereAnd(
                 path(UserActivityHistory::id)(UserActivityHistoryId::userId).eq(userId)
             )
