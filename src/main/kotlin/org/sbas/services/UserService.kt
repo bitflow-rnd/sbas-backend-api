@@ -356,13 +356,13 @@ class UserService {
      * 즐겨찾기 삭제
      */
     @Transactional
-    fun delFavorite(request: InfoCntcDto): CommonResponse<String> {
+    fun delFavorite(request: InfoCntcDto): CommonResponse<InfoCntc> {
         val findCntc = cntcRepository.findInfoCntcByUserIdAndMbrId(request.id, request.mbrId)
             ?: return CommonResponse(SbasConst.ResCode.FAIL, "즐겨찾기에 등록되어 있지 않습니다.", null)
 
         cntcRepository.delete(findCntc)
 
-        return CommonResponse("즐겨찾기에서 삭제되었습니다.")
+        return CommonResponse("즐겨찾기에서 삭제되었습니다.", findCntc)
     }
 
     fun getActivityHistory(userId: String): CommonListResponse<UserActivityHistoryResponse> {
