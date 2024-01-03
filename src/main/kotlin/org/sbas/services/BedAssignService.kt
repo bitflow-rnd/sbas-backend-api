@@ -130,11 +130,9 @@ class BedAssignService {
         val bdasUsers = infoUserRepository.findBdasUserByReqDstrCd(bdasReq.reqDstr1Cd, bdasReq.reqDstr2Cd)
 
         // 푸쉬 알람 보내기
-        bdasUsers.forEach {
-            firebaseService.sendMessageMultiDevice("${findInfoPt.ptNm}님 병상요청", "신규 병상요청", it.id)
-        }
+        firebaseService.sendMessageMultiDeviceV2("${findInfoPt.ptNm}님 병상요청", "신규 병상요청", bdasUsers.map { it.id })
 
-        activityHistoryRepository.save(saveRequest.toActivityHistory(bdasReq.rgstUserId))
+        activityHistoryRepository.save(saveRequest.convertToActivityHistory(bdasReq.rgstUserId))
 
         return CommonResponse("병상 요청 성공")
     }
@@ -161,6 +159,7 @@ class BedAssignService {
             findBdasReq.changeBedStatTo(BedStatCd.BAST0008.name)
             return CommonResponse("배정 불가 처리 완료")
         } else if (saveRequest.aprvYn == "Y") { // 승인할 경우 원내 배정 여부 체크
+            val userIdList = emptyList<String>().toMutableList()
             if (findBdasReq.inhpAsgnYn == "N") {
                 // 전원 요청시 병원 정보 저장
                 val hospList = infoHospRepository.findByHospIdList(saveRequest.reqHospIdList)
@@ -175,8 +174,9 @@ class BedAssignService {
                     )
                     bdasReqAprvRepository.persist(entity)
                     findBdasReq.changeBedStatTo(BedStatCd.BAST0004.name)
-                    firebaseService.sendMessageMultiDevice("${findInfoPt.ptNm}님 전원요청", "가용 병상 확인해 주시기 바랍니다.", infoHosp.userId)
+                    userIdList.add(infoHosp.userId)
                 }
+                firebaseService.sendMessageMultiDeviceV2("${findInfoPt.ptNm}님 전원요청", "가용 병상 확인해 주시기 바랍니다.", userIdList)
 
             } else if (findBdasReq.inhpAsgnYn == "Y") { // 원내 배정 승인
                 // TODO reqHospId
@@ -187,7 +187,7 @@ class BedAssignService {
             throw CustomizedException("aprvYn 값이 올바르지 않습니다.", Response.Status.INTERNAL_SERVER_ERROR)
         }
 
-        activityHistoryRepository.save(saveRequest.toActivityHistory(jwt.name))
+        activityHistoryRepository.save(saveRequest.convertToActivityHistory(jwt.name))
 
         return CommonResponse("승인 성공")
     }
@@ -331,22 +331,14 @@ class BedAssignService {
 
         firebaseService.sendMessageMultiDevice("${findInfoPt.ptNm}님 병상배정", msg, bdasReqAprvList[0].rgstUserId)
 
-//        // 지역코드로 병상배정반 찾기
-//        val bdasUsers = infoUserRepository.findBdasUserByReqDstrCd(findBdasReq.reqDstr1Cd, findBdasReq.reqDstr2Cd)
-//
-//        bdasUsers.forEach {
-//            log.debug("asgnConfirm bdasUsers >>> ${it.id}")
-//            try {
-//                firebaseService.sendMessage("${findInfoPt.ptNm}님 병상배정", "병상 배정이 승인되었습니다.", bdasReqAprvList[0].rgstUserId!!)
-//
-//            } catch (e: Exception) {
-//                log.warn(e.printStackTrace())
-//            }
-//        }
-
+        activityHistoryRepository.save(saveRequest.convertToActivityHistory(jwt.name))
+        
         return CommonResponse(BdasAprvResponse(false, "배정 승인되었습니다."))
     }
 
+    /**
+     * 이송처리
+     */
     @Transactional
     fun confirmTrans(saveRequest: BdasTrnsSaveRequest): CommonResponse<String> {
         val findBdasReq = bdasReqRepository.findByPtIdAndBdasSeq(saveRequest.ptId, saveRequest.bdasSeq)

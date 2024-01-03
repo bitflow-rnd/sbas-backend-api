@@ -231,7 +231,6 @@ class InfoUserRepository : PanacheRepositoryBase<InfoUser, String> {
 @ApplicationScoped
 class UserFcmTokenRepository : PanacheRepositoryBase<UserFcmToken, Long> {
 
-    @Transactional
     fun findAllByUserId(userId: String): List<UserFcmToken> {
         return find("userId = '${userId}' and isValid = true").list()
     }

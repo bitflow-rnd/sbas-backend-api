@@ -8,7 +8,6 @@ import org.sbas.constants.enums.ReqBedTypeCd
 import org.sbas.constants.enums.SvrtTypeCd
 import org.sbas.entities.bdas.BdasReq
 import org.sbas.entities.bdas.BdasReqId
-import org.sbas.entities.info.UserActivityHistory
 import org.sbas.utils.StringUtils
 import org.sbas.utils.annotation.ValidEnum
 
@@ -59,14 +58,6 @@ data class BdasReqSaveRequest(
             chrgTelno = dprtInfo.chrgTelno,
             msg = dprtInfo.msg,
             bedStatCd = BedStatCd.BAST0003.name,
-        )
-    }
-
-    fun toActivityHistory(userId: String): UserActivityHistory {
-        return UserActivityHistory(
-            userId = userId,
-            ptId = svrInfo.ptId,
-            activityDetail = "병상요청",
         )
     }
 

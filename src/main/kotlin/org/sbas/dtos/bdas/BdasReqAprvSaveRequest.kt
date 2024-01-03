@@ -7,7 +7,6 @@ import org.sbas.entities.bdas.BdasReqAprvId
 import jakarta.validation.constraints.NotBlank
 import jakarta.validation.constraints.NotNull
 import jakarta.validation.constraints.Pattern
-import org.sbas.entities.info.UserActivityHistory
 
 data class BdasReqAprvSaveRequest(
     @field: NotBlank
@@ -58,14 +57,6 @@ data class BdasReqAprvSaveRequest(
             msg = this.msg,
             reqHospId = hospId,
             reqHospNm = hospNm,
-        )
-    }
-
-    fun toActivityHistory(userId: String): UserActivityHistory {
-        return UserActivityHistory(
-            userId = userId,
-            ptId = ptId,
-            activityDetail = if (aprvYn == "Y") "병상배정 요청 승인" else "병상배정 요청 불가"
         )
     }
 }
