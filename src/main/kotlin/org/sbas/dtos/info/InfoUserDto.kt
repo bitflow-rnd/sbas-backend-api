@@ -53,12 +53,8 @@ data class InfoUserSearchParam(
 data class InfoUserSearchFromUserParam(
     @field: QueryParam("dstr1Cd") var dstr1Cd: String?,
     @field: QueryParam("dstr2Cd") var dstr2Cd: String?,
-    @field: QueryParam("userNm") var userNm: String?,
-    @field: QueryParam("telno") var telno: String?,
-    @field: QueryParam("instNm") var instNm: String?,
+    @field: QueryParam("search") var search: String?,
     @field: QueryParam("instTypeCd") var instTypeCd: String?,
-    @field: QueryParam("ptTypeCd") var ptTypeCd: String?,
-    @field: QueryParam("userStatCdStr") var userStatCdStr: String?,
     @field: QueryParam("myInstTypeCd") var myInstTypeCd: String?,
 )
 

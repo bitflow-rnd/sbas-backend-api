@@ -108,16 +108,12 @@ class InfoUserRepository : PanacheRepositoryBase<InfoUser, String> {
     }
 
     private fun conditionAndOffsetFromUser(param: InfoUserSearchFromUserParam): String {
-        var cond = param.userNm?.run { " (iu.userNm like '%$this%' " } ?: " (1=1"
-        cond += param.telno?.run { " and iu.telno like '%$this%') " } ?: ")"
+        var cond = param.instTypeCd?.run { "iu.instTypeCd in ('${this.split(',').joinToString("', '")}') " } ?: "1=1 "
 
-        cond += param.ptTypeCd?.run { " and fn_like_any(iu.ptTypeCd, '{%${this.split(',').joinToString("%, %")}%}') = true " }
-            ?: ""
-        cond += param.instTypeCd?.run { " and iu.instTypeCd in ('${this.split(',').joinToString("', '")}') " } ?: ""
+        cond += param.search?.run { "and (iu.userNm like '%$this%' or iu.telno like '%$this%' or iu.instNm like '%$this%') " } ?: ""
 
         cond += param.dstr1Cd?.run { " and iu.dutyDstr1Cd like '%$this%' " } ?: ""
         cond += param.dstr2Cd?.run { " and iu.dutyDstr2Cd like '%$this%' " } ?: ""
-        cond += param.instNm?.run { " and iu.instNm like '%$this%' " } ?: ""
 
         return cond
     }
