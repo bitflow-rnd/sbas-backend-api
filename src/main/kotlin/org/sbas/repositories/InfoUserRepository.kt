@@ -11,7 +11,10 @@ import jakarta.transaction.Transactional
 import kotlinx.coroutines.runBlocking
 import org.eclipse.microprofile.jwt.JsonWebToken
 import org.sbas.dtos.info.*
-import org.sbas.entities.info.*
+import org.sbas.entities.info.InfoPt
+import org.sbas.entities.info.InfoUser
+import org.sbas.entities.info.UserActivityHistory
+import org.sbas.entities.info.UserFcmToken
 import org.sbas.parameters.PageRequest
 
 @ApplicationScoped
@@ -232,10 +235,14 @@ class UserFcmTokenRepository : PanacheRepositoryBase<UserFcmToken, Long> {
     fun findAllByUserId(userId: String): List<UserFcmToken> {
         return find("userId = '${userId}' and isValid = true").list()
     }
+
+    fun findAllByUserIdList(list: List<String>): List<UserFcmToken>{
+        return find("userId in (${list.joinToString("','", "'", "'")}) and isValid = true").list()
+    }
 }
 
 @ApplicationScoped
-class UserActivityHistoryRepository : PanacheRepositoryBase<UserActivityHistory, UserActivityHistoryId> {
+class UserActivityHistoryRepository : PanacheRepositoryBase<UserActivityHistory, Int> {
 
     @Inject
     private lateinit var entityManager: EntityManager
@@ -251,8 +258,9 @@ class UserActivityHistoryRepository : PanacheRepositoryBase<UserActivityHistory,
     fun findAllByUserId(userId: String): List<UserActivityHistoryResponse> {
         val query = jpql {
             selectNew<UserActivityHistoryResponse>(
-                path(UserActivityHistory::id)(UserActivityHistoryId::userId),
-                path(UserActivityHistory::id)(UserActivityHistoryId::ptId),
+                path(UserActivityHistory::id),
+                path(UserActivityHistory::userId),
+                path(UserActivityHistory::ptId),
                 path(InfoPt::ptNm), path(InfoPt::gndr),
                 function(String::class, "fn_get_age", path(InfoPt::rrno1), path(InfoPt::rrno2)),
                 path(InfoPt::dstr1Cd),
@@ -263,9 +271,9 @@ class UserActivityHistoryRepository : PanacheRepositoryBase<UserActivityHistory,
                 path(UserActivityHistory::rgstDttm),
             ).from(
                 entity(UserActivityHistory::class),
-                join(InfoPt::class).on(path(UserActivityHistory::id)(UserActivityHistoryId::ptId).eq(path(InfoPt::ptId))),
+                join(InfoPt::class).on(path(UserActivityHistory::ptId).eq(path(InfoPt::ptId))),
             ).whereAnd(
-                path(UserActivityHistory::id)(UserActivityHistoryId::userId).eq(userId)
+                path(UserActivityHistory::userId).eq(userId),
             )
         }
 

@@ -14,7 +14,7 @@ import org.sbas.responses.patient.DestinationInfo
 import java.time.Instant
 
 @ApplicationScoped
-class BdasEsvyRepository : PanacheRepositoryBase<BdasEsvy, String> {
+class BdasEsvyRepository : PanacheRepositoryBase<BdasEsvy, Int> {
     fun findByPtIdWithLatestBdasSeq(ptId: String): BdasEsvy? {
         return find("ptId = '${ptId}'", Sort.by("bdasSeq", Sort.Direction.Descending)).firstResult()
     }
