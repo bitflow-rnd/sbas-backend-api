@@ -23,10 +23,10 @@ class InfoInst(
     @Column(name = "inst_nm", nullable = false, length = 100)
     var instNm: String, // 기관 이름
 
-    @Column(name = "dstr_cd_1", nullable = false, length = 8)
+    @Column(name = "dstr_1_cd", nullable = false, length = 8)
     var dstr1Cd: String, // 지역 코드 (시도)
 
-    @Column(name = "dstr_cd_2", length = 8)
+    @Column(name = "dstr_2_cd", length = 8)
     var dstr2Cd: String? = null, // 지역 코드 (시군구)
 
     @Column(name = "chrg_id", length = 10)

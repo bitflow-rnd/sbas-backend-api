@@ -60,10 +60,10 @@ class InfoHosp(
     @Column(name = "dutyetc")
     var dutyEtc: String? = null, // 비고
 
-    @Column(name = "dstr_cd1", length = 8)
+    @Column(name = "dstr_1_cd", length = 8)
     var dstr1Cd: String? = null, // 시도
 
-    @Column(name = "dstr_cd2", length = 8)
+    @Column(name = "dstr_2_cd", length = 8)
     var dstr2Cd: String? = null, // 시군구
 
     @Column(name = "attc_id", length = 12)
