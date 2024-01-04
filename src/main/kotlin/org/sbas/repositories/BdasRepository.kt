@@ -6,6 +6,7 @@ import jakarta.enterprise.context.ApplicationScoped
 import jakarta.inject.Inject
 import jakarta.persistence.EntityManager
 import jakarta.persistence.TypedQuery
+import jakarta.ws.rs.NotFoundException
 import org.sbas.constants.enums.AdmsStatCd
 import org.sbas.constants.enums.TimeLineStatCd
 import org.sbas.dtos.bdas.*
@@ -15,8 +16,9 @@ import java.time.Instant
 
 @ApplicationScoped
 class BdasEsvyRepository : PanacheRepositoryBase<BdasEsvy, Int> {
-    fun findByPtIdWithLatestBdasSeq(ptId: String): BdasEsvy? {
+    fun findByPtIdWithLatestBdasSeq(ptId: String): BdasEsvy {
         return find("ptId = '${ptId}'", Sort.by("bdasSeq", Sort.Direction.Descending)).firstResult()
+            ?: throw NotFoundException("해당 환자의 질병정보를 찾을 수 없습니다.")
     }
 }
 
@@ -26,11 +28,11 @@ class BdasReqRepository : PanacheRepositoryBase<BdasReq, BdasReqId> {
     @Inject
     private lateinit var entityManager: EntityManager
 
-    fun findByPtIdAndBdasSeq(ptId: String, bdasSeq: Int): BdasReq? {
+    fun findByPtIdAndBdasSeq(ptId: String, bdasSeq: Int): BdasReq {
         return find(
             "id.ptId = '${ptId}' and id.bdasSeq = $bdasSeq",
             Sort.by("id.bdasSeq", Sort.Direction.Descending)
-        ).firstResult()
+        ).firstResult() ?: throw NotFoundException("$ptId $bdasSeq 병상요청 정보가 없습니다.")
     }
 
     fun queryForBdasList(cond: String?, offset: Int?): TypedQuery<BdasListDto> {

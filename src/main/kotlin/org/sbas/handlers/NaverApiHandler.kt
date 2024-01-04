@@ -153,7 +153,6 @@ class NaverApiHandler {
         // 코드
         val dstr1Cd = StringUtils.getDstrCd1(addrList[0])
         val baseCode = baseCodeRepository.findByDstr1CdAndCdNm(dstr1Cd, addrList[1])
-            ?: throw NotFoundException("baseCode not found")
         val dstr2Cd = baseCode.id.cdId
 
         return AddressMap(
@@ -185,7 +184,6 @@ class NaverApiHandler {
         }
         val dstr1Cd = StringUtils.getDstrCd1(resultMap["SIDO"]!!)
         val baseCode = baseCodeRepository.findByDstr1CdAndCdNm(dstr1Cd, resultMap["SIGUGUN"]!!)
-            ?: throw NotFoundException("baseCode not found")
         val dstr2Cd = baseCode.id.cdId
 
         return AddressMap(
