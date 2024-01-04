@@ -52,7 +52,7 @@ class InfoUserRepository : PanacheRepositoryBase<InfoUser, String> {
         val cond = conditionAndOffsetFromUser(param)
 
         var query = """
-            select new org.sbas.dtos.info.InfoUserListDto(iu.id, iu.dutyDstr1Cd, fn_get_cd_nm('SIDO', iu.dutyDstr1Cd), iu.telno,
+            select new org.sbas.dtos.info.InfoUserListDto(iu.id, iu.dutyDstr1Cd, fn_get_cd_nm('SIDO', iu.dutyDstr1Cd), iu.telno, iu.ptTypeCd,
              iu.instTypeCd, iu.instNm, iu.userNm, iu.jobCd, iu.authCd, iu.rgstDttm, iu.userStatCd, iu.rgstUserId, iu.instId, iu.ocpCd, false)
               from InfoUser iu where iu.id != '${jwt.name}'
         """.trimIndent()
@@ -111,16 +111,12 @@ class InfoUserRepository : PanacheRepositoryBase<InfoUser, String> {
     }
 
     private fun conditionAndOffsetFromUser(param: InfoUserSearchFromUserParam): String {
-        var cond = param.userNm?.run { " (iu.userNm like '%$this%' " } ?: " (1=1"
-        cond += param.telno?.run { " and iu.telno like '%$this%') " } ?: ")"
+        var cond = param.instTypeCd?.run { "iu.instTypeCd in ('${this.split(',').joinToString("', '")}') " } ?: "1=1 "
 
-        cond += param.ptTypeCd?.run { " and fn_like_any(iu.ptTypeCd, '{%${this.split(',').joinToString("%, %")}%}') = true " }
-            ?: ""
-        cond += param.instTypeCd?.run { " and iu.instTypeCd in ('${this.split(',').joinToString("', '")}') " } ?: ""
+        cond += param.search?.run { "and (iu.userNm like '%$this%' or iu.telno like '%$this%' or iu.instNm like '%$this%') " } ?: ""
 
         cond += param.dstr1Cd?.run { " and iu.dutyDstr1Cd like '%$this%' " } ?: ""
         cond += param.dstr2Cd?.run { " and iu.dutyDstr2Cd like '%$this%' " } ?: ""
-        cond += param.instNm?.run { " and iu.instNm like '%$this%' " } ?: ""
 
         return cond
     }
