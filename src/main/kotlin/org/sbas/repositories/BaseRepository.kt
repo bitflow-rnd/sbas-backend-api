@@ -6,6 +6,7 @@ import org.sbas.dtos.SidoSiGunGuDto
 import org.sbas.entities.base.*
 import jakarta.enterprise.context.ApplicationScoped
 import jakarta.transaction.Transactional
+import jakarta.ws.rs.NotFoundException
 
 @ApplicationScoped
 class BaseCodeRepository : PanacheRepositoryBase<BaseCode, BaseCodeId> {
@@ -32,7 +33,6 @@ class BaseCodeRepository : PanacheRepositoryBase<BaseCode, BaseCodeId> {
         return find("id.cdId = '$cdId'").firstResult()
     }
 
-
     @Transactional
     fun findCdIdByAddrNm(addrNm: String): SidoSiGunGuDto {
         val arrAddr = addrNm.split(" ")
@@ -45,15 +45,8 @@ class BaseCodeRepository : PanacheRepositoryBase<BaseCode, BaseCodeId> {
         return SidoSiGunGuDto(siDoCd, siGunGu?.id?.cdId)
     }
 
-    fun findByDstr1CdAndCdNm(dstr1Cd: String, cdNm: String): BaseCode? {
-        return find("id.cdGrpId = 'SIDO$dstr1Cd' and cdNm = '$cdNm'").firstResult()
-    }
-
-    fun getCdNm(grpId: String, cdId: String): String {
-        val findCode = find("from BaseCode where id.cdGrpId='$grpId' and id.cdId='$cdId'").firstResult()
-
-        if(findCode == null) return ""
-        else return findCode.cdNm ?: ""
+    fun findByDstr1CdAndCdNm(dstr1Cd: String, cdNm: String): BaseCode {
+        return find("id.cdGrpId = 'SIDO$dstr1Cd' and cdNm = '$cdNm'").firstResult() ?: throw NotFoundException("baseCode not found")
     }
 
     fun getDstrCd2Nm(dstrCd1: String?, dstrCd2: String?): String {
