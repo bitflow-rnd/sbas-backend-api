@@ -76,9 +76,9 @@ class PatientService {
     fun saveInfoPt(infoPtDto: InfoPtDto): CommonResponse<String?> {
         //환자 주소(bascAddr)로 dstr1Cd, dstr2Cd 구하기
         val split = infoPtDto.bascAddr.split(" ")
-        val dstrCd1 = StringUtils.getDstrCd1(split[0])
-        val findBaseCode = baseCodeRepository.findByDstr1CdAndCdNm(dstrCd1, split[1])
-        val infoPt = infoPtDto.toEntity(dstrCd1, findBaseCode.id.cdId)
+        val dstr1Cd = StringUtils.getdstr1Cd(split[0])
+        val findBaseCode = baseCodeRepository.findByDstr1CdAndCdNm(dstr1Cd, split[1])
+        val infoPt = infoPtDto.toEntity(dstr1Cd, findBaseCode.id.cdId)
 
         infoPtRepository.persist(infoPt)
 
@@ -134,9 +134,9 @@ class PatientService {
 
         //환자 주소(bascAddr)로 dstr1Cd, dstr2Cd 구하기
         val split = infoPtDto.bascAddr.split(" ")
-        val dstrCd1 = StringUtils.getDstrCd1(split[0])
-        val findBaseCode = baseCodeRepository.findByDstr1CdAndCdNm(dstrCd1, split[1])
-        infoPtDto.dstr1Cd = dstrCd1
+        val dstr1Cd = StringUtils.getdstr1Cd(split[0])
+        val findBaseCode = baseCodeRepository.findByDstr1CdAndCdNm(dstr1Cd, split[1])
+        infoPtDto.dstr1Cd = dstr1Cd
         infoPtDto.dstr2Cd = findBaseCode.id.cdId
 
         findInfoPt.updateEntity(infoPtDto)
@@ -149,7 +149,7 @@ class PatientService {
         //TODO
         val infoUser = infoUserRepository.findById(jwt.name) ?: throw NotFoundException("infoUser not found")
         val infoInst = infoInstRepository.findById(infoUser.instId) ?: throw NotFoundException("infoInst not found")
-        val infoPtList = infoPtRepository.findByDstrCd(infoInst.dstrCd1, infoInst.dstrCd2!!)
+        val infoPtList = infoPtRepository.findByDstrCd(infoInst.dstr1Cd, infoInst.dstr2Cd!!)
 
         return CommonListResponse(infoPtList)
     }

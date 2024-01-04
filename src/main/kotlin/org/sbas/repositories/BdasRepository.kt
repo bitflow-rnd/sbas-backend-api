@@ -124,7 +124,7 @@ class BdasReqRepository : PanacheRepositoryBase<BdasReq, BdasReqId> {
                     "'${TimeLineStatCd.SUSPEND.cdNm}', " +
                     "ii.id, ii.instNm) " +
                     "from BdasReq br " +
-                    "join InfoInst ii on ii.dstrCd1 = br.reqDstr1Cd " +
+                    "join InfoInst ii on ii.dstr1Cd = br.reqDstr1Cd " +
                     "where br.id.ptId = '$ptId' and br.id.bdasSeq = $bdasSeq " +
                     "and ii.instTypeCd = 'ORGN0001' "
         return entityManager.createQuery(query, BdasReqAprvSuspendTimeLine::class.java).resultList

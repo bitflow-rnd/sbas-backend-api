@@ -191,11 +191,11 @@ class BedAssignService {
     fun getAvalHospList(ptId: String, bdasSeq: Int): CommonResponse<*> {
         val findBdasReq = bdasReqRepository.findByPtIdAndBdasSeq(ptId, bdasSeq)
 
-        val dstrCd1 = findBdasReq.reqDstr1Cd
-        val dstrCd2: String? = findBdasReq.reqDstr2Cd
+        val dstr1Cd = findBdasReq.reqDstr1Cd
+        val dstr2Cd: String? = findBdasReq.reqDstr2Cd
 
-        // 병상 배정 요청시 선택한 dstrCd1, dstrCd2에 해당하는 infoHosp 목록
-        val infoHospList = infoHospRepository.findAvalHospListByDstrCd1(dstrCd1, dstrCd2)
+        // 병상 배정 요청시 선택한 dstr1Cd, dstr2Cd에 해당하는 infoHosp 목록
+        val infoHospList = infoHospRepository.findAvalHospListBydstr1Cd(dstr1Cd, dstr2Cd)
         log.debug("getAvalHospList >>>>>>>>>>>>>> ${infoHospList.size}")
         val list = infoHospList.map { avalHospDto ->
             val distance = calculateDistance(

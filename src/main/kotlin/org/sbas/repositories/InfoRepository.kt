@@ -186,17 +186,17 @@ class InfoInstRepository : PanacheRepositoryBase<InfoInst, String> {
     @Inject
     private lateinit var context: JpqlRenderContext
 
-    fun findInfoInst(dstrCd1: String?, dstrCd2: String?, instTypeCd: String?): List<InfoInstResponse> {
+    fun findInfoInst(dstr1Cd: String?, dstr2Cd: String?, instTypeCd: String?): List<InfoInstResponse> {
         val query = jpql {
             selectNew<InfoInstResponse>(
                 path(InfoInst::id), path(InfoInst::instTypeCd), path(InfoInst::instNm),
-                path(InfoInst::dstrCd1), path(InfoInst::dstrCd2),
+                path(InfoInst::dstr1Cd), path(InfoInst::dstr2Cd),
             ).from(
                 entity(InfoInst::class),
             ).whereAnd(
                 instTypeCd?.run { path(InfoInst::instTypeCd).equal(this) },
-                dstrCd1?.run { path(InfoInst::dstrCd1).equal(this) },
-                dstrCd2?.run { path(InfoInst::dstrCd2).equal(this) },
+                dstr1Cd?.run { path(InfoInst::dstr1Cd).equal(this) },
+                dstr2Cd?.run { path(InfoInst::dstr2Cd).equal(this) },
             )
         }
 
@@ -215,8 +215,8 @@ class InfoInstRepository : PanacheRepositoryBase<InfoInst, String> {
             
             selectNew<FireStatnListDto>(
                 path(InfoInst::id), path(InfoInst::instNm),
-                function(String::class, "fn_get_cd_nm", stringLiteral("SIDO"), path(InfoInst::dstrCd1)),
-                function(String::class, "fn_get_dstr_cd2_nm", path(InfoInst::dstrCd1), path(InfoInst::dstrCd2)),
+                function(String::class, "fn_get_cd_nm", stringLiteral("SIDO"), path(InfoInst::dstr1Cd)),
+                function(String::class, "fn_get_dstr_cd2_nm", path(InfoInst::dstr1Cd), path(InfoInst::dstr2Cd)),
                 path(InfoInst::chrgTelno), crewCount, path(InfoInst::lat), path(InfoInst::lon)
             ).from(
                 entity(InfoInst::class)
@@ -224,8 +224,8 @@ class InfoInstRepository : PanacheRepositoryBase<InfoInst, String> {
                 path(InfoInst::instTypeCd).eq("ORGN0002"),
                 param.instId?.run { path(InfoInst::id).like("%$this%") },
                 param.instNm?.run { path(InfoInst::instNm).like("%$this%") },
-                param.dstrCd1?.run { path(InfoInst::dstrCd1).eq(this) },
-                param.dstrCd2?.run { path(InfoInst::dstrCd2).eq(this) },
+                param.dstr1Cd?.run { path(InfoInst::dstr1Cd).eq(this) },
+                param.dstr2Cd?.run { path(InfoInst::dstr2Cd).eq(this) },
                 param.chrgTelno?.run { path(InfoInst::chrgTelno).like("%$this%") },
             ).orderBy(
                 path(InfoInst::id).desc(),
@@ -250,8 +250,8 @@ class InfoInstRepository : PanacheRepositoryBase<InfoInst, String> {
                 path(InfoInst::instTypeCd).eq("ORGN0002"),
                 param.instId?.run { path(InfoInst::id).like("%$this%") },
                 param.instNm?.run { path(InfoInst::instNm).like("%$this%") },
-                param.dstrCd1?.run { path(InfoInst::dstrCd1).eq(this) },
-                param.dstrCd2?.run { path(InfoInst::dstrCd2).eq(this) },
+                param.dstr1Cd?.run { path(InfoInst::dstr1Cd).eq(this) },
+                param.dstr2Cd?.run { path(InfoInst::dstr2Cd).eq(this) },
                 param.chrgTelno?.run { path(InfoInst::chrgTelno).like("%$this%") },
             )
         }
@@ -265,8 +265,8 @@ class InfoInstRepository : PanacheRepositoryBase<InfoInst, String> {
 
     fun findFireStatnDtoByInstId(instId: String): FireStatnDto? {
         val query = "select new org.sbas.dtos.info.FireStatnDto(ii.id, ii.instNm, " +
-                "ii.chrgId, ii.chrgNm, ii.dstrCd1, fn_get_cd_nm('SIDO', ii.dstrCd1), " +
-                "ii.dstrCd2, fn_get_cd_nm('SIDO'||ii.dstrCd1, ii.dstrCd2), " +
+                "ii.chrgId, ii.chrgNm, ii.dstr1Cd, fn_get_cd_nm('SIDO', ii.dstr1Cd), " +
+                "ii.dstr2Cd, fn_get_cd_nm('SIDO'||ii.dstr1Cd, ii.dstr2Cd), " +
                 "ii.chrgTelno, ii.rmk, ii.detlAddr, ii.lat, ii.lon, ii.vecno ) " +
                 "from InfoInst ii " +
                 "where ii.instTypeCd = 'ORGN0002' and ii.id = '$instId' "

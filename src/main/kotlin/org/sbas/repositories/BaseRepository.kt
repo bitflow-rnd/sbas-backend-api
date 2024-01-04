@@ -49,8 +49,8 @@ class BaseCodeRepository : PanacheRepositoryBase<BaseCode, BaseCodeId> {
         return find("id.cdGrpId = 'SIDO$dstr1Cd' and cdNm = '$cdNm'").firstResult() ?: throw NotFoundException("baseCode not found")
     }
 
-    fun getDstrCd2Nm(dstrCd1: String?, dstrCd2: String?): String {
-        val query = "select fn_get_dstr_cd2_nm('$dstrCd1', '$dstrCd2') as test"
+    fun getdstr2CdNm(dstr1Cd: String?, dstr2Cd: String?): String {
+        val query = "select fn_get_dstr_cd2_nm('$dstr1Cd', '$dstr2Cd') as test"
         return getEntityManager().createNativeQuery(query).singleResult as String
     }
 }

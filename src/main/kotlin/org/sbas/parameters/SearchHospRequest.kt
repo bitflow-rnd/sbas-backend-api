@@ -6,7 +6,7 @@ import org.sbas.utils.annotation.NoArg
 data class SearchHospRequest(
     var pageRequest: PageRequest?,
     var dutyDivNam: MutableList<String>,
-    var dstrCd1: String?,
-    var dstrCd2: String?,
+    var dstr1Cd: String?,
+    var dstr2Cd: String?,
     var hospId: String?
 )

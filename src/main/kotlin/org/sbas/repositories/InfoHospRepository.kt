@@ -33,8 +33,8 @@ class InfoHospRepository : PanacheRepositoryBase<InfoHosp, String> {
     fun findInfoHospByHpId(hpId: String): InfoHospId {
         val query = jpql {
             selectNew<InfoHospId>(
-                path(InfoHosp::hospId), path(InfoHosp::hpId), path(InfoHosp::dstrCd1),
-                function(String::class, "fn_get_cd_nm", stringLiteral("SIDO"), path(InfoHosp::dstrCd1)),
+                path(InfoHosp::hospId), path(InfoHosp::hpId), path(InfoHosp::dstr1Cd),
+                function(String::class, "fn_get_cd_nm", stringLiteral("SIDO"), path(InfoHosp::dstr1Cd)),
                 path(InfoHosp::attcId),
             ).from(
                 entity(InfoHosp::class)
@@ -58,7 +58,7 @@ class InfoHospRepository : PanacheRepositoryBase<InfoHosp, String> {
 
             selectNew<InfoHospListDto>(
                 path(InfoHosp::hospId), path(InfoHosp::hpId), path(InfoHosp::dutyName), path(InfoHosp::dutyDivNam),
-                path(InfoHosp::dstrCd1), path(InfoHosp::dstrCd2), path(InfoHosp::dutyTel1), path(InfoHosp::dutyTel1), path(InfoBed::updtDttm),
+                path(InfoHosp::dstr1Cd), path(InfoHosp::dstr2Cd), path(InfoHosp::dutyTel1), path(InfoHosp::dutyTel1), path(InfoBed::updtDttm),
                 path(InfoBed::gnbdIcu), path(InfoBed::npidIcu), path(InfoBed::gnbdSvrt), path(InfoBed::gnbdSmsv), path(InfoBed::gnbdModr),
                 path(InfoBed::ventilator), path(InfoBed::ventilatorPreemie), path(InfoBed::incubator), path(InfoBed::ecmo), path(InfoBed::highPressureOxygen),
                 path(InfoBed::ct), path(InfoBed::mri), path(InfoBed::highPressureOxygen), path(InfoBed::bodyTemperatureControl),
@@ -72,8 +72,8 @@ class InfoHospRepository : PanacheRepositoryBase<InfoHosp, String> {
             ).whereAnd(
                 param.hospId?.run { path(InfoHosp::hospId).like("%$this%") },
                 param.dutyName?.run { path(InfoHosp::dutyName).like("%$this%") },
-                param.dstrCd1?.run { path(InfoHosp::dstrCd1).equal(this) },
-                param.dstrCd2?.run { path(InfoHosp::dstrCd2).equal(this) },
+                param.dstr1Cd?.run { path(InfoHosp::dstr1Cd).equal(this) },
+                param.dstr2Cd?.run { path(InfoHosp::dstr2Cd).equal(this) },
                 param.dutyDivNam?.run { path(InfoHosp::dutyDivNam).`in`(this) },
             ).orderBy(
                 path(InfoBed::gnbdSvrt).desc(),
@@ -99,8 +99,8 @@ class InfoHospRepository : PanacheRepositoryBase<InfoHosp, String> {
             ).whereAnd(
                 param.hospId?.run { path(InfoHosp::hospId).like("%$this%") },
                 param.dutyName?.run { path(InfoHosp::dutyName).like("%$this%") },
-                param.dstrCd1?.run { path(InfoHosp::dstrCd1).equal(this) },
-                param.dstrCd2?.run { path(InfoHosp::dstrCd2).equal(this) },
+                param.dstr1Cd?.run { path(InfoHosp::dstr1Cd).equal(this) },
+                param.dstr2Cd?.run { path(InfoHosp::dstr2Cd).equal(this) },
                 param.dutyDivNam?.run { path(InfoHosp::dutyDivNam).`in`(this) },
             )
         }
@@ -125,7 +125,7 @@ class InfoHospRepository : PanacheRepositoryBase<InfoHosp, String> {
         return entityManager.createQuery(query, context).resultList
     }
 
-    fun findAvalHospListByDstrCd1(dstrCd1: String, dstrCd2: String?): MutableList<AvalHospDto> {
+    fun findAvalHospListBydstr1Cd(dstr1Cd: String, dstr2Cd: String?): MutableList<AvalHospDto> {
         val query = jpql {
             selectNew<AvalHospDto>(
                 path(InfoHosp::hospId), path(InfoHosp::dutyName), path(InfoHosp::wgs84Lon), path(InfoHosp::wgs84Lat),
@@ -138,43 +138,43 @@ class InfoHospRepository : PanacheRepositoryBase<InfoHosp, String> {
                 entity(InfoHosp::class),
                 join(InfoBed::class).on(path(InfoHosp::hospId).eq(path(InfoBed::hospId)))
             ).whereAnd(
-                path(InfoHosp::dstrCd1).eq(dstrCd1),
-                dstrCd2?.run { path(InfoHosp::dstrCd2).eq(dstrCd2) }
+                path(InfoHosp::dstr1Cd).eq(dstr1Cd),
+                dstr2Cd?.run { path(InfoHosp::dstr2Cd).eq(dstr2Cd) }
             )
         }
 
         return entityManager.createQuery(query, context).resultList
     }
 
-    fun findPubHealthCenter(dstrCd1: String?, dstrCd2: String?): List<InfoInstResponse> {
+    fun findPubHealthCenter(dstr1Cd: String?, dstr2Cd: String?): List<InfoInstResponse> {
         val query = jpql {
             selectNew<InfoInstResponse>(
                 path(InfoHosp::hospId), stringLiteral("ORGN0003"), path(InfoHosp::dutyName),
-                path(InfoHosp::dstrCd1), path(InfoHosp::dstrCd2),
+                path(InfoHosp::dstr1Cd), path(InfoHosp::dstr2Cd),
             ).from(
                 entity(InfoHosp::class)
             ).whereAnd(
                 path(InfoHosp::dutyDivNam).eq("보건소"),
                 path(InfoHosp::dutyName).like("%보건소"),
-                dstrCd1?.run { path(InfoHosp::dstrCd1).equal(this) },
-                dstrCd2?.run { path(InfoHosp::dstrCd2).equal(this) },
+                dstr1Cd?.run { path(InfoHosp::dstr1Cd).equal(this) },
+                dstr2Cd?.run { path(InfoHosp::dstr2Cd).equal(this) },
             )
         }
 
         return entityManager.createQuery(query, context).resultList
     }
 
-    fun findMediOrgan(dstrCd1: String?, dstrCd2: String?): List<InfoInstResponse> {
+    fun findMediOrgan(dstr1Cd: String?, dstr2Cd: String?): List<InfoInstResponse> {
         val query = jpql {
             selectNew<InfoInstResponse>(
                 path(InfoHosp::hospId), stringLiteral("ORGN0004"), path(InfoHosp::dutyName),
-                path(InfoHosp::dstrCd1), path(InfoHosp::dstrCd2),
+                path(InfoHosp::dstr1Cd), path(InfoHosp::dstr2Cd),
             ).from(
                 entity(InfoHosp::class),
                 join(InfoBed::class).on(path(InfoHosp::hospId).equal(path(InfoBed::hospId)))
             ).whereAnd(
-                dstrCd1?.run { path(InfoHosp::dstrCd1).equal(this) },
-                dstrCd2?.run { path(InfoHosp::dstrCd2).equal(this) },
+                dstr1Cd?.run { path(InfoHosp::dstr1Cd).equal(this) },
+                dstr2Cd?.run { path(InfoHosp::dstr2Cd).equal(this) },
             )
         }
 
@@ -186,8 +186,8 @@ class InfoHospRepository : PanacheRepositoryBase<InfoHosp, String> {
 //        whereAnd(
 //            param.hospId?.run { col(InfoHosp::hospId).like("%$this%") },
 //            param.dutyName?.run { col(InfoHosp::dutyName).like("%$this%") },
-//            param.dstrCd1?.run { col(InfoHosp::dstrCd1).equal(this) },
-//            param.dstrCd2?.run { col(InfoHosp::dstrCd2).equal(this) },
+//            param.dstr1Cd?.run { col(InfoHosp::dstr1Cd).equal(this) },
+//            param.dstr2Cd?.run { col(InfoHosp::dstr2Cd).equal(this) },
 //            param.dutyDivNam?.run { col(InfoHosp::dutyDivNam).`in`(this) },
 //        )
 //    }

@@ -125,11 +125,11 @@ class OrganiztnService {
      * 기관코드 목록 조회
      */
     @Transactional
-    fun getInstCodes(dstrCd1: String?, dstrCd2: String?, instTypeCd: String?): CommonListResponse<*> {
+    fun getInstCodes(dstr1Cd: String?, dstr2Cd: String?, instTypeCd: String?): CommonListResponse<*> {
         val instList = when (instTypeCd) {
-            "ORGN0003" -> infoHospRepository.findPubHealthCenter(dstrCd1, dstrCd2)
-            "ORGN0004" -> infoHospRepository.findMediOrgan(dstrCd1, dstrCd2)
-            else -> infoInstRepository.findInfoInst(dstrCd1, dstrCd2, instTypeCd)
+            "ORGN0003" -> infoHospRepository.findPubHealthCenter(dstr1Cd, dstr2Cd)
+            "ORGN0004" -> infoHospRepository.findMediOrgan(dstr1Cd, dstr2Cd)
+            else -> infoInstRepository.findInfoInst(dstr1Cd, dstr2Cd, instTypeCd)
         }
 
         return CommonListResponse(instList)
@@ -142,10 +142,10 @@ class OrganiztnService {
     fun regFireStatn(fireStatnSaveReq: FireStatnSaveReq): CommonResponse<String> {
         val fireStatnInstId = StringUtils.incrementCode("FS", 8, infoInstRepository.findLatestFireStatInstId())
 
-        val baseCode = baseCodeRepository.findBaseCodeByCdId(fireStatnSaveReq.dstrCd1)
-        val dstrCd2Nm = baseCodeRepository.getDstrCd2Nm(fireStatnSaveReq.dstrCd1, fireStatnSaveReq.dstrCd2)
+        val baseCode = baseCodeRepository.findBaseCodeByCdId(fireStatnSaveReq.dstr1Cd)
+        val dstr2CdNm = baseCodeRepository.getdstr2CdNm(fireStatnSaveReq.dstr1Cd, fireStatnSaveReq.dstr2Cd)
 
-        val fullAddr = baseCode!!.cdNm + dstrCd2Nm + fireStatnSaveReq.detlAddr
+        val fullAddr = baseCode!!.cdNm + dstr2CdNm + fireStatnSaveReq.detlAddr
 
         val geocoding = geoHandler.getGeocoding(NaverGeocodingApiParams(query = fullAddr))
         fireStatnSaveReq.lat = geocoding.addresses!![0].y // 위도
@@ -332,10 +332,10 @@ class OrganiztnService {
     private fun findHospDetailInfo(hpId: String): Pair<HospDetailInfo, String?> {
         val infoHosp = infoHospRepository.findInfoHospByHpId(hpId)
 
-        val stage1 = if (infoHosp.dstrCd1Nm == "강원도") {
+        val stage1 = if (infoHosp.dstr1CdNm == "강원도") {
             "강원특별자치도"
         } else {
-            infoHosp.dstrCd1Nm!!
+            infoHosp.dstr1CdNm!!
         }
 
         val jsonObject = egenService.getEmrrmRltmUsefulSckbdInfoInqire(
