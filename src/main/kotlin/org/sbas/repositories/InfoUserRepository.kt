@@ -41,7 +41,7 @@ class InfoUserRepository : PanacheRepositoryBase<InfoUser, String> {
         val (cond, offset) = conditionAndOffset(param)
 
         val query = "select new org.sbas.dtos.info.InfoUserListDto(iu.id, iu.dutyDstr1Cd, fn_get_cd_nm('SIDO', iu.dutyDstr1Cd), iu.telno, iu.ptTypeCd, " +
-            "iu.instTypeCd, iu.instNm, iu.userNm, iu.jobCd, iu.authCd, iu.rgstDttm, iu.userStatCd, iu.rgstUserId, iu.instId, iu.ocpCd, false) " +
+            "iu.instTypeCd, iu.instNm, iu.userNm, iu.jobCd, iu.authCd, iu.rgstDttm, iu.userStatCd, iu.rgstUserId, iu.instId, iu.ocpCd, iu.updtDttm, false) " +
             "from InfoUser iu " +
             "where " + "$cond " + "order by iu.updtDttm desc"
 
@@ -53,7 +53,7 @@ class InfoUserRepository : PanacheRepositoryBase<InfoUser, String> {
 
         var query = """
             select new org.sbas.dtos.info.InfoUserListDto(iu.id, iu.dutyDstr1Cd, fn_get_cd_nm('SIDO', iu.dutyDstr1Cd), iu.telno, iu.ptTypeCd,
-             iu.instTypeCd, iu.instNm, iu.userNm, iu.jobCd, iu.authCd, iu.rgstDttm, iu.userStatCd, iu.rgstUserId, iu.instId, iu.ocpCd, false)
+             iu.instTypeCd, iu.instNm, iu.userNm, iu.jobCd, iu.authCd, iu.rgstDttm, iu.userStatCd, iu.rgstUserId, iu.instId, iu.ocpCd, iu.updtDttm, false)
               from InfoUser iu where iu.id != '${jwt.name}'
         """.trimIndent()
 
@@ -76,7 +76,7 @@ class InfoUserRepository : PanacheRepositoryBase<InfoUser, String> {
 
         val query = """
             select new org.sbas.dtos.info.InfoUserListDto(iu.id, iu.dutyDstr1Cd, fn_get_cd_nm('SIDO', iu.dutyDstr1Cd), iu.telno, iu.ptTypeCd, 
-            iu.instTypeCd, iu.instNm, iu.userNm, iu.jobCd, iu.authCd, iu.rgstDttm, iu.userStatCd, iu.rgstUserId, iu.instId, iu.ocpCd, false)
+            iu.instTypeCd, iu.instNm, iu.userNm, iu.jobCd, iu.authCd, iu.rgstDttm, iu.userStatCd, iu.rgstUserId, iu.instId, iu.ocpCd, iu.updtDttm, false)
         from InfoUser iu
         join InfoCntc ic on ic.id.mbrId = iu.id
         where ic.id.userId = '$userId'
