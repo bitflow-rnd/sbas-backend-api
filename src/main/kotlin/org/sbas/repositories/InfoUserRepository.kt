@@ -40,7 +40,7 @@ class InfoUserRepository : PanacheRepositoryBase<InfoUser, String> {
     fun findInfoUserList(param: InfoUserSearchParam): List<InfoUserListDto> {
         val (cond, offset) = conditionAndOffset(param)
 
-        val query = "select new org.sbas.dtos.info.InfoUserListDto(iu.id, iu.dutyDstr1Cd, fn_get_cd_nm('SIDO', iu.dutyDstr1Cd), iu.telno, " +
+        val query = "select new org.sbas.dtos.info.InfoUserListDto(iu.id, iu.dutyDstr1Cd, fn_get_cd_nm('SIDO', iu.dutyDstr1Cd), iu.telno, iu.ptTypeCd " +
             "iu.instTypeCd, iu.instNm, iu.userNm, iu.jobCd, iu.authCd, iu.rgstDttm, iu.userStatCd, iu.rgstUserId, iu.instId, iu.ocpCd, false) " +
             "from InfoUser iu " +
             "where " + "$cond " + "order by iu.updtDttm desc"
@@ -75,7 +75,7 @@ class InfoUserRepository : PanacheRepositoryBase<InfoUser, String> {
     fun findContactedInfoUserListByUserId(userId: String): List<InfoUserListDto> {
 
         val query = """
-            select new org.sbas.dtos.info.InfoUserListDto(iu.id, iu.dutyDstr1Cd, fn_get_cd_nm('SIDO', iu.dutyDstr1Cd), iu.telno,
+            select new org.sbas.dtos.info.InfoUserListDto(iu.id, iu.dutyDstr1Cd, fn_get_cd_nm('SIDO', iu.dutyDstr1Cd), iu.telno, iu.ptTypeCd
             iu.instTypeCd, iu.instNm, iu.userNm, iu.jobCd, iu.authCd, iu.rgstDttm, iu.userStatCd, iu.rgstUserId, iu.instId, iu.ocpCd, false)
         from InfoUser iu
         join InfoCntc ic on ic.id.mbrId = iu.id
