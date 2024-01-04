@@ -18,6 +18,7 @@ data class InfoUserListDto(
     var dutyDstr1Cd: String?,
     val dutyDstr1CdNm: String?,
     var telno: String?,
+    var ptTypeCd: String?,
     var instTypeCd: String?,
     var instNm: String?,
     var userNm: String?,
