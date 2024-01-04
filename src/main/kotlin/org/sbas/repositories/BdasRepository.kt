@@ -161,7 +161,7 @@ class BdasReqAprvRepository : PanacheRepositoryBase<BdasReqAprv, BdasReqAprvId> 
         return getEntityManager().createQuery(query, CompleteTimeLine::class.java).resultList
     }
 
-    fun findReqAprvListByPtIdAndBdasSeq(ptId: String, bdasSeq: Int): List<BdasReqAprv> {
+    fun findAllByPtIdAndBdasSeq(ptId: String, bdasSeq: Int): List<BdasReqAprv> {
         return find("id.ptId = '$ptId' and id.bdasSeq = $bdasSeq").list()
     }
 }

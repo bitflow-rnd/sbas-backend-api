@@ -8,6 +8,7 @@ import io.quarkus.panache.common.Sort
 import jakarta.enterprise.context.ApplicationScoped
 import jakarta.inject.Inject
 import jakarta.persistence.EntityManager
+import jakarta.ws.rs.NotFoundException
 import org.jboss.logging.Logger
 import org.sbas.dtos.info.*
 import org.sbas.entities.info.*
@@ -170,9 +171,9 @@ class InfoCrewRepository : PanacheRepositoryBase<InfoCrew, InfoCrewId> {
         return find("id.instId = '$instId' and id.crewId = $crewId").firstResult()
     }
 
-    fun findLatestCrewId(instId: String): Int? {
+    fun findLatestCrewId(instId: String): Int {
         return find("id.instId = '$instId'", Sort.by("id.crewId", Sort.Direction.Descending))
-            .firstResult()?.id?.crewId
+            .firstResult()?.id?.crewId ?: 0
     }
 }
 
@@ -184,15 +185,6 @@ class InfoInstRepository : PanacheRepositoryBase<InfoInst, String> {
 
     @Inject
     private lateinit var context: JpqlRenderContext
-
-    fun findInstCodeList(dstrCd1: String, dstrCd2: String, instTypeCd: String) =
-        find(
-            "select i from InfoInst i where " +
-                "('$dstrCd1' = '' or i.dstrCd1 = '$dstrCd1') and " +
-                "('$dstrCd2' = '' or i.dstrCd2 = '$dstrCd2') and " +
-                "('$instTypeCd' = '' or i.instTypeCd = '$instTypeCd')"
-        ).list()
-
 
     fun findInfoInst(dstrCd1: String?, dstrCd2: String?, instTypeCd: String?): List<InfoInstResponse> {
         val query = jpql {
@@ -282,20 +274,10 @@ class InfoInstRepository : PanacheRepositoryBase<InfoInst, String> {
         return getEntityManager().createQuery(query, FireStatnDto::class.java).singleResult
     }
 
-    fun findFireStatn(instId: String): InfoInst? {
-        return find("instTypeCd = 'ORGN0002' and id = '$instId'").firstResult()
+    fun findFireStatn(instId: String): InfoInst {
+        return find("instTypeCd = 'ORGN0002' and id = '$instId'").firstResult() ?: throw NotFoundException("fire station not found")
     }
 
-//    private fun CriteriaQueryDsl<*>.fireStatnsWhereAnd(param: FireStatnSearchParam) {
-//        whereAnd(
-//            col(InfoInst::instTypeCd).equal("ORGN0002"),
-//            param.instId?.run { col(InfoInst::id).like("%$this%") },
-//            param.instNm?.run { col(InfoInst::instNm).like("%$this%") },
-//            param.dstrCd1?.run { col(InfoInst::dstrCd1).equal(this) },
-//            param.dstrCd2?.run { col(InfoInst::dstrCd2).equal(this) },
-//            param.chrgTelno?.run { col(InfoInst::chrgTelno).like("%$this%") },
-//        )
-//    }
 }
 
 @ApplicationScoped

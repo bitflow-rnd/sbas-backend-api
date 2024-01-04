@@ -234,8 +234,7 @@ class OrganiztnService {
      */
     @Transactional
     fun regFireman(infoCrewSaveReq: InfoCrewSaveReq): CommonResponse<String> {
-        val latestCrewId = infoCrewRepository.findLatestCrewId(infoCrewSaveReq.instId) ?: 0
-
+        val latestCrewId = infoCrewRepository.findLatestCrewId(infoCrewSaveReq.instId)
         infoCrewRepository.persist(infoCrewSaveReq.toEntityForInsert(latestCrewId + 1))
 
         return CommonResponse("등록 성공")

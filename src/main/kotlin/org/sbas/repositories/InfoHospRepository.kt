@@ -125,7 +125,7 @@ class InfoHospRepository : PanacheRepositoryBase<InfoHosp, String> {
         return entityManager.createQuery(query, context).resultList
     }
 
-    fun findAvalHospListByDstrCd1(dstrCd1: String): MutableList<AvalHospDto> {
+    fun findAvalHospListByDstrCd1(dstrCd1: String, dstrCd2: String?): MutableList<AvalHospDto> {
         val query = jpql {
             selectNew<AvalHospDto>(
                 path(InfoHosp::hospId), path(InfoHosp::dutyName), path(InfoHosp::wgs84Lon), path(InfoHosp::wgs84Lat),
@@ -139,6 +139,7 @@ class InfoHospRepository : PanacheRepositoryBase<InfoHosp, String> {
                 join(InfoBed::class).on(path(InfoHosp::hospId).eq(path(InfoBed::hospId)))
             ).whereAnd(
                 path(InfoHosp::dstrCd1).eq(dstrCd1),
+                dstrCd2?.run { path(InfoHosp::dstrCd2).eq(dstrCd2) }
             )
         }
 
