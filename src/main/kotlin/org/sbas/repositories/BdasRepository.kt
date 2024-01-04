@@ -28,6 +28,8 @@ class BdasReqRepository : PanacheRepositoryBase<BdasReq, BdasReqId> {
     @Inject
     private lateinit var entityManager: EntityManager
 
+    fun findByPtIdWithLatestBdasSeq(ptId: String) = find("from BdasReq where id.ptId='$ptId' order by id.bdasSeq desc").firstResult()
+
     fun findByPtIdAndBdasSeq(ptId: String, bdasSeq: Int): BdasReq {
         return find(
             "id.ptId = '${ptId}' and id.bdasSeq = $bdasSeq",
@@ -138,8 +140,6 @@ class BdasReqRepository : PanacheRepositoryBase<BdasReq, BdasReqId> {
                     "where br.id.ptId = '$ptId' and br.id.bdasSeq = $bdasSeq"
         return entityManager.createQuery(query, CompleteTimeLine::class.java).resultList
     }
-
-    fun findByPtId(ptId: String) = find("from BdasReq where id.ptId='$ptId' order by id.bdasSeq desc").firstResult()
 }
 
 @ApplicationScoped

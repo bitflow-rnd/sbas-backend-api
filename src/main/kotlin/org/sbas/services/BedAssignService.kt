@@ -62,9 +62,6 @@ class BedAssignService {
     private lateinit var infoUserRepository: InfoUserRepository
 
     @Inject
-    private lateinit var baseCodeRepository: BaseCodeRepository
-
-    @Inject
     private lateinit var infoCrewRepository: InfoCrewRepository
 
     @Inject
@@ -533,7 +530,7 @@ class BedAssignService {
     @Transactional
     fun getDiseaseInfo(ptId: String): CommonResponse<*> {
         val bdasEsvy = bdasEsvyRepository.findByPtIdWithLatestBdasSeq(ptId)
-        val findReq = bdasReqRepository.findByPtId(ptId) ?: throw NotFoundException("$ptId request not found")
+        val findReq = bdasReqRepository.findByPtIdWithLatestBdasSeq(ptId) ?: throw NotFoundException("$ptId request not found")
 
         return CommonResponse(DiseaseInfoResponse(bdasEsvy, findReq))
     }
