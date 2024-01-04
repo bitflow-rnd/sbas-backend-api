@@ -77,7 +77,7 @@ class PatientService {
         //환자 주소(bascAddr)로 dstr1Cd, dstr2Cd 구하기
         val split = infoPtDto.bascAddr.split(" ")
         val dstrCd1 = StringUtils.getDstrCd1(split[0])
-        val findBaseCode = baseCodeRepository.findByDstr1CdAndCdNm(dstrCd1, split[1]) ?: throw NotFoundException("baseCode not found")
+        val findBaseCode = baseCodeRepository.findByDstr1CdAndCdNm(dstrCd1, split[1])
         val infoPt = infoPtDto.toEntity(dstrCd1, findBaseCode.id.cdId)
 
         infoPtRepository.persist(infoPt)
@@ -135,7 +135,7 @@ class PatientService {
         //환자 주소(bascAddr)로 dstr1Cd, dstr2Cd 구하기
         val split = infoPtDto.bascAddr.split(" ")
         val dstrCd1 = StringUtils.getDstrCd1(split[0])
-        val findBaseCode = baseCodeRepository.findByDstr1CdAndCdNm(dstrCd1, split[1]) ?: throw NotFoundException("baseCode not found")
+        val findBaseCode = baseCodeRepository.findByDstr1CdAndCdNm(dstrCd1, split[1])
         infoPtDto.dstr1Cd = dstrCd1
         infoPtDto.dstr2Cd = findBaseCode.id.cdId
 
@@ -158,12 +158,12 @@ class PatientService {
     fun findBasicInfo(ptId: String): CommonResponse<*> {
         val infoPt = infoPtRepository.findById(ptId) ?: throw NotFoundException("$ptId not found")
         val bdasEsvy = bdasEsvyRepository.findByPtIdWithLatestBdasSeq(ptId)
-        val bdasReq = bdasEsvy?.let { bdasReqRepository.findByPtIdAndBdasSeq(ptId, it.bdasSeq) }
+        val bdasReq = bdasEsvy.let { bdasReqRepository.findByPtIdAndBdasSeq(ptId, it.bdasSeq) }
 
         val bedStatCd: String = if (bdasEsvy == null) {
             BedStatCd.BAST0001.name
         } else {
-            bdasReq?.bedStatCd ?: BedStatCd.BAST0002.name
+            bdasReq.bedStatCd
         }
 
         val baseCode = infoPt.dstr2Cd?.let { baseCodeRepository.findBaseCodeByCdId(it) }

@@ -3,6 +3,7 @@ package org.sbas.dtos.info
 import java.time.Instant
 
 data class UserActivityHistoryResponse(
+    val id: Int,
     val userId: String,
     val ptId: String,
     val ptNm: String,
