@@ -43,10 +43,10 @@ class PublicOrganiztnEndpoint {
     @Operation(summary = "기관코드 목록", description = "기관코드 목록")
     @GET
     @Path("codes")
-    fun getInstCodes(@QueryParam("dstrCd1") @Length(max = 2) dstrCd1: String?,
-                     @QueryParam("dstrCd2") @Length(max = 4) dstrCd2: String?,
+    fun getInstCodes(@QueryParam("dstr1Cd") @Length(max = 2) dstr1Cd: String?,
+                     @QueryParam("dstr2Cd") @Length(max = 4) dstr2Cd: String?,
                      @QueryParam("instTypeCd") instTypeCd: String?): Response {
-        return Response.ok(organiztnService.getInstCodes(dstrCd1, dstrCd2, instTypeCd)).build()
+        return Response.ok(organiztnService.getInstCodes(dstr1Cd, dstr2Cd, instTypeCd)).build()
     }
 
     @Operation(summary = "구급대 목록", description = "특정 지역 코드에 해당하는 구급대 목록")

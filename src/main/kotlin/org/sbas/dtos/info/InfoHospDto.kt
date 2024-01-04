@@ -38,8 +38,8 @@ data class InfoHospSaveReq(
             wgs84Lat = this.wgs84Lat,
             dutyInf = this.dutyInf,
             dutyEtc = this.dutyEtc,
-            dstrCd1 = siDo,
-            dstrCd2 = siGunGu
+            dstr1Cd = siDo,
+            dstr2Cd = siGunGu
         )
     }
 
@@ -57,8 +57,8 @@ data class InfoHospSaveReq(
             wgs84Lat = wgs84Lat,
             dutyInf = dutyInf,
             dutyEtc = dutyEtc,
-            dstrCd1 = siDo,
-            dstrCd2 = siGunGu,
+            dstr1Cd = siDo,
+            dstr2Cd = siGunGu,
         )
     }
 
@@ -71,8 +71,8 @@ data class InfoHospSaveReq(
 data class InfoHospSearchParam(
     @field: QueryParam("hospId") var hospId: String?,
     @field: QueryParam("dutyName") var dutyName: String?,
-    @field: QueryParam("dstrCd1") var dstrCd1: String?,
-    @field: QueryParam("dstrCd2") var dstrCd2: String?,
+    @field: QueryParam("dstr1Cd") var dstr1Cd: String?,
+    @field: QueryParam("dstr2Cd") var dstr2Cd: String?,
     @field: QueryParam("page") var page: Int? = 0,
     @field: QueryParam("dutyDivNams") var dutyDivNams: String?,
 ) {
@@ -88,8 +88,8 @@ data class InfoHospListDto(
     val hpId: String?,
     val dutyName: String?,
     val dutyDivNam: String?,
-    val dstrCd1: String?,
-    val dstrCd2: String?,
+    val dstr1Cd: String?,
+    val dstr2Cd: String?,
     val dutyTel1: String?,
     val dutyTel3: String?,
     val updtDttm: Instant?,
@@ -135,8 +135,8 @@ data class InfoHospWithUser(
 data class InfoHospId(
     val hospId: String,
     val hpId: String,
-    val dstrCd1: String?,
-    val dstrCd1Nm: String?,
+    val dstr1Cd: String?,
+    val dstr1CdNm: String?,
     val attcId: String?,
 )
 

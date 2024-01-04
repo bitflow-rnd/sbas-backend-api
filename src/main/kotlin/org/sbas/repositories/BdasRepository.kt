@@ -28,6 +28,8 @@ class BdasReqRepository : PanacheRepositoryBase<BdasReq, BdasReqId> {
     @Inject
     private lateinit var entityManager: EntityManager
 
+    fun findByPtIdWithLatestBdasSeq(ptId: String) = find("from BdasReq where id.ptId='$ptId' order by id.bdasSeq desc").firstResult()
+
     fun findByPtIdAndBdasSeq(ptId: String, bdasSeq: Int): BdasReq {
         return find(
             "id.ptId = '${ptId}' and id.bdasSeq = $bdasSeq",
@@ -122,7 +124,7 @@ class BdasReqRepository : PanacheRepositoryBase<BdasReq, BdasReqId> {
                     "'${TimeLineStatCd.SUSPEND.cdNm}', " +
                     "ii.id, ii.instNm) " +
                     "from BdasReq br " +
-                    "join InfoInst ii on ii.dstrCd1 = br.reqDstr1Cd " +
+                    "join InfoInst ii on ii.dstr1Cd = br.reqDstr1Cd " +
                     "where br.id.ptId = '$ptId' and br.id.bdasSeq = $bdasSeq " +
                     "and ii.instTypeCd = 'ORGN0001' "
         return entityManager.createQuery(query, BdasReqAprvSuspendTimeLine::class.java).resultList
@@ -138,8 +140,6 @@ class BdasReqRepository : PanacheRepositoryBase<BdasReq, BdasReqId> {
                     "where br.id.ptId = '$ptId' and br.id.bdasSeq = $bdasSeq"
         return entityManager.createQuery(query, CompleteTimeLine::class.java).resultList
     }
-
-    fun findByPtId(ptId: String) = find("from BdasReq where id.ptId='$ptId' order by id.bdasSeq desc").firstResult()
 }
 
 @ApplicationScoped
@@ -161,7 +161,7 @@ class BdasReqAprvRepository : PanacheRepositoryBase<BdasReqAprv, BdasReqAprvId> 
         return getEntityManager().createQuery(query, CompleteTimeLine::class.java).resultList
     }
 
-    fun findReqAprvListByPtIdAndBdasSeq(ptId: String, bdasSeq: Int): List<BdasReqAprv> {
+    fun findAllByPtIdAndBdasSeq(ptId: String, bdasSeq: Int): List<BdasReqAprv> {
         return find("id.ptId = '$ptId' and id.bdasSeq = $bdasSeq").list()
     }
 }

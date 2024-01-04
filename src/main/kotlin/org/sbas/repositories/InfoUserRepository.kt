@@ -160,11 +160,11 @@ class InfoUserRepository : PanacheRepositoryBase<InfoUser, String> {
         return find("order by id").page(page - 1, size).list()
     }
 
-    fun findBdasUserByReqDstrCd(dstrCd1: String?, dstrCd2: String?): List<InfoUser> {
-        val query = if (dstrCd2 != null) {
-            "dutyDstr1Cd = '$dstrCd1' and dutyDstr2Cd = '$dstrCd2' and (jobCd = 'PMGR0002' OR jobCd like '병상승인%')"
+    fun findBdasUserByReqDstrCd(dstr1Cd: String?, dstr2Cd: String?): List<InfoUser> {
+        val query = if (dstr2Cd != null) {
+            "dutyDstr1Cd = '$dstr1Cd' and dutyDstr2Cd = '$dstr2Cd' and (jobCd = 'PMGR0002' OR jobCd like '병상승인%')"
         } else {
-            "dutyDstr1Cd = '$dstrCd1' and (jobCd = 'PMGR0002' OR jobCd like '병상승인%')"
+            "dutyDstr1Cd = '$dstr1Cd' and (jobCd = 'PMGR0002' OR jobCd like '병상승인%')"
         }
         return find(query).list()
     }

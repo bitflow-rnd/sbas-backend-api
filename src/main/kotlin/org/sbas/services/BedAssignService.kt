@@ -5,7 +5,6 @@ import org.jboss.logging.Logger
 import org.sbas.constants.enums.BedStatCd
 import org.sbas.constants.enums.TimeLineStatCd
 import org.sbas.dtos.bdas.*
-import org.sbas.dtos.info.InfoCrewSaveReq
 import org.sbas.entities.bdas.BdasReqId
 import org.sbas.handlers.GeocodingHandler
 import org.sbas.repositories.*
@@ -21,6 +20,8 @@ import jakarta.inject.Inject
 import jakarta.transaction.Transactional
 import jakarta.ws.rs.NotFoundException
 import jakarta.ws.rs.core.Response
+import org.sbas.component.InfoCrewComponent
+import org.sbas.dtos.info.AvalHospDto
 import kotlin.math.acos
 import kotlin.math.cos
 import kotlin.math.roundToInt
@@ -62,15 +63,6 @@ class BedAssignService {
     private lateinit var infoUserRepository: InfoUserRepository
 
     @Inject
-    private lateinit var baseCodeRepository: BaseCodeRepository
-
-    @Inject
-    private lateinit var infoCrewRepository: InfoCrewRepository
-
-    @Inject
-    private lateinit var infoInstRepository: InfoInstRepository
-
-    @Inject
     private lateinit var activityHistoryRepository: UserActivityHistoryRepository
 
     @Inject
@@ -78,6 +70,9 @@ class BedAssignService {
 
     @Inject
     private lateinit var firebaseService: FirebaseService
+
+    @Inject
+    private lateinit var infoCrewComponent: InfoCrewComponent
 
     @Inject
     private lateinit var jwt: JsonWebToken
@@ -143,8 +138,7 @@ class BedAssignService {
     fun reqConfirm(saveRequest: BdasReqAprvSaveRequest): CommonResponse<String> {
         val findBdasReq = bdasReqRepository.findByPtIdAndBdasSeq(saveRequest.ptId, saveRequest.bdasSeq)
 
-        val bdasReqAprvs =
-            bdasReqAprvRepository.findReqAprvListByPtIdAndBdasSeq(saveRequest.ptId, saveRequest.bdasSeq)
+        val bdasReqAprvs = bdasReqAprvRepository.findAllByPtIdAndBdasSeq(saveRequest.ptId, saveRequest.bdasSeq)
 
         val requestUser = infoUserRepository.findByUserId(findBdasReq.rgstUserId)
             ?: throw NotFoundException("user not found")
@@ -197,39 +191,39 @@ class BedAssignService {
     fun getAvalHospList(ptId: String, bdasSeq: Int): CommonResponse<*> {
         val findBdasReq = bdasReqRepository.findByPtIdAndBdasSeq(ptId, bdasSeq)
 
-        val dstrCd1 = findBdasReq.reqDstr1Cd
-        val dstrCd2: String? = findBdasReq.reqDstr2Cd
+        val dstr1Cd = findBdasReq.reqDstr1Cd
+        val dstr2Cd: String? = findBdasReq.reqDstr2Cd
 
-        // 병상 배정 요청시 선택한 dstrCd1, dstrCd2에 해당하는 infoHosp 목록
-        val infoHospList = infoHospRepository.findAvalHospListByDstrCd1(dstrCd1)
+        // 병상 배정 요청시 선택한 dstr1Cd, dstr2Cd에 해당하는 infoHosp 목록
+        val infoHospList = infoHospRepository.findAvalHospListBydstr1Cd(dstr1Cd, dstr2Cd)
         log.debug("getAvalHospList >>>>>>>>>>>>>> ${infoHospList.size}")
-        val list = infoHospList.map {
+        val list = infoHospList.map { avalHospDto ->
             val distance = calculateDistance(
                 lat1 = findBdasReq.dprtDstrLat!!.toDouble(),
                 lon1 = findBdasReq.dprtDstrLon!!.toDouble(),
-                lat2 = it.wgs84Lat!!.toDouble(),
-                lon2 = it.wgs84Lon!!.toDouble(),
+                lat2 = avalHospDto.wgs84Lat!!.toDouble(),
+                lon2 = avalHospDto.wgs84Lon!!.toDouble(),
             )
             AvalHospListResponse(
-                hospId = it.hospId,
-                hospNm = it.dutyName!!,
+                hospId = avalHospDto.hospId,
+                hospNm = avalHospDto.dutyName!!,
                 doubleDistance = distance,
                 distance = convertToStringDistance(distance),
-                addr = it.dutyAddr!!,
-                gnbdIcu = it.gnbdIcu, // hv22 54
-                npidIcu = it.npidIcu, // hv23 55
-                gnbdSvrt = it.gnbdSvrt, // hv24 56
-                gnbdSmsv = it.gnbdSmsv, // hv25
-                gnbdModr = it.gnbdModr, // hv26
-                ventilator = it.ventilator,
-                ventilatorPreemie = it.ventilatorPreemie,
-                incubator = it.incubator,
-                ecmo = it.ecmo,
-                highPressureOxygen = it.highPressureOxygen,
-                ct = it.ct,
-                mri = it.mri,
-                bloodVesselImaging = it.bloodVesselImaging,
-                bodyTemperatureControl = it.bodyTemperatureControl,
+                addr = avalHospDto.dutyAddr!!,
+                gnbdIcu = avalHospDto.gnbdIcu, // hv22 54
+                npidIcu = avalHospDto.npidIcu, // hv23 55
+                gnbdSvrt = avalHospDto.gnbdSvrt, // hv24 56
+                gnbdSmsv = avalHospDto.gnbdSmsv, // hv25
+                gnbdModr = avalHospDto.gnbdModr, // hv26
+                ventilator = avalHospDto.ventilator,
+                ventilatorPreemie = avalHospDto.ventilatorPreemie,
+                incubator = avalHospDto.incubator,
+                ecmo = avalHospDto.ecmo,
+                highPressureOxygen = avalHospDto.highPressureOxygen,
+                ct = avalHospDto.ct,
+                mri = avalHospDto.mri,
+                bloodVesselImaging = avalHospDto.bloodVesselImaging,
+                bodyTemperatureControl = avalHospDto.bodyTemperatureControl,
             )
 //        }.filter { response -> response.hospId !in findBdasReqAprv.map { it.reqHospId } }
         }
@@ -259,13 +253,12 @@ class BedAssignService {
         val findInfoUser = infoUserRepository.findByUserId(jwt.name) ?: throw NotFoundException("user not found")
         val findInfoPt = infoPtRepository.findById(saveRequest.ptId) ?: throw NotFoundException("${saveRequest.ptId} not found")
 
-        val bdasReqAprvList =
-            bdasReqAprvRepository.findReqAprvListByPtIdAndBdasSeq(saveRequest.ptId, saveRequest.bdasSeq)
+        val bdasReqAprvs = bdasReqAprvRepository.findAllByPtIdAndBdasSeq(saveRequest.ptId, saveRequest.bdasSeq)
 
-        if (bdasReqAprvList.isEmpty()) {
+        if (bdasReqAprvs.isEmpty()) {
             throw CustomizedException("배정 승인 정보가 없습니다.", Response.Status.BAD_REQUEST)
         } else {
-            bdasReqAprvList.firstOrNull { it.id.asgnReqSeq == saveRequest.asgnReqSeq && it.reqHospId == saveRequest.hospId }
+            bdasReqAprvs.firstOrNull { it.id.asgnReqSeq == saveRequest.asgnReqSeq && it.reqHospId == saveRequest.hospId }
                 ?: throw CustomizedException("배정 요청 순번(asgnReqSeq) 및 병원 ID(hospId)가 일치하지 않습니다.", Response.Status.BAD_REQUEST)
         }
 
@@ -284,11 +277,11 @@ class BedAssignService {
             // TODO 재요청?
             // 모든 병원이 배정불가인 경우
             val refusedBdasAprv = bdasAprvRepository.findRefusedBdasAprv(saveRequest.ptId, saveRequest.bdasSeq)
-            if (bdasReqAprvList.size == refusedBdasAprv.size) {
+            if (bdasReqAprvs.size == refusedBdasAprv.size) {
                 firebaseService.sendMessageMultiDevice(
                     "${findInfoPt.ptNm}님 병상배정",
                     "모든 병원이 배정 불가 처리되었습니다. 재요청 바랍니다.",
-                    bdasReqAprvList[0].rgstUserId
+                    bdasReqAprvs[0].rgstUserId
                 )
                 //            findBdasReq.changeBedStatTo(BedStatCd.BAST0008.name)
                 findBdasReq.changeBedStatTo(BedStatCd.BAST0003.name)
@@ -313,7 +306,7 @@ class BedAssignService {
         }
 
         // 나머지 병원 거절 + push 알림?
-        bdasReqAprvList.filter { it.id.asgnReqSeq !in asgnReqSeqList }.forEach {
+        bdasReqAprvs.filter { it.id.asgnReqSeq !in asgnReqSeqList }.forEach {
             bdasAprvRepository.persist(it.convertToRefuseBdasAprv())
         }
 
@@ -325,7 +318,7 @@ class BedAssignService {
             else -> "병상 배정이 불가처리되었습니다."
         }
 
-        firebaseService.sendMessageMultiDevice("${findInfoPt.ptNm}님 병상배정", msg, bdasReqAprvList[0].rgstUserId)
+        firebaseService.sendMessageMultiDevice("${findInfoPt.ptNm}님 병상배정", msg, bdasReqAprvs[0].rgstUserId)
 
         activityHistoryRepository.save(saveRequest.convertToActivityHistory(jwt.name))
         
@@ -342,52 +335,10 @@ class BedAssignService {
         if (bdasAprvList.isEmpty()) {
             throw CustomizedException("의료진 승인 정보가 없습니다.", Response.Status.BAD_REQUEST)
         }
-
         bdasTrnsRepository.persist(saveRequest.toEntity())
 
-        // 구급대원 정보 저장
-        val infoCrew1 = saveRequest.crew1Nm?.let {
-            InfoCrewSaveReq(
-                instId = saveRequest.instId,
-                crewNm = saveRequest.crew1Nm,
-                telno = saveRequest.crew1Telno,
-                rmk = null,
-                pstn = saveRequest.crew1Pstn
-            )
-        }
-        val infoCrew2 = saveRequest.crew2Nm?.let {
-            InfoCrewSaveReq(
-                instId = saveRequest.instId,
-                crewNm = saveRequest.crew2Nm,
-                telno = saveRequest.crew2Telno,
-                rmk = null,
-                pstn = saveRequest.crew2Pstn,
-            )
-        }
-        val infoCrew3 = saveRequest.crew3Nm?.let {
-            InfoCrewSaveReq(
-                instId = saveRequest.instId,
-                crewNm = saveRequest.crew3Nm,
-                telno = saveRequest.crew3Telno,
-                rmk = null,
-                pstn = saveRequest.crew3Pstn,
-            )
-        }
-
-        val latestCrewId = infoCrewRepository.findLatestCrewId(saveRequest.instId) ?: 0
-        val list = mutableListOf(infoCrew1, infoCrew2, infoCrew3)
-
-        val infoCrews = list.filterNotNull().mapIndexed { idx, it ->
-            it.toEntityForInsert(latestCrewId + 1 + idx)
-        }
-
-        infoCrews.forEach {
-            infoCrewRepository.persist(it)
-        }
-
-        // 차량정보 저장
-        val fireStatn = infoInstRepository.findFireStatn(saveRequest.instId) ?: throw NotFoundException("fire station not found")
-        fireStatn.updateFireStatnVecno(saveRequest.vecno)
+        infoCrewComponent.saveInfoCrew(saveRequest.toInfoCrewSaveReqList(), saveRequest.instId)
+        infoCrewComponent.saveVehicleInfo(saveRequest.instId, saveRequest.vecno)
 
         findBdasReq.changeBedStatTo(BedStatCd.BAST0006.name)
 
@@ -533,7 +484,7 @@ class BedAssignService {
     @Transactional
     fun getDiseaseInfo(ptId: String): CommonResponse<*> {
         val bdasEsvy = bdasEsvyRepository.findByPtIdWithLatestBdasSeq(ptId)
-        val findReq = bdasReqRepository.findByPtId(ptId) ?: throw NotFoundException("$ptId request not found")
+        val findReq = bdasReqRepository.findByPtIdWithLatestBdasSeq(ptId) ?: throw NotFoundException("$ptId request not found")
 
         return CommonResponse(DiseaseInfoResponse(bdasEsvy, findReq))
     }

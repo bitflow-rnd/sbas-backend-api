@@ -8,6 +8,7 @@ import io.quarkus.panache.common.Sort
 import jakarta.enterprise.context.ApplicationScoped
 import jakarta.inject.Inject
 import jakarta.persistence.EntityManager
+import jakarta.ws.rs.NotFoundException
 import org.jboss.logging.Logger
 import org.sbas.dtos.info.*
 import org.sbas.entities.info.*
@@ -170,9 +171,9 @@ class InfoCrewRepository : PanacheRepositoryBase<InfoCrew, InfoCrewId> {
         return find("id.instId = '$instId' and id.crewId = $crewId").firstResult()
     }
 
-    fun findLatestCrewId(instId: String): Int? {
+    fun findLatestCrewId(instId: String): Int {
         return find("id.instId = '$instId'", Sort.by("id.crewId", Sort.Direction.Descending))
-            .firstResult()?.id?.crewId
+            .firstResult()?.id?.crewId ?: 0
     }
 }
 
@@ -185,26 +186,17 @@ class InfoInstRepository : PanacheRepositoryBase<InfoInst, String> {
     @Inject
     private lateinit var context: JpqlRenderContext
 
-    fun findInstCodeList(dstrCd1: String, dstrCd2: String, instTypeCd: String) =
-        find(
-            "select i from InfoInst i where " +
-                "('$dstrCd1' = '' or i.dstrCd1 = '$dstrCd1') and " +
-                "('$dstrCd2' = '' or i.dstrCd2 = '$dstrCd2') and " +
-                "('$instTypeCd' = '' or i.instTypeCd = '$instTypeCd')"
-        ).list()
-
-
-    fun findInfoInst(dstrCd1: String?, dstrCd2: String?, instTypeCd: String?): List<InfoInstResponse> {
+    fun findInfoInst(dstr1Cd: String?, dstr2Cd: String?, instTypeCd: String?): List<InfoInstResponse> {
         val query = jpql {
             selectNew<InfoInstResponse>(
                 path(InfoInst::id), path(InfoInst::instTypeCd), path(InfoInst::instNm),
-                path(InfoInst::dstrCd1), path(InfoInst::dstrCd2),
+                path(InfoInst::dstr1Cd), path(InfoInst::dstr2Cd),
             ).from(
                 entity(InfoInst::class),
             ).whereAnd(
                 instTypeCd?.run { path(InfoInst::instTypeCd).equal(this) },
-                dstrCd1?.run { path(InfoInst::dstrCd1).equal(this) },
-                dstrCd2?.run { path(InfoInst::dstrCd2).equal(this) },
+                dstr1Cd?.run { path(InfoInst::dstr1Cd).equal(this) },
+                dstr2Cd?.run { path(InfoInst::dstr2Cd).equal(this) },
             )
         }
 
@@ -223,8 +215,8 @@ class InfoInstRepository : PanacheRepositoryBase<InfoInst, String> {
             
             selectNew<FireStatnListDto>(
                 path(InfoInst::id), path(InfoInst::instNm),
-                function(String::class, "fn_get_cd_nm", stringLiteral("SIDO"), path(InfoInst::dstrCd1)),
-                function(String::class, "fn_get_dstr_cd2_nm", path(InfoInst::dstrCd1), path(InfoInst::dstrCd2)),
+                function(String::class, "fn_get_cd_nm", stringLiteral("SIDO"), path(InfoInst::dstr1Cd)),
+                function(String::class, "fn_get_dstr_cd2_nm", path(InfoInst::dstr1Cd), path(InfoInst::dstr2Cd)),
                 path(InfoInst::chrgTelno), crewCount, path(InfoInst::lat), path(InfoInst::lon)
             ).from(
                 entity(InfoInst::class)
@@ -232,8 +224,8 @@ class InfoInstRepository : PanacheRepositoryBase<InfoInst, String> {
                 path(InfoInst::instTypeCd).eq("ORGN0002"),
                 param.instId?.run { path(InfoInst::id).like("%$this%") },
                 param.instNm?.run { path(InfoInst::instNm).like("%$this%") },
-                param.dstrCd1?.run { path(InfoInst::dstrCd1).eq(this) },
-                param.dstrCd2?.run { path(InfoInst::dstrCd2).eq(this) },
+                param.dstr1Cd?.run { path(InfoInst::dstr1Cd).eq(this) },
+                param.dstr2Cd?.run { path(InfoInst::dstr2Cd).eq(this) },
                 param.chrgTelno?.run { path(InfoInst::chrgTelno).like("%$this%") },
             ).orderBy(
                 path(InfoInst::id).desc(),
@@ -258,8 +250,8 @@ class InfoInstRepository : PanacheRepositoryBase<InfoInst, String> {
                 path(InfoInst::instTypeCd).eq("ORGN0002"),
                 param.instId?.run { path(InfoInst::id).like("%$this%") },
                 param.instNm?.run { path(InfoInst::instNm).like("%$this%") },
-                param.dstrCd1?.run { path(InfoInst::dstrCd1).eq(this) },
-                param.dstrCd2?.run { path(InfoInst::dstrCd2).eq(this) },
+                param.dstr1Cd?.run { path(InfoInst::dstr1Cd).eq(this) },
+                param.dstr2Cd?.run { path(InfoInst::dstr2Cd).eq(this) },
                 param.chrgTelno?.run { path(InfoInst::chrgTelno).like("%$this%") },
             )
         }
@@ -273,8 +265,8 @@ class InfoInstRepository : PanacheRepositoryBase<InfoInst, String> {
 
     fun findFireStatnDtoByInstId(instId: String): FireStatnDto? {
         val query = "select new org.sbas.dtos.info.FireStatnDto(ii.id, ii.instNm, " +
-                "ii.chrgId, ii.chrgNm, ii.dstrCd1, fn_get_cd_nm('SIDO', ii.dstrCd1), " +
-                "ii.dstrCd2, fn_get_cd_nm('SIDO'||ii.dstrCd1, ii.dstrCd2), " +
+                "ii.chrgId, ii.chrgNm, ii.dstr1Cd, fn_get_cd_nm('SIDO', ii.dstr1Cd), " +
+                "ii.dstr2Cd, fn_get_cd_nm('SIDO'||ii.dstr1Cd, ii.dstr2Cd), " +
                 "ii.chrgTelno, ii.rmk, ii.detlAddr, ii.lat, ii.lon, ii.vecno ) " +
                 "from InfoInst ii " +
                 "where ii.instTypeCd = 'ORGN0002' and ii.id = '$instId' "
@@ -282,20 +274,10 @@ class InfoInstRepository : PanacheRepositoryBase<InfoInst, String> {
         return getEntityManager().createQuery(query, FireStatnDto::class.java).singleResult
     }
 
-    fun findFireStatn(instId: String): InfoInst? {
-        return find("instTypeCd = 'ORGN0002' and id = '$instId'").firstResult()
+    fun findFireStatn(instId: String): InfoInst {
+        return find("instTypeCd = 'ORGN0002' and id = '$instId'").firstResult() ?: throw NotFoundException("fire station not found")
     }
 
-//    private fun CriteriaQueryDsl<*>.fireStatnsWhereAnd(param: FireStatnSearchParam) {
-//        whereAnd(
-//            col(InfoInst::instTypeCd).equal("ORGN0002"),
-//            param.instId?.run { col(InfoInst::id).like("%$this%") },
-//            param.instNm?.run { col(InfoInst::instNm).like("%$this%") },
-//            param.dstrCd1?.run { col(InfoInst::dstrCd1).equal(this) },
-//            param.dstrCd2?.run { col(InfoInst::dstrCd2).equal(this) },
-//            param.chrgTelno?.run { col(InfoInst::chrgTelno).like("%$this%") },
-//        )
-//    }
 }
 
 @ApplicationScoped
