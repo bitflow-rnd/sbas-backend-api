@@ -4,7 +4,7 @@ import org.sbas.constants.enums.*
 import org.sbas.dtos.info.InfoUserUpdateReq
 import org.sbas.entities.CommonEntity
 import java.time.Instant
-import javax.persistence.*
+import jakarta.persistence.*
 
 /**
  * 사용자 정보
@@ -94,7 +94,7 @@ class InfoUser(
     }
     
     // 처음 사용자 등록할 때 사용
-    fun setRgstAndUpdtUserIdTo(userId: String?) {
+    fun setRgstAndUpdtUserIdTo(userId: String) {
         rgstUserId = userId
         updtUserId = userId
     }

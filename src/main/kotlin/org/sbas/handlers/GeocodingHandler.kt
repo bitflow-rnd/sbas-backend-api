@@ -5,7 +5,7 @@ import org.sbas.restclients.NaverGeocodingRestClient
 import org.sbas.restparameters.NaverGeocodingApiParams
 import org.sbas.restresponses.NaverGeocodingApiResponse
 import org.sbas.restresponses.NaverReverseGeocodingApiResponse
-import javax.enterprise.context.ApplicationScoped
+import jakarta.enterprise.context.ApplicationScoped
 
 @ApplicationScoped
 class GeocodingHandler {

@@ -21,11 +21,11 @@ import org.sbas.restparameters.*
 import org.sbas.utils.CustomizedException
 import org.sbas.utils.StringUtils
 import java.io.File
-import javax.enterprise.context.ApplicationScoped
-import javax.inject.Inject
-import javax.transaction.Transactional
-import javax.ws.rs.NotFoundException
-import javax.ws.rs.core.Response
+import jakarta.enterprise.context.ApplicationScoped
+import jakarta.inject.Inject
+import jakarta.transaction.Transactional
+import jakarta.ws.rs.NotFoundException
+import jakarta.ws.rs.core.Response
 
 
 /**
@@ -98,7 +98,7 @@ class OrganiztnService {
 
         val hospBasicInfo = objectMapper.readValue(item.toString(), HospBasicInfo::class.java)
 
-        val (jsonObject2, totalCount) = egenService.getHsptlMdcncListInfoInqire(param = EgenApiListInfoParams(qn = hospBasicInfo.dutyName))
+        val (jsonObject2, totalCount) = egenService.getHsptlMdcncListInfoInqire(param = EgenApiListInfoParams(qn = hospBasicInfo.dutyName?.replace("\\s".toRegex(), "")))
         val bassInfo = if (totalCount == 1) {
             jsonObject2.getJSONObject("item")
         } else {
@@ -125,11 +125,11 @@ class OrganiztnService {
      * 기관코드 목록 조회
      */
     @Transactional
-    fun getInstCodes(dstrCd1: String?, dstrCd2: String?, instTypeCd: String?): CommonListResponse<*> {
+    fun getInstCodes(dstr1Cd: String?, dstr2Cd: String?, instTypeCd: String?): CommonListResponse<*> {
         val instList = when (instTypeCd) {
-            "ORGN0003" -> infoHospRepository.findPubHealthCenter(dstrCd1, dstrCd2)
-            "ORGN0004" -> infoHospRepository.findMediOrgan(dstrCd1, dstrCd2)
-            else -> infoInstRepository.findInfoInst(dstrCd1, dstrCd2, instTypeCd)
+            "ORGN0003" -> infoHospRepository.findPubHealthCenter(dstr1Cd, dstr2Cd)
+            "ORGN0004" -> infoHospRepository.findMediOrgan(dstr1Cd, dstr2Cd)
+            else -> infoInstRepository.findInfoInst(dstr1Cd, dstr2Cd, instTypeCd)
         }
 
         return CommonListResponse(instList)
@@ -142,10 +142,10 @@ class OrganiztnService {
     fun regFireStatn(fireStatnSaveReq: FireStatnSaveReq): CommonResponse<String> {
         val fireStatnInstId = StringUtils.incrementCode("FS", 8, infoInstRepository.findLatestFireStatInstId())
 
-        val baseCode = baseCodeRepository.findBaseCodeByCdId(fireStatnSaveReq.dstrCd1)
-        val dstrCd2Nm = baseCodeRepository.getDstrCd2Nm(fireStatnSaveReq.dstrCd1, fireStatnSaveReq.dstrCd2)
+        val baseCode = baseCodeRepository.findBaseCodeByCdId(fireStatnSaveReq.dstr1Cd)
+        val dstr2CdNm = baseCodeRepository.getdstr2CdNm(fireStatnSaveReq.dstr1Cd, fireStatnSaveReq.dstr2Cd)
 
-        val fullAddr = baseCode!!.cdNm + dstrCd2Nm + fireStatnSaveReq.detlAddr
+        val fullAddr = baseCode!!.cdNm + dstr2CdNm + fireStatnSaveReq.detlAddr
 
         val geocoding = geoHandler.getGeocoding(NaverGeocodingApiParams(query = fullAddr))
         fireStatnSaveReq.lat = geocoding.addresses!![0].y // 위도
@@ -222,7 +222,7 @@ class OrganiztnService {
      * 구급대원 조회
      */
     @Transactional
-    fun findFireman(instId: String, crewId: String): CommonResponse<InfoCrewDto> {
+    fun findFireman(instId: String, crewId: Int): CommonResponse<InfoCrewDto> {
         val findInfoCrew = infoCrewRepository.findInfoCrew(instId, crewId)
             ?: throw CustomizedException("해당 구급대원이 없습니다.", RestResponse.Status.NOT_FOUND)
 
@@ -234,8 +234,7 @@ class OrganiztnService {
      */
     @Transactional
     fun regFireman(infoCrewSaveReq: InfoCrewSaveReq): CommonResponse<String> {
-        val latestCrewId = infoCrewRepository.findLatestCrewId(infoCrewSaveReq.instId) ?: 0
-
+        val latestCrewId = infoCrewRepository.findLatestCrewId(infoCrewSaveReq.instId)
         infoCrewRepository.persist(infoCrewSaveReq.toEntityForInsert(latestCrewId + 1))
 
         return CommonResponse("등록 성공")
@@ -333,10 +332,10 @@ class OrganiztnService {
     private fun findHospDetailInfo(hpId: String): Pair<HospDetailInfo, String?> {
         val infoHosp = infoHospRepository.findInfoHospByHpId(hpId)
 
-        val stage1 = if (infoHosp.dstrCd1Nm == "강원도") {
+        val stage1 = if (infoHosp.dstr1CdNm == "강원도") {
             "강원특별자치도"
         } else {
-            infoHosp.dstrCd1Nm!!
+            infoHosp.dstr1CdNm!!
         }
 
         val jsonObject = egenService.getEmrrmRltmUsefulSckbdInfoInqire(

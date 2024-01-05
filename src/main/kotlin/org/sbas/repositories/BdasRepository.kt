@@ -1,24 +1,24 @@
 package org.sbas.repositories
 
-import com.linecorp.kotlinjdsl.QueryFactory
 import io.quarkus.hibernate.orm.panache.kotlin.PanacheRepositoryBase
 import io.quarkus.panache.common.Sort
+import jakarta.enterprise.context.ApplicationScoped
+import jakarta.inject.Inject
+import jakarta.persistence.EntityManager
+import jakarta.persistence.TypedQuery
+import jakarta.ws.rs.NotFoundException
 import org.sbas.constants.enums.AdmsStatCd
 import org.sbas.constants.enums.TimeLineStatCd
 import org.sbas.dtos.bdas.*
 import org.sbas.entities.bdas.*
 import org.sbas.responses.patient.DestinationInfo
 import java.time.Instant
-import javax.enterprise.context.ApplicationScoped
-import javax.inject.Inject
-import javax.persistence.EntityManager
-import javax.persistence.TypedQuery
-import javax.ws.rs.NotFoundException
 
 @ApplicationScoped
-class BdasEsvyRepository : PanacheRepositoryBase<BdasEsvy, String> {
-    fun findByPtIdWithLatestBdasSeq(ptId: String): BdasEsvy? {
-        return find("pt_id = '${ptId}'", Sort.by("bdas_seq", Sort.Direction.Descending)).firstResult()
+class BdasEsvyRepository : PanacheRepositoryBase<BdasEsvy, Int> {
+    fun findByPtIdWithLatestBdasSeq(ptId: String): BdasEsvy {
+        return find("ptId = '${ptId}'", Sort.by("bdasSeq", Sort.Direction.Descending)).firstResult()
+            ?: throw NotFoundException("해당 환자의 질병정보를 찾을 수 없습니다.")
     }
 }
 
@@ -28,14 +28,13 @@ class BdasReqRepository : PanacheRepositoryBase<BdasReq, BdasReqId> {
     @Inject
     private lateinit var entityManager: EntityManager
 
-    @Inject
-    private lateinit var queryFactory: QueryFactory
+    fun findByPtIdWithLatestBdasSeq(ptId: String) = find("from BdasReq where id.ptId='$ptId' order by id.bdasSeq desc").firstResult()
 
-    fun findByPtIdAndBdasSeq(ptId: String, bdasSeq: Int): BdasReq? {
+    fun findByPtIdAndBdasSeq(ptId: String, bdasSeq: Int): BdasReq {
         return find(
-            "pt_id = '${ptId}' and bdas_seq = $bdasSeq",
-            Sort.by("bdas_seq", Sort.Direction.Descending)
-        ).firstResult()
+            "id.ptId = '${ptId}' and id.bdasSeq = $bdasSeq",
+            Sort.by("id.bdasSeq", Sort.Direction.Descending)
+        ).firstResult() ?: throw NotFoundException("$ptId $bdasSeq 병상요청 정보가 없습니다.")
     }
 
     fun queryForBdasList(cond: String?, offset: Int?): TypedQuery<BdasListDto> {
@@ -111,7 +110,7 @@ class BdasReqRepository : PanacheRepositoryBase<BdasReq, BdasReqId> {
         return try {
             val query = "SELECT iu.instNm from InfoUser iu where iu.id in ($subQuery)"
             entityManager.createQuery(query).singleResult as String
-        } catch (ex: javax.persistence.NoResultException) {
+        } catch (ex: jakarta.persistence.NoResultException) {
             // 예외 처리: 결과가 없을 때 빈 문자열을 반환
             ""
         }
@@ -125,7 +124,7 @@ class BdasReqRepository : PanacheRepositoryBase<BdasReq, BdasReqId> {
                     "'${TimeLineStatCd.SUSPEND.cdNm}', " +
                     "ii.id, ii.instNm) " +
                     "from BdasReq br " +
-                    "join InfoInst ii on ii.dstrCd1 = br.reqDstr1Cd " +
+                    "join InfoInst ii on ii.dstr1Cd = br.reqDstr1Cd " +
                     "where br.id.ptId = '$ptId' and br.id.bdasSeq = $bdasSeq " +
                     "and ii.instTypeCd = 'ORGN0001' "
         return entityManager.createQuery(query, BdasReqAprvSuspendTimeLine::class.java).resultList
@@ -141,8 +140,6 @@ class BdasReqRepository : PanacheRepositoryBase<BdasReq, BdasReqId> {
                     "where br.id.ptId = '$ptId' and br.id.bdasSeq = $bdasSeq"
         return entityManager.createQuery(query, CompleteTimeLine::class.java).resultList
     }
-
-    fun findByPtId(ptId: String) = find("from BdasReq where id.ptId='$ptId' order by id.bdasSeq desc").firstResult()
 }
 
 @ApplicationScoped
@@ -164,7 +161,7 @@ class BdasReqAprvRepository : PanacheRepositoryBase<BdasReqAprv, BdasReqAprvId> 
         return getEntityManager().createQuery(query, CompleteTimeLine::class.java).resultList
     }
 
-    fun findReqAprvListByPtIdAndBdasSeq(ptId: String, bdasSeq: Int): List<BdasReqAprv> {
+    fun findAllByPtIdAndBdasSeq(ptId: String, bdasSeq: Int): List<BdasReqAprv> {
         return find("id.ptId = '$ptId' and id.bdasSeq = $bdasSeq").list()
     }
 }
@@ -254,8 +251,8 @@ class BdasTrnsRepository : PanacheRepositoryBase<BdasTrns, BdasTrnsId> {
 
     fun findByPtIdAndBdasSeqWithNull(ptId: String, bdasSeq: Int): BdasTrns? {
         return find(
-            "pt_id = '${ptId}' and bdas_seq = $bdasSeq",
-            Sort.by("bdas_seq", Sort.Direction.Descending)
+            "id.ptId = '${ptId}' and id.bdasSeq = $bdasSeq",
+            Sort.by("id.bdasSeq", Sort.Direction.Descending)
         ).firstResult()
     }
 
@@ -294,8 +291,8 @@ class BdasAdmsRepository : PanacheRepositoryBase<BdasAdms, BdasAdmsId> {
 
     fun findByIdOrderByAdmsSeqDesc(ptId: String, bdasSeq: Int): BdasAdms? {
         return find(
-            "pt_id = '$ptId' and bdas_seq = $bdasSeq",
-            Sort.by("adms_seq", Sort.Direction.Descending)
+            "id.ptId = '$ptId' and id.bdasSeq = $bdasSeq",
+            Sort.by("id.admsSeq", Sort.Direction.Descending)
         ).firstResult()
     }
 

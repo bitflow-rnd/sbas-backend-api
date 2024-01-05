@@ -2,7 +2,7 @@ package org.sbas.entities.svrt
 
 import org.sbas.entities.CommonEntity
 import java.io.Serializable
-import javax.persistence.*
+import jakarta.persistence.*
 
 /**
  * 중증 분석 결과

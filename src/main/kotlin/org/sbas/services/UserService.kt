@@ -24,11 +24,11 @@ import org.sbas.restparameters.NaverSmsMsgApiParams
 import org.sbas.restparameters.NaverSmsReqMsgs
 import org.sbas.utils.CustomizedException
 import org.sbas.utils.TokenUtils
-import javax.enterprise.context.ApplicationScoped
-import javax.inject.Inject
-import javax.transaction.Transactional
-import javax.ws.rs.NotFoundException
-import javax.ws.rs.core.Response
+import jakarta.enterprise.context.ApplicationScoped
+import jakarta.inject.Inject
+import jakarta.transaction.Transactional
+import jakarta.ws.rs.core.Response
+import org.sbas.repositories.UserActivityHistoryRepository
 
 
 @ApplicationScoped
@@ -42,6 +42,9 @@ class UserService {
 
     @Inject
     private lateinit var cntcRepository: InfoCntcRepository
+
+    @Inject
+    private lateinit var activityHistoryRepository: UserActivityHistoryRepository
 
     @RestClient
     private lateinit var naverSensClient: NaverSensRestClient
@@ -161,7 +164,7 @@ class UserService {
             ?: throw CustomizedException("선택한 유저 ID가 없습니다.", Response.Status.NOT_FOUND)
 
         findUser.userStatCd = UserStatCd.URST0006
-        findUser.updtUserId = request.adminId
+        findUser.updtUserId = request.adminId!!
 
         return CommonResponse("${request.id} 계정을 삭제하였습니다.")
     }
@@ -320,6 +323,10 @@ class UserService {
     fun regFavorite(request: InfoCntcDto): CommonResponse<InfoCntc> {
         val histSeq = cntcRepository.getHistSeq(request.id) ?: 0
 
+        if(cntcRepository.findInfoCntcByUserIdAndMbrId(request.id, request.mbrId) != null) {
+            return CommonResponse(SbasConst.ResCode.FAIL, "이미 즐겨찾기에 등록되어 있습니다.", null)
+        }
+
         //유저 존재 확인
         userRepository.findByUserId(request.mbrId) ?: throw CustomizedException("해당 유저를 찾을 수 없습니다.", Response.Status.NOT_FOUND)
 
@@ -331,7 +338,7 @@ class UserService {
 
         cntcRepository.persist(insertCntc)
 
-        return CommonResponse(insertCntc)
+        return CommonResponse("즐겨찾기에 등록되었습니다.", insertCntc)
     }
 
     /**
@@ -349,12 +356,17 @@ class UserService {
      * 즐겨찾기 삭제
      */
     @Transactional
-    fun delFavorite(request: InfoCntcDto): CommonResponse<String> {
-        val findCntc = cntcRepository.findInfoCntcByUserIdAndMbrId(request.id, request.mbrId) ?: throw CustomizedException("즐겨찾기에 등록되어 있지 않습니다.", Response.Status.NOT_FOUND)
+    fun delFavorite(request: InfoCntcDto): CommonResponse<InfoCntc> {
+        val findCntc = cntcRepository.findInfoCntcByUserIdAndMbrId(request.id, request.mbrId)
+            ?: return CommonResponse(SbasConst.ResCode.FAIL, "즐겨찾기에 등록되어 있지 않습니다.", null)
 
         cntcRepository.delete(findCntc)
 
-        return CommonResponse("즐겨찾기에서 삭제되었습니다.")
+        return CommonResponse("즐겨찾기에서 삭제되었습니다.", findCntc)
     }
 
+    fun getActivityHistory(userId: String): CommonListResponse<UserActivityHistoryResponse> {
+        val histories = activityHistoryRepository.findAllByUserId(userId)
+        return CommonListResponse(histories, histories.size)
+    }
 }

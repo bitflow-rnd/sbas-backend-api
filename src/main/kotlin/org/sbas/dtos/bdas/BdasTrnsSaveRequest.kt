@@ -3,8 +3,9 @@ package org.sbas.dtos.bdas
 import org.sbas.entities.bdas.BdasTrns
 import org.sbas.entities.bdas.BdasTrnsId
 import org.sbas.utils.StringUtils
-import javax.validation.constraints.NotBlank
-import javax.validation.constraints.NotNull
+import jakarta.validation.constraints.NotBlank
+import jakarta.validation.constraints.NotNull
+import org.sbas.dtos.info.InfoCrewSaveReq
 
 data class BdasTrnsSaveRequest(
     @field: NotBlank
@@ -55,5 +56,36 @@ data class BdasTrnsSaveRequest(
             dprtDt = StringUtils.getYyyyMmDd(),
             dprtTm = StringUtils.getHhMmSs(),
         )
+    }
+
+    fun toInfoCrewSaveReqList(): List<InfoCrewSaveReq?> {
+        val infoCrew1 = crew1Nm?.let {
+            InfoCrewSaveReq(
+                instId = instId,
+                crewNm = crew1Nm,
+                telno = crew1Telno,
+                rmk = null,
+                pstn = crew1Pstn
+            )
+        }
+        val infoCrew2 = crew2Nm?.let {
+            InfoCrewSaveReq(
+                instId = instId,
+                crewNm = crew2Nm,
+                telno = crew2Telno,
+                rmk = null,
+                pstn = crew2Pstn,
+            )
+        }
+        val infoCrew3 = crew3Nm?.let {
+            InfoCrewSaveReq(
+                instId = instId,
+                crewNm = crew3Nm,
+                telno = crew3Telno,
+                rmk = null,
+                pstn = crew3Pstn,
+            )
+        }
+        return listOf(infoCrew1, infoCrew2, infoCrew3)
     }
 }

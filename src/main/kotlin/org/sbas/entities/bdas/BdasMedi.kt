@@ -2,7 +2,7 @@ package org.sbas.entities.bdas
 
 import org.sbas.entities.CommonEntity
 import java.io.Serializable
-import javax.persistence.*
+import jakarta.persistence.*
 
 /**
  * 진료 확인 정보

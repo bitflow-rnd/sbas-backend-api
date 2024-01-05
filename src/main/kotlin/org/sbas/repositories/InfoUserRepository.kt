@@ -1,19 +1,21 @@
 package org.sbas.repositories
 
-import com.linecorp.kotlinjdsl.QueryFactory
-import com.linecorp.kotlinjdsl.listQuery
-import com.linecorp.kotlinjdsl.querydsl.expression.col
+import com.linecorp.kotlinjdsl.dsl.jpql.jpql
+import com.linecorp.kotlinjdsl.render.jpql.JpqlRenderContext
+import com.linecorp.kotlinjdsl.support.hibernate.extension.createQuery
 import io.quarkus.hibernate.orm.panache.kotlin.PanacheRepositoryBase
+import jakarta.enterprise.context.ApplicationScoped
+import jakarta.inject.Inject
+import jakarta.persistence.EntityManager
+import jakarta.transaction.Transactional
 import kotlinx.coroutines.runBlocking
 import org.eclipse.microprofile.jwt.JsonWebToken
 import org.sbas.dtos.info.*
+import org.sbas.entities.info.InfoPt
 import org.sbas.entities.info.InfoUser
+import org.sbas.entities.info.UserActivityHistory
 import org.sbas.entities.info.UserFcmToken
 import org.sbas.parameters.PageRequest
-import javax.enterprise.context.ApplicationScoped
-import javax.inject.Inject
-import javax.persistence.EntityManager
-import javax.transaction.Transactional
 
 @ApplicationScoped
 class InfoUserRepository : PanacheRepositoryBase<InfoUser, String> {
@@ -22,7 +24,7 @@ class InfoUserRepository : PanacheRepositoryBase<InfoUser, String> {
     private lateinit var entityManager: EntityManager
 
     @Inject
-    private lateinit var queryFactory: QueryFactory
+    private lateinit var context: JpqlRenderContext
 
     @Inject
     private lateinit var jwt: JsonWebToken
@@ -38,8 +40,8 @@ class InfoUserRepository : PanacheRepositoryBase<InfoUser, String> {
     fun findInfoUserList(param: InfoUserSearchParam): List<InfoUserListDto> {
         val (cond, offset) = conditionAndOffset(param)
 
-        val query = "select new org.sbas.dtos.info.InfoUserListDto(iu.id, iu.dutyDstr1Cd, fn_get_cd_nm('SIDO', iu.dutyDstr1Cd), iu.telno, " +
-            "iu.instTypeCd, iu.instNm, iu.userNm, iu.jobCd, iu.authCd, iu.rgstDttm, iu.userStatCd, iu.rgstUserId, iu.instId, iu.ocpCd, false) " +
+        val query = "select new org.sbas.dtos.info.InfoUserListDto(iu.id, iu.dutyDstr1Cd, fn_get_cd_nm('SIDO', iu.dutyDstr1Cd), iu.telno, iu.ptTypeCd, " +
+            "iu.instTypeCd, iu.instNm, iu.userNm, iu.jobCd, iu.authCd, iu.rgstDttm, iu.userStatCd, iu.rgstUserId, iu.instId, iu.ocpCd, iu.updtDttm, false) " +
             "from InfoUser iu " +
             "where " + "$cond " + "order by iu.updtDttm desc"
 
@@ -50,8 +52,8 @@ class InfoUserRepository : PanacheRepositoryBase<InfoUser, String> {
         val cond = conditionAndOffsetFromUser(param)
 
         var query = """
-            select new org.sbas.dtos.info.InfoUserListDto(iu.id, iu.dutyDstr1Cd, fn_get_cd_nm('SIDO', iu.dutyDstr1Cd), iu.telno,
-             iu.instTypeCd, iu.instNm, iu.userNm, iu.jobCd, iu.authCd, iu.rgstDttm, iu.userStatCd, iu.rgstUserId, iu.instId, iu.ocpCd, false)
+            select new org.sbas.dtos.info.InfoUserListDto(iu.id, iu.dutyDstr1Cd, fn_get_cd_nm('SIDO', iu.dutyDstr1Cd), iu.telno, iu.ptTypeCd,
+             iu.instTypeCd, iu.instNm, iu.userNm, iu.jobCd, iu.authCd, iu.rgstDttm, iu.userStatCd, iu.rgstUserId, iu.instId, iu.ocpCd, iu.updtDttm, false)
               from InfoUser iu where iu.id != '${jwt.name}'
         """.trimIndent()
 
@@ -63,7 +65,7 @@ class InfoUserRepository : PanacheRepositoryBase<InfoUser, String> {
         val userList = entityManager.createQuery(query, InfoUserListDto::class.java).resultList
 
         userList.forEach{
-            it.isFavorite = cntcRepository.findInfoCntcByUserIdAndMbrId(jwt.name, it.userId) != null
+            it.isFavorite = cntcRepository.findInfoCntcByUserIdAndMbrId(jwt.name, it.id) != null
         }
 
         return userList
@@ -73,8 +75,8 @@ class InfoUserRepository : PanacheRepositoryBase<InfoUser, String> {
     fun findContactedInfoUserListByUserId(userId: String): List<InfoUserListDto> {
 
         val query = """
-            select new org.sbas.dtos.info.InfoUserListDto(iu.id, iu.dutyDstr1Cd, fn_get_cd_nm('SIDO', iu.dutyDstr1Cd), iu.telno,
-            iu.instTypeCd, iu.instNm, iu.userNm, iu.jobCd, iu.authCd, iu.rgstDttm, iu.userStatCd, iu.rgstUserId, iu.instId, iu.ocpCd, false)
+            select new org.sbas.dtos.info.InfoUserListDto(iu.id, iu.dutyDstr1Cd, fn_get_cd_nm('SIDO', iu.dutyDstr1Cd), iu.telno, iu.ptTypeCd, 
+            iu.instTypeCd, iu.instNm, iu.userNm, iu.jobCd, iu.authCd, iu.rgstDttm, iu.userStatCd, iu.rgstUserId, iu.instId, iu.ocpCd, iu.updtDttm, false)
         from InfoUser iu
         join InfoCntc ic on ic.id.mbrId = iu.id
         where ic.id.userId = '$userId'
@@ -84,7 +86,7 @@ class InfoUserRepository : PanacheRepositoryBase<InfoUser, String> {
         val userList = entityManager.createQuery(query, InfoUserListDto::class.java).resultList
 
         userList.forEach{
-            it.isFavorite = cntcRepository.findInfoCntcByUserIdAndMbrId(jwt.name, it.userId) != null
+            it.isFavorite = cntcRepository.findInfoCntcByUserIdAndMbrId(jwt.name, it.id) != null
         }
 
         return userList
@@ -109,16 +111,12 @@ class InfoUserRepository : PanacheRepositoryBase<InfoUser, String> {
     }
 
     private fun conditionAndOffsetFromUser(param: InfoUserSearchFromUserParam): String {
-        var cond = param.userNm?.run { " (iu.userNm like '%$this%' " } ?: " (1=1"
-        cond += param.telno?.run { " and iu.telno like '%$this%') " } ?: ")"
+        var cond = param.instTypeCd?.run { "iu.instTypeCd in ('${this.split(',').joinToString("', '")}') " } ?: "1=1 "
 
-        cond += param.ptTypeCd?.run { " and fn_like_any(iu.ptTypeCd, '{%${this.split(',').joinToString("%, %")}%}') = true " }
-            ?: ""
-        cond += param.instTypeCd?.run { " and iu.instTypeCd in ('${this.split(',').joinToString("', '")}') " } ?: ""
+        cond += param.search?.run { "and (iu.userNm like '%$this%' or iu.telno like '%$this%' or iu.instNm like '%$this%') " } ?: ""
 
         cond += param.dstr1Cd?.run { " and iu.dutyDstr1Cd like '%$this%' " } ?: ""
         cond += param.dstr2Cd?.run { " and iu.dutyDstr2Cd like '%$this%' " } ?: ""
-        cond += param.instNm?.run { " and iu.instNm like '%$this%' " } ?: ""
 
         return cond
     }
@@ -149,7 +147,7 @@ class InfoUserRepository : PanacheRepositoryBase<InfoUser, String> {
     fun findId(infoUser: InfoUser): InfoUser? = find("select u from InfoUser u where u.userNm = '${infoUser.userNm}' and u.telno = '${infoUser.telno}'").firstResult()
 
     fun existByUserId(userId: String?): Boolean {
-        return count("user_id = '$userId'") == 1L
+        return count("id = '$userId'") == 1L
     }
 
     fun existByTelNo(telno: String): Boolean {
@@ -162,11 +160,11 @@ class InfoUserRepository : PanacheRepositoryBase<InfoUser, String> {
         return find("order by id").page(page - 1, size).list()
     }
 
-    fun findBdasUserByReqDstrCd(dstrCd1: String?, dstrCd2: String?): List<InfoUser> {
-        val query = if (dstrCd2 != null) {
-            "duty_dstr_1_cd = '$dstrCd1' and duty_dstr_2_cd = '$dstrCd2' and (job_cd = 'PMGR0002' OR job_cd like '병상승인%')"
+    fun findBdasUserByReqDstrCd(dstr1Cd: String?, dstr2Cd: String?): List<InfoUser> {
+        val query = if (dstr2Cd != null) {
+            "dutyDstr1Cd = '$dstr1Cd' and dutyDstr2Cd = '$dstr2Cd' and (jobCd = 'PMGR0002' OR jobCd like '병상승인%')"
         } else {
-            "duty_dstr_1_cd = '$dstrCd1' and (job_cd = 'PMGR0002' OR job_cd like '병상승인%')"
+            "dutyDstr1Cd = '$dstr1Cd' and (jobCd = 'PMGR0002' OR jobCd like '병상승인%')"
         }
         return find(query).list()
     }
@@ -182,39 +180,41 @@ class InfoUserRepository : PanacheRepositoryBase<InfoUser, String> {
     }
 
     fun findInfoUserDetail(): List<UserDetailResponse> {
-
-        val infoUserDetail = queryFactory.listQuery<UserDetailResponse> {
-            selectMulti(
-                col(InfoUser::id), col(InfoUser::userNm), col(InfoUser::gndr), col(InfoUser::telno),
-                col(InfoUser::jobCd), col(InfoUser::ocpCd), col(InfoUser::ptTypeCd),
-                col(InfoUser::instTypeCd), col(InfoUser::instId), col(InfoUser::instNm), col(InfoUser::dutyDstr1Cd),
-                function("fn_get_cd_nm", String::class.java, literal("SIDO"), col(InfoUser::dutyDstr1Cd)),
-                col(InfoUser::dutyDstr2Cd),
-                function("fn_get_dstr_cd2_nm", String::class.java, col(InfoUser::dutyDstr1Cd), col(InfoUser::dutyDstr2Cd)),
-                col(InfoUser::btDt), col(InfoUser::authCd), col(InfoUser::attcId), col(InfoUser::userStatCd), col(InfoUser::updtDttm),
+        val query = jpql {
+            selectNew<UserDetailResponse>(
+                path(InfoUser::id), path(InfoUser::userNm), path(InfoUser::gndr), path(InfoUser::telno),
+                path(InfoUser::jobCd), path(InfoUser::ocpCd), path(InfoUser::ptTypeCd),
+                path(InfoUser::instTypeCd), path(InfoUser::instId), path(InfoUser::instNm), path(InfoUser::dutyDstr1Cd),
+                function(String::class, "fn_get_cd_nm", stringLiteral("SIDO"), path(InfoUser::dutyDstr1Cd)),
+                path(InfoUser::dutyDstr2Cd),
+                function(String::class, "fn_get_dstr_cd2_nm", path(InfoUser::dutyDstr1Cd), path(InfoUser::dutyDstr2Cd)),
+                path(InfoUser::btDt), path(InfoUser::authCd), path(InfoUser::attcId), path(InfoUser::userStatCd), path(InfoUser::updtDttm),
+            ).from(
+                entity(InfoUser::class)
             )
-            from(entity(InfoUser::class))
         }
 
-        return infoUserDetail
+        return entityManager.createQuery(query, context).resultList
     }
 
     fun findInfoUserById(userId: String): UserDetailResponse {
-        val infoUserDetail = queryFactory.listQuery<UserDetailResponse> {
-            selectMulti(
-                col(InfoUser::id), col(InfoUser::userNm), col(InfoUser::gndr), col(InfoUser::telno),
-                col(InfoUser::jobCd), col(InfoUser::ocpCd), col(InfoUser::ptTypeCd),
-                col(InfoUser::instTypeCd), col(InfoUser::instId), col(InfoUser::instNm), col(InfoUser::dutyDstr1Cd),
-                function("fn_get_cd_nm", String::class.java, literal("SIDO"), col(InfoUser::dutyDstr1Cd)),
-                col(InfoUser::dutyDstr2Cd),
-                function("fn_get_dstr_cd2_nm", String::class.java, col(InfoUser::dutyDstr1Cd), col(InfoUser::dutyDstr2Cd)),
-                col(InfoUser::btDt), col(InfoUser::authCd), col(InfoUser::attcId), col(InfoUser::userStatCd), col(InfoUser::updtDttm),
-            )
-            from(entity(InfoUser::class))
-            where(
-               col(InfoUser::id).equal(userId)
+        val query = jpql {
+            selectNew<UserDetailResponse>(
+                path(InfoUser::id), path(InfoUser::userNm), path(InfoUser::gndr), path(InfoUser::telno),
+                path(InfoUser::jobCd), path(InfoUser::ocpCd), path(InfoUser::ptTypeCd),
+                path(InfoUser::instTypeCd), path(InfoUser::instId), path(InfoUser::instNm), path(InfoUser::dutyDstr1Cd),
+                function(String::class, "fn_get_cd_nm", stringLiteral("SIDO"), path(InfoUser::dutyDstr1Cd)),
+                path(InfoUser::dutyDstr2Cd),
+                function(String::class, "fn_get_dstr_cd2_nm", path(InfoUser::dutyDstr1Cd), path(InfoUser::dutyDstr2Cd)),
+                path(InfoUser::btDt), path(InfoUser::authCd), path(InfoUser::attcId), path(InfoUser::userStatCd), path(InfoUser::updtDttm),
+            ).from(
+                entity(InfoUser::class)
+            ).whereAnd(
+                path(InfoUser::id).eq(userId)
             )
         }
+
+        val infoUserDetail = entityManager.createQuery(query, context).resultList
         val isFavorite = cntcRepository.findInfoCntcByUserIdAndMbrId(jwt.name, userId) != null
 
         val result = infoUserDetail.first()
@@ -227,8 +227,51 @@ class InfoUserRepository : PanacheRepositoryBase<InfoUser, String> {
 @ApplicationScoped
 class UserFcmTokenRepository : PanacheRepositoryBase<UserFcmToken, Long> {
 
-    @Transactional
     fun findAllByUserId(userId: String): List<UserFcmToken> {
         return find("userId = '${userId}' and isValid = true").list()
+    }
+
+    fun findAllByUserIdList(list: List<String>): List<UserFcmToken>{
+        return find("userId in (${list.joinToString("','", "'", "'")}) and isValid = true").list()
+    }
+}
+
+@ApplicationScoped
+class UserActivityHistoryRepository : PanacheRepositoryBase<UserActivityHistory, Int> {
+
+    @Inject
+    private lateinit var entityManager: EntityManager
+
+    @Inject
+    private lateinit var context: JpqlRenderContext
+
+    fun save(userActivityHistory: UserActivityHistory): UserActivityHistory {
+        persist(userActivityHistory)
+        return userActivityHistory
+    }
+
+    fun findAllByUserId(userId: String): List<UserActivityHistoryResponse> {
+        val query = jpql {
+            selectNew<UserActivityHistoryResponse>(
+                path(UserActivityHistory::id),
+                path(UserActivityHistory::userId),
+                path(UserActivityHistory::ptId),
+                path(InfoPt::ptNm), path(InfoPt::gndr),
+                function(String::class, "fn_get_age", path(InfoPt::rrno1), path(InfoPt::rrno2)),
+                path(InfoPt::dstr1Cd),
+                function(String::class, "fn_get_cd_nm", stringLiteral("SIDO"), path(InfoPt::dstr1Cd)),
+                path(InfoPt::dstr2Cd),
+                function(String::class, "fn_get_dstr_cd2_nm", path(InfoPt::dstr1Cd), path(InfoPt::dstr2Cd)),
+                path(UserActivityHistory::activityDetail),
+                path(UserActivityHistory::rgstDttm),
+            ).from(
+                entity(UserActivityHistory::class),
+                join(InfoPt::class).on(path(UserActivityHistory::ptId).eq(path(InfoPt::ptId))),
+            ).whereAnd(
+                path(UserActivityHistory::userId).eq(userId),
+            )
+        }
+
+        return entityManager.createQuery(query, context).resultList
     }
 }

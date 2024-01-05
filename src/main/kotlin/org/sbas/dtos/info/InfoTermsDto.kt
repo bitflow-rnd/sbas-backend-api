@@ -3,7 +3,7 @@ package org.sbas.dtos.info
 import org.hibernate.validator.constraints.Length
 import org.sbas.entities.info.InfoTerms
 import org.sbas.entities.info.InfoTermsId
-import javax.validation.constraints.NotBlank
+import jakarta.validation.constraints.NotBlank
 
 data class RegTermsReq(
     @field: [NotBlank(message = "약관 타입을 설정해 주세요.") Length(max = 2)]

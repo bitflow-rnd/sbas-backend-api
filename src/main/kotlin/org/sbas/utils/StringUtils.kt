@@ -45,7 +45,7 @@ class StringUtils {
             return simpleDateFormat.format(_date)
         }
 
-        fun getDstrCd1(addr: String): String {
+        fun getdstr1Cd(addr: String): String {
             val map = mapOf(
                 "서울" to "11",
                 "부산" to "26",

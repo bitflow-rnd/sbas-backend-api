@@ -1,7 +1,7 @@
 package org.sbas.utils.annotation
 
-import javax.validation.ConstraintValidator
-import javax.validation.ConstraintValidatorContext
+import jakarta.validation.ConstraintValidator
+import jakarta.validation.ConstraintValidatorContext
 
 class EnumValidator : ConstraintValidator<ValidEnum, String?> {
 

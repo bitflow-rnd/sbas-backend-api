@@ -17,11 +17,11 @@ import org.sbas.repositories.InfoUserRepository
 import org.sbas.repositories.UserFcmTokenRepository
 import org.sbas.responses.CommonResponse
 import java.io.FileInputStream
-import javax.enterprise.context.ApplicationScoped
-import javax.enterprise.event.Observes
-import javax.inject.Inject
-import javax.transaction.Transactional
-import javax.ws.rs.NotFoundException
+import jakarta.enterprise.context.ApplicationScoped
+import jakarta.enterprise.event.Observes
+import jakarta.inject.Inject
+import jakarta.transaction.Transactional
+import jakarta.ws.rs.NotFoundException
 
 @ApplicationScoped
 class FirebaseService {
@@ -74,6 +74,31 @@ class FirebaseService {
     @Transactional
     fun sendMessageMultiDevice(title: String, body: String?, userId: String) {
         val pushKeys: List<UserFcmToken> = userFcmTokenRepository.findAllByUserId(userId)
+
+        val tokens = pushKeys.map { it.reregistrationToken }
+
+        val notification = Notification.builder()
+            .setTitle(title)
+            .setBody(body)
+            .build()
+
+        val message = MulticastMessage.builder()
+            .setNotification(notification)
+            .addAllTokens(tokens)
+            .build()
+
+        val response = FirebaseMessaging.getInstance().sendMulticast(message)
+
+        response.responses.forEachIndexed { index, sendResponse ->
+            if (!sendResponse.isSuccessful) {
+                pushKeys[index].invalidateToken()
+            }
+        }
+    }
+
+    @Transactional
+    fun sendMessageMultiDeviceV2(title: String, body: String?, userIdList: List<String>) {
+        val pushKeys: List<UserFcmToken> = userFcmTokenRepository.findAllByUserIdList(userIdList)
 
         val tokens = pushKeys.map { it.reregistrationToken }
 

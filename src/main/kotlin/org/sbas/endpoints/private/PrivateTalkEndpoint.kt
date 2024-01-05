@@ -5,11 +5,11 @@ import org.eclipse.microprofile.openapi.annotations.Operation
 import org.eclipse.microprofile.openapi.annotations.tags.Tag
 import org.jboss.resteasy.reactive.RestPath
 import org.sbas.services.TalkService
-import javax.annotation.security.RolesAllowed
-import javax.inject.Inject
-import javax.ws.rs.GET
-import javax.ws.rs.Path
-import javax.ws.rs.core.Response
+import jakarta.annotation.security.RolesAllowed
+import jakarta.inject.Inject
+import jakarta.ws.rs.GET
+import jakarta.ws.rs.Path
+import jakarta.ws.rs.core.Response
 
 @Tag(name = "대화방 관리(사용자 권한용)", description = "로그인 된 사용자(세부권한별 분기) - 대화방 등록 및 조회 등")
 //@RolesAllowed("USER")

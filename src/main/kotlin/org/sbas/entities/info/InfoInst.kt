@@ -2,10 +2,10 @@ package org.sbas.entities.info
 
 import org.sbas.dtos.info.InfoInstUpdateReq
 import org.sbas.entities.CommonEntity
-import javax.persistence.Column
-import javax.persistence.Entity
-import javax.persistence.Id
-import javax.persistence.Table
+import jakarta.persistence.Column
+import jakarta.persistence.Entity
+import jakarta.persistence.Id
+import jakarta.persistence.Table
 
 /**
  * 기관 정보
@@ -23,11 +23,11 @@ class InfoInst(
     @Column(name = "inst_nm", nullable = false, length = 100)
     var instNm: String, // 기관 이름
 
-    @Column(name = "dstr_cd_1", nullable = false, length = 8)
-    var dstrCd1: String, // 지역 코드 (시도)
+    @Column(name = "dstr_1_cd", nullable = false, length = 8)
+    var dstr1Cd: String, // 지역 코드 (시도)
 
-    @Column(name = "dstr_cd_2", length = 8)
-    var dstrCd2: String? = null, // 지역 코드 (시군구)
+    @Column(name = "dstr_2_cd", length = 8)
+    var dstr2Cd: String? = null, // 지역 코드 (시군구)
 
     @Column(name = "chrg_id", length = 10)
     var chrgId: String? = null, // 담당자 ID
@@ -60,8 +60,8 @@ class InfoInst(
     fun update(updateDto: InfoInstUpdateReq) {
         with(updateDto) {
             instNm.let { this@InfoInst.instNm = it }
-            dstrCd1.let { this@InfoInst.dstrCd1 = it }
-            dstrCd2?.let { this@InfoInst.dstrCd2 = it }
+            dstr1Cd.let { this@InfoInst.dstr1Cd = it }
+            dstr2Cd?.let { this@InfoInst.dstr2Cd = it }
             chrgId?.let { this@InfoInst.chrgId = it }
             chrgNm?.let { this@InfoInst.chrgNm = it }
             chrgTelno?.let { this@InfoInst.chrgTelno = it }

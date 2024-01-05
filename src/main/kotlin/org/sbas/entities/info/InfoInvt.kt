@@ -2,7 +2,7 @@ package org.sbas.entities.info
 
 import java.io.Serializable
 import java.time.Instant
-import javax.persistence.*
+import jakarta.persistence.*
 
 /**
  * 초대 정보

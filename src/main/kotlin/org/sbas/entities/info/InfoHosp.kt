@@ -1,11 +1,8 @@
 package org.sbas.entities.info
 
-import org.hibernate.annotations.GenericGenerator
-import org.hibernate.annotations.Parameter
 import org.sbas.entities.CommonEntity
-import org.sbas.entities.StringPrefixedSequenceIdGenerator
 import java.io.Serializable
-import javax.persistence.*
+import jakarta.persistence.*
 
 /**
  * 병원 정보
@@ -59,15 +56,15 @@ class InfoHosp(
 
     @Column(name = "dutyinf", length = 300)
     var dutyInf: String? = null, // 기관설명상세
-    
+
     @Column(name = "dutyetc")
     var dutyEtc: String? = null, // 비고
 
-    @Column(name = "dstr_cd1", length = 8)
-    var dstrCd1: String? = null, // 시도
+    @Column(name = "dstr_1_cd", length = 8)
+    var dstr1Cd: String? = null, // 시도
 
-    @Column(name = "dstr_cd2", length = 8)
-    var dstrCd2: String? = null, // 시군구
+    @Column(name = "dstr_2_cd", length = 8)
+    var dstr2Cd: String? = null, // 시군구
 
     @Column(name = "attc_id", length = 12)
     var attcId: String? = null, // 첨부 ID

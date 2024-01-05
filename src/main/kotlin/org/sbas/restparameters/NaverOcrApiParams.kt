@@ -1,6 +1,6 @@
 package org.sbas.restparameters
 
-import javax.validation.constraints.NotNull
+import jakarta.validation.constraints.NotNull
 
 data class NaverOcrApiParams(
     @field: NotNull (message = "이미지 정보가 누락되었습니다")

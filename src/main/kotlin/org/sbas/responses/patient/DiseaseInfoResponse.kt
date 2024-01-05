@@ -2,10 +2,11 @@ package org.sbas.responses.patient
 
 import org.sbas.entities.bdas.BdasEsvy
 import org.sbas.entities.bdas.BdasReq
-import org.sbas.repositories.BaseCodeRepository
-import javax.inject.Inject
+import org.sbas.constants.enums.PtTypeCd
+import org.sbas.constants.enums.SvrtTypeCd
+import org.sbas.constants.enums.UndrDsesCd
 
-class DiseaseInfoResponse(
+data class DiseaseInfoResponse(
     var rcptPhc: String? = null,//담당보건소
     var diagNm: String? = null,//코로나19증상및징후
     var dfdgExamRslt: String? = null,//확진검사결과
@@ -34,37 +35,33 @@ class DiseaseInfoResponse(
     var reqBedTypeNm: String? = null,//요청병상유형
 ) {
 
-    constructor(bdasEsvy: BdasEsvy?, bdasReq: BdasReq?) : this() {
-        var arrUndrDsesCd = bdasReq?.undrDsesCd?.split(";")
-        var arrPtTypeCd = bdasReq?.ptTypeCd?.split(";")
-        var arrSvrtTypeCd = bdasReq?.svrtTypeCd?.split(";")
-        rcptPhc=bdasEsvy?.rcptPhc
-        diagNm=bdasEsvy?.diagNm
-        dfdgExamRslt=bdasEsvy?.dfdgExamRslt
-        diagGrde=bdasEsvy?.diagGrde
-        occrDt=bdasEsvy?.occrDt
-        diagDt=bdasEsvy?.diagDt
-        rptDt=bdasEsvy?.rptDt
-        ptCatg=bdasEsvy?.ptCatg
-        rmk=bdasEsvy?.rmk
-        undrDsesNms = arrUndrDsesCd
-        ptTypeNms = arrPtTypeCd
-        svrtTypeNms = arrSvrtTypeCd
-        bdtp=bdasReq?.bdtp
-        hr=bdasReq?.hr
-        resp=bdasReq?.resp
-        spo2=bdasReq?.spo2
-        sbp=bdasReq?.sbp
-        dnrAgreYn=bdasReq?.dnrAgreYn
-        admsYn=bdasEsvy?.admsYn
-        instNm=bdasEsvy?.instNm
-        instId=bdasEsvy?.instId
-        instAddr=bdasEsvy?.instAddr
-        instTelno=bdasEsvy?.instTelno
-        diagDrNm=bdasEsvy?.diagDrNm
-        rptChfNm=bdasEsvy?.rptChfNm
-        reqBedTypeNm = bdasReq?.reqBedTypeCd
+    constructor(bdasEsvy: BdasEsvy, bdasReq: BdasReq) : this() {
+        rcptPhc = bdasEsvy.rcptPhc
+        diagNm = bdasEsvy.diagNm
+        dfdgExamRslt = bdasEsvy.dfdgExamRslt
+        diagGrde = bdasEsvy.diagGrde
+        occrDt = bdasEsvy.occrDt
+        diagDt = bdasEsvy.diagDt
+        rptDt = bdasEsvy.rptDt
+        ptCatg = bdasEsvy.ptCatg
+        rmk = bdasEsvy.rmk
+        undrDsesNms = bdasReq.undrDsesCd?.split(";")?.map { UndrDsesCd.valueOf(it).cdNm }
+        ptTypeNms = bdasReq.ptTypeCd.split(";").map { PtTypeCd.valueOf(it).cdNm }
+        svrtTypeNms = bdasReq.svrtTypeCd?.split(";")?.map { SvrtTypeCd.valueOf(it).cdNm }
+        bdtp = bdasReq.bdtp
+        hr = bdasReq.hr
+        resp = bdasReq.resp
+        spo2 = bdasReq.spo2
+        sbp = bdasReq.sbp
+        dnrAgreYn = bdasReq.dnrAgreYn
+        admsYn = bdasEsvy.admsYn
+        instNm = bdasEsvy.instNm
+        instId = bdasEsvy.instId
+        instAddr = bdasEsvy.instAddr
+        instTelno = bdasEsvy.instTelno
+        diagDrNm = bdasEsvy.diagDrNm
+        rptChfNm = bdasEsvy.rptChfNm
+        reqBedTypeNm = bdasReq.reqBedTypeCd
     }
-
 
 }

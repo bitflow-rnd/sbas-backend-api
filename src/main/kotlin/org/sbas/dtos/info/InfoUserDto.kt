@@ -5,19 +5,20 @@ import org.sbas.entities.info.InfoUser
 import org.sbas.utils.annotation.NoArg
 import org.sbas.utils.annotation.ValidEnum
 import java.time.Instant
-import javax.validation.constraints.NotBlank
-import javax.validation.constraints.Pattern
-import javax.validation.constraints.Size
-import javax.ws.rs.QueryParam
+import jakarta.validation.constraints.NotBlank
+import jakarta.validation.constraints.Pattern
+import jakarta.validation.constraints.Size
+import jakarta.ws.rs.QueryParam
 
 /**
  * 사용자 목록 조회 DTO
  */
 data class InfoUserListDto(
-    var userId: String,
+    var id: String,
     var dutyDstr1Cd: String?,
     val dutyDstr1CdNm: String?,
     var telno: String?,
+    var ptTypeCd: String?,
     var instTypeCd: String?,
     var instNm: String?,
     var userNm: String?,
@@ -28,6 +29,7 @@ data class InfoUserListDto(
     var userStatCdNm: String?,
     var instId: String?,
     var ocpCd: String?,
+    var updtDttm: Instant,
     var isFavorite: Boolean?,
 )
 
@@ -53,12 +55,8 @@ data class InfoUserSearchParam(
 data class InfoUserSearchFromUserParam(
     @field: QueryParam("dstr1Cd") var dstr1Cd: String?,
     @field: QueryParam("dstr2Cd") var dstr2Cd: String?,
-    @field: QueryParam("userNm") var userNm: String?,
-    @field: QueryParam("telno") var telno: String?,
-    @field: QueryParam("instNm") var instNm: String?,
+    @field: QueryParam("search") var search: String?,
     @field: QueryParam("instTypeCd") var instTypeCd: String?,
-    @field: QueryParam("ptTypeCd") var ptTypeCd: String?,
-    @field: QueryParam("userStatCdStr") var userStatCdStr: String?,
     @field: QueryParam("myInstTypeCd") var myInstTypeCd: String?,
 )
 

@@ -10,13 +10,13 @@ import org.sbas.repositories.TalkRoomRepository
 import org.sbas.repositories.TalkUserRepository
 import org.sbas.responses.messages.TalkRoomResponse
 import org.sbas.responses.messages.arrToJson
-import javax.enterprise.context.ApplicationScoped
-import javax.inject.Inject
-import javax.websocket.OnMessage
-import javax.websocket.OnOpen
-import javax.websocket.Session
-import javax.websocket.server.PathParam
-import javax.websocket.server.ServerEndpoint
+import jakarta.enterprise.context.ApplicationScoped
+import jakarta.inject.Inject
+import jakarta.websocket.OnMessage
+import jakarta.websocket.OnOpen
+import jakarta.websocket.Session
+import jakarta.websocket.server.PathParam
+import jakarta.websocket.server.ServerEndpoint
 
 @ServerEndpoint(value = "/chat-rooms/{userId}")
 @ApplicationScoped

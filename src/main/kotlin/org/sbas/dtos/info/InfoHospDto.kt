@@ -4,7 +4,7 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties
 import org.sbas.entities.info.InfoHosp
 import org.sbas.utils.annotation.NoArg
 import java.time.Instant
-import javax.ws.rs.QueryParam
+import jakarta.ws.rs.QueryParam
 
 @NoArg
 @JsonIgnoreProperties(ignoreUnknown = true)
@@ -38,8 +38,8 @@ data class InfoHospSaveReq(
             wgs84Lat = this.wgs84Lat,
             dutyInf = this.dutyInf,
             dutyEtc = this.dutyEtc,
-            dstrCd1 = siDo,
-            dstrCd2 = siGunGu
+            dstr1Cd = siDo,
+            dstr2Cd = siGunGu
         )
     }
 
@@ -57,8 +57,8 @@ data class InfoHospSaveReq(
             wgs84Lat = wgs84Lat,
             dutyInf = dutyInf,
             dutyEtc = dutyEtc,
-            dstrCd1 = siDo,
-            dstrCd2 = siGunGu,
+            dstr1Cd = siDo,
+            dstr2Cd = siGunGu,
         )
     }
 
@@ -71,8 +71,8 @@ data class InfoHospSaveReq(
 data class InfoHospSearchParam(
     @field: QueryParam("hospId") var hospId: String?,
     @field: QueryParam("dutyName") var dutyName: String?,
-    @field: QueryParam("dstrCd1") var dstrCd1: String?,
-    @field: QueryParam("dstrCd2") var dstrCd2: String?,
+    @field: QueryParam("dstr1Cd") var dstr1Cd: String?,
+    @field: QueryParam("dstr2Cd") var dstr2Cd: String?,
     @field: QueryParam("page") var page: Int? = 0,
     @field: QueryParam("dutyDivNams") var dutyDivNams: String?,
 ) {
@@ -88,8 +88,8 @@ data class InfoHospListDto(
     val hpId: String?,
     val dutyName: String?,
     val dutyDivNam: String?,
-    val dstrCd1: String?,
-    val dstrCd2: String?,
+    val dstr1Cd: String?,
+    val dstr2Cd: String?,
     val dutyTel1: String?,
     val dutyTel3: String?,
     val updtDttm: Instant?,
@@ -98,20 +98,25 @@ data class InfoHospListDto(
     val gnbdSvrt: Int, // hv24 56
     val gnbdSmsv: Int, // hv25
     val gnbdModr: Int, // hv26
-    var ventilator: String?,
-    var ventilatorPreemie: String?,
-    var incubator: String?,
-    var ecmo: String?,
-    var highPressureOxygen: String?,
-    var ct: String?,
-    var mri: String?,
-    var bloodVesselImaging: String?,
-    var bodyTemperatureControl: String?,
-    var emrgncyNrmlBed: Int?, // hvec - 일반(응급실일반병상)
-    var ngtvIsltnChild: Int?, // hv15 - 소아 음압격리
-    var nrmlIsltnChild: Int?, // hv16 - 소아 일반격리
-    var nrmlChildBed: Int?, // hv28 - 소아
-    var emrgncyNrmlIsltnBed: Int?, // hv30 - 응급실 일반 격리 병상
+    val ventilator: String?,
+    val ventilatorPreemie: String?,
+    val incubator: String?,
+    val ecmo: String?,
+    val highPressureOxygen: String?,
+    val ct: String?,
+    val mri: String?,
+    val bloodVesselImaging: String?,
+    val bodyTemperatureControl: String?,
+    val emrgncyNrmlBed: Int?, // hvec - 일반(응급실일반병상)
+    val ngtvIsltnChild: Int?, // hv15 - 소아 음압격리
+    val nrmlIsltnChild: Int?, // hv16 - 소아 일반격리
+    val nrmlChildBed: Int?, // hv28 - 소아
+    val emrgncyNgtvIsltnBed: Int?, // hv29 - 응급실 음압 격리 병상
+    val emrgncyNrmlIsltnBed: Int?, // hv30 - 응급실 일반 격리 병상
+    val isltnMedAreaNgtvIsltnBed: Int?, // hv13 - 격리 진료 구역 음압 격리 병상
+    val isltnMedAreaNrmlIsltnBed: Int?, // hv14 - 격리 진료 구역 일반 격리 병상
+    val cohtBed: Int?,
+
     var medicalStaffCount: Long?,
 ) {
     init {
@@ -130,8 +135,8 @@ data class InfoHospWithUser(
 data class InfoHospId(
     val hospId: String,
     val hpId: String,
-    val dstrCd1: String?,
-    val dstrCd1Nm: String?,
+    val dstr1Cd: String?,
+    val dstr1CdNm: String?,
     val attcId: String?,
 )
 

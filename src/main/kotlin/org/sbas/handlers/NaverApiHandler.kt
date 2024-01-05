@@ -14,9 +14,9 @@ import org.sbas.restparameters.NaverOcrApiParams
 import org.sbas.restparameters.OcrApiImagesParam
 import org.sbas.restresponses.FieldName
 import org.sbas.utils.StringUtils
-import javax.enterprise.context.ApplicationScoped
-import javax.inject.Inject
-import javax.ws.rs.NotFoundException
+import jakarta.enterprise.context.ApplicationScoped
+import jakarta.inject.Inject
+import jakarta.ws.rs.NotFoundException
 
 
 /**
@@ -151,9 +151,8 @@ class NaverApiHandler {
         }
 
         // 코드
-        val dstr1Cd = StringUtils.getDstrCd1(addrList[0])
+        val dstr1Cd = StringUtils.getdstr1Cd(addrList[0])
         val baseCode = baseCodeRepository.findByDstr1CdAndCdNm(dstr1Cd, addrList[1])
-            ?: throw NotFoundException("baseCode not found")
         val dstr2Cd = baseCode.id.cdId
 
         return AddressMap(
@@ -183,9 +182,8 @@ class NaverApiHandler {
                 it.types!![0] to it.longName!!
             }
         }
-        val dstr1Cd = StringUtils.getDstrCd1(resultMap["SIDO"]!!)
+        val dstr1Cd = StringUtils.getdstr1Cd(resultMap["SIDO"]!!)
         val baseCode = baseCodeRepository.findByDstr1CdAndCdNm(dstr1Cd, resultMap["SIGUGUN"]!!)
-            ?: throw NotFoundException("baseCode not found")
         val dstr2Cd = baseCode.id.cdId
 
         return AddressMap(

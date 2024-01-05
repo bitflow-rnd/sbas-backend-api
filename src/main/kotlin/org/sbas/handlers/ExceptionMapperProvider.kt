@@ -2,22 +2,22 @@ package org.sbas.handlers
 
 import com.fasterxml.jackson.databind.exc.MismatchedInputException
 import com.google.firebase.messaging.FirebaseMessagingException
-import io.quarkus.arc.Priority
 import io.quarkus.security.AuthenticationFailedException
 import io.quarkus.security.ForbiddenException
 import io.quarkus.security.UnauthorizedException
+import jakarta.annotation.Priority
 import org.postgresql.util.PSQLException
 import org.sbas.constants.SbasConst
 import org.sbas.responses.CommonResponse
 import org.sbas.utils.CustomizedException
-import javax.ws.rs.BadRequestException
-import javax.ws.rs.InternalServerErrorException
-import javax.ws.rs.NotFoundException
-import javax.ws.rs.Priorities
-import javax.ws.rs.core.MediaType
-import javax.ws.rs.core.Response
-import javax.ws.rs.ext.ExceptionMapper
-import javax.ws.rs.ext.Provider
+import jakarta.ws.rs.BadRequestException
+import jakarta.ws.rs.InternalServerErrorException
+import jakarta.ws.rs.NotFoundException
+import jakarta.ws.rs.Priorities
+import jakarta.ws.rs.core.MediaType
+import jakarta.ws.rs.core.Response
+import jakarta.ws.rs.ext.ExceptionMapper
+import jakarta.ws.rs.ext.Provider
 
 
 /**

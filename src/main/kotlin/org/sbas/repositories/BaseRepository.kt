@@ -4,14 +4,15 @@ import io.quarkus.hibernate.orm.panache.kotlin.PanacheRepositoryBase
 import io.quarkus.panache.common.Sort
 import org.sbas.dtos.SidoSiGunGuDto
 import org.sbas.entities.base.*
-import javax.enterprise.context.ApplicationScoped
-import javax.transaction.Transactional
+import jakarta.enterprise.context.ApplicationScoped
+import jakarta.transaction.Transactional
+import jakarta.ws.rs.NotFoundException
 
 @ApplicationScoped
 class BaseCodeRepository : PanacheRepositoryBase<BaseCode, BaseCodeId> {
 
     fun findBaseCodeGrp(cdGrpId: String): BaseCode? {
-        return find("cd_grp_id = '$cdGrpId' and cd_seq = 0 and cd_grp_id = cd_id").firstResult()
+        return find("id.cdGrpId = '$cdGrpId' and cdSeq = 0 and id.cdGrpId = id.cdId").firstResult()
     }
 
     fun findBaseCodeGrpList(): MutableList<Any?> {
@@ -21,17 +22,16 @@ class BaseCodeRepository : PanacheRepositoryBase<BaseCode, BaseCodeId> {
     }
 
     fun findBaseCodeByCdGrpId(cdGrpId: String): MutableList<BaseCode> {
-        return find("cd_grp_id = '$cdGrpId' and cd_seq != 0", Sort.by("cd_seq", "cd_id")).list().toMutableList()
+        return find("id.cdGrpId = '$cdGrpId' and cdSeq != 0", Sort.by("cdSeq", "id.cdId")).list().toMutableList()
     }
 
     fun findBaseCodeNameByCdId(cdId: String): String? {
-        return find("cd_id = '$cdId'").singleResult().cdNm
+        return find("id.cdId = '$cdId'").singleResult().cdNm
     }
 
     fun findBaseCodeByCdId(cdId: String): BaseCode? {
-        return find("cd_id = '$cdId'").firstResult()
+        return find("id.cdId = '$cdId'").firstResult()
     }
-
 
     @Transactional
     fun findCdIdByAddrNm(addrNm: String): SidoSiGunGuDto {
@@ -45,19 +45,12 @@ class BaseCodeRepository : PanacheRepositoryBase<BaseCode, BaseCodeId> {
         return SidoSiGunGuDto(siDoCd, siGunGu?.id?.cdId)
     }
 
-    fun findByDstr1CdAndCdNm(dstr1Cd: String, cdNm: String): BaseCode? {
-        return find("cd_grp_id = 'SIDO$dstr1Cd' and cd_nm = '$cdNm'").firstResult()
+    fun findByDstr1CdAndCdNm(dstr1Cd: String, cdNm: String): BaseCode {
+        return find("id.cdGrpId = 'SIDO$dstr1Cd' and cdNm = '$cdNm'").firstResult() ?: throw NotFoundException("baseCode not found")
     }
 
-    fun getCdNm(grpId: String, cdId: String): String {
-        val findCode = find("from BaseCode where id.cdGrpId='$grpId' and id.cdId='$cdId'").firstResult()
-
-        if(findCode == null) return ""
-        else return findCode.cdNm ?: ""
-    }
-
-    fun getDstrCd2Nm(dstrCd1: String?, dstrCd2: String?): String {
-        val query = "select fn_get_dstr_cd2_nm('$dstrCd1', '$dstrCd2') as test"
+    fun getdstr2CdNm(dstr1Cd: String?, dstr2Cd: String?): String {
+        val query = "select fn_get_dstr_cd2_nm('$dstr1Cd', '$dstr2Cd') as test"
         return getEntityManager().createNativeQuery(query).singleResult as String
     }
 }
@@ -66,14 +59,14 @@ class BaseCodeRepository : PanacheRepositoryBase<BaseCode, BaseCodeId> {
 class BaseCodeEgenRepository : PanacheRepositoryBase<BaseCodeEgen, BaseCodeEgenId> {
 
     fun findCodeEgenByCmMid(cmMid: String): List<BaseCodeEgen> {
-        return find("cm_mid = '$cmMid'").list()
+        return find("id.cmMid = '$cmMid'").list()
     }
 }
 
 @ApplicationScoped
 class BaseAttcRepository : PanacheRepositoryBase<BaseAttc, String> {
     fun deleteByAttcId(attcId: String): Long? {
-        return delete("attc_id = '$attcId'")
+        return delete("attcId = '$attcId'")
     }
 
     fun findFilesByAttcGrpId(attcGrpId: String): List<BaseAttc> {

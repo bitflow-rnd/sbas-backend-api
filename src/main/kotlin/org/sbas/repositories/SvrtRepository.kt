@@ -4,7 +4,7 @@ import io.quarkus.hibernate.orm.panache.kotlin.PanacheRepositoryBase
 import org.sbas.dtos.info.InfoPtSearchDto
 import org.sbas.entities.svrt.*
 import java.util.*
-import javax.enterprise.context.ApplicationScoped
+import jakarta.enterprise.context.ApplicationScoped
 
 @ApplicationScoped
 class SvrtPtRepository : PanacheRepositoryBase<SvrtPt, SvrtPtId> {

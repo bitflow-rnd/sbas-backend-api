@@ -1,20 +1,18 @@
 package org.sbas.repositories
 
-import com.linecorp.kotlinjdsl.QueryFactory
-import com.linecorp.kotlinjdsl.listQuery
-import com.linecorp.kotlinjdsl.query.spec.ExpressionOrderSpec
-import com.linecorp.kotlinjdsl.querydsl.CriteriaQueryDsl
-import com.linecorp.kotlinjdsl.querydsl.expression.col
-import com.linecorp.kotlinjdsl.subquery
+import com.linecorp.kotlinjdsl.dsl.jpql.jpql
+import com.linecorp.kotlinjdsl.render.jpql.JpqlRenderContext
+import com.linecorp.kotlinjdsl.support.hibernate.extension.createQuery
 import io.quarkus.hibernate.orm.panache.kotlin.PanacheRepositoryBase
 import io.quarkus.panache.common.Sort
+import jakarta.enterprise.context.ApplicationScoped
+import jakarta.inject.Inject
+import jakarta.persistence.EntityManager
+import jakarta.ws.rs.NotFoundException
 import org.jboss.logging.Logger
 import org.sbas.dtos.info.*
 import org.sbas.entities.info.*
 import java.time.Instant
-import javax.enterprise.context.ApplicationScoped
-import javax.inject.Inject
-import javax.persistence.EntityManager
 
 @ApplicationScoped
 class InfoPtRepository : PanacheRepositoryBase<InfoPt, String> {
@@ -23,16 +21,13 @@ class InfoPtRepository : PanacheRepositoryBase<InfoPt, String> {
     private lateinit var entityManager: EntityManager
 
     @Inject
-    private lateinit var queryFactory: QueryFactory
-
-    @Inject
     private lateinit var log: Logger
 
     fun findByPtNmAndRrno(ptNm: String, rrno1: String, rrno2: String): InfoPt? =
-        find("pt_nm = '$ptNm' AND rrno_1 = '$rrno1' AND rrno_2 = '$rrno2'").firstResult()
+        find("ptNm = '$ptNm' AND rrno1 = '$rrno1' AND rrno2 = '$rrno2'").firstResult()
 
     fun findByDstrCd(dstr1Cd: String, dstr2Cd: String): List<InfoPt> {
-        return find("dstr_1_cd = '$dstr1Cd' and dstr_2_cd = '$dstr2Cd'").list()
+        return find("dstr1Cd = '$dstr1Cd' and dstr2Cd = '$dstr2Cd'").list()
     }
 
     fun findInfoPtList(param: InfoPtSearchParam): List<InfoPtSearchDto> {
@@ -149,34 +144,36 @@ class InfoPtRepository : PanacheRepositoryBase<InfoPt, String> {
 class InfoCrewRepository : PanacheRepositoryBase<InfoCrew, InfoCrewId> {
 
     @Inject
-    private lateinit var queryFactory: QueryFactory
+    private lateinit var entityManager: EntityManager
+
+    @Inject
+    private lateinit var context: JpqlRenderContext
 
     fun findInfoCrews(param: InfoCrewSearchParam): MutableList<InfoCrewDto> {
-        val infoCrewList = queryFactory.listQuery<InfoCrewDto> {
-            selectMulti(
-                col(InfoCrewId::instId), col(InfoCrewId::crewId), col(InfoCrew::crewNm),
-                col(InfoCrew::telno), col(InfoCrew::rmk), col(InfoCrew::pstn),
-            )
-            from(entity(InfoCrew::class))
-            associate(entity(InfoCrew::class), InfoCrewId::class, on(InfoCrew::id))
-            whereAnd(
-                col(InfoCrewId::instId).equal(param.instId),
-                param.crewId?.run { col(InfoCrewId::crewId).equal(this) },
-                param.crewNm?.run { col(InfoCrew::crewNm).like("%$this%") },
-                param.telno?.run { col(InfoCrew::telno).like("%$this%") },
+        val query = jpql {
+            selectNew<InfoCrewDto>(
+                path(InfoCrew::id)(InfoCrewId::instId), path(InfoCrew::id)(InfoCrewId::crewId),
+                path(InfoCrew::crewNm), path(InfoCrew::telno), path(InfoCrew::rmk), path(InfoCrew::pstn),
+            ).from(
+                entity(InfoCrew::class)
+            ).whereAnd(
+                path(InfoCrew::id)(InfoCrewId::instId).eq(param.instId),
+                param.crewId?.run { path(InfoCrew::id)(InfoCrewId::crewId).eq(this) },
+                param.crewNm?.run { path(InfoCrew::crewNm).like("%$this%") },
+                param.telno?.run { path(InfoCrew::telno).like("%$this%") },
             )
         }
 
-        return infoCrewList.toMutableList()
+        return entityManager.createQuery(query, context).resultList
     }
 
-    fun findInfoCrew(instId: String, crewId: String): InfoCrew? {
-        return find("inst_id = '$instId' and crew_id = '$crewId'").firstResult()
+    fun findInfoCrew(instId: String, crewId: Int): InfoCrew? {
+        return find("id.instId = '$instId' and id.crewId = $crewId").firstResult()
     }
 
-    fun findLatestCrewId(instId: String): Int? {
-        return find("inst_id = '$instId'", Sort.by("crew_id", Sort.Direction.Descending))
-            .firstResult()?.id?.crewId
+    fun findLatestCrewId(instId: String): Int {
+        return find("id.instId = '$instId'", Sort.by("id.crewId", Sort.Direction.Descending))
+            .firstResult()?.id?.crewId ?: 0
     }
 }
 
@@ -184,83 +181,92 @@ class InfoCrewRepository : PanacheRepositoryBase<InfoCrew, InfoCrewId> {
 class InfoInstRepository : PanacheRepositoryBase<InfoInst, String> {
 
     @Inject
-    private lateinit var queryFactory: QueryFactory
+    private lateinit var entityManager: EntityManager
 
-    fun findInstCodeList(dstrCd1: String, dstrCd2: String, instTypeCd: String) =
-        find(
-            "select i from InfoInst i where " +
-                "('$dstrCd1' = '' or i.dstrCd1 = '$dstrCd1') and " +
-                "('$dstrCd2' = '' or i.dstrCd2 = '$dstrCd2') and " +
-                "('$instTypeCd' = '' or i.instTypeCd = '$instTypeCd')"
-        ).list()
+    @Inject
+    private lateinit var context: JpqlRenderContext
 
-
-    fun findInfoInst(dstrCd1: String?, dstrCd2: String?, instTypeCd: String?): List<InfoInstResponse> {
-        val list = queryFactory.listQuery<InfoInstResponse> {
-            selectMulti(
-                col(InfoInst::id), col(InfoInst::instTypeCd), col(InfoInst::instNm),
-                col(InfoInst::dstrCd1), col(InfoInst::dstrCd2),
-            )
-            from(entity(InfoInst::class))
-            whereAnd(
-                instTypeCd?.run { col(InfoInst::instTypeCd).equal(this) },
-                dstrCd1?.run { col(InfoInst::dstrCd1).equal(this) },
-                dstrCd2?.run { col(InfoInst::dstrCd2).equal(this) },
+    fun findInfoInst(dstr1Cd: String?, dstr2Cd: String?, instTypeCd: String?): List<InfoInstResponse> {
+        val query = jpql {
+            selectNew<InfoInstResponse>(
+                path(InfoInst::id), path(InfoInst::instTypeCd), path(InfoInst::instNm),
+                path(InfoInst::dstr1Cd), path(InfoInst::dstr2Cd),
+            ).from(
+                entity(InfoInst::class),
+            ).whereAnd(
+                instTypeCd?.run { path(InfoInst::instTypeCd).equal(this) },
+                dstr1Cd?.run { path(InfoInst::dstr1Cd).equal(this) },
+                dstr2Cd?.run { path(InfoInst::dstr2Cd).equal(this) },
             )
         }
 
-        return list
+        return entityManager.createQuery(query, context).resultList
     }
 
     fun findFireStatns(param: FireStatnSearchParam): MutableList<FireStatnListDto> {
-        val fireStatnList: List<FireStatnListDto> = queryFactory.listQuery {
-            val crewCount = queryFactory.subquery {
-                select(
-                    count(col(InfoCrewId::crewId))
-                )
-                from(entity(InfoCrew::class))
-                associate(entity(InfoCrew::class), InfoCrewId::class, on(InfoCrew::id))
-                groupBy(col(InfoCrewId::instId))
-                where(col(InfoCrewId::instId).equal(col(InfoInst::id)))
-            }
-            selectMulti(
-                col(InfoInst::id), col(InfoInst::instNm),
-                function("fn_get_cd_nm", String::class.java, literal("SIDO"), col(InfoInst::dstrCd1)),
-                function("fn_get_dstr_cd2_nm", String::class.java, col(InfoInst::dstrCd1), col(InfoInst::dstrCd2)),
-                col(InfoInst::chrgTelno), crewCount, col(InfoInst::lat), col(InfoInst::lon)
-            )
-            from(entity(InfoInst::class))
-            fireStatnsWhereAnd(param)
-            limit(15)
-            param.page?.run { offset(this.minus(1).times(15)) }
-            orderBy(
-                ExpressionOrderSpec(col(InfoInst::id), ascending = false),
-                ExpressionOrderSpec(col(InfoInst::rgstDttm), ascending = false),
-                ExpressionOrderSpec(col(InfoInst::instNm), ascending = false),
+        val query = jpql { 
+            val crewCount = select(
+                count(path(InfoCrew::id)(InfoCrewId::crewId))
+            ).from(
+                entity(InfoCrew::class)
+            ).where(
+                path(InfoCrew::id)(InfoCrewId::instId).eq(path(InfoInst::id))
+            ).asSubquery()
+            
+            selectNew<FireStatnListDto>(
+                path(InfoInst::id), path(InfoInst::instNm),
+                function(String::class, "fn_get_cd_nm", stringLiteral("SIDO"), path(InfoInst::dstr1Cd)),
+                function(String::class, "fn_get_dstr_cd2_nm", path(InfoInst::dstr1Cd), path(InfoInst::dstr2Cd)),
+                path(InfoInst::chrgTelno), crewCount, path(InfoInst::lat), path(InfoInst::lon)
+            ).from(
+                entity(InfoInst::class)
+            ).whereAnd(
+                path(InfoInst::instTypeCd).eq("ORGN0002"),
+                param.instId?.run { path(InfoInst::id).like("%$this%") },
+                param.instNm?.run { path(InfoInst::instNm).like("%$this%") },
+                param.dstr1Cd?.run { path(InfoInst::dstr1Cd).eq(this) },
+                param.dstr2Cd?.run { path(InfoInst::dstr2Cd).eq(this) },
+                param.chrgTelno?.run { path(InfoInst::chrgTelno).like("%$this%") },
+            ).orderBy(
+                path(InfoInst::id).desc(),
+                path(InfoInst::rgstDttm).desc(),
+                path(InfoInst::instNm).desc(),
             )
         }
 
-        return fireStatnList.toMutableList()
+        val offset = param.page?.run { this.minus(1).times(15) } ?: 0
+        val createQuery = entityManager.createQuery(query, context).setMaxResults(15).setFirstResult(offset)
+
+        return createQuery.resultList
     }
 
     fun countFireStatns(param: FireStatnSearchParam): Int {
-        val count = queryFactory.listQuery<Long> {
-            selectMulti((count(entity(InfoInst::class))))
-            from(entity(InfoInst::class))
-            fireStatnsWhereAnd(param)
+        val query = jpql {
+            select(
+                count(entity(InfoInst::class))
+            ).from(
+                entity(InfoInst::class)
+            ).whereAnd(
+                path(InfoInst::instTypeCd).eq("ORGN0002"),
+                param.instId?.run { path(InfoInst::id).like("%$this%") },
+                param.instNm?.run { path(InfoInst::instNm).like("%$this%") },
+                param.dstr1Cd?.run { path(InfoInst::dstr1Cd).eq(this) },
+                param.dstr2Cd?.run { path(InfoInst::dstr2Cd).eq(this) },
+                param.chrgTelno?.run { path(InfoInst::chrgTelno).like("%$this%") },
+            )
         }
 
-        return count[0].toInt()
+        return entityManager.createQuery(query, context).singleResult.toInt()
     }
 
     fun findLatestFireStatInstId(): String? {
-        return find("inst_type_cd = 'ORGN0002'", Sort.by("inst_id", Sort.Direction.Descending)).firstResult()?.id
+        return find("instTypeCd = 'ORGN0002'", Sort.by("id", Sort.Direction.Descending)).firstResult()?.id
     }
 
     fun findFireStatnDtoByInstId(instId: String): FireStatnDto? {
         val query = "select new org.sbas.dtos.info.FireStatnDto(ii.id, ii.instNm, " +
-                "ii.chrgId, ii.chrgNm, ii.dstrCd1, fn_get_cd_nm('SIDO', ii.dstrCd1), " +
-                "ii.dstrCd2, fn_get_cd_nm('SIDO'||ii.dstrCd1, ii.dstrCd2), " +
+                "ii.chrgId, ii.chrgNm, ii.dstr1Cd, fn_get_cd_nm('SIDO', ii.dstr1Cd), " +
+                "ii.dstr2Cd, fn_get_cd_nm('SIDO'||ii.dstr1Cd, ii.dstr2Cd), " +
                 "ii.chrgTelno, ii.rmk, ii.detlAddr, ii.lat, ii.lon, ii.vecno ) " +
                 "from InfoInst ii " +
                 "where ii.instTypeCd = 'ORGN0002' and ii.id = '$instId' "
@@ -268,20 +274,10 @@ class InfoInstRepository : PanacheRepositoryBase<InfoInst, String> {
         return getEntityManager().createQuery(query, FireStatnDto::class.java).singleResult
     }
 
-    fun findFireStatn(instId: String): InfoInst? {
-        return find("inst_type_cd = 'ORGN0002' and inst_id = '$instId'").firstResult()
+    fun findFireStatn(instId: String): InfoInst {
+        return find("instTypeCd = 'ORGN0002' and id = '$instId'").firstResult() ?: throw NotFoundException("fire station not found")
     }
 
-    private fun CriteriaQueryDsl<*>.fireStatnsWhereAnd(param: FireStatnSearchParam) {
-        whereAnd(
-            col(InfoInst::instTypeCd).equal("ORGN0002"),
-            param.instId?.run { col(InfoInst::id).like("%$this%") },
-            param.instNm?.run { col(InfoInst::instNm).like("%$this%") },
-            param.dstrCd1?.run { col(InfoInst::dstrCd1).equal(this) },
-            param.dstrCd2?.run { col(InfoInst::dstrCd2).equal(this) },
-            param.chrgTelno?.run { col(InfoInst::chrgTelno).like("%$this%") },
-        )
-    }
 }
 
 @ApplicationScoped
@@ -302,7 +298,7 @@ class InfoBedRepository : PanacheRepositoryBase<InfoBed, String> {
         return find("hospId = '$hospId'").firstResult()
     }
 
-    fun findByHpid(hpid: String): InfoBed? {
-        return find("hpid = '$hpid'").firstResult()
+    fun findByHpId(hpId: String): InfoBed? {
+        return find("hpId = '$hpId'").firstResult()
     }
 }

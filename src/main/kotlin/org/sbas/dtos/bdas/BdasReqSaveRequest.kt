@@ -1,16 +1,13 @@
 package org.sbas.dtos.bdas
 
-import org.sbas.constants.enums.BedStatCd
-import org.sbas.constants.enums.ReqBedTypeCd
-import org.sbas.constants.enums.SvrtTypeCd
+import jakarta.validation.Valid
+import jakarta.validation.constraints.NotBlank
+import jakarta.validation.constraints.Pattern
+import org.sbas.constants.enums.*
 import org.sbas.entities.bdas.BdasReq
 import org.sbas.entities.bdas.BdasReqId
 import org.sbas.utils.StringUtils
 import org.sbas.utils.annotation.ValidEnum
-import javax.validation.Valid
-import javax.validation.constraints.NotBlank
-import javax.validation.constraints.NotEmpty
-import javax.validation.constraints.Pattern
 
 /**
  * 병상 요청 DTO
@@ -74,7 +71,9 @@ data class BdasReqSaveRequest(
 data class BdasReqSvrInfo(
     @field: NotBlank
     val ptId: String,
+    @field: ValidEnum(enumClass = PtTypeCd::class, isNullable = true)
     val ptTypeCd: String?,
+    @field: ValidEnum(enumClass = UndrDsesCd::class, isNullable = true)
     val undrDsesCd: String?,
     @field: [NotBlank ValidEnum(enumClass = ReqBedTypeCd::class)]
     val reqBedTypeCd: String,
