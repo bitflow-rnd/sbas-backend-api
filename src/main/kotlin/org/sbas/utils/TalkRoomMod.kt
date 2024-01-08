@@ -18,6 +18,7 @@ import jakarta.inject.Inject
 import jakarta.websocket.*
 import jakarta.websocket.server.PathParam
 import jakarta.websocket.server.ServerEndpoint
+import org.eclipse.microprofile.config.inject.ConfigProperty
 
 
 @ServerEndpoint("/chat-rooms/room/{tkrmId}")
@@ -49,6 +50,9 @@ class TalkRoomMod {
 
     @OnOpen
     fun onOpen(session: Session, @PathParam("tkrmId") tkrmId: String) {
+        session.maxBinaryMessageBufferSize = 5242880
+        session.maxTextMessageBufferSize = 5242880
+
         this.session = session
         this.tkrmId = tkrmId
 
