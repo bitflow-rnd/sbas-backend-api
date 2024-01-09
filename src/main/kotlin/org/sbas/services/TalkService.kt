@@ -10,6 +10,7 @@ import jakarta.inject.Inject
 import jakarta.transaction.Transactional
 import jakarta.ws.rs.NotFoundException
 import org.sbas.constants.SbasConst
+import org.sbas.dtos.RegGroupTalkRoomDto
 import org.sbas.dtos.RegTalkRoomDto
 import org.sbas.entities.talk.*
 
@@ -26,7 +27,7 @@ class TalkService {
     private lateinit var talkRoomRepository: TalkRoomRepository
 
     @Transactional
-    fun regChatRoom(regRequest: RegTalkRoomDto): CommonResponse<String> {
+    fun regPersonalChatRoom(regRequest: RegTalkRoomDto): CommonResponse<String> {
         val hasTalkRoom = talkUserRepository.findTkrmIdByUserId(regRequest)
         if(hasTalkRoom != null)
             return CommonResponse(SbasConst.ResCode.FAIL, "해당 유저와의 대화방이 있습니다.", hasTalkRoom)
@@ -60,6 +61,27 @@ class TalkService {
         talkUserRepository.persist(regTalkUser)
 
         return CommonResponse("채팅방을 만들었습니다.")
+    }
+
+    @Transactional
+    fun regGroupChatRoom(regRequest: RegGroupTalkRoomDto): CommonResponse<String> {
+        val tkrmId = talkRoomRepository.findNextId()
+
+        if(regRequest.tkrmNm == "" || regRequest.tkrmNm == null) {
+            var tkrmNm = ""
+            tkrmNm += regRequest.userIds?.joinToString(", ")
+
+            if(tkrmNm == "") regRequest.tkrmNm = regRequest.id
+            else regRequest.tkrmNm = tkrmNm
+        }
+
+        val regTalkRoom = regRequest.toEntity(tkrmId)
+
+        talkRoomRepository.persist(regTalkRoom)
+
+        talkUserRepository.persistTalkUsers(regRequest, regTalkRoom)
+
+        return CommonResponse("단체 채팅방을 만들었습니다.")
     }
 
     fun getMyChats(userId: String): CommonResponse<List<TalkRoomResponse>> {

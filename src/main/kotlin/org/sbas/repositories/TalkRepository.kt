@@ -9,6 +9,7 @@ import java.time.Instant
 import jakarta.enterprise.context.ApplicationScoped
 import jakarta.inject.Inject
 import jakarta.transaction.Transactional
+import org.sbas.dtos.RegGroupTalkRoomDto
 import org.sbas.dtos.RegTalkRoomDto
 
 @ApplicationScoped
@@ -64,6 +65,33 @@ class TalkUserRepository : PanacheRepositoryBase<TalkUser, TalkUserId> {
             """.trimIndent()
 
         return find(query).firstResult()?.id?.tkrmId
+    }
+
+    fun persistTalkUsers(regGroupTalkRoomDto: RegGroupTalkRoomDto, talkRoom: TalkRoom) {
+        val regTalkUserIdSelf = TalkUserId(tkrmId = talkRoom.tkrmId, userId = regGroupTalkRoomDto.id)
+        val regTalkUserSelf = TalkUser(
+            id = regTalkUserIdSelf,
+            hostYn = "Y",
+            joinDt = talkRoom.cretDt,
+            joinTm = talkRoom.cretTm,
+            wtdrDt = null,
+            wtdrTm = null
+        )
+        persist(regTalkUserSelf)
+
+        regGroupTalkRoomDto.userIds?.map {
+            val talkRoomId = TalkUserId(tkrmId = talkRoom.tkrmId, userId = it)
+            val regTalkUser = TalkUser(
+                id = talkRoomId,
+                hostYn = "N",
+                joinDt = talkRoom.cretDt,
+                joinTm = talkRoom.cretTm,
+                wtdrDt = null,
+                wtdrTm = null
+            )
+
+            persist(regTalkUser)
+        }
     }
 
 }

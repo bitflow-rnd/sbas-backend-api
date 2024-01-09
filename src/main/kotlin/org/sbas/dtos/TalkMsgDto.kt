@@ -31,3 +31,19 @@ data class RegTalkRoomDto(
         )
     }
 }
+
+data class RegGroupTalkRoomDto(
+    var id: String, // 유저 ID
+    var tkrmNm: String?, // 채팅방 이름
+    var userIds: List<String>?, // 초대유저 ID
+) {
+    fun toEntity(tkrmId: String): TalkRoom {
+        return TalkRoom(
+            tkrmId = tkrmId,
+            tkrmNm = tkrmNm,
+            cretDt = StringUtils.getYyyyMmDd(),
+            cretTm = StringUtils.getHhMmSs(),
+            cretUserId = id,
+        )
+    }
+}
