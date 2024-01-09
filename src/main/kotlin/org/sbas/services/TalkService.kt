@@ -9,6 +9,7 @@ import jakarta.enterprise.context.ApplicationScoped
 import jakarta.inject.Inject
 import jakarta.transaction.Transactional
 import jakarta.ws.rs.NotFoundException
+import org.sbas.constants.SbasConst
 import org.sbas.dtos.RegTalkRoomDto
 import org.sbas.entities.talk.*
 
@@ -26,15 +27,17 @@ class TalkService {
 
     @Transactional
     fun regChatRoom(regRequest: RegTalkRoomDto): CommonResponse<String> {
-        val tkrmId = talkRoomRepository.findAll().stream()
-            .max(compareBy { it.tkrmId }).orElse(null).tkrmId ?: "0"
-        val result = (tkrmId.toInt() + 1).toString()
-        val regTalkRoom = regRequest.toEntity(result)
+        val hasTalkRoom = talkUserRepository.findTkrmIdByUserId(regRequest)
+        if(hasTalkRoom != null)
+            return CommonResponse(SbasConst.ResCode.FAIL, "해당 유저와의 대화방이 있습니다.", hasTalkRoom)
+
+        val tkrmId = talkRoomRepository.findNextId()
+        val regTalkRoom = regRequest.toEntity(tkrmId)
 
         talkRoomRepository.persist(regTalkRoom)
 
-        val regTalkUserIdSelf = TalkUserId(tkrmId = result, userId = regRequest.id)
-        val regTalkUserId = TalkUserId(tkrmId = result, userId = regRequest.userId)
+        val regTalkUserIdSelf = TalkUserId(tkrmId = tkrmId, userId = regRequest.id)
+        val regTalkUserId = TalkUserId(tkrmId = tkrmId, userId = regRequest.userId)
 
         val regTalkUserSelf = TalkUser(
             id = regTalkUserIdSelf,

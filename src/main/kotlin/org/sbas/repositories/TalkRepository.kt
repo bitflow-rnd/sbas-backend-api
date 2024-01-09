@@ -9,9 +9,10 @@ import java.time.Instant
 import jakarta.enterprise.context.ApplicationScoped
 import jakarta.inject.Inject
 import jakarta.transaction.Transactional
+import org.sbas.dtos.RegTalkRoomDto
 
 @ApplicationScoped
-class TalkUserRepository : PanacheRepositoryBase<TalkUser, TalkUserId>{
+class TalkUserRepository : PanacheRepositoryBase<TalkUser, TalkUserId> {
 
     @Transactional
     fun deleteTkrmByUserId(tkrmId: String, userId: String) {
@@ -30,11 +31,39 @@ class TalkUserRepository : PanacheRepositoryBase<TalkUser, TalkUserId>{
     }
 
     @Transactional
-    fun findOtherUsersByTkrmId(tkrmId: String, userId: String): List<TalkUser>{
+    fun findOtherUsersByTkrmId(tkrmId: String, userId: String): List<TalkUser> {
         val result = runBlocking {
             find("select tu from TalkUser tu where tu.id.tkrmId = '$tkrmId' and tu.id.userId != '$userId'").list()
         }
         return result
+    }
+
+    /**
+     * 개인톡방 tkrmId 찾기
+     */
+    fun findTkrmIdByUserId(regTalkRoomDto: RegTalkRoomDto): String? {
+        val query = """
+            select
+                distinct t1
+            from
+                TalkUser t1
+            inner join
+                TalkUser t2
+            on
+                t1.id.tkrmId = t2.id.tkrmId and t1.id.userId != t2.id.userId
+            where
+                t1.id.userId in ('${regTalkRoomDto.id}', '${regTalkRoomDto.userId}')
+                and t2.id.userId in ('${regTalkRoomDto.id}', '${regTalkRoomDto.userId}')
+            and not exists (
+                        select 1
+                        from TalkUser t3
+                        where
+                            t3.id.tkrmId = t1.id.tkrmId
+                            and t3.id.userId not in ('${regTalkRoomDto.id}', '${regTalkRoomDto.userId}')
+            )
+            """.trimIndent()
+
+        return find(query).firstResult()?.id?.tkrmId
     }
 
 }
@@ -44,19 +73,19 @@ class TalkMsgRepository : PanacheRepositoryBase<TalkMsg, TalkMsgId> {
     @Transactional
     fun findChatDetail(tkrmId: String): List<TalkMsgDto> {
         val query = "select new org.sbas.dtos.TalkMsgDto(tm.id.tkrmId, tm.id.msgSeq, tm.id.histSeq, " +
-                "tm.histCd, tm.msg, tm.attcId, " +
-                "iu.instNm || ' / ' || iu.userNm, " +
-                "tm.rgstDttm, tm.updtUserId, tm.updtDttm) " +
-                "from TalkMsg tm " +
-                "inner join InfoUser iu on iu.id = tm.rgstUserId " +
-                "where tm.id.tkrmId = '$tkrmId' order by tm.id.msgSeq "
+            "tm.histCd, tm.msg, tm.attcId, " +
+            "iu.instNm || ' / ' || iu.userNm, " +
+            "tm.rgstDttm, tm.updtUserId, tm.updtDttm) " +
+            "from TalkMsg tm " +
+            "inner join InfoUser iu on iu.id = tm.rgstUserId " +
+            "where tm.id.tkrmId = '$tkrmId' order by tm.id.msgSeq "
 
         return getEntityManager().createQuery(query, TalkMsgDto::class.java).resultList
 //        return find("select tm from TalkMsg tm where tm.id.tkrmId = '$tkrmId' order by tm.id.msgSeq").list()
     }
 
     @Transactional
-    fun insertMessage(message: String, tkrmId: String, userId: String): TalkMsg{
+    fun insertMessage(message: String, tkrmId: String, userId: String): TalkMsg {
         val recentMsgSeq = findRecentlyMsg(tkrmId)
         val insertObject = TalkMsg(
             id = TalkMsgId(tkrmId, (recentMsgSeq?.id?.msgSeq ?: 0) + 1, 1),
@@ -74,7 +103,7 @@ class TalkMsgRepository : PanacheRepositoryBase<TalkMsg, TalkMsgId> {
     }
 
     @Transactional
-    fun insertFile(msg: String?, file: String?, tkrmId: String, userId: String): TalkMsg{
+    fun insertFile(msg: String?, file: String?, tkrmId: String, userId: String): TalkMsg {
         val recentMsgSeq = findRecentlyMsg(tkrmId)
         val insertFile = TalkMsg(
             id = TalkMsgId(tkrmId, (recentMsgSeq?.id?.msgSeq ?: 0) + 1, 1),
@@ -127,6 +156,7 @@ class TalkRoomRepository : PanacheRepositoryBase<TalkRoom, String> {
 
         return resultList
     }
+
     fun findTalkRoomByTkrmId(tkrmId: String): TalkRoom? {
         return find("select tr from TalkRoom tr where tr.tkrmId = '$tkrmId'").firstResult()
     }
@@ -142,5 +172,9 @@ class TalkRoomRepository : PanacheRepositoryBase<TalkRoom, String> {
                 TalkRoomResponse(tkrmId, it.tkrmNm, null, it.rgstDttm)
             }
         }
+    }
+
+    fun findNextId(): String {
+        return find("select max(cast(tkrmId as integer)) + 1 from TalkRoom").firstResult().toString()
     }
 }
