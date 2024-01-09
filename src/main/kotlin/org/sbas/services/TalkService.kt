@@ -27,10 +27,12 @@ class TalkService {
     private lateinit var talkRoomRepository: TalkRoomRepository
 
     @Transactional
-    fun regPersonalChatRoom(regRequest: RegTalkRoomDto): CommonResponse<String> {
+    fun regPersonalChatRoom(regRequest: RegTalkRoomDto): CommonResponse<*> {
         val hasTalkRoom = talkUserRepository.findTkrmIdByUserId(regRequest)
-        if(hasTalkRoom != null)
-            return CommonResponse(SbasConst.ResCode.FAIL, "해당 유저와의 대화방이 있습니다.", hasTalkRoom)
+        if(hasTalkRoom != null) {
+            val talkRoom = talkRoomRepository.findTalkRoomByTkrmId(hasTalkRoom)
+            return CommonResponse(SbasConst.ResCode.FAIL, "해당 유저와의 대화방이 있습니다.", talkRoom)
+        }
 
         val tkrmId = talkRoomRepository.findNextId()
         val regTalkRoom = regRequest.toEntity(tkrmId)
@@ -60,7 +62,7 @@ class TalkService {
         talkUserRepository.persist(regTalkUserSelf)
         talkUserRepository.persist(regTalkUser)
 
-        return CommonResponse("채팅방을 만들었습니다.")
+        return CommonResponse("채팅방을 만들었습니다.", regTalkRoom)
     }
 
     @Transactional
