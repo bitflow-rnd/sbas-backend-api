@@ -21,6 +21,7 @@ import jakarta.transaction.Transactional
 import jakarta.ws.rs.NotFoundException
 import jakarta.ws.rs.core.Response
 import org.sbas.component.InfoCrewComponent
+import org.sbas.component.base.BaseCodeReader
 import org.sbas.dtos.info.AvalHospDto
 import kotlin.math.acos
 import kotlin.math.cos
@@ -73,6 +74,9 @@ class BedAssignService {
 
     @Inject
     private lateinit var infoCrewComponent: InfoCrewComponent
+
+    @Inject
+    private lateinit var baseCodeReader: BaseCodeReader
 
     @Inject
     private lateinit var jwt: JsonWebToken
@@ -375,6 +379,10 @@ class BedAssignService {
 
         val findBdasList = bdasReqRepository.findBdasList(param)
         findBdasList.forEach {
+            it.ptTypeCdNm = baseCodeReader.getBaseCodeCdNm("PTTP", it.ptTypeCd)?.joinToString(";")
+            it.svrtTypeCdNm = baseCodeReader.getBaseCodeCdNm("SVTP", it.svrtTypeCd)?.joinToString(";")
+            it.undrDsesCdNm = baseCodeReader.getBaseCodeCdNm("UDDS", it.undrDsesCd)?.joinToString(";")
+
             when (it.bedStatCd) {
                 BedStatCd.BAST0003.name -> {
                     bdasReqList.items.add(it)
