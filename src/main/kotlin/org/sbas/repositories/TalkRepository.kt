@@ -173,9 +173,6 @@ class TalkRoomRepository : PanacheRepositoryBase<TalkRoom, String> {
     @Inject
     private lateinit var infoUserRepository: InfoUserRepository
 
-    @Inject
-    private lateinit var log: Logger
-
     fun findMyRooms(userId: String): List<TalkRoom> {
         return find("select tr from TalkRoom tr join TalkUser tu on tr.tkrmId = tu.id.tkrmId and tu.id.userId = '$userId'").list()
     }
@@ -187,13 +184,6 @@ class TalkRoomRepository : PanacheRepositoryBase<TalkRoom, String> {
 
         runBlocking {
             talkRooms.forEach {
-                val count = talkUserRepository.countByTkrmId(it.tkrmId!!)
-                log.warn("count ${it.tkrmNm}")
-                if(count == 2 && it.tkrmNm == "") {
-                    val otherUserId = talkUserRepository.findOtherUsersByTkrmId(it.tkrmId!!, userId)[0].id?.userId!!
-                    val otherUserNm = infoUserRepository.findByUserId(otherUserId)!!.userNm
-                    it.tkrmNm = otherUserNm
-                }
                 val talkMsg = talkMsgRepository.findRecentlyMsg(it.tkrmId!!)
                 if (talkMsg != null) {
                     resultList.add(TalkRoomResponse(it.tkrmId, it.tkrmNm, talkMsg.msg, talkMsg.rgstDttm))
@@ -204,6 +194,18 @@ class TalkRoomRepository : PanacheRepositoryBase<TalkRoom, String> {
         }
 
         return resultList
+    }
+
+    fun changePersonalTkrmNm(list: List<TalkRoomResponse>, userId: String) : List<TalkRoomResponse> {
+        list.map {
+            val count = talkUserRepository.countByTkrmId(it.tkrmId!!)
+            if(count == 2 && it.tkrmNm == "") {
+                val otherUserId = talkUserRepository.findOtherUsersByTkrmId(it.tkrmId!!, userId)[0].id?.userId!!
+                val otherUserNm = infoUserRepository.findByUserId(otherUserId)!!.userNm
+                it.tkrmNm = otherUserNm
+            }
+        }
+        return list
     }
 
     fun findTalkRoomByTkrmId(tkrmId: String): TalkRoom? {

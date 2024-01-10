@@ -89,7 +89,9 @@ class TalkService {
     fun getMyChats(userId: String): CommonResponse<List<TalkRoomResponse>> {
         val findChatRooms = talkRoomRepository.findTalkRoomResponse(userId)
 
-        if(findChatRooms.isEmpty()) throw NotFoundException("대화중인 채팅방이 없습니다.")
+        val result = talkRoomRepository.changePersonalTkrmNm(findChatRooms, userId)
+
+        if(result.isEmpty()) throw NotFoundException("대화중인 채팅방이 없습니다.")
 
         return CommonResponse(findChatRooms)
     }
