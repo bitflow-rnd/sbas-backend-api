@@ -7,11 +7,13 @@ import jakarta.persistence.Id
 import jakarta.persistence.Table
 import jakarta.validation.constraints.NotNull
 import jakarta.validation.constraints.Size
+import org.sbas.utils.annotation.NoArg
 
 /**
  * 대화방 정보
  */
 @Entity
+@NoArg
 @Table(name = "talk_room")
 class TalkRoom(
     @Id
