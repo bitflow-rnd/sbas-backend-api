@@ -113,8 +113,8 @@ class TalkRoomMod {
     }
 
     @OnClose
-    fun onClose(session: Session, @PathParam("userId") userId: String) {
-        chatSockets.remove(userId) // WebSocket 연결을 Map에서 제거
+    fun onClose(session: Session, @PathParam("tkrmId") tkrmId: String) {
+        chatSockets.remove(tkrmId) // WebSocket 연결을 Map에서 제거
     }
 
     private fun updateTalkMsg(tkrmId: String) {
