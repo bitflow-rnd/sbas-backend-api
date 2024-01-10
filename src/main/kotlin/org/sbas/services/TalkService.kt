@@ -93,7 +93,7 @@ class TalkService {
 
         if(result.isEmpty()) throw NotFoundException("대화중인 채팅방이 없습니다.")
 
-        return CommonResponse(findChatRooms)
+        return CommonResponse(result)
     }
 
     fun getMyChat(tkrmId: String) : CommonResponse<*>{
