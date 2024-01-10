@@ -131,7 +131,7 @@ class TalkRoomMod {
         val talkUsers: List<TalkUser>
 
         runBlocking(Dispatchers.IO) {
-            talkRoomResponse = talkRoomRepository.findTalkRoomResponseByTkrmId(tkrmId)
+            talkRoomResponse = talkRoomRepository.findTalkRoomResponseByTkrmId(tkrmId, userId)
             talkUsers = talkUserRepository.findUsersByTkrmId(tkrmId)
         }
 
