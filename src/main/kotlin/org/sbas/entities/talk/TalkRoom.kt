@@ -7,7 +7,6 @@ import jakarta.persistence.Id
 import jakarta.persistence.Table
 import jakarta.validation.constraints.NotNull
 import jakarta.validation.constraints.Size
-import org.sbas.utils.annotation.NoArg
 
 /**
  * 대화방 정보
@@ -38,4 +37,6 @@ class TalkRoom(
     @NotNull
     @Column(name = "cret_user_id", nullable = false, length = 10)
     var cretUserId: String? = null,
-) : CommonEntity()
+) : CommonEntity() {
+    constructor() : this("", null, null, null, null)
+}
