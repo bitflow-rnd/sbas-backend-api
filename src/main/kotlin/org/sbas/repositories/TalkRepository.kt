@@ -218,14 +218,23 @@ class TalkRoomRepository : PanacheRepositoryBase<TalkRoom, String> {
     }
 
     @Transactional
-    fun findTalkRoomResponseByTkrmId(tkrmId: String): TalkRoomResponse? {
+    fun findTalkRoomResponseByTkrmId(tkrmId: String, userId: String): TalkRoomResponse? {
         val talkRoom = findTalkRoomByTkrmId(tkrmId)
         return talkRoom?.let {
             val talkMsg = runBlocking { talkMsgRepository.findRecentlyMsg(tkrmId) }
+            var tkrmNm = it.tkrmNm
+
+            val count = talkUserRepository.countByTkrmId(it.tkrmId!!)
+            if(count == 2 && it.tkrmNm == "") {
+                val otherUserId = talkUserRepository.findOtherUsersByTkrmId(it.tkrmId!!, userId)[0].id?.userId!!
+                val otherUserNm = infoUserRepository.findByUserId(otherUserId)?.userNm
+                tkrmNm = otherUserNm
+            }
+
             if (talkMsg != null) {
-                TalkRoomResponse(tkrmId, it.tkrmNm, talkMsg.msg, talkMsg.rgstDttm)
+                TalkRoomResponse(tkrmId, tkrmNm, talkMsg.msg, talkMsg.rgstDttm)
             } else {
-                TalkRoomResponse(tkrmId, it.tkrmNm, null, it.rgstDttm)
+                TalkRoomResponse(tkrmId, tkrmNm, null, it.rgstDttm)
             }
         }
     }

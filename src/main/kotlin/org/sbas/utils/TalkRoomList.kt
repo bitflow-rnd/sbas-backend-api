@@ -55,7 +55,7 @@ class TalkRoomList {
         val talkRoomResponse: TalkRoomResponse?
 
         runBlocking(Dispatchers.IO) {
-            talkRoomResponse = talkRoomRepository.findTalkRoomResponseByTkrmId(tkrmId)
+            talkRoomResponse = talkRoomRepository.findTalkRoomResponseByTkrmId(tkrmId, userId)
         }
 
         chatRoomsSockets.forEach{
