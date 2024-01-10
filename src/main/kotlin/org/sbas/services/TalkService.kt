@@ -31,7 +31,11 @@ class TalkService {
         val hasTalkRoom = talkUserRepository.findTkrmIdByUserId(regRequest)
         if(hasTalkRoom != null) {
             val talkRoom = talkRoomRepository.findTalkRoomByTkrmId(hasTalkRoom)
-            return CommonResponse(SbasConst.ResCode.FAIL, "해당 유저와의 대화방이 있습니다.", talkRoom)
+            val result = TalkRoomResponse(
+                tkrmId = talkRoom?.tkrmId,
+                tkrmNm = talkRoomRepository.changePersonalTkrmNm(talkRoom!!, regRequest.userId),
+            )
+            return CommonResponse(SbasConst.ResCode.FAIL, "해당 유저와의 대화방이 있습니다.", result)
         }
 
         val tkrmId = talkRoomRepository.findNextId()
@@ -62,7 +66,12 @@ class TalkService {
         talkUserRepository.persist(regTalkUserSelf)
         talkUserRepository.persist(regTalkUser)
 
-        return CommonResponse("채팅방을 만들었습니다.", regTalkRoom)
+        val result = TalkRoomResponse(
+            tkrmId = regTalkRoom.tkrmId,
+            tkrmNm = talkRoomRepository.changePersonalTkrmNm(regTalkRoom, regRequest.userId),
+        )
+
+        return CommonResponse("채팅방을 만들었습니다.", result)
     }
 
     @Transactional
@@ -89,7 +98,7 @@ class TalkService {
     fun getMyChats(userId: String): CommonResponse<List<TalkRoomResponse>> {
         val findChatRooms = talkRoomRepository.findTalkRoomResponse(userId)
 
-        val result = talkRoomRepository.changePersonalTkrmNm(findChatRooms, userId)
+        val result = talkRoomRepository.changeTalkRoomListByPersonalTkrmNm(findChatRooms, userId)
 
         if(result.isEmpty()) throw NotFoundException("대화중인 채팅방이 없습니다.")
 
@@ -103,11 +112,6 @@ class TalkService {
 
         return CommonResponse(findChatDetail)
     }
-
-//    fun getMyChatByTkrmId(tkrmId: String): TalkRoomResponse {
-//        return talkRoomRepository.findTalkRoomResponseByTkrmId(tkrmId)
-//    }
-
     @Transactional
     fun sendMsg(tkrmId: String, userId: String, detail: String){
         val recentMsg = talkMsgRepository.findRecentlyMsg(tkrmId)
