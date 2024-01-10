@@ -173,6 +173,9 @@ class TalkRoomRepository : PanacheRepositoryBase<TalkRoom, String> {
     @Inject
     private lateinit var infoUserRepository: InfoUserRepository
 
+    @Inject
+    private lateinit var log: Logger
+
     fun findMyRooms(userId: String): List<TalkRoom> {
         return find("select tr from TalkRoom tr join TalkUser tu on tr.tkrmId = tu.id.tkrmId and tu.id.userId = '$userId'").list()
     }
@@ -184,11 +187,19 @@ class TalkRoomRepository : PanacheRepositoryBase<TalkRoom, String> {
 
         runBlocking {
             talkRooms.forEach {
-                val talkMsg = talkMsgRepository.findRecentlyMsg(it.tkrmId!!)
+                var tkrmNm = it.tkrmNm
+                val count = talkUserRepository.countByTkrmId(it.tkrmId)
+                if(count == 2 && it.tkrmNm == "") {
+                    val otherUserId = talkUserRepository.findOtherUsersByTkrmId(it.tkrmId, userId)[0].id?.userId!!
+                    val otherUserNm = infoUserRepository.findByUserId(otherUserId)?.userNm
+                    tkrmNm = otherUserNm
+                }
+
+                val talkMsg = talkMsgRepository.findRecentlyMsg(it.tkrmId)
                 if (talkMsg != null) {
-                    resultList.add(TalkRoomResponse(it.tkrmId, it.tkrmNm, talkMsg.msg, talkMsg.rgstDttm))
+                    resultList.add(TalkRoomResponse(it.tkrmId, tkrmNm, talkMsg.msg, talkMsg.rgstDttm))
                 } else {
-                    resultList.add(TalkRoomResponse(it.tkrmId, it.tkrmNm, null, it.rgstDttm))
+                    resultList.add(TalkRoomResponse(it.tkrmId, tkrmNm, null, it.rgstDttm))
                 }
             }
         }
@@ -224,9 +235,11 @@ class TalkRoomRepository : PanacheRepositoryBase<TalkRoom, String> {
             val talkMsg = runBlocking { talkMsgRepository.findRecentlyMsg(tkrmId) }
             var tkrmNm = it.tkrmNm
 
-            val count = talkUserRepository.countByTkrmId(it.tkrmId!!)
+            log.warn("userId : $userId")
+
+            val count = talkUserRepository.countByTkrmId(it.tkrmId)
             if(count == 2 && it.tkrmNm == "") {
-                val otherUserId = talkUserRepository.findOtherUsersByTkrmId(it.tkrmId!!, userId)[0].id?.userId!!
+                val otherUserId = talkUserRepository.findOtherUsersByTkrmId(it.tkrmId, userId)[0].id?.userId!!
                 val otherUserNm = infoUserRepository.findByUserId(otherUserId)?.userNm
                 tkrmNm = otherUserNm
             }
