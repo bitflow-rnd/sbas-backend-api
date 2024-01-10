@@ -1,16 +1,17 @@
 package org.sbas.repositories
 
 import io.quarkus.hibernate.orm.panache.kotlin.PanacheRepositoryBase
+import jakarta.enterprise.context.ApplicationScoped
+import jakarta.inject.Inject
+import jakarta.transaction.Transactional
 import kotlinx.coroutines.runBlocking
+import org.jboss.logging.Logger
+import org.sbas.dtos.RegGroupTalkRoomDto
+import org.sbas.dtos.RegTalkRoomDto
 import org.sbas.dtos.TalkMsgDto
 import org.sbas.entities.talk.*
 import org.sbas.responses.messages.TalkRoomResponse
 import java.time.Instant
-import jakarta.enterprise.context.ApplicationScoped
-import jakarta.inject.Inject
-import jakarta.transaction.Transactional
-import org.sbas.dtos.RegGroupTalkRoomDto
-import org.sbas.dtos.RegTalkRoomDto
 
 @ApplicationScoped
 class TalkUserRepository : PanacheRepositoryBase<TalkUser, TalkUserId> {
@@ -94,6 +95,10 @@ class TalkUserRepository : PanacheRepositoryBase<TalkUser, TalkUserId> {
         }
     }
 
+    fun countByTkrmId(tkrmId: String): Int {
+        return count("where id.tkrmId = '$tkrmId'").toInt()
+    }
+
 }
 
 @ApplicationScoped
@@ -162,6 +167,15 @@ class TalkRoomRepository : PanacheRepositoryBase<TalkRoom, String> {
     @Inject
     private lateinit var talkMsgRepository: TalkMsgRepository
 
+    @Inject
+    private lateinit var talkUserRepository: TalkUserRepository
+
+    @Inject
+    private lateinit var infoUserRepository: InfoUserRepository
+
+    @Inject
+    private lateinit var log: Logger
+
     fun findMyRooms(userId: String): List<TalkRoom> {
         return find("select tr from TalkRoom tr join TalkUser tu on tr.tkrmId = tu.id.tkrmId and tu.id.userId = '$userId'").list()
     }
@@ -173,6 +187,13 @@ class TalkRoomRepository : PanacheRepositoryBase<TalkRoom, String> {
 
         runBlocking {
             talkRooms.forEach {
+                val count = talkUserRepository.countByTkrmId(it.tkrmId!!)
+                log.warn("count ${it.tkrmNm}")
+                if(count == 2 && it.tkrmNm == "") {
+                    val otherUserId = talkUserRepository.findOtherUsersByTkrmId(it.tkrmId!!, userId)[0].id?.userId!!
+                    val otherUserNm = infoUserRepository.findByUserId(otherUserId)!!.userNm
+                    it.tkrmNm = otherUserNm
+                }
                 val talkMsg = talkMsgRepository.findRecentlyMsg(it.tkrmId!!)
                 if (talkMsg != null) {
                     resultList.add(TalkRoomResponse(it.tkrmId, it.tkrmNm, talkMsg.msg, talkMsg.rgstDttm))
