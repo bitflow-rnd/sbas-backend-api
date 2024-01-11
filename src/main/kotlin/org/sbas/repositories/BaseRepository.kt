@@ -23,11 +23,7 @@ class BaseCodeRepository : PanacheRepositoryBase<BaseCode, BaseCodeId> {
         return find("id.cdGrpId = '$cdGrpId' and cdSeq != 0", Sort.by("cdSeq", "id.cdId")).list()
     }
 
-    fun findBaseCodeNameByCdId(cdId: String): String? {
-        return find("id.cdId = '$cdId'").singleResult().cdNm
-    }
-
-    fun findBaseCodeByCdId(cdId: String): BaseCode? {
+    fun findByCdId(cdId: String): BaseCode? {
         return find("id.cdId = '$cdId'").firstResult()
     }
 

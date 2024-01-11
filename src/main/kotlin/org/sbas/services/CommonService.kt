@@ -71,9 +71,9 @@ class CommonService {
         if (baseCodeGrp != null) {
             throw CustomizedException("${saveReq.cdGrpId} 이미 등록되어 있습니다.", Response.Status.CONFLICT)
         }
-        baseCodeRepository.persist(saveReq.toEntity())
+        baseCodeReader.saveBaseCode(saveReq.cdGrpId, saveReq.toEntity())
 
-        return CommonResponse("cdGrpId: ${saveReq.cdGrpId}")
+        return CommonResponse("save cdGrpId: ${saveReq.cdGrpId}")
     }
 
     /**
@@ -126,9 +126,8 @@ class CommonService {
      */
     @Transactional
     fun findBaseCodeName(cdId: String): CommonResponse<String> {
-        val findCodeName = baseCodeRepository.findBaseCodeNameByCdId(cdId = cdId) ?: throw NotFoundException("해당 코드명이 없습니다.")
-
-        return CommonResponse(findCodeName)
+        val baseCode = baseCodeReader.getBaseCodeByCdId(cdId = cdId)
+        return CommonResponse(baseCode.id.cdId)
     }
 
     /**
@@ -136,12 +135,8 @@ class CommonService {
      */
     @Transactional
     fun saveBaseCode(saveReq: BaseCodeSaveReq): CommonResponse<String> {
-        baseCodeRepository.findBaseCodeGrp(saveReq.cdGrpId) ?: throw NotFoundException("공통코드 그룹이 없습니다.")
         val findBaseCode = baseCodeRepository.findById(BaseCodeId(saveReq.cdGrpId, saveReq.cdId))
         if (findBaseCode != null) {
-            if (!findBaseCode.isCdGrpNmMatch(saveReq)) {
-                throw CustomizedException("코드그룹 이름이 일치하지 않습니다.", Response.Status.BAD_REQUEST)
-            }
             throw CustomizedException("${saveReq.cdId} 이미 등록되어 있습니다.", Response.Status.CONFLICT)
         }
         baseCodeReader.saveBaseCode(saveReq.cdGrpId, saveReq.toEntity())
@@ -153,7 +148,6 @@ class CommonService {
      * 공통코드 수정
      */
     @Transactional
-//    @CacheInvalidate(cacheName = "cdGrpId")
     fun updateBaseCode(updateReq: BaseCodeUpdateReq): CommonResponse<String> {
         val baseCodeId = updateReq.getId()
         val findBaseCode = baseCodeRepository.findById(baseCodeId)
@@ -168,12 +162,9 @@ class CommonService {
      * 공통코드 삭제
      */
     @Transactional
-//    @CacheInvalidate(cacheName = "cdGrpId")
     fun deleteBaseCode(cdId: String): CommonResponse<String> {
-        val findBaseCode = baseCodeRepository.findBaseCodeByCdId(cdId) ?: throw NotFoundException("$cdId not found")
-
+        val findBaseCode = baseCodeReader.getBaseCodeByCdId(cdId)
         baseCodeRepository.delete(findBaseCode)
-
         return CommonResponse("삭제 성공")
     }
 

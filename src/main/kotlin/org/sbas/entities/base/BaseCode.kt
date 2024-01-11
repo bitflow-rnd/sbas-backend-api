@@ -46,10 +46,6 @@ class BaseCode(
         this.cdSeq = updateReq.cdSeq
         this.rmk = updateReq.rmk
     }
-
-    fun isCdGrpNmMatch(saveReq: BaseCodeSaveReq): Boolean {
-        return saveReq.cdGrpNm == this.cdGrpNm
-    }
 }
 
 @Embeddable

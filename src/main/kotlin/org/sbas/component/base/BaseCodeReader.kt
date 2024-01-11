@@ -40,9 +40,13 @@ class BaseCodeReader(
         }
 
         val list = stringCode?.split(";")?.map { code ->
-            baseCodes.firstOrNull { it.id.cdId == code }?.cdNm ?: throw NotFoundException("")
+            baseCodes.firstOrNull { it.id.cdId == code }?.cdNm ?: throw NotFoundException("해당 코드를 찾을 수 없습니다.")
         }
         return list
+    }
+
+    fun getBaseCodeByCdId(cdId: String): BaseCode {
+        return baseCodeRepository.findByCdId(cdId) ?: throw NotFoundException("해당 코드($cdId)를 찾을 수 없습니다.")
     }
 
     @CacheInvalidate(cacheName = "baseCode")
