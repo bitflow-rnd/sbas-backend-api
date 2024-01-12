@@ -20,9 +20,8 @@ import jakarta.inject.Inject
 import jakarta.transaction.Transactional
 import jakarta.ws.rs.NotFoundException
 import jakarta.ws.rs.core.Response
+import org.sbas.component.base.BaseCodeProcessor
 import org.sbas.component.base.BaseCodeReader
-import org.sbas.entities.base.BaseCodeId
-
 
 /**
  * 사용자를 CRUD하는 서비스 클래스
@@ -32,9 +31,6 @@ class CommonService {
 
     @Inject
     private lateinit var log: Logger
-
-    @Inject
-    private lateinit var baseCodeRepository: BaseCodeRepository
 
     @Inject
     private lateinit var egenCodeRepository: BaseCodeEgenRepository
@@ -54,12 +50,15 @@ class CommonService {
     @Inject
     private lateinit var baseCodeReader: BaseCodeReader
 
+    @Inject
+    private lateinit var baseCodeProcessor: BaseCodeProcessor
+
     /**
      * 공통코드 그룹 목록 조회
      */
     @Transactional
     fun findBaseCdGrpList(): CommonResponse<*> {
-        return CommonResponse(baseCodeRepository.findBaseCodeGrpList())
+        return CommonResponse(baseCodeReader.getBaseCodeGrpList())
     }
 
     /**
@@ -67,13 +66,8 @@ class CommonService {
      */
     @Transactional
     fun saveBaseCodeGrp(saveReq: BaseCodeGrpSaveReq): CommonResponse<String> {
-        val baseCodeGrp = baseCodeReader.getBaseCodeGrp(saveReq.cdGrpId)
-        if (baseCodeGrp != null) {
-            throw CustomizedException("${saveReq.cdGrpId} 이미 등록되어 있습니다.", Response.Status.CONFLICT)
-        }
-        baseCodeReader.saveBaseCode(saveReq.cdGrpId, saveReq.toEntity())
-
-        return CommonResponse("save cdGrpId: ${saveReq.cdGrpId}")
+        baseCodeProcessor.saveBaseCodeGrp(saveReq.cdGrpId, saveReq.toEntity())
+        return CommonResponse("공통코드 그룹(${saveReq.cdGrpId}) 등록 성공")
     }
 
     /**
@@ -81,14 +75,13 @@ class CommonService {
      */
     @Transactional
     fun updateBaseCdGrp(updateReq: BaseCodeGrpUpdateReq): CommonResponse<String> {
-        val baseCodeGrp = baseCodeRepository.findBaseCodeGrp(updateReq.cdGrpId)
-            ?: throw NotFoundException("${updateReq.cdGrpId} not found")
+        val baseCodeGrp = baseCodeReader.getBaseCodeGrp(updateReq.cdGrpId)
 
         // 코드 그룹 항목 수정
         baseCodeGrp.changeBaseCodeGrp(updateReq.cdGrpNm, updateReq.rmk)
 
         // 같은 코드 그룹 ID인 항목들 변경
-        val baseCodes = baseCodeReader.getBaseCodes(updateReq.cdGrpId)
+        val baseCodes = baseCodeReader.getBaseCodeList(updateReq.cdGrpId)
         baseCodes.forEach { it.changeBaseCodeGrpNm(updateReq.cdGrpNm) }
 
         return CommonResponse("수정 성공")
@@ -99,15 +92,15 @@ class CommonService {
      */
     @Transactional
     fun deleteBaseCdGrp(cdGrpId: String): CommonResponse<String> {
-        val baseCodeList = baseCodeReader.getBaseCodes(cdGrpId)
-        val baseCodeGrp = baseCodeRepository.findBaseCodeGrp(cdGrpId) ?: throw NotFoundException("$cdGrpId not found")
+        val baseCodeList = baseCodeReader.getBaseCodeList(cdGrpId)
+        val baseCodeGrp = baseCodeReader.getBaseCodeGrp(cdGrpId)
 
         // cdSeq 가 0이 아닌 항목들이 존재하면 삭제 X
         if (baseCodeList.any { it.cdSeq != 0 }) {
             throw CustomizedException("하위 항목들이 존재합니다.", Response.Status.CONFLICT)
         }
 
-        baseCodeRepository.delete(baseCodeGrp)
+        baseCodeProcessor.removeBaseCode(cdGrpId, baseCodeGrp)
 
         return CommonResponse("삭제 성공")
     }
@@ -117,7 +110,7 @@ class CommonService {
      */
     @Transactional
     fun findBaseCodeList(cdGrpId: String): CommonResponse<List<BaseCodeResponse>> {
-        val baseCodes = baseCodeReader.getBaseCodes(cdGrpId)
+        val baseCodes = baseCodeReader.getBaseCodeList(cdGrpId)
         return toBaseCodeResponse(baseCodes)
     }
 
@@ -135,13 +128,8 @@ class CommonService {
      */
     @Transactional
     fun saveBaseCode(saveReq: BaseCodeSaveReq): CommonResponse<String> {
-        val findBaseCode = baseCodeRepository.findById(BaseCodeId(saveReq.cdGrpId, saveReq.cdId))
-        if (findBaseCode != null) {
-            throw CustomizedException("${saveReq.cdId} 이미 등록되어 있습니다.", Response.Status.CONFLICT)
-        }
-        baseCodeReader.saveBaseCode(saveReq.cdGrpId, saveReq.toEntity())
-
-        return CommonResponse("cdId: ${saveReq.cdId}")
+        baseCodeProcessor.saveBaseCode(saveReq.cdGrpId, saveReq.toEntity())
+        return CommonResponse("공통코드(${saveReq.cdId}) 등록 성공")
     }
 
     /**
@@ -149,12 +137,8 @@ class CommonService {
      */
     @Transactional
     fun updateBaseCode(updateReq: BaseCodeUpdateReq): CommonResponse<String> {
-        val baseCodeId = updateReq.getId()
-        val findBaseCode = baseCodeRepository.findById(baseCodeId)
-            ?: throw NotFoundException("${baseCodeId.cdId} not found")
-
+        val findBaseCode = baseCodeReader.getBaseCodeByCdId(updateReq.cdId)
         findBaseCode.changeBaseCode(updateReq)
-
         return CommonResponse("수정 성공")
     }
 
@@ -164,7 +148,7 @@ class CommonService {
     @Transactional
     fun deleteBaseCode(cdId: String): CommonResponse<String> {
         val findBaseCode = baseCodeReader.getBaseCodeByCdId(cdId)
-        baseCodeRepository.delete(findBaseCode)
+        baseCodeProcessor.removeBaseCode(findBaseCode.id.cdGrpId, findBaseCode)
         return CommonResponse("삭제 성공")
     }
 
@@ -174,7 +158,7 @@ class CommonService {
     @Transactional
     @CacheResult(cacheName = "sido")
     fun findSidoList(): CommonResponse<List<BaseCodeResponse>> {
-        val baseCodes = baseCodeReader.getBaseCodes("SIDO")
+        val baseCodes = baseCodeReader.getBaseCodeList("SIDO")
         return toBaseCodeResponse(baseCodes)
     }
 
@@ -187,7 +171,7 @@ class CommonService {
     fun findGugunList(@CacheKey cdGrpId: String): CommonResponse<List<BaseCodeResponse>> {
         return when {
             cdGrpId.matches(Regex("^(SIDO)\\d+")) -> {
-                val baseCodes = baseCodeReader.getBaseCodes(cdGrpId)
+                val baseCodes = baseCodeReader.getBaseCodeList(cdGrpId)
                 toBaseCodeResponse(baseCodes)
             }
 

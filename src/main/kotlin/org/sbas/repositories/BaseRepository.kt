@@ -11,11 +11,7 @@ import jakarta.ws.rs.NotFoundException
 @ApplicationScoped
 class BaseCodeRepository : PanacheRepositoryBase<BaseCode, BaseCodeId> {
 
-    fun findBaseCodeGrp(cdGrpId: String): BaseCode? {
-        return find("id.cdGrpId = '$cdGrpId' and cdSeq = 0 and id.cdGrpId = id.cdId").firstResult()
-    }
-
-    fun findBaseCodeGrpList(): List<BaseCode> {
+    fun findBaseCodeGrpList(): List<BaseCode>? {
         return find("id.cdGrpId = id.cdId and cdSeq = 0", Sort.by("id.cdGrpId")).list()
     }
 

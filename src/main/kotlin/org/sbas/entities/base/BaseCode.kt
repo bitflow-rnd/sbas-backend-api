@@ -1,6 +1,5 @@
 package org.sbas.entities.base
 
-import org.sbas.dtos.BaseCodeSaveReq
 import org.sbas.dtos.BaseCodeUpdateReq
 import org.sbas.entities.CommonEntity
 import java.io.Serializable

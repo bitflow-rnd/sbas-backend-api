@@ -13,18 +13,18 @@ class BaseCodeReader(
 ) {
 
     fun getBaseCodeGrpList(): List<BaseCode> {
-        return baseCodeRepository.findBaseCodeGrpList()
+        return baseCodeRepository.findBaseCodeGrpList() ?: throw NotFoundException("")
     }
 
     @CacheResult(cacheName = "baseCodeGrp")
     fun getBaseCodeGrp(@CacheKey cdGrpId: String): BaseCode {
-        val baseCodes = baseCodeRepository.findBaseCodeGrpList()
+        val baseCodes = baseCodeRepository.findBaseCodeGrpList() ?: throw NotFoundException("")
         return baseCodes.firstOrNull { baseCode -> baseCode.id.cdGrpId == cdGrpId }
             ?: throw NotFoundException("$cdGrpId 해당하는 코드 그룹이 존재하지 않습니다.")
     }
 
     @CacheResult(cacheName = "baseCode")
-    fun getBaseCodes(@CacheKey cdGrpId: String): List<BaseCode> {
+    fun getBaseCodeList(@CacheKey cdGrpId: String): List<BaseCode> {
         val baseCodes = baseCodeRepository.findAllByCdGrpId(cdGrpId)
         if (baseCodes.isNullOrEmpty()) throw NotFoundException("해당 코드($cdGrpId) 목록이 존재하지 않습니다.")
         return baseCodes
@@ -34,7 +34,7 @@ class BaseCodeReader(
         val completableFuture =
             cache.`as`(CaffeineCache::class.java).getIfPresent<List<BaseCode>>(cdGrpId)
         val baseCodes = if (completableFuture == null) {
-            getBaseCodes(cdGrpId)
+            getBaseCodeList(cdGrpId)
         } else {
             completableFuture.get()
         }
@@ -47,17 +47,5 @@ class BaseCodeReader(
 
     fun getBaseCodeByCdId(cdId: String): BaseCode {
         return baseCodeRepository.findByCdId(cdId) ?: throw NotFoundException("해당 코드($cdId)를 찾을 수 없습니다.")
-    }
-
-    @CacheInvalidate(cacheName = "baseCode")
-    fun saveBaseCode(@CacheKey cdGrpId: String, baseCode: BaseCode): BaseCode {
-        baseCodeRepository.persist(baseCode)
-        return baseCode
-    }
-
-    @CacheInvalidate(cacheName = "baseCode")
-    fun removeBaseCode(@CacheKey cdGrpId: String, baseCode: BaseCode): BaseCode {
-        baseCodeRepository.delete(baseCode)
-        return baseCode
     }
 }
