@@ -8,6 +8,7 @@ data class UserActivityHistoryResponse(
     val ptId: String,
     val ptNm: String,
     val gndr: String,
+    val rrno1: String,
     val age: Int,
     val dstr1Cd: String?,
     val dstr1CdNm: String?,
