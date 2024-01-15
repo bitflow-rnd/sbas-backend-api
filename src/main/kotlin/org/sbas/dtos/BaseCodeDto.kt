@@ -77,11 +77,7 @@ data class BaseCodeUpdateReq(
     @field: Min(value = 1)
     var cdSeq: Int?,
     var rmk: String?,
-) {
-    fun getId(): BaseCodeId {
-        return BaseCodeId(cdGrpId = this.cdGrpId, cdId = this.cdId)
-    }
-}
+)
 
 data class SidoSiGunGuDto(
     var siDoCd: String? = null,

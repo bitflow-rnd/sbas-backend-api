@@ -11,25 +11,15 @@ import jakarta.ws.rs.NotFoundException
 @ApplicationScoped
 class BaseCodeRepository : PanacheRepositoryBase<BaseCode, BaseCodeId> {
 
-    fun findBaseCodeGrp(cdGrpId: String): BaseCode? {
-        return find("id.cdGrpId = '$cdGrpId' and cdSeq = 0 and id.cdGrpId = id.cdId").firstResult()
+    fun findBaseCodeGrpList(): List<BaseCode>? {
+        return find("id.cdGrpId = id.cdId and cdSeq = 0", Sort.by("id.cdGrpId")).list()
     }
 
-    fun findBaseCodeGrpList(): MutableList<Any?> {
-        val query = "select new map(a.id.cdGrpId as cdGrpId, a.cdGrpNm as cdGrpNm, a.rmk as rmk) from BaseCode a " +
-                "where a.id.cdGrpId = a.id.cdId and cdSeq = 0 order by a.id.cdGrpId"
-        return getEntityManager().createQuery(query).resultList
+    fun findAllByCdGrpId(cdGrpId: String): List<BaseCode>? {
+        return find("id.cdGrpId = '$cdGrpId' and cdSeq != 0", Sort.by("cdSeq", "id.cdId")).list()
     }
 
-    fun findBaseCodeByCdGrpId(cdGrpId: String): MutableList<BaseCode> {
-        return find("id.cdGrpId = '$cdGrpId' and cdSeq != 0", Sort.by("cdSeq", "id.cdId")).list().toMutableList()
-    }
-
-    fun findBaseCodeNameByCdId(cdId: String): String? {
-        return find("id.cdId = '$cdId'").singleResult().cdNm
-    }
-
-    fun findBaseCodeByCdId(cdId: String): BaseCode? {
+    fun findByCdId(cdId: String): BaseCode? {
         return find("id.cdId = '$cdId'").firstResult()
     }
 

@@ -22,8 +22,11 @@ data class BdasListDto(
     var chrgInstNm: String?,
     val inhpAsgnYn: String?,
     val ptTypeCd: String,
+    var ptTypeCdNm: String?,
     val svrtTypeCd: String?,
+    var svrtTypeCdNm: String?,
     val undrDsesCd: String?,
+    var undrDsesCdNm: String?,
     val reqBedTypeCd: String?,
     @JsonIgnore
     val admsStatCd: String?,
@@ -37,34 +40,25 @@ data class BdasListDto(
         }
     }
 
-    @JsonProperty("svrtTypeCdNm")
-    private val svrtTypeCdNm = svrtTypeCd?.let { SvrtTypeCd.valueOf(it).cdNm }
-
     private val reqBedTypeCdNm: String?
         get() = reqBedTypeCd?.let { ReqBedTypeCd.valueOf(reqBedTypeCd).cdNm }
 
-    @JsonProperty("tagList")
-    private val tagList: MutableList<String> = emptyList<String>().toMutableList()
+    @get:JsonProperty("tagList")
+    private val tagList: List<String>
+        get() {
+            val list = emptyList<String>().toMutableList()
+            ptTypeCdNm?.let { list.addAll(it.split(";")) }
+            svrtTypeCdNm?.let { list.add(it) }
+            undrDsesCdNm?.let { list.addAll(it.split(";")) }
 
-    @JsonProperty("ptTypeCdNmTagList")
-    private val ptTypeCdNmTagList: MutableList<String> = emptyList<String>().toMutableList()
-
-    init {
-        val splitPtTypeCd = ptTypeCd.split(";")
-        val ptTypeCdNm = splitPtTypeCd.map { PtTypeCd.valueOf(it).cdNm }
-
-        val splitUndrDsesCd = undrDsesCd?.split(";")
-        val undrDsesCdNm = splitUndrDsesCd?.map { UndrDsesCd.valueOf(it).cdNm }
-
-        tagList.addAll(ptTypeCdNm)
-        tagList.add(svrtTypeCdNm!!)
-
-        undrDsesCdNm?.let {
-            tagList.addAll(it)
+            return list
         }
 
-        ptTypeCdNmTagList.addAll(ptTypeCdNm)
-    }
+    @get:JsonProperty("ptTypeCdNmTagList")
+    private val ptTypeCdNmTagList: List<String>?
+        get() {
+            return ptTypeCdNm?.split(";")
+        }
 }
 
 data class BdasList(
