@@ -10,7 +10,6 @@ import org.sbas.repositories.SvrtAnlyRepository
 import org.sbas.repositories.SvrtCollRepository
 import org.sbas.repositories.SvrtPtRepository
 import org.sbas.responses.CommonResponse
-import org.sbas.utils.StringUtils.Companion.getYyyyMmDdWithHyphen
 import jakarta.enterprise.context.ApplicationScoped
 import jakarta.inject.Inject
 import jakarta.transaction.Transactional
@@ -27,11 +26,6 @@ class SvrtService {
     @Inject
     private lateinit var svrtCollRepository: SvrtCollRepository
 
-
-    fun getSvrtAnlyById(id: SvrtAnlyId): SvrtAnly? {
-        return svrtAnlyRepository.findById(id)
-    }
-
     fun getLastSvrtAnlyByPtId(ptId: String): CommonResponse<*> {
         return CommonResponse(svrtAnlyRepository.getSvrtAnlyByPtId(ptId))
     }
@@ -39,16 +33,6 @@ class SvrtService {
     @Transactional
     fun saveSvrtAnly(anly: SvrtAnly) {
         svrtAnlyRepository.persist(anly)
-    }
-
-    fun deleteSvrtAnlyById(id: SvrtAnlyId): Boolean {
-        return svrtAnlyRepository.deleteById(id)
-    }
-
-
-    fun getSvrtCollById(id: SvrtCollId): SvrtColl? {
-        System.out.println(5)
-        return svrtCollRepository.findById(id)
     }
 
     fun getSvrtCollByPidAndMsreDt(pid: String): List<SvrtColl>? {
@@ -109,14 +93,6 @@ class SvrtService {
 
     fun getLastAnlySeqValue(): Int? {
         return svrtAnlyRepository.getLastAnlySeqValue()
-    }
-
-    fun saveSvrtColl(coll: SvrtColl) {
-        svrtCollRepository.persist(coll)
-    }
-
-    fun deleteSvrtCollById(id: SvrtCollId): Boolean {
-        return svrtCollRepository.deleteById(id)
     }
 
 }
