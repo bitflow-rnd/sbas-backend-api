@@ -60,9 +60,7 @@ class SvrtService {
      */
     fun getSvrtRequestData(svrtCollList: List<SvrtColl>): String {
         val requestMap = mapOf(
-            "ALT" to mutableMapOf<String, Float>(),
-            "AST" to mutableMapOf(),
-            "BUN" to mutableMapOf(),
+            "BUN" to mutableMapOf<String, Float>(),
             "Creatinine" to mutableMapOf(),
             "Hemoglobin" to mutableMapOf(),
             "LDH" to mutableMapOf(),
@@ -78,13 +76,12 @@ class SvrtService {
             "DBP" to mutableMapOf(),
             "PULSE" to mutableMapOf(),
             "SBP" to mutableMapOf(),
-            "SPO2" to mutableMapOf()
+            "SPO2" to mutableMapOf(),
+            "Oxygen apply" to mutableMapOf<String, String>()
         )
         var msreDt: String
         svrtCollList.forEach {
-            msreDt = getYyyyMmDdWithHyphen(it.id!!.msreDt)
-            (requestMap["ALT"] as HashMap<String, Float>)[msreDt] = it.alt!!.toFloat()
-            (requestMap["AST"] as HashMap<String, Float>)[msreDt] = it.ast!!.toFloat()
+            msreDt = it.id!!.msreDt
             (requestMap["BUN"] as HashMap<String, Float>)[msreDt] = it.bun!!.toFloat()
             (requestMap["Creatinine"] as HashMap<String, Float>)[msreDt] = it.cre!!.toFloat()
             (requestMap["Hemoglobin"] as HashMap<String, Float>)[msreDt] = it.hem!!.toFloat()
@@ -102,6 +99,7 @@ class SvrtService {
             (requestMap["PULSE"] as HashMap<String, Float>)[msreDt] = it.hr!!.toFloat()
             (requestMap["SBP"] as HashMap<String, Float>)[msreDt] = it.sbp!!.toFloat()
             (requestMap["SPO2"] as HashMap<String, Float>)[msreDt] = it.spo2!!.toFloat()
+            (requestMap["Oxygen apply"] as HashMap<String, String>)[msreDt] = it.oxygen!!.toString()
 
         }
         val json = ObjectMapper().writeValueAsString(requestMap)
