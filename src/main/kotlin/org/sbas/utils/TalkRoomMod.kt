@@ -18,8 +18,6 @@ import jakarta.inject.Inject
 import jakarta.websocket.*
 import jakarta.websocket.server.PathParam
 import jakarta.websocket.server.ServerEndpoint
-import org.eclipse.microprofile.config.inject.ConfigProperty
-
 
 @ServerEndpoint("/chat-rooms/room/{tkrmId}")
 class TalkRoomMod {
@@ -103,12 +101,13 @@ class TalkRoomMod {
                 it.session.asyncRemote.sendText(JsonObject.mapFrom(addMsg).toString())
             }
 
-        // TODO 하나의 기기로 여러 아이디 로그인 한 경우 알림이 여러번 옴, 자신 제외
-        firebaseService.sendMessageMultiDevice(userId, message, userId)
-
-        otherUsers.forEach{
-            session.asyncRemote.sendText(it.id?.userId)
-        }
+//        // TODO 하나의 기기로 여러 아이디 로그인 한 경우 알림이 여러번 옴, 자신 제외
+          // TODO 예외 발생
+//        firebaseService.sendMessageMultiDevice(userId, message, userId)
+//
+//        otherUsers.forEach{
+//            session.asyncRemote.sendText(it.id?.userId)
+//        }
 
     }
 
