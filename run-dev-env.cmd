@@ -1,0 +1,1 @@
+./gradlew --console=plain quarkusDev

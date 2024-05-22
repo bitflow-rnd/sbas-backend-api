@@ -18,6 +18,7 @@ import jakarta.inject.Inject
 import jakarta.websocket.*
 import jakarta.websocket.server.PathParam
 import jakarta.websocket.server.ServerEndpoint
+import org.eclipse.microprofile.config.inject.ConfigProperty
 
 
 @ServerEndpoint("/chat-rooms/room/{tkrmId}")
@@ -49,6 +50,7 @@ class TalkRoomMod {
 
     @OnOpen
     fun onOpen(session: Session, @PathParam("tkrmId") tkrmId: String) {
+
         this.session = session
         this.tkrmId = tkrmId
 
@@ -111,8 +113,8 @@ class TalkRoomMod {
     }
 
     @OnClose
-    fun onClose(session: Session, @PathParam("userId") userId: String) {
-        chatSockets.remove(userId) // WebSocket 연결을 Map에서 제거
+    fun onClose(session: Session, @PathParam("tkrmId") tkrmId: String) {
+        chatSockets.remove(tkrmId) // WebSocket 연결을 Map에서 제거
     }
 
     private fun updateTalkMsg(tkrmId: String) {
@@ -129,7 +131,7 @@ class TalkRoomMod {
         val talkUsers: List<TalkUser>
 
         runBlocking(Dispatchers.IO) {
-            talkRoomResponse = talkRoomRepository.findTalkRoomResponseByTkrmId(tkrmId)
+            talkRoomResponse = talkRoomRepository.findTalkRoomResponseByTkrmId(tkrmId, userId)
             talkUsers = talkUserRepository.findUsersByTkrmId(tkrmId)
         }
 

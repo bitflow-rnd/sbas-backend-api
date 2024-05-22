@@ -6,7 +6,7 @@ fun BdasReqSaveRequest.convertToActivityHistory(userId: String): UserActivityHis
     return UserActivityHistory(
         userId = userId,
         ptId = this.svrInfo.ptId,
-        activityDetail = "병상요청",
+        activityDetail = "BAST0003",
     )
 }
 
@@ -14,7 +14,7 @@ fun BdasReqAprvSaveRequest.convertToActivityHistory(userId: String): UserActivit
     return UserActivityHistory(
         userId = userId,
         ptId = this.ptId,
-        activityDetail = if (this.aprvYn == "Y") "요청승인" else "배정불가"
+        activityDetail = if (this.aprvYn == "Y") "BAST0004" else "BAST0008"
     )
 }
 
@@ -22,7 +22,7 @@ fun BdasAprvSaveRequest.convertToActivityHistory(userId: String): UserActivityHi
     return UserActivityHistory(
         userId = userId,
         ptId = this.ptId,
-        activityDetail = if (this.aprvYn == "Y") "배정승인" else "배정불가"
+        activityDetail = if (this.aprvYn == "Y") "BAST0005" else "BAST0008"
     )
 }
 

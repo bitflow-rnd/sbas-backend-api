@@ -16,7 +16,7 @@ import jakarta.validation.constraints.Size
 class TalkRoom(
     @Id
     @Column(name = "tkrm_id", nullable = false, length = 10)
-    var tkrmId: String? = null, // 대화방 ID
+    var tkrmId: String, // 대화방 ID
 
     @Size(max = 200)
     @NotNull
@@ -37,4 +37,6 @@ class TalkRoom(
     @NotNull
     @Column(name = "cret_user_id", nullable = false, length = 10)
     var cretUserId: String? = null,
-) : CommonEntity()
+) : CommonEntity() {
+    constructor() : this("", null, null, null, null)
+}

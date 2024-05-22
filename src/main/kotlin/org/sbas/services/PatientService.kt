@@ -95,7 +95,7 @@ class PatientService {
             rrno1 = dto.rrno1,
             rrno2 = dto.rrno2,
         )
-        val baseCode = dto.dstr2Cd?.let { baseCodeRepository.findBaseCodeByCdId(it) }
+        val baseCode = dto.dstr2Cd?.let { baseCodeRepository.findByCdId(it) }
 
         val infoPtResponse = findInfoPt?.let {
             InfoPtCheckResponse(
@@ -161,7 +161,7 @@ class PatientService {
 
         val bedStatCd: String = bdasReq?.bedStatCd ?: "BAST0001"
 
-        val baseCode = infoPt.dstr2Cd?.let { baseCodeRepository.findBaseCodeByCdId(it) }
+        val baseCode = infoPt.dstr2Cd?.let { baseCodeRepository.findByCdId(it) }
         val infoPtBasicInfo = InfoPtBasicInfo(
             ptId = infoPt.ptId,
             ptNm = infoPt.ptNm,
@@ -306,6 +306,7 @@ class PatientService {
     fun readEpidReport(attcId: String): CommonResponse<*> {
         val baseAttc = baseAttcRepository.findByAttcId(attcId) ?: throw NotFoundException("$attcId not found")
 
+        log.debug("readEpidReport attcId >>>>>>>>> $attcId")
         val url = URL("$serverdomain/${baseAttc.uriPath}/${baseAttc.fileNm}")
 
         return try {

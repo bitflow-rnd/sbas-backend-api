@@ -6,7 +6,6 @@ import io.quarkus.cache.CacheResult
 import org.jboss.logging.Logger
 import org.jboss.resteasy.reactive.RestResponse
 import org.jboss.resteasy.reactive.multipart.FileUpload
-import org.json.JSONException
 import org.json.JSONObject
 import org.sbas.constants.SbasConst
 import org.sbas.dtos.info.*
@@ -142,7 +141,7 @@ class OrganiztnService {
     fun regFireStatn(fireStatnSaveReq: FireStatnSaveReq): CommonResponse<String> {
         val fireStatnInstId = StringUtils.incrementCode("FS", 8, infoInstRepository.findLatestFireStatInstId())
 
-        val baseCode = baseCodeRepository.findBaseCodeByCdId(fireStatnSaveReq.dstr1Cd)
+        val baseCode = baseCodeRepository.findByCdId(fireStatnSaveReq.dstr1Cd)
         val dstr2CdNm = baseCodeRepository.getdstr2CdNm(fireStatnSaveReq.dstr1Cd, fireStatnSaveReq.dstr2Cd)
 
         val fullAddr = baseCode!!.cdNm + dstr2CdNm + fireStatnSaveReq.detlAddr

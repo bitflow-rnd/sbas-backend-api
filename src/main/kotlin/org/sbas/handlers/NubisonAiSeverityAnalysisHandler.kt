@@ -9,7 +9,6 @@ import org.sbas.services.SvrtService
 import org.sbas.utils.StringUtils
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
-import java.util.*
 import jakarta.enterprise.context.ApplicationScoped
 import jakarta.inject.Inject
 
@@ -52,17 +51,16 @@ class NubisonAiSeverityAnalysisHandler {
             val currentAnlySeq = (svrtService.getLastAnlySeqValue() ?: 0) + 1
 
             /**
-             * Response format:
              * model_name: 모델명
              * model_version: 모델 버전
              * id: 요청 구분 값
              * parameters: None
-             * outputs[]: 모델 추론 값 구조. +0일, +1일, +2일, +3일 추론 값이 리스트에 순서대로 들어있습니다.
-             * name: row 날짜 기준. +0day | +1day | +2day | +3day
-             * shape: 추론 값의 길이. min(<입력한 환자의 데이터 날짜 수>, 4)
-             * datatype: 추론 값의 데이터 형. FP32
+             * outputs[]: Output 은 모델 추론값 구조. 기존 Outputs은 환자 데이터의 현 시점을 기준으로 현 시점까지의 모든 모델의 평균과 표준편차 그리고 이후 예측에대한 평균과 표준편차를 표시, 변경된 Output 은 CovSF
+             * name: CovSF 표시
+             * shape: 추론 값의 길이.
+             * datatype: 추론 값의 데이터 형. FP64
              * parameters: None 무시
-             * data[]: 모델 추론 값 리스트. 입력한 값 날짜 순으로 출력. ex) 2022-03-21, 2022-03-22, 2022-03-22, 2022-03-24
+             * data[]: CovSF 값
              */
             val response = nubisonAiSeverityAnalysisRestClient.infer(requestBody)
             val dateFormat = DateTimeFormatter.ofPattern("yyyyMMdd")
@@ -72,7 +70,8 @@ class NubisonAiSeverityAnalysisHandler {
                             ptId = value.id!!.ptId,
                             hospId = value.id!!.hospId,
                             rgstSeq = value.id!!.rgstSeq,
-                            msreDt = value.id!!.msreDt,
+                            msreDt = LocalDate.parse(value.id!!.msreDt, DateTimeFormatter.ofPattern("yyyy.M.d"))
+                                .format(dateFormat),
                             collSeq = requestRowIndex + 1, // +1 is to start from 1, not from 0
                             anlyDt = StringUtils.getYyyyMmDd(),
                             anlySeq = currentAnlySeq
@@ -81,35 +80,11 @@ class NubisonAiSeverityAnalysisHandler {
                         collDt = value.rsltDt,
                         collTm = value.rsltTm,
                         anlyTm = StringUtils.getHhMmSs(),
-                        prdtDt = LocalDate.parse(value.id!!.msreDt, dateFormat)
+                        prdtDt = LocalDate.parse(value.id!!.msreDt, DateTimeFormatter.ofPattern("yyyy.M.d"))
                             .format(dateFormat),
-                        svrtProbMean = "%.3f".format(response.outputs[0].data[requestRowIndex]),
-                        svrtProbStd = "%.3f".format(response.outputs[1].data[requestRowIndex])
+                        CovSF = "%.3f".format(response.outputs[0].data[requestRowIndex])
                     )
                     svrtService.saveSvrtAnly(svrtAnlyRow)
-                if (requestRowIndex == (svrtCollList.size - 1)) {
-                    for (plusIndex in 1..3) {
-                        val svrtAnlyRow = SvrtAnly(
-                            SvrtAnlyId(
-                                ptId = value.id!!.ptId,
-                                hospId = value.id!!.hospId,
-                                rgstSeq = value.id!!.rgstSeq,
-                                msreDt = value.id!!.msreDt,
-                                collSeq = requestRowIndex + plusIndex + 1, // +1 is to start from 1, not from 0
-                                anlyDt = StringUtils.getYyyyMmDd(),
-                                anlySeq = currentAnlySeq
-                            ),
-                            pid = pid,
-                            collDt = value.rsltDt,
-                            collTm = value.rsltTm,
-                            anlyTm = StringUtils.getHhMmSs(),
-                            prdtDt = LocalDate.parse(value.id!!.msreDt, dateFormat).plusDays(plusIndex.toLong()).format(dateFormat),
-                            svrtProbMean = "%.3f".format(response.outputs[0].data[requestRowIndex + plusIndex]),
-                            svrtProbStd = "%.3f".format(response.outputs[1].data[requestRowIndex + plusIndex])
-                        )
-                        svrtService.saveSvrtAnly(svrtAnlyRow)
-                    }
-                }
             }
             return response
         } else {

@@ -10,7 +10,6 @@ import org.sbas.repositories.SvrtAnlyRepository
 import org.sbas.repositories.SvrtCollRepository
 import org.sbas.repositories.SvrtPtRepository
 import org.sbas.responses.CommonResponse
-import org.sbas.utils.StringUtils.Companion.getYyyyMmDdWithHyphen
 import jakarta.enterprise.context.ApplicationScoped
 import jakarta.inject.Inject
 import jakarta.transaction.Transactional
@@ -27,11 +26,6 @@ class SvrtService {
     @Inject
     private lateinit var svrtCollRepository: SvrtCollRepository
 
-
-    fun getSvrtAnlyById(id: SvrtAnlyId): SvrtAnly? {
-        return svrtAnlyRepository.findById(id)
-    }
-
     fun getLastSvrtAnlyByPtId(ptId: String): CommonResponse<*> {
         return CommonResponse(svrtAnlyRepository.getSvrtAnlyByPtId(ptId))
     }
@@ -39,16 +33,6 @@ class SvrtService {
     @Transactional
     fun saveSvrtAnly(anly: SvrtAnly) {
         svrtAnlyRepository.persist(anly)
-    }
-
-    fun deleteSvrtAnlyById(id: SvrtAnlyId): Boolean {
-        return svrtAnlyRepository.deleteById(id)
-    }
-
-
-    fun getSvrtCollById(id: SvrtCollId): SvrtColl? {
-        System.out.println(5)
-        return svrtCollRepository.findById(id)
     }
 
     fun getSvrtCollByPidAndMsreDt(pid: String): List<SvrtColl>? {
@@ -60,9 +44,7 @@ class SvrtService {
      */
     fun getSvrtRequestData(svrtCollList: List<SvrtColl>): String {
         val requestMap = mapOf(
-            "ALT" to mutableMapOf<String, Float>(),
-            "AST" to mutableMapOf(),
-            "BUN" to mutableMapOf(),
+            "BUN" to mutableMapOf<String, Float>(),
             "Creatinine" to mutableMapOf(),
             "Hemoglobin" to mutableMapOf(),
             "LDH" to mutableMapOf(),
@@ -78,13 +60,12 @@ class SvrtService {
             "DBP" to mutableMapOf(),
             "PULSE" to mutableMapOf(),
             "SBP" to mutableMapOf(),
-            "SPO2" to mutableMapOf()
+            "SPO2" to mutableMapOf(),
+            "Oxygen apply" to mutableMapOf<String, String>()
         )
         var msreDt: String
         svrtCollList.forEach {
-            msreDt = getYyyyMmDdWithHyphen(it.id!!.msreDt)
-            (requestMap["ALT"] as HashMap<String, Float>)[msreDt] = it.alt!!.toFloat()
-            (requestMap["AST"] as HashMap<String, Float>)[msreDt] = it.ast!!.toFloat()
+            msreDt = it.id!!.msreDt
             (requestMap["BUN"] as HashMap<String, Float>)[msreDt] = it.bun!!.toFloat()
             (requestMap["Creatinine"] as HashMap<String, Float>)[msreDt] = it.cre!!.toFloat()
             (requestMap["Hemoglobin"] as HashMap<String, Float>)[msreDt] = it.hem!!.toFloat()
@@ -102,6 +83,7 @@ class SvrtService {
             (requestMap["PULSE"] as HashMap<String, Float>)[msreDt] = it.hr!!.toFloat()
             (requestMap["SBP"] as HashMap<String, Float>)[msreDt] = it.sbp!!.toFloat()
             (requestMap["SPO2"] as HashMap<String, Float>)[msreDt] = it.spo2!!.toFloat()
+            (requestMap["Oxygen apply"] as HashMap<String, String>)[msreDt] = it.oxygen!!.toString()
 
         }
         val json = ObjectMapper().writeValueAsString(requestMap)
@@ -111,14 +93,6 @@ class SvrtService {
 
     fun getLastAnlySeqValue(): Int? {
         return svrtAnlyRepository.getLastAnlySeqValue()
-    }
-
-    fun saveSvrtColl(coll: SvrtColl) {
-        svrtCollRepository.persist(coll)
-    }
-
-    fun deleteSvrtCollById(id: SvrtCollId): Boolean {
-        return svrtCollRepository.deleteById(id)
     }
 
 }
