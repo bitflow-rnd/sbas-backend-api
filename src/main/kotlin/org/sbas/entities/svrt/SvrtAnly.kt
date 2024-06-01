@@ -28,8 +28,11 @@ class SvrtAnly(
     @Column(name = "prdt_dt", length = 8)
     var prdtDt: String? = null, // 예측 날짜
 
-    @Column(name = "CovSF", length = 6)
-    var CovSF: String? = null, // 중증 확률
+    @Column(name = "svrt_prob_mean", length = 6)
+    var svrtProbMean: String? = null, // 중증 확률
+
+    @Column(name = "svrt_prob_std", length = 6)
+    var svrtProbStd: String? = null, // 중증 확률
 
 
 ) : CommonEntity()

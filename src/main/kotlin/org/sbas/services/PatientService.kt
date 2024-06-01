@@ -306,7 +306,6 @@ class PatientService {
     fun readEpidReport(attcId: String): CommonResponse<*> {
         val baseAttc = baseAttcRepository.findByAttcId(attcId) ?: throw NotFoundException("$attcId not found")
 
-        log.debug("readEpidReport attcId >>>>>>>>> $attcId")
         val url = URL("$serverdomain/${baseAttc.uriPath}/${baseAttc.fileNm}")
 
         return try {

@@ -22,6 +22,7 @@ import jakarta.enterprise.event.Observes
 import jakarta.inject.Inject
 import jakarta.transaction.Transactional
 import jakarta.ws.rs.NotFoundException
+import org.eclipse.microprofile.config.inject.ConfigProperty
 
 @ApplicationScoped
 class FirebaseService {
@@ -29,22 +30,49 @@ class FirebaseService {
     @Inject
     private lateinit var log: Logger
 
+    @ConfigProperty(name = "firebase.account.file.path")
+    private lateinit var FIREBASE_ACCOUNT_PATH: String
+
+    @ConfigProperty(name = "firebase.project.id")
+    private lateinit var FIREBASE_PROJECT_ID: String
+
     @Inject
     private lateinit var userRepository: InfoUserRepository
 
     @Inject
     private lateinit var userFcmTokenRepository: UserFcmTokenRepository
 
-    fun onStart(@Observes ev: StartupEvent) {
+    /*
+    fun getApp(): FirebaseApp {
         if (FirebaseApp.getApps().isEmpty()) {
             val serviceAccount =
-                FileInputStream("C:\\www\\dev.smartbas.org\\public\\firebase\\serviceAccountKey.json")
+            FileInputStream("C:\\www\\dev.smartbas.org\\public\\firebase\\serviceAccountKey.json")
             val options = FirebaseOptions.builder()
-                .setCredentials(GoogleCredentials.fromStream(serviceAccount))
-                .setStorageBucket("smart-bed-allocation-system")
-                .build()
+            .setCredentials(GoogleCredentials.fromStream(serviceAccount))
+            .setStorageBucket("smart-bed-allocation-system")
+            .build()
 
             FirebaseApp.initializeApp(options)
+        }
+    }
+    */
+
+    fun onStart(@Observes ev: StartupEvent) {
+
+        if (FirebaseApp.getApps().isEmpty()) {
+            try {
+                val loader = Thread.currentThread().getContextClassLoader()
+                val serviceAccount = loader.getResourceAsStream(FIREBASE_ACCOUNT_PATH)
+                val credentials = GoogleCredentials.fromStream(serviceAccount)
+                log.debug("cred $credentials")
+                val options = FirebaseOptions.builder()
+                    .setCredentials(credentials)
+                    .setProjectId(FIREBASE_PROJECT_ID)
+                    .build()
+                FirebaseApp.initializeApp(options)
+            } catch (e: Exception) {
+                log.error("err ${e.localizedMessage}")
+            }
         }
     }
 
