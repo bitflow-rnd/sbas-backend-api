@@ -1,2 +1,2 @@
 REM ./gradlew --console=plain quarkusRun
-gradlew quarkusDev -Dquarkus.profile=dev -Ddebug=5009
+gradlew quarkusDev -Dquarkus.profile=dev
