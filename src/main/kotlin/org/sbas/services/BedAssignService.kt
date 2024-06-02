@@ -12,6 +12,7 @@ import org.sbas.component.base.BaseCodeReader
 import org.sbas.constants.enums.BedStatCd
 import org.sbas.constants.enums.TimeLineStatCd
 import org.sbas.dtos.bdas.*
+import org.sbas.entities.bdas.BdasAprvId
 import org.sbas.entities.bdas.BdasReqId
 import org.sbas.handlers.GeocodingHandler
 import org.sbas.repositories.*
@@ -269,9 +270,9 @@ class BedAssignService {
   @Transactional
   fun asgnConfirm(saveRequest: BdasAprvSaveRequest): CommonResponse<*> {
 
-    val findBdasReq = bdasReqRepository.findByPtIdAndBdasSeq(saveRequest.ptId, saveRequest.bdasSeq)
+    val findBdasReq  = bdasReqRepository.findByPtIdAndBdasSeq(saveRequest.ptId, saveRequest.bdasSeq)
     val findInfoUser = infoUserRepository.findByUserId(jwt.name) ?: throw NotFoundException("user not found")
-    val findInfoPt =
+    val findInfoPt   =
       infoPtRepository.findById(saveRequest.ptId) ?: throw NotFoundException("${saveRequest.ptId} not found")
     val bdasReqAprvs = bdasReqAprvRepository.findAllByPtIdAndBdasSeq(saveRequest.ptId, saveRequest.bdasSeq)
 
@@ -280,9 +281,13 @@ class BedAssignService {
     } else {
       if (saveRequest.hospId == "INST000000") {
         // Todo : 시연용 임시. 전산이 승인하는 경우. 아무 병원정보로 승인처리
+        if (saveRequest.asgnReqSeq==0) {
+          saveRequest.asgnReqSeq = 1
+        }
+        saveRequest.hospId = bdasReqAprvs.first().reqHospId!!
       } else {
         bdasReqAprvs.firstOrNull {
-          log.debug("${it.id.asgnReqSeq}/${saveRequest.asgnReqSeq} <=>> ${it.reqHospId}/${saveRequest.hospId}")
+          log.debug("${it.id.asgnReqSeq}/${saveRequest.asgnReqSeq} = ${it.reqHospId}/${saveRequest.hospId}")
           it.id.asgnReqSeq == saveRequest.asgnReqSeq && it.reqHospId == saveRequest.hospId
         } ?: throw CustomizedException("배정 요청 순번(asgnReqSeq) 및 병원 ID(hospId)가 일치하지 않습니다.", Response.Status.BAD_REQUEST)
       }
@@ -377,7 +382,7 @@ class BedAssignService {
 
   @Transactional
   fun confirmHosp(saveRequest: BdasAdmsSaveRequest): CommonResponse<String> {
-    val findBdasReq = bdasReqRepository.findByPtIdAndBdasSeq(saveRequest.ptId, saveRequest.bdasSeq)
+    val findBdasReq  = bdasReqRepository.findByPtIdAndBdasSeq(saveRequest.ptId, saveRequest.bdasSeq)
     val findBdasAdms = bdasAdmsRepository.findByIdOrderByAdmsSeqDesc(saveRequest.ptId, saveRequest.bdasSeq)
 
     val entity = if (findBdasAdms == null) {

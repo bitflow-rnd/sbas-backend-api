@@ -28,7 +28,7 @@ class BdasAdms(
     @Column(name = "spcl_nm", length = 10)
     var spclNm: String? = null, // 담당의 이름
 
-    @Column(name = "chrg_telno", length = 12)
+    @Column(name = "chrg_telno", length = 14)
     var chrgTelno: String? = null, // 담당 전화번호
 
     @Column(name = "adms_dt", length = 8)
