@@ -2,7 +2,14 @@ package org.sbas.services
 
 import io.quarkus.cache.CacheKey
 import io.quarkus.cache.CacheResult
+import jakarta.enterprise.context.ApplicationScoped
+import jakarta.inject.Inject
+import jakarta.transaction.Transactional
+import jakarta.ws.rs.NotFoundException
+import jakarta.ws.rs.core.Response
 import org.jboss.logging.Logger
+import org.sbas.component.base.BaseCodeProcessor
+import org.sbas.component.base.BaseCodeReader
 import org.sbas.dtos.*
 import org.sbas.dtos.info.*
 import org.sbas.entities.base.BaseCode
@@ -15,13 +22,6 @@ import org.sbas.responses.terms.AgreeTermsListResponse
 import org.sbas.responses.terms.TermsDetailResponse
 import org.sbas.utils.CustomizedException
 import org.sbas.utils.StringUtils
-import jakarta.enterprise.context.ApplicationScoped
-import jakarta.inject.Inject
-import jakarta.transaction.Transactional
-import jakarta.ws.rs.NotFoundException
-import jakarta.ws.rs.core.Response
-import org.sbas.component.base.BaseCodeProcessor
-import org.sbas.component.base.BaseCodeReader
 
 /**
  * 사용자를 CRUD하는 서비스 클래스

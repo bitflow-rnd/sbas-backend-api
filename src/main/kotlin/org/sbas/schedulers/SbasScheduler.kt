@@ -2,13 +2,14 @@ package org.sbas.schedulers
 
 import io.quarkus.scheduler.Scheduled
 import io.quarkus.scheduler.Scheduled.Schedules
-import kotlinx.coroutines.*
+import jakarta.enterprise.context.ApplicationScoped
+import jakarta.inject.Inject
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
 import org.jboss.logging.Logger
 import org.sbas.restparameters.EgenApiEmrrmRltmUsefulSckbdInfoParams
 import org.sbas.services.EgenService
-import jakarta.enterprise.context.ApplicationScoped
-import jakarta.enterprise.context.control.ActivateRequestContext
-import jakarta.inject.Inject
 
 /**
  * 시간 주기적인 반복작업 수행

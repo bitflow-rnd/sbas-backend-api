@@ -1,9 +1,8 @@
 package org.sbas.entities.bdas
 
-import org.sbas.constants.enums.AdmsStatCd
+import jakarta.persistence.*
 import org.sbas.entities.CommonEntity
 import java.io.Serializable
-import jakarta.persistence.*
 
 /**
  * 입원 정보
@@ -29,7 +28,7 @@ class BdasAdms(
     @Column(name = "spcl_nm", length = 10)
     var spclNm: String? = null, // 담당의 이름
 
-    @Column(name = "chrg_telno", length = 12)
+    @Column(name = "chrg_telno", length = 14)
     var chrgTelno: String? = null, // 담당 전화번호
 
     @Column(name = "adms_dt", length = 8)

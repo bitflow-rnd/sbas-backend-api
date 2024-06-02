@@ -1,10 +1,10 @@
 package org.sbas.dtos.info
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties
+import jakarta.ws.rs.QueryParam
 import org.sbas.entities.info.InfoHosp
 import org.sbas.utils.annotation.NoArg
 import java.time.Instant
-import jakarta.ws.rs.QueryParam
 
 @NoArg
 @JsonIgnoreProperties(ignoreUnknown = true)

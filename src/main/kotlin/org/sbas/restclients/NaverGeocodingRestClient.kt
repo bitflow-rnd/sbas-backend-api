@@ -1,13 +1,13 @@
 package org.sbas.restclients
 
+import jakarta.ws.rs.GET
+import jakarta.ws.rs.Path
+import jakarta.ws.rs.QueryParam
 import org.eclipse.microprofile.rest.client.annotation.RegisterClientHeaders
 import org.eclipse.microprofile.rest.client.inject.RegisterRestClient
 import org.sbas.restresponses.NaverGeocodingApiResponse
 import org.sbas.restresponses.NaverReverseGeocodingApiResponse
 import org.sbas.utils.headerFactory.RequestNaverGeocodingHeaderFactory
-import jakarta.ws.rs.GET
-import jakarta.ws.rs.Path
-import jakarta.ws.rs.QueryParam
 
 /**
  * Naver Sens 메시지 API를 처리하는 클라이언트

@@ -1,5 +1,8 @@
 package org.sbas.handlers
 
+import jakarta.enterprise.context.ApplicationScoped
+import jakarta.inject.Inject
+import jakarta.ws.rs.core.Response
 import org.eclipse.microprofile.config.inject.ConfigProperty
 import org.jboss.logging.Logger
 import org.jboss.resteasy.reactive.multipart.FileUpload
@@ -10,9 +13,6 @@ import java.io.File
 import java.nio.file.Files
 import java.nio.file.StandardCopyOption
 import java.time.Instant
-import jakarta.enterprise.context.ApplicationScoped
-import jakarta.inject.Inject
-import jakarta.ws.rs.core.Response
 import kotlin.io.path.readBytes
 
 @ApplicationScoped

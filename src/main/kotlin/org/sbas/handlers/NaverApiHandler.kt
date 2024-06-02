@@ -1,6 +1,8 @@
 package org.sbas.handlers
 
 import io.netty.util.internal.StringUtil
+import jakarta.enterprise.context.ApplicationScoped
+import jakarta.inject.Inject
 import org.eclipse.microprofile.config.inject.ConfigProperty
 import org.eclipse.microprofile.rest.client.inject.RestClient
 import org.jboss.logging.Logger
@@ -14,9 +16,6 @@ import org.sbas.restparameters.NaverOcrApiParams
 import org.sbas.restparameters.OcrApiImagesParam
 import org.sbas.restresponses.FieldName
 import org.sbas.utils.StringUtils
-import jakarta.enterprise.context.ApplicationScoped
-import jakarta.inject.Inject
-import jakarta.ws.rs.NotFoundException
 
 
 /**

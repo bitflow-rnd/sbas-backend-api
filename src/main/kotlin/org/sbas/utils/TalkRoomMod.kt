@@ -2,7 +2,16 @@ package org.sbas.utils
 
 import com.google.gson.Gson
 import io.vertx.core.json.JsonObject
-import kotlinx.coroutines.*
+import jakarta.inject.Inject
+import jakarta.websocket.OnClose
+import jakarta.websocket.OnMessage
+import jakarta.websocket.OnOpen
+import jakarta.websocket.Session
+import jakarta.websocket.server.PathParam
+import jakarta.websocket.server.ServerEndpoint
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.withContext
 import org.jboss.logging.Logger
 import org.json.JSONArray
 import org.sbas.dtos.AttcIdResponse
@@ -14,10 +23,7 @@ import org.sbas.repositories.TalkRoomRepository
 import org.sbas.repositories.TalkUserRepository
 import org.sbas.responses.messages.TalkRoomResponse
 import org.sbas.services.FirebaseService
-import jakarta.inject.Inject
-import jakarta.websocket.*
-import jakarta.websocket.server.PathParam
-import jakarta.websocket.server.ServerEndpoint
+
 
 @ServerEndpoint("/chat-rooms/room/{tkrmId}")
 class TalkRoomMod {
@@ -101,13 +107,12 @@ class TalkRoomMod {
                 it.session.asyncRemote.sendText(JsonObject.mapFrom(addMsg).toString())
             }
 
-//        // TODO 하나의 기기로 여러 아이디 로그인 한 경우 알림이 여러번 옴, 자신 제외
-          // TODO 예외 발생
-//        firebaseService.sendMessageMultiDevice(userId, message, userId)
-//
-//        otherUsers.forEach{
-//            session.asyncRemote.sendText(it.id?.userId)
-//        }
+        // TODO 하나의 기기로 여러 아이디 로그인 한 경우 알림이 여러번 옴, 자신 제외
+        firebaseService.sendMessageMultiDevice(userId, message, userId)
+
+        otherUsers.forEach{
+            session.asyncRemote.sendText(it.id?.userId)
+        }
 
     }
 

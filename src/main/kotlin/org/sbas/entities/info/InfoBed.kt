@@ -1,12 +1,12 @@
 package org.sbas.entities.info
 
-import org.sbas.entities.CommonEntity
-import java.io.Serial
-import java.io.Serializable
 import jakarta.persistence.Column
 import jakarta.persistence.Entity
 import jakarta.persistence.Id
 import jakarta.persistence.Table
+import org.sbas.entities.CommonEntity
+import java.io.Serial
+import java.io.Serializable
 
 @Entity
 @Table(name = "info_bed")

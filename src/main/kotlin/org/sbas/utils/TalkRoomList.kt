@@ -1,15 +1,6 @@
 package org.sbas.utils
 
 import io.vertx.core.json.JsonObject
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.runBlocking
-import org.jboss.logging.Logger
-import org.json.JSONArray
-import org.sbas.entities.talk.TalkUser
-import org.sbas.repositories.TalkRoomRepository
-import org.sbas.repositories.TalkUserRepository
-import org.sbas.responses.messages.TalkRoomResponse
-import org.sbas.responses.messages.arrToJson
 import jakarta.enterprise.context.ApplicationScoped
 import jakarta.inject.Inject
 import jakarta.websocket.OnMessage
@@ -17,6 +8,13 @@ import jakarta.websocket.OnOpen
 import jakarta.websocket.Session
 import jakarta.websocket.server.PathParam
 import jakarta.websocket.server.ServerEndpoint
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.runBlocking
+import org.jboss.logging.Logger
+import org.json.JSONArray
+import org.sbas.repositories.TalkRoomRepository
+import org.sbas.repositories.TalkUserRepository
+import org.sbas.responses.messages.TalkRoomResponse
 
 @ServerEndpoint(value = "/chat-rooms/{userId}")
 @ApplicationScoped

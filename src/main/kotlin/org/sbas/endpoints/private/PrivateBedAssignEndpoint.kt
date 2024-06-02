@@ -1,11 +1,5 @@
 package org.sbas.endpoints.private
 
-import org.eclipse.microprofile.openapi.annotations.Operation
-import org.eclipse.microprofile.openapi.annotations.tags.Tag
-import org.jboss.logging.Logger
-import org.jboss.resteasy.reactive.RestPath
-import org.sbas.dtos.bdas.*
-import org.sbas.services.BedAssignService
 import jakarta.inject.Inject
 import jakarta.validation.Valid
 import jakarta.ws.rs.BeanParam
@@ -13,6 +7,12 @@ import jakarta.ws.rs.GET
 import jakarta.ws.rs.POST
 import jakarta.ws.rs.Path
 import jakarta.ws.rs.core.Response
+import org.eclipse.microprofile.openapi.annotations.Operation
+import org.eclipse.microprofile.openapi.annotations.tags.Tag
+import org.jboss.logging.Logger
+import org.jboss.resteasy.reactive.RestPath
+import org.sbas.dtos.bdas.*
+import org.sbas.services.BedAssignService
 
 @Tag(name = "병상배정 업무처리(사용자 권한용)", description = "로그인 된 사용자(세부권한별 분기) - 병상배정현황 조회 및 처리 등")
 @Path("v1/private/bedasgn")

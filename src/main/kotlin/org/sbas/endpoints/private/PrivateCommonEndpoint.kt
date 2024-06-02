@@ -1,5 +1,12 @@
 package org.sbas.endpoints.private
 
+import jakarta.inject.Inject
+import jakarta.ws.rs.GET
+import jakarta.ws.rs.POST
+import jakarta.ws.rs.Path
+import jakarta.ws.rs.Produces
+import jakarta.ws.rs.core.MediaType
+import jakarta.ws.rs.core.Response
 import org.eclipse.microprofile.openapi.annotations.Operation
 import org.eclipse.microprofile.openapi.annotations.tags.Tag
 import org.jboss.logging.Logger
@@ -10,13 +17,6 @@ import org.sbas.dtos.info.AgreeTermsListReq
 import org.sbas.dtos.info.TermsAgreeReq
 import org.sbas.services.CommonService
 import org.sbas.services.FileService
-import jakarta.inject.Inject
-import jakarta.ws.rs.GET
-import jakarta.ws.rs.POST
-import jakarta.ws.rs.Path
-import jakarta.ws.rs.Produces
-import jakarta.ws.rs.core.MediaType
-import jakarta.ws.rs.core.Response
 
 @Tag(name = "공통 관리(사용자 권한용)", description = "로그인 된 사용자(세부권한별 분기) - 다운로드, 업로드, 코드 및 환자 목록조회 등")
 @Path("v1/private/common")

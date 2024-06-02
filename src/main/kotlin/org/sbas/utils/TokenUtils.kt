@@ -1,12 +1,12 @@
 package org.sbas.utils
 
 import io.smallrye.jwt.build.Jwt
-import org.eclipse.microprofile.jwt.JsonWebToken
 import jakarta.ws.rs.InternalServerErrorException
 import jakarta.ws.rs.Produces
 import jakarta.ws.rs.core.Context
 import jakarta.ws.rs.core.MediaType
 import jakarta.ws.rs.core.SecurityContext
+import org.eclipse.microprofile.jwt.JsonWebToken
 
 
 /**

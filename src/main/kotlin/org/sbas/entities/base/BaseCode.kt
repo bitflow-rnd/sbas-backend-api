@@ -1,9 +1,9 @@
 package org.sbas.entities.base
 
+import jakarta.persistence.*
 import org.sbas.dtos.BaseCodeUpdateReq
 import org.sbas.entities.CommonEntity
 import java.io.Serializable
-import jakarta.persistence.*
 
 /**
  * 기초 코드

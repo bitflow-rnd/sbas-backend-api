@@ -6,10 +6,6 @@ import io.quarkus.security.AuthenticationFailedException
 import io.quarkus.security.ForbiddenException
 import io.quarkus.security.UnauthorizedException
 import jakarta.annotation.Priority
-import org.postgresql.util.PSQLException
-import org.sbas.constants.SbasConst
-import org.sbas.responses.CommonResponse
-import org.sbas.utils.CustomizedException
 import jakarta.ws.rs.BadRequestException
 import jakarta.ws.rs.InternalServerErrorException
 import jakarta.ws.rs.NotFoundException
@@ -18,6 +14,10 @@ import jakarta.ws.rs.core.MediaType
 import jakarta.ws.rs.core.Response
 import jakarta.ws.rs.ext.ExceptionMapper
 import jakarta.ws.rs.ext.Provider
+import org.postgresql.util.PSQLException
+import org.sbas.constants.SbasConst
+import org.sbas.responses.CommonResponse
+import org.sbas.utils.CustomizedException
 
 
 /**

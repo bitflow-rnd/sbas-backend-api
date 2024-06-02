@@ -1,8 +1,11 @@
 package org.sbas.entities.info
 
+import jakarta.persistence.Column
+import jakarta.persistence.Entity
+import jakarta.persistence.Id
+import jakarta.persistence.Table
 import org.sbas.entities.CommonEntity
 import java.io.Serializable
-import jakarta.persistence.*
 
 /**
  * 병원 정보
@@ -10,19 +13,7 @@ import jakarta.persistence.*
 @Entity
 @Table(name = "info_hosp")
 class InfoHosp(
-//    @EmbeddedId
-//    var id: InfoHospId? = null,
 
-//    @Id
-//    @GenericGenerator(
-//        name = "info_hosp_id_seq",
-//        strategy = "org.sbas.entities.StringPrefixedSequenceIdGenerator",
-//        parameters = [
-//            Parameter(name = StringPrefixedSequenceIdGenerator.VALUE_PREFIX_PARAMETER, value = "HP"),
-//            Parameter(name = StringPrefixedSequenceIdGenerator.NUMBER_FORMAT_PARAMETER, value = "%08d"),
-//            Parameter(name = StringPrefixedSequenceIdGenerator.incrementSize, value = "1")
-//        ]) // HP00000001
-//    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "info_hosp_id_seq")
     @Column(name = "hosp_id", nullable = false, length = 10)
     var hospId: String? = null, // 병원 ID
 

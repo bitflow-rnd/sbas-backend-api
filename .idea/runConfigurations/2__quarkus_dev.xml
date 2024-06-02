@@ -1,0 +1,9 @@
+<component name="ProjectRunConfigurationManager">
+  <configuration default="false" name="2) quarkus dev" type="QuarkusRunConfiguration" factoryName="QuarkusRunConfiguration">
+    <module name="sbas-backend-api.main" />
+    <option name="profile" value="local" />
+    <method v="2">
+      <option name="Make" enabled="true" />
+    </method>
+  </configuration>
+</component>

@@ -1,7 +1,17 @@
 package org.sbas.utils
 
 import io.vertx.core.json.JsonObject
-import kotlinx.coroutines.*
+import jakarta.enterprise.context.ApplicationScoped
+import jakarta.inject.Inject
+import jakarta.websocket.OnClose
+import jakarta.websocket.OnMessage
+import jakarta.websocket.OnOpen
+import jakarta.websocket.Session
+import jakarta.websocket.server.PathParam
+import jakarta.websocket.server.ServerEndpoint
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.withContext
 import org.jboss.logging.Logger
 import org.sbas.dtos.TalkMsgDto
 import org.sbas.entities.talk.TalkMsg
@@ -11,11 +21,6 @@ import org.sbas.handlers.FileHandler
 import org.sbas.repositories.*
 import org.sbas.responses.messages.TalkRoomResponse
 import org.sbas.services.FirebaseService
-import jakarta.enterprise.context.ApplicationScoped
-import jakarta.inject.Inject
-import jakarta.websocket.*
-import jakarta.websocket.server.PathParam
-import jakarta.websocket.server.ServerEndpoint
 
 
 @ServerEndpoint("/chat-rooms/{tkrmId}/{userId}")

@@ -108,21 +108,23 @@ class InfoHospRepository : PanacheRepositoryBase<InfoHosp, String> {
         return entityManager.createQuery(query, context).singleResult.toInt()
     }
 
-    fun findByHospIdList(hospList: List<String>): MutableList<InfoHospWithUser> {
-        val query = jpql {
-            selectNew<InfoHospWithUser>(
-                path(InfoHosp::hospId), path(InfoHosp::dutyName),
-                path(InfoUser::instId), path(InfoUser::instNm), path(InfoUser::id)
-            ).from(
-                entity(InfoHosp::class),
-                join(InfoUser::class).on(path(InfoHosp::hospId).eq(path(InfoUser::instId)))
-            ).whereAnd(
-                path(InfoUser::instId).`in`(hospList),
-                path(InfoUser::jobCd).eq("PMGR0003"),
-            )
-        }
+    fun findByHospIdList(hospList: List<String>): List<InfoHosp> {
 
-        return entityManager.createQuery(query, context).resultList
+        return list("hospId in ?1", hospList)
+
+//        val query = jpql {
+//            selectNew<InfoHospWithUser>(
+//                path(InfoHosp::hospId), path(InfoHosp::dutyName)
+//            ).from(
+//                entity(InfoHosp::class),
+//                join(InfoUser::class).on(path(InfoHosp::hospId).eq(path(InfoUser::instId)))
+//            ).whereAnd(
+//                path(InfoHosp::hospId).`in`(hospList),
+//                path(InfoUser::jobCd).eq("PMGR0003"),
+//            )
+//        }
+//
+//        return entityManager.createQuery(query, context).resultList
     }
 
     fun findAvalHospListBydstr1Cd(dstr1Cd: String, dstr2Cd: String?): MutableList<AvalHospDto> {

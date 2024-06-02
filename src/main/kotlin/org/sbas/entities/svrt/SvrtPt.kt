@@ -1,8 +1,8 @@
 package org.sbas.entities.svrt
 
+import jakarta.persistence.*
 import org.sbas.entities.CommonEntity
 import java.io.Serializable
-import jakarta.persistence.*
 
 /**
  * 중증 환자 정보

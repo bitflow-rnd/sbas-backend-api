@@ -1,11 +1,11 @@
 package org.sbas.dtos.bdas
 
-import org.sbas.entities.bdas.BdasAprv
-import org.sbas.entities.bdas.BdasAprvId
-import org.sbas.utils.StringUtils
 import jakarta.validation.constraints.NotBlank
 import jakarta.validation.constraints.NotNull
 import jakarta.validation.constraints.Pattern
+import org.sbas.entities.bdas.BdasAprv
+import org.sbas.entities.bdas.BdasAprvId
+import org.sbas.utils.StringUtils
 
 data class BdasAprvSaveRequest(
     @field: NotBlank
@@ -13,9 +13,9 @@ data class BdasAprvSaveRequest(
     @field: NotNull
     val bdasSeq: Int,
     @field: NotNull
-    val asgnReqSeq: Int,
+    var asgnReqSeq: Int,
     @field: NotBlank
-    val hospId: String,
+    var hospId: String,
     @field: [NotBlank Pattern(regexp = "^[YN]\$", message = "Y/N 값만 가능합니다.")]
     val aprvYn: String,
     val negCd: String?,

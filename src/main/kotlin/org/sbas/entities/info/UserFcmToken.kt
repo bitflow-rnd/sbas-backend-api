@@ -1,7 +1,7 @@
 package org.sbas.entities.info
 
-import org.sbas.entities.CommonEntity
 import jakarta.persistence.*
+import org.sbas.entities.CommonEntity
 
 @Entity
 @Table(name = "user_fcm_token")

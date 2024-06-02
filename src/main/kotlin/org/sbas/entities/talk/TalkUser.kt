@@ -1,10 +1,10 @@
 package org.sbas.entities.talk
 
-import org.sbas.entities.CommonEntity
-import java.io.Serializable
 import jakarta.persistence.*
 import jakarta.validation.constraints.NotNull
 import jakarta.validation.constraints.Size
+import org.sbas.entities.CommonEntity
+import java.io.Serializable
 
 /**
  * 대화 멤버 정보

@@ -1,10 +1,10 @@
 package org.sbas.responses.patient
 
-import org.sbas.entities.bdas.BdasEsvy
-import org.sbas.entities.bdas.BdasReq
 import org.sbas.constants.enums.PtTypeCd
 import org.sbas.constants.enums.SvrtTypeCd
 import org.sbas.constants.enums.UndrDsesCd
+import org.sbas.entities.bdas.BdasEsvy
+import org.sbas.entities.bdas.BdasReq
 
 data class DiseaseInfoResponse(
     var rcptPhc: String? = null,//담당보건소

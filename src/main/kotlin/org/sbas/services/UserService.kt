@@ -1,15 +1,17 @@
 package org.sbas.services
 
 import io.quarkus.cache.*
+import jakarta.enterprise.context.ApplicationScoped
+import jakarta.inject.Inject
+import jakarta.transaction.Transactional
+import jakarta.ws.rs.core.Response
 import org.eclipse.microprofile.config.inject.ConfigProperty
 import org.eclipse.microprofile.jwt.JsonWebToken
 import org.eclipse.microprofile.rest.client.inject.RestClient
 import org.jboss.logging.Logger
 import org.sbas.constants.SbasConst
-import org.sbas.constants.enums.PmgrTypeCd
-import org.sbas.constants.enums.SidoCd
 import org.sbas.constants.enums.UserStatCd
-import org.sbas.dtos.*
+import org.sbas.dtos.PagingListDto
 import org.sbas.dtos.info.*
 import org.sbas.entities.info.InfoCntc
 import org.sbas.entities.info.InfoCntcId
@@ -17,6 +19,7 @@ import org.sbas.entities.info.InfoUser
 import org.sbas.parameters.*
 import org.sbas.repositories.InfoCntcRepository
 import org.sbas.repositories.InfoUserRepository
+import org.sbas.repositories.UserActivityHistoryRepository
 import org.sbas.responses.CommonListResponse
 import org.sbas.responses.CommonResponse
 import org.sbas.restclients.NaverSensRestClient
@@ -24,11 +27,6 @@ import org.sbas.restparameters.NaverSmsMsgApiParams
 import org.sbas.restparameters.NaverSmsReqMsgs
 import org.sbas.utils.CustomizedException
 import org.sbas.utils.TokenUtils
-import jakarta.enterprise.context.ApplicationScoped
-import jakarta.inject.Inject
-import jakarta.transaction.Transactional
-import jakarta.ws.rs.core.Response
-import org.sbas.repositories.UserActivityHistoryRepository
 
 
 @ApplicationScoped

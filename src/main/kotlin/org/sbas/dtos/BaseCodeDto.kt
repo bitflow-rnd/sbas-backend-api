@@ -1,10 +1,10 @@
 package org.sbas.dtos
 
+import jakarta.validation.constraints.Min
+import jakarta.validation.constraints.NotBlank
 import org.hibernate.validator.constraints.Length
 import org.sbas.entities.base.BaseCode
 import org.sbas.entities.base.BaseCodeId
-import jakarta.validation.constraints.Min
-import jakarta.validation.constraints.NotBlank
 
 /**
  * 공통코드 그룹 등록 Dto

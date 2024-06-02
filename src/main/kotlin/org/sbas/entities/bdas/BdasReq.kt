@@ -1,11 +1,9 @@
 package org.sbas.entities.bdas
 
+import jakarta.persistence.*
 import org.hibernate.annotations.DynamicUpdate
-import org.sbas.dtos.bdas.BdasReqDprtInfo
-import org.sbas.dtos.bdas.BdasReqSvrInfo
 import org.sbas.entities.CommonEntity
 import java.io.Serializable
-import jakarta.persistence.*
 
 /**
  * 병상 배정 요청 정보

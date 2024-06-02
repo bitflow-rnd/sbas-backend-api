@@ -1,9 +1,10 @@
+import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
+
 plugins {
-    val kotlinVersion = "1.9.21"
-    java
-    kotlin("jvm") version kotlinVersion
-    kotlin("plugin.allopen") version kotlinVersion
-    kotlin("plugin.noarg") version kotlinVersion
+    val kotlinVersion = "1.9.22"
+    kotlin("jvm") version "1.9.22"
+    kotlin("plugin.noarg") version "1.9.22"
+    kotlin("plugin.allopen") version "1.9.22"
     id("io.quarkus")
 }
 
@@ -12,9 +13,13 @@ repositories {
     mavenLocal()
 }
 
+group = "org.sbas"
+version = "0.9.1"
+
 val quarkusPlatformGroupId: String by project
 val quarkusPlatformArtifactId: String by project
 val quarkusPlatformVersion: String by project
+val isLocal: String by project
 
 dependencies {
     implementation(enforcedPlatform("${quarkusPlatformGroupId}:${quarkusPlatformArtifactId}:${quarkusPlatformVersion}"))
@@ -38,7 +43,6 @@ dependencies {
     implementation("io.quarkus:quarkus-hibernate-orm")
     implementation("io.quarkus:quarkus-smallrye-openapi")
     implementation("io.quarkus:quarkus-smallrye-reactive-messaging")
-//    implementation("io.quarkus:quarkus-scheduler")
 
     implementation("com.fasterxml.jackson.module:jackson-module-kotlin:2.14.3")
     implementation("com.google.firebase:firebase-admin:9.1.1")
@@ -51,19 +55,9 @@ dependencies {
     testImplementation("io.rest-assured:rest-assured")
 }
 
-group = "org.sbas"
-version = "0.0.1"
-
 java {
-    sourceCompatibility = JavaVersion.VERSION_17
-    targetCompatibility = JavaVersion.VERSION_17
-}
-
-noArg {
-    annotation("jakarta.persistence.Entity")
-    annotation("jakarta.persistence.Embeddable")
-    annotation("jakarta.persistence.MappedSuperclass")
-    annotation("org.sbas.utils.annotation.NoArg")
+    sourceCompatibility = JavaVersion.VERSION_11
+    targetCompatibility = JavaVersion.VERSION_11
 }
 
 allOpen {
@@ -75,16 +69,35 @@ allOpen {
     annotation("io.quarkus.test.junit.QuarkusTest")
 }
 
+noArg {
+    annotation("jakarta.persistence.Entity")
+    annotation("jakarta.persistence.Embeddable")
+    annotation("jakarta.persistence.MappedSuperclass")
+    annotation("org.sbas.utils.annotation.NoArg")
+}
+
 tasks.withType<Test> {
     systemProperty("java.util.logging.manager", "org.jboss.logmanager.LogManager")
+    //exclude("ai/bitflow/api/**")
+    //exclude("id/g8id/api/**")
 }
+
+tasks.compileTestKotlin {
+    //exclude("ai/bitflow/api/**")
+    //exclude("id/g8id/api/**")
+}
+
 tasks.withType<JavaCompile> {
     options.encoding = "UTF-8"
     options.compilerArgs.add("-parameters")
 }
 
-tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile> {
-    kotlinOptions {
-        jvmTarget = "17"
-    }
+tasks.withType<KotlinCompile> {
+    kotlinOptions.jvmTarget = JavaVersion.VERSION_11.toString()
+    kotlinOptions.javaParameters = true
 }
+
+noArg {
+    annotation("org.sbas.utils.annotation.NoArg")
+}
+

@@ -1,8 +1,8 @@
 package org.sbas.entities.info
 
+import jakarta.persistence.*
 import org.sbas.entities.CommonEntity
 import java.io.Serializable
-import jakarta.persistence.*
 
 /**
  * 연락처 정보

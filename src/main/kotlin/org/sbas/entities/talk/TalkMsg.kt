@@ -1,13 +1,13 @@
 package org.sbas.entities.talk
 
+import jakarta.persistence.*
+import jakarta.validation.constraints.NotNull
+import jakarta.validation.constraints.Size
 import org.hibernate.annotations.CreationTimestamp
 import org.hibernate.annotations.UpdateTimestamp
 import org.sbas.dtos.TalkMsgDto
 import java.io.Serializable
 import java.time.Instant
-import jakarta.persistence.*
-import jakarta.validation.constraints.NotNull
-import jakarta.validation.constraints.Size
 
 /**
  * 대화 메시지
