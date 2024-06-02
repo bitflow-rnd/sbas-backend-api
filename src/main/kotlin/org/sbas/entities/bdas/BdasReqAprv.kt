@@ -1,8 +1,8 @@
 package org.sbas.entities.bdas
 
+import jakarta.persistence.*
 import org.sbas.entities.CommonEntity
 import java.io.Serializable
-import jakarta.persistence.*
 
 @Entity
 @Table(name = "bdas_req_aprv")

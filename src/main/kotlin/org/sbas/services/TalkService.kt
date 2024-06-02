@@ -1,10 +1,5 @@
 package org.sbas.services
 
-import org.sbas.repositories.TalkMsgRepository
-import org.sbas.repositories.TalkRoomRepository
-import org.sbas.repositories.TalkUserRepository
-import org.sbas.responses.CommonResponse
-import org.sbas.responses.messages.TalkRoomResponse
 import jakarta.enterprise.context.ApplicationScoped
 import jakarta.inject.Inject
 import jakarta.transaction.Transactional
@@ -13,6 +8,11 @@ import org.sbas.constants.SbasConst
 import org.sbas.dtos.RegGroupTalkRoomDto
 import org.sbas.dtos.RegTalkRoomDto
 import org.sbas.entities.talk.*
+import org.sbas.repositories.TalkMsgRepository
+import org.sbas.repositories.TalkRoomRepository
+import org.sbas.repositories.TalkUserRepository
+import org.sbas.responses.CommonResponse
+import org.sbas.responses.messages.TalkRoomResponse
 
 @ApplicationScoped
 class TalkService {

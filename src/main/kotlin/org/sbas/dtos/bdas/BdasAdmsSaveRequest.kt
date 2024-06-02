@@ -1,12 +1,12 @@
 package org.sbas.dtos.bdas
 
+import jakarta.validation.constraints.NotBlank
+import jakarta.validation.constraints.NotNull
 import org.sbas.constants.enums.AdmsStatCd
 import org.sbas.entities.bdas.BdasAdms
 import org.sbas.entities.bdas.BdasAdmsId
 import org.sbas.utils.StringUtils
 import org.sbas.utils.annotation.ValidEnum
-import jakarta.validation.constraints.NotBlank
-import jakarta.validation.constraints.NotNull
 
 data class BdasAdmsSaveRequest(
     @field: NotBlank val ptId: String,

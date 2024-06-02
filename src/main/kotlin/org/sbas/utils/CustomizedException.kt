@@ -1,7 +1,7 @@
 package org.sbas.utils
 
-import java.io.Serial
 import jakarta.ws.rs.core.Response.StatusType
+import java.io.Serial
 
 class CustomizedException(
     override var message: String,

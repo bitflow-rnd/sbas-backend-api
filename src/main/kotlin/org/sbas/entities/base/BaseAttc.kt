@@ -1,11 +1,11 @@
 package org.sbas.entities.base
 
+import jakarta.persistence.*
 import org.hibernate.annotations.GenericGenerator
 import org.hibernate.annotations.Parameter
 import org.sbas.entities.CommonEntity
 import org.sbas.entities.StringPrefixedSequenceIdGenerator
 import java.io.Serializable
-import jakarta.persistence.*
 
 /**
  * 첨부 파일 정보

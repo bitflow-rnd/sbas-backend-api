@@ -1,7 +1,7 @@
 package org.sbas.parameters
 
-import org.sbas.utils.annotation.NoArg
 import jakarta.ws.rs.QueryParam
+import org.sbas.utils.annotation.NoArg
 
 @NoArg
 data class PageRequest (

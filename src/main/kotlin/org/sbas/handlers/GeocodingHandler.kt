@@ -1,11 +1,11 @@
 package org.sbas.handlers
 
+import jakarta.enterprise.context.ApplicationScoped
 import org.eclipse.microprofile.rest.client.inject.RestClient
 import org.sbas.restclients.NaverGeocodingRestClient
 import org.sbas.restparameters.NaverGeocodingApiParams
 import org.sbas.restresponses.NaverGeocodingApiResponse
 import org.sbas.restresponses.NaverReverseGeocodingApiResponse
-import jakarta.enterprise.context.ApplicationScoped
 
 @ApplicationScoped
 class GeocodingHandler {

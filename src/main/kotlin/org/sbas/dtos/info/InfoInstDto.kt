@@ -1,10 +1,10 @@
 package org.sbas.dtos.info
 
-import org.sbas.entities.info.InfoInst
-import org.sbas.utils.annotation.NoArg
 import jakarta.validation.constraints.NotBlank
 import jakarta.validation.constraints.Size
 import jakarta.ws.rs.QueryParam
+import org.sbas.entities.info.InfoInst
+import org.sbas.utils.annotation.NoArg
 
 data class InfoInstUpdateReq(
     @field: [NotBlank(message = "기관 ID는 필수 값입니다.") Size(max = 8)]

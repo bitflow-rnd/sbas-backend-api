@@ -2,10 +2,12 @@ package org.sbas.dtos.bdas
 
 import com.fasterxml.jackson.annotation.JsonIgnore
 import com.fasterxml.jackson.annotation.JsonProperty
-import org.sbas.constants.enums.*
+import jakarta.ws.rs.QueryParam
+import org.sbas.constants.enums.AdmsStatCd
+import org.sbas.constants.enums.BedStatCd
+import org.sbas.constants.enums.ReqBedTypeCd
 import org.sbas.utils.annotation.NoArg
 import java.time.Instant
-import jakarta.ws.rs.QueryParam
 
 data class BdasListDto(
     val ptId: String,

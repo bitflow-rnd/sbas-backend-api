@@ -1,7 +1,14 @@
 package org.sbas.services
 
+import jakarta.enterprise.context.ApplicationScoped
+import jakarta.inject.Inject
+import jakarta.transaction.Transactional
+import jakarta.ws.rs.NotFoundException
+import jakarta.ws.rs.core.Response
 import org.eclipse.microprofile.jwt.JsonWebToken
 import org.jboss.logging.Logger
+import org.sbas.component.InfoCrewComponent
+import org.sbas.component.base.BaseCodeReader
 import org.sbas.constants.enums.BedStatCd
 import org.sbas.constants.enums.TimeLineStatCd
 import org.sbas.dtos.bdas.*
@@ -15,16 +22,6 @@ import org.sbas.responses.patient.TransInfoResponse
 import org.sbas.responses.patient.toTransInfoResponse
 import org.sbas.restparameters.NaverGeocodingApiParams
 import org.sbas.utils.CustomizedException
-import jakarta.enterprise.context.ApplicationScoped
-import jakarta.inject.Inject
-import jakarta.transaction.Transactional
-import jakarta.ws.rs.NotFoundException
-import jakarta.ws.rs.core.Response
-import org.sbas.component.InfoCrewComponent
-import org.sbas.component.base.BaseCodeReader
-import org.sbas.dtos.info.AvalHospDto
-import org.sbas.entities.bdas.BdasReq
-import org.sbas.entities.info.InfoHospDetail
 import kotlin.math.acos
 import kotlin.math.cos
 import kotlin.math.roundToInt
@@ -143,9 +140,9 @@ class BedAssignService {
   @Transactional
   fun reqConfirm(saveRequest: BdasReqAprvSaveRequest): CommonResponse<String> {
 
-    val findBdasReq  = bdasReqRepository.findByPtIdAndBdasSeq(saveRequest.ptId, saveRequest.bdasSeq)
+    val findBdasReq = bdasReqRepository.findByPtIdAndBdasSeq(saveRequest.ptId, saveRequest.bdasSeq)
     val bdasReqAprvs = bdasReqAprvRepository.findAllByPtIdAndBdasSeq(saveRequest.ptId, saveRequest.bdasSeq)
-    val requestUser  = infoUserRepository.findByUserId(findBdasReq.rgstUserId)
+    val requestUser = infoUserRepository.findByUserId(findBdasReq.rgstUserId)
       ?: throw NotFoundException("user not found")
     val findInfoPt =
       infoPtRepository.findById(saveRequest.ptId) ?: throw NotFoundException("${saveRequest.ptId} not found")
@@ -165,7 +162,7 @@ class BedAssignService {
 
         // 전원 요청시 병원 정보 저장
         val oldAsgnReqSeq = bdasReqAprvs.size
-        val hospList      = infoHospRepository.findByHospIdList(saveRequest.reqHospIdList)
+        val hospList = infoHospRepository.findByHospIdList(saveRequest.reqHospIdList)
 
         log.info("${saveRequest.reqHospIdList} / hospList / ${hospList.size}")
 
@@ -271,18 +268,24 @@ class BedAssignService {
    */
   @Transactional
   fun asgnConfirm(saveRequest: BdasAprvSaveRequest): CommonResponse<*> {
+
     val findBdasReq = bdasReqRepository.findByPtIdAndBdasSeq(saveRequest.ptId, saveRequest.bdasSeq)
     val findInfoUser = infoUserRepository.findByUserId(jwt.name) ?: throw NotFoundException("user not found")
     val findInfoPt =
       infoPtRepository.findById(saveRequest.ptId) ?: throw NotFoundException("${saveRequest.ptId} not found")
-
     val bdasReqAprvs = bdasReqAprvRepository.findAllByPtIdAndBdasSeq(saveRequest.ptId, saveRequest.bdasSeq)
 
     if (bdasReqAprvs.isEmpty()) {
       throw CustomizedException("배정 승인 정보가 없습니다.", Response.Status.BAD_REQUEST)
     } else {
-      bdasReqAprvs.firstOrNull { it.id.asgnReqSeq == saveRequest.asgnReqSeq && it.reqHospId == saveRequest.hospId }
-        ?: throw CustomizedException("배정 요청 순번(asgnReqSeq) 및 병원 ID(hospId)가 일치하지 않습니다.", Response.Status.BAD_REQUEST)
+      if (saveRequest.hospId == "INST000000") {
+        // Todo : 시연용 임시. 전산이 승인하는 경우. 아무 병원정보로 승인처리
+      } else {
+        bdasReqAprvs.firstOrNull {
+          log.debug("${it.id.asgnReqSeq}/${saveRequest.asgnReqSeq} <=>> ${it.reqHospId}/${saveRequest.hospId}")
+          it.id.asgnReqSeq == saveRequest.asgnReqSeq && it.reqHospId == saveRequest.hospId
+        } ?: throw CustomizedException("배정 요청 순번(asgnReqSeq) 및 병원 ID(hospId)가 일치하지 않습니다.", Response.Status.BAD_REQUEST)
+      }
     }
 
     // 원내배정
@@ -341,7 +344,11 @@ class BedAssignService {
       else -> "병상 배정이 불가처리되었습니다."
     }
 
-    firebaseService.sendMessageMultiDevice("${findInfoPt.ptNm}님 병상배정", msg, bdasReqAprvs[0].rgstUserId)
+    try {
+      firebaseService.sendMessageMultiDevice("${findInfoPt.ptNm}님 병상배정", msg, bdasReqAprvs[0].rgstUserId)
+    } catch (e: Exception) {
+      e.printStackTrace()
+    }
 
     activityHistoryRepository.save(saveRequest.convertToActivityHistory(jwt.name))
 

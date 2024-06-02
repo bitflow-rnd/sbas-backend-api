@@ -1,13 +1,13 @@
 package org.sbas.restclients
 
+import jakarta.validation.Valid
+import jakarta.ws.rs.POST
+import jakarta.ws.rs.Path
 import org.eclipse.microprofile.rest.client.annotation.RegisterClientHeaders
 import org.eclipse.microprofile.rest.client.inject.RegisterRestClient
 import org.sbas.restparameters.NaverOcrApiParams
 import org.sbas.restresponses.NaverOcrApiResponse
 import org.sbas.utils.headerFactory.NaverOcrHeaderFactory
-import jakarta.validation.Valid
-import jakarta.ws.rs.POST
-import jakarta.ws.rs.Path
 
 
 /**

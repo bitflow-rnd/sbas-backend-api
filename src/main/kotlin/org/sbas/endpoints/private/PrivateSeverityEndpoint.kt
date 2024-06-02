@@ -1,15 +1,15 @@
 package org.sbas.endpoints.private
 
-import org.eclipse.microprofile.openapi.annotations.Operation
-import org.eclipse.microprofile.openapi.annotations.tags.Tag
-import org.jboss.resteasy.reactive.RestPath
-import org.sbas.handlers.NubisonAiSeverityAnalysisHandler
-import org.sbas.services.SvrtService
 import jakarta.inject.Inject
 import jakarta.ws.rs.GET
 import jakarta.ws.rs.Path
 import jakarta.ws.rs.QueryParam
 import jakarta.ws.rs.core.Response
+import org.eclipse.microprofile.openapi.annotations.Operation
+import org.eclipse.microprofile.openapi.annotations.tags.Tag
+import org.jboss.resteasy.reactive.RestPath
+import org.sbas.handlers.NubisonAiSeverityAnalysisHandler
+import org.sbas.services.SvrtService
 
 
 @Tag(name = "Managing severity", description = "Severity analysis")

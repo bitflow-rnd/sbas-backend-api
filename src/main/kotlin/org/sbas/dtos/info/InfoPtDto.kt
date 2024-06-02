@@ -1,14 +1,14 @@
 package org.sbas.dtos.info
 
 import com.fasterxml.jackson.annotation.JsonIgnore
-import org.sbas.constants.enums.*
-import org.sbas.entities.info.InfoPt
-import org.sbas.utils.annotation.NoArg
-import java.time.Instant
 import jakarta.validation.constraints.NotBlank
 import jakarta.validation.constraints.NotNull
 import jakarta.validation.constraints.Pattern
 import jakarta.ws.rs.QueryParam
+import org.sbas.constants.enums.*
+import org.sbas.entities.info.InfoPt
+import org.sbas.utils.annotation.NoArg
+import java.time.Instant
 
 data class InfoPtDto(
     @field: NotBlank val ptNm: String,

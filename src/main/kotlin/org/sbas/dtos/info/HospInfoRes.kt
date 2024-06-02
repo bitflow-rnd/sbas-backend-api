@@ -1,7 +1,10 @@
 package org.sbas.dtos.info
 
 import com.fasterxml.jackson.annotation.JsonProperty
-import org.sbas.constants.enums.*
+import org.sbas.constants.enums.DtpmTypeCd
+import org.sbas.constants.enums.PmgrTypeCd
+import org.sbas.constants.enums.SidoCd
+import org.sbas.constants.enums.UserStatCd
 import org.sbas.utils.annotation.NoArg
 import java.time.Instant
 

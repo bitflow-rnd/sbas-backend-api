@@ -1,11 +1,11 @@
 package org.sbas.dtos.bdas
 
-import org.sbas.entities.bdas.BdasTrns
-import org.sbas.entities.bdas.BdasTrnsId
-import org.sbas.utils.StringUtils
 import jakarta.validation.constraints.NotBlank
 import jakarta.validation.constraints.NotNull
 import org.sbas.dtos.info.InfoCrewSaveReq
+import org.sbas.entities.bdas.BdasTrns
+import org.sbas.entities.bdas.BdasTrnsId
+import org.sbas.utils.StringUtils
 
 data class BdasTrnsSaveRequest(
     @field: NotBlank

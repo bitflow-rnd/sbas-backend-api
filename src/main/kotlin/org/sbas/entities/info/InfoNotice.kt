@@ -1,5 +1,6 @@
 package org.sbas.entities.info
 
+import jakarta.persistence.*
 import org.hibernate.annotations.GenericGenerator
 import org.hibernate.annotations.Parameter
 import org.sbas.entities.CommonEntity
@@ -7,7 +8,6 @@ import org.sbas.entities.StringPrefixedSequenceIdGenerator
 import org.sbas.responses.notice.NoticeListResponse
 import java.io.Serial
 import java.io.Serializable
-import jakarta.persistence.*
 
 /**
  * 공지사항 정보

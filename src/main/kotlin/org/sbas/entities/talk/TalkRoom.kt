@@ -1,12 +1,12 @@
 package org.sbas.entities.talk
 
-import org.sbas.entities.CommonEntity
 import jakarta.persistence.Column
 import jakarta.persistence.Entity
 import jakarta.persistence.Id
 import jakarta.persistence.Table
 import jakarta.validation.constraints.NotNull
 import jakarta.validation.constraints.Size
+import org.sbas.entities.CommonEntity
 
 /**
  * 대화방 정보

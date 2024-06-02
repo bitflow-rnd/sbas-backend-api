@@ -1,10 +1,10 @@
 package org.sbas.entities.info
 
-import org.sbas.constants.enums.*
+import jakarta.persistence.*
+import org.sbas.constants.enums.UserStatCd
 import org.sbas.dtos.info.InfoUserUpdateReq
 import org.sbas.entities.CommonEntity
 import java.time.Instant
-import jakarta.persistence.*
 
 /**
  * 사용자 정보

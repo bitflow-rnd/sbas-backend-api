@@ -1,10 +1,10 @@
 package org.sbas.entities.info
 
+import jakarta.persistence.*
 import org.sbas.dtos.info.InfoCrewDto
 import org.sbas.dtos.info.InfoCrewUpdateReq
 import org.sbas.entities.CommonEntity
 import java.io.Serializable
-import jakarta.persistence.*
 
 /**
  * 구급대원 정보

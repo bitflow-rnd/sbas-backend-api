@@ -1,7 +1,6 @@
 package org.sbas.parameters
 
 import jakarta.validation.constraints.NotBlank
-import jakarta.validation.constraints.NotNull
 
 data class SmsSendRequest (
     @field: NotBlank

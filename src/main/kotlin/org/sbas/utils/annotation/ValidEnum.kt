@@ -2,7 +2,6 @@ package org.sbas.utils.annotation
 
 import jakarta.validation.Constraint
 import jakarta.validation.Payload
-import kotlin.Enum
 import kotlin.reflect.KClass
 
 @Target(

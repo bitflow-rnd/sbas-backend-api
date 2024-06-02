@@ -2,11 +2,11 @@ package org.sbas.dtos.bdas
 
 import com.fasterxml.jackson.annotation.JsonIgnore
 import com.fasterxml.jackson.annotation.JsonProperty
-import org.sbas.entities.bdas.BdasReqAprv
-import org.sbas.entities.bdas.BdasReqAprvId
 import jakarta.validation.constraints.NotBlank
 import jakarta.validation.constraints.NotNull
 import jakarta.validation.constraints.Pattern
+import org.sbas.entities.bdas.BdasReqAprv
+import org.sbas.entities.bdas.BdasReqAprvId
 
 data class BdasReqAprvSaveRequest(
     @field: NotBlank

@@ -1,10 +1,10 @@
 package org.sbas.responses
 
 import com.fasterxml.jackson.annotation.JsonIgnore
-import org.eclipse.microprofile.openapi.annotations.media.Schema
-import org.sbas.constants.SbasConst
 import jakarta.validation.constraints.NotEmpty
 import jakarta.validation.constraints.NotNull
+import org.eclipse.microprofile.openapi.annotations.media.Schema
+import org.sbas.constants.SbasConst
 
 open class CommonResponse<T>(
     @NotNull

@@ -1,11 +1,11 @@
 package org.sbas.dtos.bdas
 
-import org.sbas.entities.bdas.BdasAprv
-import org.sbas.entities.bdas.BdasAprvId
-import org.sbas.utils.StringUtils
 import jakarta.validation.constraints.NotBlank
 import jakarta.validation.constraints.NotNull
 import jakarta.validation.constraints.Pattern
+import org.sbas.entities.bdas.BdasAprv
+import org.sbas.entities.bdas.BdasAprvId
+import org.sbas.utils.StringUtils
 
 data class BdasAprvSaveRequest(
     @field: NotBlank

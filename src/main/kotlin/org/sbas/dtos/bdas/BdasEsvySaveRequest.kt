@@ -1,8 +1,8 @@
 package org.sbas.dtos.bdas
 
+import jakarta.validation.constraints.NotBlank
 import org.sbas.entities.bdas.BdasEsvy
 import org.sbas.entities.info.InfoPt
-import jakarta.validation.constraints.NotBlank
 
 data class BdasEsvySaveRequest(
     @field: NotBlank

@@ -1,13 +1,8 @@
 package org.sbas.entities.info
 
+import jakarta.persistence.*
 import org.sbas.dtos.info.InfoHospDetailDto
 import org.sbas.entities.CommonEntity
-import jakarta.persistence.Column
-import jakarta.persistence.Embeddable
-import jakarta.persistence.Embedded
-import jakarta.persistence.Entity
-import jakarta.persistence.Id
-import jakarta.persistence.Table
 
 @Entity
 @Table(name = "info_hosp_detail")

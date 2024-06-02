@@ -1,12 +1,12 @@
 package org.sbas.dtos.info
 
-import org.sbas.entities.info.InfoCrew
-import org.sbas.entities.info.InfoCrewId
-import org.sbas.utils.annotation.NoArg
 import jakarta.validation.constraints.NotBlank
 import jakarta.validation.constraints.NotNull
 import jakarta.validation.constraints.Size
 import jakarta.ws.rs.QueryParam
+import org.sbas.entities.info.InfoCrew
+import org.sbas.entities.info.InfoCrewId
+import org.sbas.utils.annotation.NoArg
 
 data class InfoCrewSaveReq (
     @field: [NotBlank(message = "기관 ID는 필수 값입니다.") Size(max = 10)]

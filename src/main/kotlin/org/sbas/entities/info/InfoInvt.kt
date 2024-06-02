@@ -1,8 +1,8 @@
 package org.sbas.entities.info
 
+import jakarta.persistence.*
 import java.io.Serializable
 import java.time.Instant
-import jakarta.persistence.*
 
 /**
  * 초대 정보

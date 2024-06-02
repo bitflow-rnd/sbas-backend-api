@@ -1,13 +1,5 @@
 package org.sbas.endpoints.test
 
-import org.eclipse.microprofile.openapi.annotations.parameters.RequestBody
-import org.eclipse.microprofile.openapi.annotations.tags.Tag
-import org.jboss.logging.Logger
-import org.sbas.handlers.GeocodingHandler
-import org.sbas.restparameters.NaverGeocodingApiParams
-import org.sbas.restresponses.NaverGeocodingApiResponse
-import org.sbas.restresponses.NaverReverseGeocodingApiResponse
-import org.sbas.services.FirebaseService
 import jakarta.annotation.security.PermitAll
 import jakarta.inject.Inject
 import jakarta.validation.Valid
@@ -16,6 +8,13 @@ import jakarta.ws.rs.POST
 import jakarta.ws.rs.Path
 import jakarta.ws.rs.QueryParam
 import jakarta.ws.rs.core.SecurityContext
+import org.eclipse.microprofile.openapi.annotations.tags.Tag
+import org.jboss.logging.Logger
+import org.sbas.handlers.GeocodingHandler
+import org.sbas.restparameters.NaverGeocodingApiParams
+import org.sbas.restresponses.NaverGeocodingApiResponse
+import org.sbas.restresponses.NaverReverseGeocodingApiResponse
+import org.sbas.services.FirebaseService
 
 
 @Tag(name = "테스트", description = "내맘대로 테스트")

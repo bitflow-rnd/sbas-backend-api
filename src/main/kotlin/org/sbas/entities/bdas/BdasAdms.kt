@@ -1,9 +1,8 @@
 package org.sbas.entities.bdas
 
-import org.sbas.constants.enums.AdmsStatCd
+import jakarta.persistence.*
 import org.sbas.entities.CommonEntity
 import java.io.Serializable
-import jakarta.persistence.*
 
 /**
  * 입원 정보

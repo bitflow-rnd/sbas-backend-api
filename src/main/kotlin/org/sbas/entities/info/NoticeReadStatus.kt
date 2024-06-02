@@ -1,11 +1,7 @@
 package org.sbas.entities.info
 
+import jakarta.persistence.*
 import java.io.Serializable
-import jakarta.persistence.Column
-import jakarta.persistence.Embeddable
-import jakarta.persistence.EmbeddedId
-import jakarta.persistence.Entity
-import jakarta.persistence.Table
 
 @Entity
 @Table(name = "notice_read_status")

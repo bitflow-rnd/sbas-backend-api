@@ -1,11 +1,11 @@
 package org.sbas.entities.info
 
-import org.sbas.dtos.info.InfoInstUpdateReq
-import org.sbas.entities.CommonEntity
 import jakarta.persistence.Column
 import jakarta.persistence.Entity
 import jakarta.persistence.Id
 import jakarta.persistence.Table
+import org.sbas.dtos.info.InfoInstUpdateReq
+import org.sbas.entities.CommonEntity
 
 /**
  * 기관 정보
