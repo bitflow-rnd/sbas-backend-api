@@ -124,7 +124,6 @@ class FirebaseService {
         }
     }
 
-    @Transactional
     fun sendMessageMultiDeviceV2(title: String, body: String?, userIdList: List<String>) {
         val pushKeys: List<UserFcmToken> = userFcmTokenRepository.findAllByUserIdList(userIdList)
 

@@ -1,27 +1,7 @@
 <component name="ProjectRunConfigurationManager">
-  <configuration default="false" name="2) quarkus dev" type="QuarkusRunConfigurationType" factoryName="Quarkus">
+  <configuration default="false" name="2) quarkus dev" type="QuarkusRunConfiguration" factoryName="QuarkusRunConfiguration">
     <module name="sbas-backend-api.main" />
-    <QsGradleRunConfiguration>
-      <ExternalSystemSettings>
-        <option name="executionName" />
-        <option name="externalProjectPath" value="$PROJECT_DIR$" />
-        <option name="externalSystemIdString" value="GRADLE" />
-        <option name="scriptParameters" value="-Pquarkus.profile=local" />
-        <option name="taskDescriptions">
-          <list />
-        </option>
-        <option name="taskNames">
-          <list>
-            <option value="quarkusDev" />
-          </list>
-        </option>
-        <option name="vmOptions" value="" />
-      </ExternalSystemSettings>
-      <ExternalSystemDebugServerProcess>true</ExternalSystemDebugServerProcess>
-      <ExternalSystemReattachDebugProcess>true</ExternalSystemReattachDebugProcess>
-      <DebugAllEnabled>false</DebugAllEnabled>
-      <RunAsTest>false</RunAsTest>
-    </QsGradleRunConfiguration>
+    <option name="profile" value="local" />
     <method v="2">
       <option name="Make" enabled="true" />
     </method>
