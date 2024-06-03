@@ -21,6 +21,8 @@
 ##  Gradle start up script for UN*X
 ##
 ##############################################################################
+# GCP build err ref. https://stackoverflow.com/questions/17668265/gradlew-permission-denied
+chmod +x ./gradlew
 
 # Attempt to set APP_HOME
 # Resolve links: $0 may be a link
