@@ -7,10 +7,9 @@ import org.sbas.utils.annotation.NoArg
  * response e.g.
  * {"ip":"66.249.75.9","country":"United States","cc":"US"}
  */
-@NoArg
-data class MyIpApiRsps(
-  val ip: String
-  , val country: String
-  , val cc: String
-  , var err: String?
+class MyIpApiRsps(
+  val ip: String? = null
+  , val country: String? = null
+  , val cc: String? = null
+  , var err: String? = null
 )

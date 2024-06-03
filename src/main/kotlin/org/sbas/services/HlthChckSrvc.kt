@@ -64,7 +64,7 @@ class HlthChckSrvc {
     ret.srvr = hlthChckDao.getSstmInfo(rc)
     // Expensive Task (not $$, but time and trial limit)
     ret.srvrPlus = hlthChckDao.getSrvrPblcInfo()
-    return null
+    return ret
   }
 
 }

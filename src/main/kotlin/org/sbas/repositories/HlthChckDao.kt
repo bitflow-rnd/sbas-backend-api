@@ -52,8 +52,8 @@ class HlthChckDao {
    * Expensive Task (not $$, but time and trial limit)
    */
   fun getSrvrPblcInfo(): SrvrPblcInfo? {
-    val res = Gson().fromJson(myIpDao.getMyIp(), MyIpApiRsps::class.java)
-    if (res!=null && res.err.isNullOrBlank()) {
+    val res: MyIpApiRsps = Gson().fromJson(myIpDao.getMyIp(), MyIpApiRsps::class.java)
+    if (res.err.isNullOrBlank()) {
       return SrvrPblcInfo(res.ip, res.country, res.cc)
     } else {
       return null
