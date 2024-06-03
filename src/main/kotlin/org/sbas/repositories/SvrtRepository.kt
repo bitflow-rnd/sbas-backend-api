@@ -23,7 +23,8 @@ class SvrtAnlyRepository : PanacheRepositoryBase<SvrtAnly, SvrtAnlyId> {
      * Get data from last analysis by ptId
      */
     fun getSvrtAnlyByPtId(ptId: String): MutableList<*> {
-        val query = "select pt_id, hosp_id, anly_dt, msre_dt, prdt_dt, svrt_prob_mean, svrt_prob_std " +
+        // , svrt_prob_mean, svrt_prob_std
+        val query = "select pt_id, hosp_id, anly_dt, msre_dt, prdt_dt " +
                 "from svrt_anly as sa " +
                 "where sa.anly_seq = (select max(anly_seq) from svrt_anly where pt_id = '$ptId') and pt_id = '$ptId' " +
                 "order by sa.prdt_dt"
