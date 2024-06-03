@@ -17,6 +17,7 @@ steps:
 
 options:
   logging: CLOUD_LOGGING_ONLY
+  defaultLogsBucketBehavior: REGIONAL_USER_OWNED_BUCKET
 
 images:
   - 'us-central1-docker.pkg.dev/gen8id/cloud-run-source-deploy/bitflow-rnd-sbas-backend-api:latest'
