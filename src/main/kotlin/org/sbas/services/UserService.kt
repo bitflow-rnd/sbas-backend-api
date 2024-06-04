@@ -91,7 +91,7 @@ class UserService {
      * 관리자 사용자 정보 관리 화면에서 사용자 목록 조회
      */
     @Transactional
-    fun getUsers(param: InfoUserSearchParam): CommonListResponse<InfoUserListDto> {
+    fun getUsers(param: InfoUserSearchParam): CommonListResponse<UserDetailResponse> {
         val list = userRepository.findInfoUserList(param)
         list.forEach { it.userStatCdNm = it.userStatCd!!.cdNm }
         val count = userRepository.countInfoUserList(param)
@@ -277,7 +277,7 @@ class UserService {
     @Transactional
     fun getAllUsers(pageRequest: PageRequest): CommonResponse<PagingListDto> {
         // TODO 응답 수정
-        val findUsers = userRepository.findInfoUserDetail()
+        val findUsers = userRepository.findAllInfoUser()
         val totalCnt = userRepository.count()
         val response = PagingListDto(totalCnt, findUsers)
         return CommonResponse(response)

@@ -586,6 +586,9 @@ class BedAssignService {
         }
 
         6 -> {
+          infoPtRepository.delete("ptId = '$ptId'")
+          bdasEsvyRepository.delete("ptId = '$ptId'")
+          bdasReqRepository.delete("id.ptId = '$ptId'")
           bdasReqAprvRepository.delete("id.ptId = '$ptId'")
           bdasAprvRepository.delete("id.ptId = '$ptId'")
           bdasTrnsRepository.delete("id.ptId = '$ptId'")

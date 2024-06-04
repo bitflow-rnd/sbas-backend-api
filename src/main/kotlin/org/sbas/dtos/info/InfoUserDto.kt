@@ -42,14 +42,11 @@ data class InfoUserSearchParam(
     @field: QueryParam("dstr2Cd") var dstr2Cd: String?,
     @field: QueryParam("userNm") var userNm: String?,
     @field: QueryParam("telno") var telno: String?,
-    @field: QueryParam("instNm") var instNm: String?,
     @field: QueryParam("instTypeCd") var instTypeCd: String?,
     @field: QueryParam("ptTypeCd") var ptTypeCd: String?,
-    @field: QueryParam("userStatCd") var userStatCd: UserStatCd?,
     @field: QueryParam("page") var page: Int?,
     @field: QueryParam("userStatCdStr") var userStatCdStr: String?
-) {
-}
+)
 
 @NoArg
 data class InfoUserSearchFromUserParam(
@@ -64,25 +61,28 @@ data class InfoUserSearchFromUserParam(
  * 사용자 상세 정보
  */
 data class UserDetailResponse(
-    val id: String,
-    val userNm: String,
-    val gndr: String?,
-    val telno: String,
-    val jobCd: String,
-    val ocpCd: String?,
-    val ptTypeCd: String?,
-    val instTypeCd: String,
-    val instId: String,
-    val instNm: String,
-    val dutyDstr1Cd: String,
-    val dutyDstr1CdNm: String,
-    val dutyDstr2Cd: String?,
-    val dutyDstr2CdNm: String?,
-    val btDt: String,
-    val authCd: String,
-    val attcId: String?,
-    val userStatCd: UserStatCd?,
-    val updtDttm: Instant,
+  val id: String,
+  val userNm: String,
+  val gndr: String?,
+  val telno: String,
+  val jobCd: String,
+  val ocpCd: String?,
+  val ptTypeCd: String?,
+  val instTypeCd: String,
+  val instId: String,
+  val instNm: String,
+  val dutyDstr1Cd: String,
+  val dutyDstr1CdNm: String,
+  val dutyDstr2Cd: String?,
+  val dutyDstr2CdNm: String?,
+  val btDt: String,
+  val authCd: String,
+  val attcId: String?,
+  val userStatCd: UserStatCd?,
+  var userStatCdNm: String?,
+  val rgstDttm: Instant?,
+  val updtDttm: Instant?,
+  val aprvDttm: Instant?,
 ) {
     val jobCdNm = PmgrTypeCd.valueOf(jobCd).cdNm
     val authCdNm = DtpmTypeCd.valueOf(authCd).cdNm

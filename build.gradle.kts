@@ -53,9 +53,9 @@ dependencies {
   implementation("com.google.firebase:firebase-admin:9.1.1")
   implementation("com.google.code.gson:gson:2.10.1")
 
-  implementation("com.linecorp.kotlin-jdsl:hibernate-support:3.2.0")
-  implementation("com.linecorp.kotlin-jdsl:jpql-dsl:3.2.0")
-  implementation("com.linecorp.kotlin-jdsl:jpql-render:3.2.0")
+  implementation("com.linecorp.kotlin-jdsl:hibernate-support:3.4.1")
+  implementation("com.linecorp.kotlin-jdsl:jpql-dsl:3.4.1")
+  implementation("com.linecorp.kotlin-jdsl:jpql-render:3.4.1")
   implementation("io.seruco.encoding:base62:0.1.3")
 
   testImplementation("io.quarkus:quarkus-junit5")
