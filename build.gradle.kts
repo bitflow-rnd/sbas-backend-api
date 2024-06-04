@@ -2,9 +2,9 @@ import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
   val kotlinVersion = "1.9.22"
-  kotlin("jvm") version "1.9.22"
-  kotlin("plugin.noarg") version "1.9.22"
-  kotlin("plugin.allopen") version "1.9.22"
+  kotlin("jvm") version kotlinVersion
+  kotlin("plugin.noarg") version kotlinVersion
+  kotlin("plugin.allopen") version kotlinVersion
   id("io.quarkus")
   id("com.google.cloud.artifactregistry.gradle-plugin") version "2.2.0"
 }
@@ -57,6 +57,7 @@ dependencies {
   implementation("com.linecorp.kotlin-jdsl:jpql-dsl:3.4.1")
   implementation("com.linecorp.kotlin-jdsl:jpql-render:3.4.1")
   implementation("io.seruco.encoding:base62:0.1.3")
+  quarkusDev("org.jetbrains.kotlin:kotlin-allopen-compiler-plugin:1.9.22")
 
   testImplementation("io.quarkus:quarkus-junit5")
   testImplementation("io.rest-assured:rest-assured")
@@ -108,3 +109,16 @@ noArg {
   annotation("org.sbas.utils.annotation.NoArg")
 }
 
+tasks.quarkusDev {
+  compilerOptions {
+    compiler("kotlin").args(
+      listOf(
+        "-Xplugin=${configurations.quarkusDev.get().files.find { "kotlin-allopen-compiler-plugin" in it.name }}",
+        "-P=plugin:org.jetbrains.kotlin.allopen:annotation=jakarta.ws.rs.Path",
+        "-P=plugin:org.jetbrains.kotlin.allopen:annotation=jakarta.enterprise.context.ApplicationScoped",
+        "-P=plugin:org.jetbrains.kotlin.allopen:annotation=jakarta.persistence.Entity",
+        "-P=plugin:org.jetbrains.kotlin.allopen:annotation=io.quarkus.test.junit.QuarkusTest",
+      )
+    )
+  }
+}
