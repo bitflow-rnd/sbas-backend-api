@@ -49,7 +49,7 @@ class InfoUserRepository : PanacheRepositoryBase<InfoUser, String> {
           function(String::class, "fn_get_cd_nm", stringLiteral("SIDO"), path(InfoUser::dutyDstr1Cd)),
           path(InfoUser::dutyDstr2Cd),
           function(String::class, "fn_get_dstr_cd2_nm", path(InfoUser::dutyDstr1Cd), path(InfoUser::dutyDstr2Cd)),
-          path(InfoUser::btDt), path(InfoUser::authCd), path(InfoUser::attcId), path(InfoUser::userStatCd), stringLiteral("userSstatCdNm"),
+          path(InfoUser::btDt), path(InfoUser::authCd), path(InfoUser::attcId), path(InfoUser::userStatCd), stringLiteral("userStatCdNm"),
           path(InfoUser::rgstDttm), path(InfoUser::updtDttm), path(InfoUser::aprvDttm),
         ).from(
           entity(InfoUser::class)
@@ -203,7 +203,7 @@ class InfoUserRepository : PanacheRepositoryBase<InfoUser, String> {
                 function(String::class, "fn_get_cd_nm", stringLiteral("SIDO"), path(InfoUser::dutyDstr1Cd)),
                 path(InfoUser::dutyDstr2Cd),
                 function(String::class, "fn_get_dstr_cd2_nm", path(InfoUser::dutyDstr1Cd), path(InfoUser::dutyDstr2Cd)),
-                path(InfoUser::btDt), path(InfoUser::authCd), path(InfoUser::attcId), path(InfoUser::userStatCd),
+                path(InfoUser::btDt), path(InfoUser::authCd), path(InfoUser::attcId), path(InfoUser::userStatCd), stringLiteral("userStatCdNm"),
                 path(InfoUser::rgstDttm), path(InfoUser::updtDttm), path(InfoUser::aprvDttm),
             ).from(
                 entity(InfoUser::class)
@@ -222,7 +222,7 @@ class InfoUserRepository : PanacheRepositoryBase<InfoUser, String> {
                 function(String::class, "fn_get_cd_nm", stringLiteral("SIDO"), path(InfoUser::dutyDstr1Cd)),
                 path(InfoUser::dutyDstr2Cd),
                 function(String::class, "fn_get_dstr_cd2_nm", path(InfoUser::dutyDstr1Cd), path(InfoUser::dutyDstr2Cd)),
-                path(InfoUser::btDt), path(InfoUser::authCd), path(InfoUser::attcId), path(InfoUser::userStatCd),
+                path(InfoUser::btDt), path(InfoUser::authCd), path(InfoUser::attcId), path(InfoUser::userStatCd), stringLiteral("userStatCdNm"),
                 path(InfoUser::rgstDttm), path(InfoUser::updtDttm), path(InfoUser::aprvDttm),
             ).from(
                 entity(InfoUser::class)
@@ -236,7 +236,7 @@ class InfoUserRepository : PanacheRepositoryBase<InfoUser, String> {
 
         val result = infoUserDetail.first()
         result.isFavorite = isFavorite
-
+        result.userStatCdNm = result.userStatCd?.name
         return result
     }
 }

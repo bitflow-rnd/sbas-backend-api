@@ -278,6 +278,7 @@ class UserService {
     fun getAllUsers(pageRequest: PageRequest): CommonResponse<PagingListDto> {
         // TODO 응답 수정
         val findUsers = userRepository.findAllInfoUser()
+        findUsers.forEach { it.userStatCdNm = it.userStatCd!!.cdNm }
         val totalCnt = userRepository.count()
         val response = PagingListDto(totalCnt, findUsers)
         return CommonResponse(response)

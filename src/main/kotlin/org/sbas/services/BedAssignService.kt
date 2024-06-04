@@ -447,6 +447,11 @@ class BedAssignService {
   @Transactional
   fun findBedAsgnListForWeb(param: BdasListSearchParam): CommonListResponse<BdasListDto> {
     val findBdasList = bdasReqRepository.findBdasListForWeb(param)
+    findBdasList.forEach {
+      it.ptTypeCdNm = baseCodeReader.getBaseCodeCdNm("PTTP", it.ptTypeCd)?.joinToString(";")
+      it.svrtTypeCdNm = baseCodeReader.getBaseCodeCdNm("SVTP", it.svrtTypeCd)?.joinToString(";")
+      it.undrDsesCdNm = baseCodeReader.getBaseCodeCdNm("UDDS", it.undrDsesCd)?.joinToString(";")
+    }
     val count = bdasReqRepository.countBdasList(param)
     return CommonListResponse(findBdasList, count.toInt())
   }
