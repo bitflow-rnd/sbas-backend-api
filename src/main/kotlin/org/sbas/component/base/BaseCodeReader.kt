@@ -26,7 +26,6 @@ class BaseCodeReader(
     @CacheResult(cacheName = "baseCode")
     fun getBaseCodeList(@CacheKey cdGrpId: String): List<BaseCode> {
         val baseCodes = baseCodeRepository.findAllByCdGrpId(cdGrpId)
-        if (baseCodes.isNullOrEmpty()) throw NotFoundException("해당 코드($cdGrpId) 목록이 존재하지 않습니다.")
         return baseCodes
     }
 

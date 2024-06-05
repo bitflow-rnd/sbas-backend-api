@@ -15,7 +15,7 @@ class BaseCodeRepository : PanacheRepositoryBase<BaseCode, BaseCodeId> {
         return find("id.cdGrpId = id.cdId and cdSeq = 0", Sort.by("id.cdGrpId")).list()
     }
 
-    fun findAllByCdGrpId(cdGrpId: String): List<BaseCode>? {
+    fun findAllByCdGrpId(cdGrpId: String): List<BaseCode> {
         return find("id.cdGrpId = '$cdGrpId' and cdSeq != 0", Sort.by("cdSeq", "id.cdId")).list()
     }
 

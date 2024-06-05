@@ -76,7 +76,7 @@ class PatientService {
     fun saveInfoPt(infoPtDto: InfoPtDto): CommonResponse<String?> {
         //환자 주소(bascAddr)로 dstr1Cd, dstr2Cd 구하기
         val split = infoPtDto.bascAddr.split(" ")
-        val dstr1Cd = StringUtils.getdstr1Cd(split[0])
+        val dstr1Cd = StringUtils.getDstr1Cd(split[0])
         val findBaseCode = baseCodeRepository.findByDstr1CdAndCdNm(dstr1Cd, split[1])
         val infoPt = infoPtDto.toEntity(dstr1Cd, findBaseCode.id.cdId)
 
@@ -134,7 +134,7 @@ class PatientService {
 
         //환자 주소(bascAddr)로 dstr1Cd, dstr2Cd 구하기
         val split = infoPtDto.bascAddr.split(" ")
-        val dstr1Cd = StringUtils.getdstr1Cd(split[0])
+        val dstr1Cd = StringUtils.getDstr1Cd(split[0])
         val findBaseCode = baseCodeRepository.findByDstr1CdAndCdNm(dstr1Cd, split[1])
         infoPtDto.dstr1Cd = dstr1Cd
         infoPtDto.dstr2Cd = findBaseCode.id.cdId

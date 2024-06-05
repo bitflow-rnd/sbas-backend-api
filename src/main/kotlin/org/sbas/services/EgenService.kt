@@ -332,7 +332,7 @@ class EgenService {
 
     fun saveUsefulSckbdInfo(param: EgenApiEmrrmRltmUsefulSckbdInfoParams) {
 //        val (jsonObjectIntPair, totalCount) = getEmrrmRltmUsefulSckbdInfoInqire(param)
-        SidoCd.values().forEach {
+        SidoCd.entries.forEach {
             if (it.cdNm == "강원도") {
                 param.stage1 = "강원특별자치도"
             } else {

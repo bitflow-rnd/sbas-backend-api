@@ -150,7 +150,7 @@ class NaverApiHandler {
         }
 
         // 코드
-        val dstr1Cd = StringUtils.getdstr1Cd(addrList[0])
+        val dstr1Cd = StringUtils.getDstr1Cd(addrList[0])
         val baseCode = baseCodeRepository.findByDstr1CdAndCdNm(dstr1Cd, addrList[1])
         val dstr2Cd = baseCode.id.cdId
 
@@ -181,7 +181,7 @@ class NaverApiHandler {
                 it.types!![0] to it.longName!!
             }
         }
-        val dstr1Cd = StringUtils.getdstr1Cd(resultMap["SIDO"]!!)
+        val dstr1Cd = StringUtils.getDstr1Cd(resultMap["SIDO"]!!)
         val baseCode = baseCodeRepository.findByDstr1CdAndCdNm(dstr1Cd, resultMap["SIGUGUN"]!!)
         val dstr2Cd = baseCode.id.cdId
 
