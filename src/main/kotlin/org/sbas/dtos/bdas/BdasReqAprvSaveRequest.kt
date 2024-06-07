@@ -70,6 +70,7 @@ data class BdasAprvResponse(
 data class AvalHospListResponse(
     val hospId: String,
     val hospNm: String,
+    val dutyDivNam: String?,
     @JsonIgnore
     val doubleDistance: Double,
     val distance: String?,

@@ -31,6 +31,14 @@ enum class PtTypeCd(val cdNm: String) {
 }
 
 /**
+ * 중증도 입력 유형 코드
+ */
+enum class SvrtIptTypeCd(val cdNm: String) {
+  SVIP0001("직접선택"),
+  SVIP0002("생체정보입력"),
+}
+
+/**
  * 중증 유형 코드
  */
 enum class SvrtTypeCd(val cdNm: String) {

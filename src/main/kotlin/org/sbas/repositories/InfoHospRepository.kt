@@ -130,7 +130,7 @@ class InfoHospRepository : PanacheRepositoryBase<InfoHosp, String> {
     fun findAvalHospListBydstr1Cd(dstr1Cd: String, dstr2Cd: String?): MutableList<AvalHospDto> {
         val query = jpql {
             selectNew<AvalHospDto>(
-                path(InfoHosp::hospId), path(InfoHosp::dutyName), path(InfoHosp::wgs84Lon), path(InfoHosp::wgs84Lat),
+                path(InfoHosp::hospId), path(InfoHosp::dutyName), path(InfoHosp::dutyDivNam), path(InfoHosp::wgs84Lon), path(InfoHosp::wgs84Lat),
                 path(InfoHosp::dutyAddr), path(InfoBed::gnbdIcu), path(InfoBed::npidIcu), path(InfoBed::gnbdSvrt),
                 path(InfoBed::gnbdSmsv), path(InfoBed::gnbdModr),
                 path(InfoBed::ventilator), path(InfoBed::ventilatorPreemie), path(InfoBed::incubator), path(InfoBed::ecmo),

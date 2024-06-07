@@ -47,7 +47,7 @@ class BdasReqRepository : PanacheRepositoryBase<BdasReq, BdasReqId> {
                 "left join BdasAdms ba on br.id.bdasSeq = ba.id.bdasSeq " +
                 "where br.id.bdasSeq in (select max(id.bdasSeq) as bdasSeq from BdasReq group by id.ptId) " +
                 "$cond " +
-                "order by br.updtDttm desc "
+                "order by br.bedStatCd, br.updtDttm desc "
 
         return entityManager.createQuery(query, BdasListDto::class.java)
     }

@@ -227,6 +227,7 @@ class BedAssignService {
       AvalHospListResponse(
         hospId = avalHospDto.hospId,
         hospNm = avalHospDto.dutyName!!,
+        dutyDivNam = avalHospDto.dutyDivNam,
         doubleDistance = distance,
         distance = convertToStringDistance(distance),
         addr = avalHospDto.dutyAddr!!,
