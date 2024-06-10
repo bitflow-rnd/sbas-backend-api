@@ -161,7 +161,7 @@ class PatientService {
     fun findBasicInfo(ptId: String): CommonResponse<*> {
         val infoPt = infoPtRepository.findById(ptId) ?: throw NotFoundException("$ptId not found")
         val bdasReq = bdasReqRepository.findByPtIdWithLatestBdasSeq(ptId)
-        val svrtPt = svrtPtRepository.findByPtIdAndRgstSeq(ptId, bdasReq?.id?.bdasSeq ?: 0)
+        val svrtPt = svrtPtRepository.findByPtIdAndRgstSeq(ptId)
 
         val bedStatCd: String = bdasReq?.bedStatCd ?: "BAST0001"
 

@@ -390,9 +390,9 @@ class BedAssignService {
     val findBdasReq  = bdasReqRepository.findByPtIdAndBdasSeq(saveRequest.ptId, saveRequest.bdasSeq)
     val findBdasAdms = bdasAdmsRepository.findByIdOrderByAdmsSeqDesc(saveRequest.ptId, saveRequest.bdasSeq)
 
-    var entity: BdasAdms? = null
+    var entity: BdasAdms?
     if (findBdasAdms == null) { // 입퇴원 정보가 없을 경우
-      val firstAdmsSeq: Int = 1
+      val firstAdmsSeq = 1
       entity = saveRequest.toEntity(saveRequest.admsStatCd, firstAdmsSeq)
 
       // 입원일 경우 중증 관찰 환자 등록

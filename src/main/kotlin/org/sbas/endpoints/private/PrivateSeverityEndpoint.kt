@@ -47,4 +47,10 @@ class PrivateSeverityEndpoint {
     return Response.ok(result).build()
   }
 
+  @GET
+  @Path("infos/{ptId}")
+  fun severityInfo(@RestPath ptId: String): Response {
+    return Response.ok(svrtService.findSeverityInfos(ptId)).build()
+  }
+
 }

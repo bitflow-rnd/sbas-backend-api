@@ -11,7 +11,6 @@ import org.sbas.entities.svrt.SvrtColl
 import org.sbas.entities.svrt.SvrtCollId
 import org.sbas.repositories.SvrtAnlyRepository
 import org.sbas.repositories.SvrtCollRepository
-import org.sbas.repositories.SvrtPtRepository
 import org.sbas.responses.CommonResponse
 import org.sbas.utils.StringUtils.Companion.getYyyyMmDdWithHyphen
 
@@ -43,7 +42,6 @@ class SvrtService {
 
 
     fun getSvrtCollById(id: SvrtCollId): SvrtColl? {
-        System.out.println(5)
         return svrtCollRepository.findById(id)
     }
 
@@ -115,6 +113,10 @@ class SvrtService {
 
     fun deleteSvrtCollById(id: SvrtCollId): Boolean {
         return svrtCollRepository.deleteById(id)
+    }
+
+  fun findSeverityInfos(ptId: String): List<SvrtColl>? {
+        return svrtCollRepository.findByPtId(ptId)
     }
 
 }
