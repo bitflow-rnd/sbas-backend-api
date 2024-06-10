@@ -9,9 +9,11 @@ import org.eclipse.microprofile.jwt.JsonWebToken
 import org.jboss.logging.Logger
 import org.sbas.component.InfoCrewComponent
 import org.sbas.component.base.BaseCodeReader
+import org.sbas.constants.enums.AdmsStatCd
 import org.sbas.constants.enums.BedStatCd
 import org.sbas.constants.enums.TimeLineStatCd
 import org.sbas.dtos.bdas.*
+import org.sbas.entities.bdas.BdasAdms
 import org.sbas.entities.bdas.BdasReqId
 import org.sbas.handlers.GeocodingHandler
 import org.sbas.repositories.*
@@ -388,20 +390,30 @@ class BedAssignService {
     val findBdasReq  = bdasReqRepository.findByPtIdAndBdasSeq(saveRequest.ptId, saveRequest.bdasSeq)
     val findBdasAdms = bdasAdmsRepository.findByIdOrderByAdmsSeqDesc(saveRequest.ptId, saveRequest.bdasSeq)
 
-    val entity = if (findBdasAdms == null) {
-      saveRequest.toEntity(saveRequest.admsStatCd, 1)
-    } else {
+    var entity: BdasAdms? = null
+    if (findBdasAdms == null) { // 입퇴원 정보가 없을 경우
+      val firstAdmsSeq: Int = 1
+      entity = saveRequest.toEntity(saveRequest.admsStatCd, firstAdmsSeq)
+
+      // 입원일 경우 중증 관찰 환자 등록
+      if (saveRequest.admsStatCd == AdmsStatCd.IOST0001.name) {
+        svrtPtRepository.persist(saveRequest.toSvrtPtEntity(firstAdmsSeq))
+      }
+    } else { // 입퇴원 정보가 있을 경우
       if (findBdasAdms.isAdmsStatCdDuplicate(saveRequest.admsStatCd)) {
         throw CustomizedException("입/퇴원 상태(admsStatCd) 중복입니다.", Response.Status.BAD_REQUEST)
       }
-      saveRequest.toEntity(saveRequest.admsStatCd, findBdasAdms.id.admsSeq + 1)
+      val admsSeq = findBdasAdms.id.admsSeq + 1
+      entity = saveRequest.toEntity(saveRequest.admsStatCd, admsSeq)
+
+      // 입원일 경우 중증 관찰 환자 등록
+      if (saveRequest.admsStatCd == AdmsStatCd.IOST0001.name) {
+        svrtPtRepository.persist(saveRequest.toSvrtPtEntity(admsSeq))
+      }
     }
 
     bdasAdmsRepository.persist(entity)
     findBdasReq.changeBedStatTo(BedStatCd.BAST0007.name)
-
-    // 중증 관찰 환자 등록
-    svrtPtRepository.persist(saveRequest.toSvrtPtEntity())
 
     return CommonResponse("${entity.id.ptId} ${entity.id.bdasSeq} 입퇴원 정보 등록 성공")
   }

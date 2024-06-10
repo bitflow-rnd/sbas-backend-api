@@ -1,14 +1,15 @@
 package org.sbas.repositories
 
 import io.quarkus.hibernate.orm.panache.kotlin.PanacheRepositoryBase
-import org.sbas.dtos.info.InfoPtSearchDto
-import org.sbas.entities.svrt.*
-import java.util.*
 import jakarta.enterprise.context.ApplicationScoped
+import org.sbas.entities.svrt.*
 
 @ApplicationScoped
 class SvrtPtRepository : PanacheRepositoryBase<SvrtPt, SvrtPtId> {
 
+  fun findByPtIdAndRgstSeq(ptId: String, rgstSeq: Int): SvrtPt? {
+    return find("id.ptId = ?1 and rgstSeq = ?2", ptId, rgstSeq).firstResult()
+  }
 }
 
 @ApplicationScoped

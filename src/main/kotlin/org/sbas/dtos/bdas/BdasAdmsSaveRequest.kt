@@ -73,12 +73,12 @@ data class BdasAdmsSaveRequest(
     )
   }
 
-  fun toSvrtPtEntity(): SvrtPt {
+  fun toSvrtPtEntity(rgstSeq: Int): SvrtPt {
     return SvrtPt(
       id = SvrtPtId(
         ptId = ptId,
         hospId = hospId,
-        rgstSeq = bdasSeq,
+        rgstSeq = rgstSeq,
       ),
       pid = pid ?: ptId,
       monStrtDt = StringUtils.getYyyyMmDd(),

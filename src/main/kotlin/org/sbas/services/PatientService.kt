@@ -55,6 +55,9 @@ class PatientService {
     private lateinit var bdasReqRepository: BdasReqRepository
 
     @Inject
+    private lateinit var svrtPtRepository: SvrtPtRepository
+
+    @Inject
     private lateinit var fileHandler: FileHandler
 
     @Inject
@@ -158,6 +161,7 @@ class PatientService {
     fun findBasicInfo(ptId: String): CommonResponse<*> {
         val infoPt = infoPtRepository.findById(ptId) ?: throw NotFoundException("$ptId not found")
         val bdasReq = bdasReqRepository.findByPtIdWithLatestBdasSeq(ptId)
+        val svrtPt = svrtPtRepository.findByPtIdAndRgstSeq(ptId, bdasReq?.id?.bdasSeq ?: 0)
 
         val bedStatCd: String = bdasReq?.bedStatCd ?: "BAST0001"
 
@@ -188,7 +192,7 @@ class PatientService {
             bedStatNm = bedStatCd.let { BedStatCd.valueOf(it).cdNm },
             undrDsesCd = infoPt.undrDsesCd,
             undrDsesEtc = infoPt.undrDsesEtc,
-            monitoring = false,
+            monitoring = svrtPt != null,
         )
 
         return CommonResponse(infoPtBasicInfo)

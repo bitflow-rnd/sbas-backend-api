@@ -95,6 +95,12 @@ enum class BnrnTypeCd(val cdNm: String) {
     BNRN0007("기타"),
 }
 
+enum class AdmsStatCd(val cdNm: String) {
+  IOST0001("입원"),
+  IOST0002("퇴원"),
+  IOST0003("자택회송"),
+}
+
 enum class DprtTypeCd(val cdNm: String) {
     DPTP0001("자택"),
     DPTP0002("병원"),
