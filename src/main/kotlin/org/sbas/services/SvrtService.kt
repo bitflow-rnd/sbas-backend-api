@@ -19,14 +19,10 @@ import org.sbas.utils.StringUtils.Companion.getYyyyMmDdWithHyphen
 class SvrtService {
 
     @Inject
-    private lateinit var svrtPtRepository: SvrtPtRepository
-
-    @Inject
     private lateinit var svrtAnlyRepository: SvrtAnlyRepository
 
     @Inject
     private lateinit var svrtCollRepository: SvrtCollRepository
-
 
     fun getSvrtAnlyById(id: SvrtAnlyId): SvrtAnly? {
         return svrtAnlyRepository.findById(id)

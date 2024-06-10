@@ -12,7 +12,6 @@ import org.sbas.component.base.BaseCodeReader
 import org.sbas.constants.enums.BedStatCd
 import org.sbas.constants.enums.TimeLineStatCd
 import org.sbas.dtos.bdas.*
-import org.sbas.entities.bdas.BdasAprvId
 import org.sbas.entities.bdas.BdasReqId
 import org.sbas.handlers.GeocodingHandler
 import org.sbas.repositories.*
@@ -65,6 +64,9 @@ class BedAssignService {
 
   @Inject
   private lateinit var activityHistoryRepository: UserActivityHistoryRepository
+
+  @Inject
+  private lateinit var svrtPtRepository: SvrtPtRepository
 
   @Inject
   private lateinit var geoHandler: GeocodingHandler
@@ -208,7 +210,7 @@ class BedAssignService {
    * 가용 병원 목록 조회
    */
   @Transactional
-  fun getAvalHospList(ptId: String, bdasSeq: Int): CommonResponse<*> {
+  fun getAvalHospList(ptId: String, bdasSeq: Int, param: AvalHospListRequest): CommonResponse<*> {
     val findBdasReq = bdasReqRepository.findByPtIdAndBdasSeq(ptId, bdasSeq)
 
     val dstr1Cd = findBdasReq.reqDstr1Cd
@@ -397,6 +399,9 @@ class BedAssignService {
 
     bdasAdmsRepository.persist(entity)
     findBdasReq.changeBedStatTo(BedStatCd.BAST0007.name)
+
+    // 중증 관찰 환자 등록
+    svrtPtRepository.persist(saveRequest.toSvrtPtEntity())
 
     return CommonResponse("${entity.id.ptId} ${entity.id.bdasSeq} 입퇴원 정보 등록 성공")
   }
