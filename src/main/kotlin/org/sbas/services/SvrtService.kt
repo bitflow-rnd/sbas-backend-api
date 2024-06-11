@@ -115,8 +115,8 @@ class SvrtService {
         return svrtCollRepository.deleteById(id)
     }
 
-  fun findSeverityInfos(ptId: String): List<SvrtColl>? {
-        return svrtCollRepository.findByPtId(ptId)
+  fun findSeverityInfos(ptId: String): CommonResponse<List<SvrtColl>> {
+        return CommonResponse(svrtCollRepository.findByPtId(ptId))
     }
 
 }

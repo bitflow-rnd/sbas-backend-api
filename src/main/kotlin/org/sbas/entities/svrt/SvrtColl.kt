@@ -41,9 +41,6 @@ class SvrtColl(
     @Column(name = "rslt_tm", nullable = false, length = 6)
     var rsltTm: String, // 결과 시간
 
-    @Column(name = "hist_cd", nullable = false, length = 8)
-    var histCd: String, // 이력 코드
-
     @Column(name = "alt", length = 10)
     var alt: String? = null, // ALT
 
@@ -99,7 +96,10 @@ class SvrtColl(
     var sbp: String? = null, // 수축기 혈압
 
     @Column(name = "spo2", length = 10)
-    var spo2: String? = null // 산소포화도
+    var spo2: String? = null, // 산소포화도
+
+    @Column(name = "oxygen", length = 12)
+    var oxygenApply: String? = null, // 산소치료수준
 ) : CommonEntity()
 
 @Embeddable
