@@ -1,4 +1,4 @@
-package org.sbas.endpoints.private
+package org.sbas.endpoints.prvt
 
 import jakarta.inject.Inject
 import jakarta.validation.Valid

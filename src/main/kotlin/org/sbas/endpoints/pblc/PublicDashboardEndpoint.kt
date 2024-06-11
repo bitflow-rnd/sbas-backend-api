@@ -1,4 +1,4 @@
-package org.sbas.endpoints.public
+package org.sbas.endpoints.pblc
 
 import jakarta.ws.rs.GET
 import jakarta.ws.rs.Path

@@ -1,4 +1,4 @@
-package org.sbas.endpoints.public
+package org.sbas.endpoints.pblc
 
 import com.google.gson.Gson
 import id.g8id.api.rsps.HlthChckDeftRsps

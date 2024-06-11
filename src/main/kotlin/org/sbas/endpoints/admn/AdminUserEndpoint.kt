@@ -1,4 +1,4 @@
-package org.sbas.endpoints.admin
+package org.sbas.endpoints.admn
 
 import jakarta.annotation.security.RolesAllowed
 import jakarta.inject.Inject
