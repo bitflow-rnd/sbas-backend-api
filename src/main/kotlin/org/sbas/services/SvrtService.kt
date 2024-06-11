@@ -2,8 +2,9 @@ package org.sbas.services
 
 import com.fasterxml.jackson.databind.ObjectMapper
 import jakarta.enterprise.context.ApplicationScoped
-import jakarta.inject.Inject
 import jakarta.transaction.Transactional
+import org.eclipse.microprofile.rest.client.inject.RestClient
+import org.jboss.logging.Logger
 import org.json.JSONObject
 import org.sbas.entities.svrt.SvrtAnly
 import org.sbas.entities.svrt.SvrtAnlyId
@@ -12,16 +13,17 @@ import org.sbas.entities.svrt.SvrtCollId
 import org.sbas.repositories.SvrtAnlyRepository
 import org.sbas.repositories.SvrtCollRepository
 import org.sbas.responses.CommonResponse
+import org.sbas.restclients.FatimaHisRestClient
+import org.sbas.restclients.HisRestClientRequest
 import org.sbas.utils.StringUtils.Companion.getYyyyMmDdWithHyphen
 
 @ApplicationScoped
-class SvrtService {
-
-  @Inject
-  private lateinit var svrtAnlyRepository: SvrtAnlyRepository
-
-  @Inject
-  private lateinit var svrtCollRepository: SvrtCollRepository
+class SvrtService(
+  private val log: Logger,
+  private val svrtAnlyRepository: SvrtAnlyRepository,
+  private val svrtCollRepository: SvrtCollRepository,
+  @RestClient private val fatimaHisRestClient: FatimaHisRestClient,
+) {
 
   fun getSvrtAnlyById(id: SvrtAnlyId): SvrtAnly? {
     return svrtAnlyRepository.findById(id)
@@ -117,6 +119,12 @@ class SvrtService {
 
   fun findSeverityInfos(ptId: String): CommonResponse<List<SvrtColl>> {
     return CommonResponse(svrtCollRepository.findByPtId(ptId))
+  }
+
+  fun getHisSvrtMntrInfo() {
+    val fatimaSvrtMntrInfo = fatimaHisRestClient.getFatimaSvrtMntrInfo(HisRestClientRequest("0030001", "20220112"))
+    log.debug("fatimaSvrtMntrInfo: $fatimaSvrtMntrInfo")
+
   }
 
 }
