@@ -11,10 +11,11 @@ data class HisApiResponse(
   val message: String,
   val timestamp: String,
   val bodyType: String,
-  val body: List<PatientData>,
+  val body: List<SvrtMntrInfo>,
 )
 
-data class PatientData(
+// basedd-4 ~ basedd 데이터 조회
+data class SvrtMntrInfo(
   @field: JsonProperty("adms_dt") val admsDt: String,
   @field: JsonProperty("dept_nm") val deptNm: String,
   @field: JsonProperty("msre_dt") val msreDt: String,

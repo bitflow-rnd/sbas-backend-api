@@ -12,6 +12,7 @@ import org.sbas.entities.svrt.SvrtColl
 import org.sbas.entities.svrt.SvrtCollId
 import org.sbas.repositories.SvrtAnlyRepository
 import org.sbas.repositories.SvrtCollRepository
+import org.sbas.repositories.SvrtPtRepository
 import org.sbas.responses.CommonResponse
 import org.sbas.restclients.FatimaHisRestClient
 import org.sbas.restclients.HisRestClientRequest
@@ -22,6 +23,7 @@ class SvrtService(
   private val log: Logger,
   private val svrtAnlyRepository: SvrtAnlyRepository,
   private val svrtCollRepository: SvrtCollRepository,
+  private val svrtPtRepository: SvrtPtRepository,
   @RestClient private val fatimaHisRestClient: FatimaHisRestClient,
 ) {
 
@@ -121,10 +123,25 @@ class SvrtService(
     return CommonResponse(svrtCollRepository.findByPtId(ptId))
   }
 
-  fun getHisSvrtMntrInfo() {
-    val fatimaSvrtMntrInfo = fatimaHisRestClient.getFatimaSvrtMntrInfo(HisRestClientRequest("0030001", "20220112"))
-    log.debug("fatimaSvrtMntrInfo: $fatimaSvrtMntrInfo")
+  fun getHisSvrtMntrInfo(ptId: String, hospId: String) {
+    // 0030001, 20220103 ~ 20220112
+    val sampleData = HisRestClientRequest("0030001", "20220113")
+    // 0030002, 20211221 ~ 20211225
+    val sampleData2 = HisRestClientRequest("0030002", "20211225")
 
+    val fatimaSvrtMntrInfo = fatimaHisRestClient.getFatimaSvrtMntrInfo(sampleData)
+
+    // SvrtColl에 저장
+    val svrtPt = svrtPtRepository.findByPtId(ptId)
+    fatimaSvrtMntrInfo.body.forEach {
+      val svrtColl = it.toSvrtColl(
+        ptId = ptId,
+        hospId = hospId,
+        rgstSeq = 1,
+      )
+    }
+
+    log.debug("fatimaSvrtMntrInfo: $fatimaSvrtMntrInfo")
   }
 
 }

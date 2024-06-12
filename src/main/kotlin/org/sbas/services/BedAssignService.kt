@@ -219,7 +219,7 @@ class BedAssignService {
     val dstr2Cd: String? = findBdasReq.reqDstr2Cd
 
     // 병상 배정 요청시 선택한 dstr1Cd, dstr2Cd에 해당하는 infoHosp 목록
-    val infoHospList = infoHospRepository.findAvalHospListBydstr1Cd(dstr1Cd, dstr2Cd)
+    val infoHospList = infoHospRepository.findAvalHospList(dstr1Cd, dstr2Cd, param)
     log.debug("getAvalHospList >>>>>>>>>>>>>> ${infoHospList.size}")
     val list = infoHospList.map { avalHospDto ->
       val distance = calculateDistance(
@@ -390,26 +390,17 @@ class BedAssignService {
     val findBdasReq  = bdasReqRepository.findByPtIdAndBdasSeq(saveRequest.ptId, saveRequest.bdasSeq)
     val findBdasAdms = bdasAdmsRepository.findByIdOrderByAdmsSeqDesc(saveRequest.ptId, saveRequest.bdasSeq)
 
-    var entity: BdasAdms?
-    if (findBdasAdms == null) { // 입퇴원 정보가 없을 경우
-      val firstAdmsSeq = 1
-      entity = saveRequest.toEntity(saveRequest.admsStatCd, firstAdmsSeq)
+    if (findBdasAdms?.isAdmsStatCdDuplicate(saveRequest.admsStatCd) == true) {
+      throw CustomizedException("입/퇴원 상태(admsStatCd) 중복입니다.", Response.Status.BAD_REQUEST)
+    }
 
-      // 입원일 경우 중증 관찰 환자 등록
-      if (saveRequest.admsStatCd == AdmsStatCd.IOST0001.name) {
-        svrtPtRepository.persist(saveRequest.toSvrtPtEntity(firstAdmsSeq))
-      }
-    } else { // 입퇴원 정보가 있을 경우
-      if (findBdasAdms.isAdmsStatCdDuplicate(saveRequest.admsStatCd)) {
-        throw CustomizedException("입/퇴원 상태(admsStatCd) 중복입니다.", Response.Status.BAD_REQUEST)
-      }
-      val admsSeq = findBdasAdms.id.admsSeq + 1
-      entity = saveRequest.toEntity(saveRequest.admsStatCd, admsSeq)
+    val admsSeq = if (findBdasAdms == null) 1 else findBdasAdms.id.admsSeq + 1
+    val svrtPtEntity = saveRequest.toSvrtPtEntity(admsSeq)
+    val entity: BdasAdms = saveRequest.toEntity(AdmsStatCd.valueOf(saveRequest.admsStatCd), admsSeq)
 
-      // 입원일 경우 중증 관찰 환자 등록
-      if (saveRequest.admsStatCd == AdmsStatCd.IOST0001.name) {
-        svrtPtRepository.persist(saveRequest.toSvrtPtEntity(admsSeq))
-      }
+    // 입원일 경우 중증 관찰 환자 등록
+    if (saveRequest.admsStatCd == AdmsStatCd.IOST0001.name) {
+      svrtPtRepository.persist(svrtPtEntity)
     }
 
     bdasAdmsRepository.persist(entity)

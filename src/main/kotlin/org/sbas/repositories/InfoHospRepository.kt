@@ -8,6 +8,7 @@ import jakarta.enterprise.context.ApplicationScoped
 import jakarta.inject.Inject
 import jakarta.persistence.EntityManager
 import org.jboss.logging.Logger
+import org.sbas.dtos.bdas.AvalHospListRequest
 import org.sbas.dtos.info.*
 import org.sbas.entities.info.InfoBed
 import org.sbas.entities.info.InfoHosp
@@ -127,7 +128,7 @@ class InfoHospRepository : PanacheRepositoryBase<InfoHosp, String> {
 //        return entityManager.createQuery(query, context).resultList
     }
 
-    fun findAvalHospListBydstr1Cd(dstr1Cd: String, dstr2Cd: String?): MutableList<AvalHospDto> {
+    fun findAvalHospList(dstr1Cd: String, dstr2Cd: String?, param: AvalHospListRequest): MutableList<AvalHospDto> {
         val query = jpql {
             selectNew<AvalHospDto>(
                 path(InfoHosp::hospId), path(InfoHosp::dutyName), path(InfoHosp::dutyDivNam), path(InfoHosp::wgs84Lon), path(InfoHosp::wgs84Lat),
@@ -141,7 +142,8 @@ class InfoHospRepository : PanacheRepositoryBase<InfoHosp, String> {
                 join(InfoBed::class).on(path(InfoHosp::hospId).eq(path(InfoBed::hospId)))
             ).whereAnd(
                 path(InfoHosp::dstr1Cd).eq(dstr1Cd),
-                dstr2Cd?.run { path(InfoHosp::dstr2Cd).eq(dstr2Cd) }
+                dstr2Cd?.run { path(InfoHosp::dstr2Cd).eq(dstr2Cd) },
+                param.dutyName?.run { path(InfoHosp::dutyName).like("%$this%") },
             )
         }
 

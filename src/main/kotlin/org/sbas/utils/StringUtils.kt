@@ -1,6 +1,8 @@
 package org.sbas.utils
 
 import java.text.SimpleDateFormat
+import java.time.LocalDate
+import java.time.format.DateTimeFormatter
 import java.util.*
 
 class StringUtils {
@@ -105,4 +107,11 @@ class StringUtils {
       return prefix + incrementedNumber.toString().padStart(codeNumberLength, '0')
     }
   }
+}
+
+operator fun String.minus(days: Int): String {
+  val formatter = DateTimeFormatter.ofPattern("yyyyMMdd")
+  val date = LocalDate.parse(this, formatter)
+  val resultDate = date.minusDays(days.toLong())
+  return formatter.format(resultDate)
 }

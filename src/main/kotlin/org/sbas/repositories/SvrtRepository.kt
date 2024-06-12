@@ -7,8 +7,8 @@ import org.sbas.entities.svrt.*
 @ApplicationScoped
 class SvrtPtRepository : PanacheRepositoryBase<SvrtPt, SvrtPtId> {
 
-  fun findByPtIdAndRgstSeq(ptId: String): SvrtPt? {
-    return find("id.ptId = ?1", ptId).firstResult()
+  fun findByPtId(ptId: String): List<SvrtPt> {
+    return find("id.ptId = ?1", ptId).list()
   }
 }
 

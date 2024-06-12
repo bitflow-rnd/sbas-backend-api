@@ -16,7 +16,7 @@ class EnumValidator : ConstraintValidator<ValidEnum, String?> {
         val values = mutableListOf<String>()
         var res = 0
 
-        if (value == null) {
+        if (value.isNullOrEmpty()) {
             return this.annotation.isNullable
         }
 
