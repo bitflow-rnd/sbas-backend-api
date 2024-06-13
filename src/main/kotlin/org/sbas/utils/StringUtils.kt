@@ -109,7 +109,14 @@ class StringUtils {
   }
 }
 
-operator fun String.minus(days: Int): String {
+fun String.plusDays(days: Int): String {
+  val formatter = DateTimeFormatter.ofPattern("yyyyMMdd")
+  val date = LocalDate.parse(this, formatter)
+  val resultDate = date.plusDays(days.toLong())
+  return formatter.format(resultDate)
+}
+
+fun String.minusDays(days: Int): String {
   val formatter = DateTimeFormatter.ofPattern("yyyyMMdd")
   val date = LocalDate.parse(this, formatter)
   val resultDate = date.minusDays(days.toLong())

@@ -15,6 +15,7 @@ import org.sbas.restparameters.NaverGeocodingApiParams
 import org.sbas.restresponses.NaverGeocodingApiResponse
 import org.sbas.restresponses.NaverReverseGeocodingApiResponse
 import org.sbas.services.FirebaseService
+import org.sbas.services.SvrtService
 
 
 @Tag(name = "테스트", description = "내맘대로 테스트")
@@ -32,6 +33,9 @@ class SbasTestEndpoint {
 
     @Inject
     lateinit var firebaseService: FirebaseService
+
+    @Inject
+    lateinit var svrtService: SvrtService
 
 //    @GET
 //    @Path("user")
@@ -67,5 +71,15 @@ class SbasTestEndpoint {
 //        firebaseService.sendMessage("jiseongtak", "123123", "jiseongtak")
         firebaseService.sendMessageMultiDevice("test", msg, to)
     }
+
+  @GET
+  @Path("test")
+  fun test() {
+    val sampleInputData = mutableMapOf(
+      "0030001" to "20220103,20220108",
+      "0030002" to "20211221"
+    )
+    svrtService.saveFatimaMntrInfoWithSample("0030001")
+  }
 
 }

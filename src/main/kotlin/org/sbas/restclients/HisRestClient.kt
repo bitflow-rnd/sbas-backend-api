@@ -18,5 +18,5 @@ interface FatimaHisRestClient {
 
 data class HisRestClientRequest(
   val pid: String,
-  val basedd: String,
+  val basedd: String? = null,
 )

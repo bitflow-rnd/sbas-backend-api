@@ -4,7 +4,6 @@ import jakarta.persistence.*
 import org.sbas.entities.CommonEntity
 import java.io.Serializable
 
-
 /**
  * 중증 관찰 정보
  */
@@ -12,7 +11,7 @@ import java.io.Serializable
 @Table(name = "svrt_coll")
 class SvrtColl(
     @EmbeddedId
-    var id: SvrtCollId? = null,
+    var id: SvrtCollId,
 
     @Column(name = "pid", nullable = false, length = 10)
     var pid: String, // 병원 PID

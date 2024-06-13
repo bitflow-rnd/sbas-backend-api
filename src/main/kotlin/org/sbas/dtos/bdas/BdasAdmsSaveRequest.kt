@@ -25,6 +25,8 @@ data class BdasAdmsSaveRequest(
   @field: [NotNull ValidEnum(enumClass = AdmsStatCd::class)]
   val admsStatCd: String,
   val pid: String?,
+  val monStrtDt: String?,
+  val monStrtTm: String?,
 ) {
 
   fun toEntity(admsStatCd: AdmsStatCd, admsSeq: Int): BdasAdms {
@@ -80,8 +82,8 @@ data class BdasAdmsSaveRequest(
         rgstSeq = rgstSeq,
       ),
       pid = pid ?: ptId,
-      monStrtDt = StringUtils.getYyyyMmDd(),
-      monStrtTm = StringUtils.getHhMmSs(),
+      monStrtDt = monStrtDt ?: StringUtils.getYyyyMmDd(),
+      monStrtTm = monStrtTm ?: StringUtils.getHhMmSs(),
     )
   }
 }

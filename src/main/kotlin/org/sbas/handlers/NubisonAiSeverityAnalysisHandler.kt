@@ -25,7 +25,7 @@ class NubisonAiSeverityAnalysisHandler {
     @OptIn(ExperimentalStdlibApi::class)
     fun analyse(pid: String): NubisonAiSeverityAnalysisResponse? {
 
-        val svrtCollList = svrtService.getSvrtCollByPidAndMsreDt(pid)?.sortedBy { it.id?.msreDt }
+        val svrtCollList = svrtService.getSvrtCollByPidAndMsreDt(pid)?.sortedBy { it.id.msreDt }
         if (!svrtCollList.isNullOrEmpty()) {
             val requestData = svrtService.getSvrtRequestData(svrtCollList)
             val requestBody = """
@@ -68,10 +68,10 @@ class NubisonAiSeverityAnalysisHandler {
             for ((requestRowIndex, value) in svrtCollList.withIndex()) {
                     val svrtAnlyRow = SvrtAnly(
                         SvrtAnlyId(
-                            ptId = value.id!!.ptId,
-                            hospId = value.id!!.hospId,
-                            rgstSeq = value.id!!.rgstSeq,
-                            msreDt = value.id!!.msreDt,
+                            ptId = value.id.ptId,
+                            hospId = value.id.hospId,
+                            rgstSeq = value.id.rgstSeq,
+                            msreDt = value.id.msreDt,
                             collSeq = requestRowIndex + 1, // +1 is to start from 1, not from 0
                             anlyDt = StringUtils.getYyyyMmDd(),
                             anlySeq = currentAnlySeq
@@ -80,7 +80,7 @@ class NubisonAiSeverityAnalysisHandler {
                         collDt = value.rsltDt,
                         collTm = value.rsltTm,
                         anlyTm = StringUtils.getHhMmSs(),
-                        prdtDt = LocalDate.parse(value.id!!.msreDt, dateFormat)
+                        prdtDt = LocalDate.parse(value.id.msreDt, dateFormat)
                             .format(dateFormat),
                         svrtProbMean = "%.3f".format(response.outputs[0].data[requestRowIndex]),
                         svrtProbStd = "%.3f".format(response.outputs[1].data[requestRowIndex])
@@ -90,10 +90,10 @@ class NubisonAiSeverityAnalysisHandler {
                     for (plusIndex in 1..3) {
                         val svrtAnlyRow = SvrtAnly(
                             SvrtAnlyId(
-                                ptId = value.id!!.ptId,
-                                hospId = value.id!!.hospId,
-                                rgstSeq = value.id!!.rgstSeq,
-                                msreDt = value.id!!.msreDt,
+                                ptId = value.id.ptId,
+                                hospId = value.id.hospId,
+                                rgstSeq = value.id.rgstSeq,
+                                msreDt = value.id.msreDt,
                                 collSeq = requestRowIndex + plusIndex + 1, // +1 is to start from 1, not from 0
                                 anlyDt = StringUtils.getYyyyMmDd(),
                                 anlySeq = currentAnlySeq
@@ -102,7 +102,7 @@ class NubisonAiSeverityAnalysisHandler {
                             collDt = value.rsltDt,
                             collTm = value.rsltTm,
                             anlyTm = StringUtils.getHhMmSs(),
-                            prdtDt = LocalDate.parse(value.id!!.msreDt, dateFormat).plusDays(plusIndex.toLong()).format(dateFormat),
+                            prdtDt = LocalDate.parse(value.id.msreDt, dateFormat).plusDays(plusIndex.toLong()).format(dateFormat),
                             svrtProbMean = "%.3f".format(response.outputs[0].data[requestRowIndex + plusIndex]),
                             svrtProbStd = "%.3f".format(response.outputs[1].data[requestRowIndex + plusIndex])
                         )

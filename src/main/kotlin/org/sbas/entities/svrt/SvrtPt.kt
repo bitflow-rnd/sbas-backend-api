@@ -11,16 +11,16 @@ import java.io.Serializable
 @Table(name = "svrt_pt")
 class SvrtPt(
     @EmbeddedId
-    var id: SvrtPtId? = null,
+    var id: SvrtPtId,
 
     @Column(name = "pid", nullable = false, length = 10)
-    var pid: String? = null, // 병원 PID
+    var pid: String, // 병원 PID
 
     @Column(name = "mon_strt_dt", nullable = false, length = 8)
-    var monStrtDt: String? = null, // 관찰 시작 날짜
+    var monStrtDt: String, // 관찰 시작 날짜
 
     @Column(name = "mon_strt_tm", nullable = false, length = 6)
-    var monStrtTm: String? = null, // 관찰 시작 시간
+    var monStrtTm: String, // 관찰 시작 시간
 
     @Column(name = "mon_end_dt", length = 8)
     var monEndDt: String? = null, // 관찰 종료 날짜
@@ -28,18 +28,24 @@ class SvrtPt(
     @Column(name = "mon_end_tm", length = 6)
     var monEndTm: String? = null, // 관찰 종료 시간
 
-) : CommonEntity()
+) : CommonEntity() {
+
+  fun endMonitoring(monEndDt: String, monEndTm: String) {
+    this.monEndDt = monEndDt
+    this.monEndTm = monEndTm
+  }
+}
 
 @Embeddable
 data class SvrtPtId(
     @Column(name = "pt_id", nullable = false, length = 10)
-    var ptId: String? = null, // 환자 ID
+    var ptId: String, // 환자 ID
 
     @Column(name = "hosp_id", nullable = false, length = 10)
-    var hospId: String? = null, // 병원 ID
+    var hospId: String, // 병원 ID
 
     @Column(name = "rgst_seq", nullable = false)
-    var rgstSeq: Int? = null, // 등록 순번
+    var rgstSeq: Int, // 등록 순번
 
 ) : Serializable {
 

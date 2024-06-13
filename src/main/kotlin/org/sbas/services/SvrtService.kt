@@ -16,7 +16,9 @@ import org.sbas.repositories.SvrtPtRepository
 import org.sbas.responses.CommonResponse
 import org.sbas.restclients.FatimaHisRestClient
 import org.sbas.restclients.HisRestClientRequest
+import org.sbas.utils.StringUtils
 import org.sbas.utils.StringUtils.Companion.getYyyyMmDdWithHyphen
+import org.sbas.utils.plusDays
 
 @ApplicationScoped
 class SvrtService(
@@ -50,7 +52,7 @@ class SvrtService(
   }
 
   fun getSvrtCollByPidAndMsreDt(pid: String): List<SvrtColl>? {
-    return svrtCollRepository.findByPtIdAndMsreDt(pid)
+    return svrtCollRepository.findByPid(pid)
   }
 
   /**
@@ -80,7 +82,7 @@ class SvrtService(
     )
     var msreDt: String
     svrtCollList.forEach {
-      msreDt = getYyyyMmDdWithHyphen(it.id!!.msreDt)
+      msreDt = getYyyyMmDdWithHyphen(it.id.msreDt)
       (requestMap["ALT"] as HashMap<String, Float>)[msreDt] = it.alt!!.toFloat()
       (requestMap["AST"] as HashMap<String, Float>)[msreDt] = it.ast!!.toFloat()
       (requestMap["BUN"] as HashMap<String, Float>)[msreDt] = it.bun!!.toFloat()
@@ -123,25 +125,28 @@ class SvrtService(
     return CommonResponse(svrtCollRepository.findByPtId(ptId))
   }
 
-  fun getHisSvrtMntrInfo(ptId: String, hospId: String) {
-    // 0030001, 20220103 ~ 20220112
-    val sampleData = HisRestClientRequest("0030001", "20220113")
-    // 0030002, 20211221 ~ 20211225
-    val sampleData2 = HisRestClientRequest("0030002", "20211225")
+  @Transactional
+  fun saveFatimaMntrInfoWithSample(pid: String) {
+    val svrtPt = svrtPtRepository.findByPid(pid) ?: return
+    val svrtColls = svrtCollRepository.findByPidAndHospId(pid, svrtPt.id.hospId)
+    val basedd = svrtColls.lastOrNull()?.id?.msreDt?.plusDays(1) ?: svrtPt.monStrtDt
 
+    val sampleData = HisRestClientRequest(pid, basedd)
     val fatimaSvrtMntrInfo = fatimaHisRestClient.getFatimaSvrtMntrInfo(sampleData)
+    log.debug("fatimaSvrtMntrInfo: $fatimaSvrtMntrInfo")
 
-    // SvrtColl에 저장
-    val svrtPt = svrtPtRepository.findByPtId(ptId)
-    fatimaSvrtMntrInfo.body.forEach {
-      val svrtColl = it.toSvrtColl(
-        ptId = ptId,
-        hospId = hospId,
-        rgstSeq = 1,
-      )
+    if (fatimaSvrtMntrInfo.body.isEmpty()) {
+      svrtPt.endMonitoring(StringUtils.getYyyyMmDd(), StringUtils.getHhMmSs())
+      return
     }
 
-    log.debug("fatimaSvrtMntrInfo: $fatimaSvrtMntrInfo")
+    val svrtMntrInfo = fatimaSvrtMntrInfo.body.last()
+    val svrtColl = svrtMntrInfo.toSvrtColl(
+      ptId = svrtPt.id.ptId,
+      hospId = svrtPt.id.hospId,
+      rgstSeq = svrtPt.id.rgstSeq,
+      collSeq = svrtColls.lastOrNull()?.id?.collSeq?.plus(1) ?: 1,
+    )
+    svrtCollRepository.persist(svrtColl)
   }
-
 }

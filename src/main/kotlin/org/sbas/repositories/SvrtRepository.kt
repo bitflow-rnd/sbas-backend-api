@@ -1,6 +1,7 @@
 package org.sbas.repositories
 
 import io.quarkus.hibernate.orm.panache.kotlin.PanacheRepositoryBase
+import io.quarkus.panache.common.Sort
 import jakarta.enterprise.context.ApplicationScoped
 import org.sbas.entities.svrt.*
 
@@ -9,6 +10,10 @@ class SvrtPtRepository : PanacheRepositoryBase<SvrtPt, SvrtPtId> {
 
   fun findByPtId(ptId: String): List<SvrtPt> {
     return find("id.ptId = ?1", ptId).list()
+  }
+
+  fun findByPid(pid: String): SvrtPt? {
+    return find("pid = ?1", pid).firstResult()
   }
 }
 
@@ -80,12 +85,16 @@ class SvrtCollRepository : PanacheRepositoryBase<SvrtColl, SvrtCollId> {
   /**
    * Get list of rows from svrt_coll table by fields msre_dt and pid
    */
-  fun findByPtIdAndMsreDt(pid: String): List<SvrtColl>? {
+  fun findByPid(pid: String): List<SvrtColl>? {
     return find("select sc from SvrtColl sc where sc.pid = '$pid'").list()
   }
 
   fun findByPtId(ptId: String): List<SvrtColl> {
-    return find("id.ptId = ?1", ptId).list()
+    return find("id.ptId = ?1", ptId, Sort.by("id.collSeq", Sort.Direction.Ascending)).list()
+  }
+
+  fun findByPidAndHospId(pid: String, hospId: String): List<SvrtColl> {
+    return find("pid = ?1 and id.hospId = ?2", pid, hospId).list()
   }
 
 }

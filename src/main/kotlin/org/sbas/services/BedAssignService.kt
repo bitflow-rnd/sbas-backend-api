@@ -390,10 +390,6 @@ class BedAssignService {
     val findBdasReq  = bdasReqRepository.findByPtIdAndBdasSeq(saveRequest.ptId, saveRequest.bdasSeq)
     val findBdasAdms = bdasAdmsRepository.findByIdOrderByAdmsSeqDesc(saveRequest.ptId, saveRequest.bdasSeq)
 
-    if (findBdasAdms?.isAdmsStatCdDuplicate(saveRequest.admsStatCd) == true) {
-      throw CustomizedException("입/퇴원 상태(admsStatCd) 중복입니다.", Response.Status.BAD_REQUEST)
-    }
-
     val admsSeq = if (findBdasAdms == null) 1 else findBdasAdms.id.admsSeq + 1
     val svrtPtEntity = saveRequest.toSvrtPtEntity(admsSeq)
     val entity: BdasAdms = saveRequest.toEntity(AdmsStatCd.valueOf(saveRequest.admsStatCd), admsSeq)
