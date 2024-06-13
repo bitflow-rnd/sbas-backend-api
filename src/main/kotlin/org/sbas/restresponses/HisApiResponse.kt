@@ -45,14 +45,14 @@ data class SvrtMntrInfo(
   val tag: String,
   val wbc: String,
 ) {
-  fun toSvrtColl(ptId: String, hospId: String, rgstSeq: Int): SvrtColl {
+  fun toSvrtColl(ptId: String, hospId: String, rgstSeq: Int, collSeq: Int): SvrtColl {
     return SvrtColl(
       id = SvrtCollId(
         ptId = ptId,
         hospId = hospId,
         rgstSeq = rgstSeq,
         msreDt = msreDt,
-        collSeq = 1,
+        collSeq = collSeq,
       ),
       pid = pid,
       admsDt = admsDt,
