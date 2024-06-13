@@ -59,6 +59,9 @@ class SbasScheduler {
     log.info("scheduler has finished job, success")
   }
 
+  /**
+   * 매일 오후 11시 50분에 실행
+   */
   @Scheduled(cron = "0 50 23 * * ?")
   fun saveSvrtColl() {
     // 0030001, 20220103 ~ 20220112

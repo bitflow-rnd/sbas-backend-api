@@ -192,7 +192,7 @@ class PatientService {
             bedStatNm = bedStatCd.let { BedStatCd.valueOf(it).cdNm },
             undrDsesCd = infoPt.undrDsesCd,
             undrDsesEtc = infoPt.undrDsesEtc,
-            monitoring = svrtPt.isEmpty(),
+            monitoring = svrtPt.isNotEmpty(),
         )
 
         return CommonResponse(infoPtBasicInfo)
