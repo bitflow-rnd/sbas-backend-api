@@ -382,6 +382,8 @@ class BedAssignService {
 
     findBdasReq.changeBedStatTo(BedStatCd.BAST0006.name)
 
+    activityHistoryRepository.save(saveRequest.convertToActivityHistory(jwt.name))
+
     return CommonResponse("이송 정보 등록 성공")
   }
 
@@ -401,6 +403,8 @@ class BedAssignService {
 
     bdasAdmsRepository.persist(entity)
     findBdasReq.changeBedStatTo(BedStatCd.BAST0007.name)
+
+    activityHistoryRepository.save(saveRequest.convertToActivityHistory(jwt.name))
 
     return CommonResponse("${entity.id.ptId} ${entity.id.bdasSeq} 입퇴원 정보 등록 성공")
   }

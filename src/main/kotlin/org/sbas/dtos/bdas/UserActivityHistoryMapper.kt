@@ -26,3 +26,18 @@ fun BdasAprvSaveRequest.convertToActivityHistory(userId: String): UserActivityHi
     )
 }
 
+fun BdasTrnsSaveRequest.convertToActivityHistory(userId: String): UserActivityHistory {
+    return UserActivityHistory(
+        userId = userId,
+        ptId = this.ptId,
+        activityDetail = "BAST0006",
+    )
+}
+
+fun BdasAdmsSaveRequest.convertToActivityHistory(userId: String): UserActivityHistory {
+    return UserActivityHistory(
+        userId = userId,
+        ptId = this.ptId,
+        activityDetail = "BAST0007",
+    )
+}
