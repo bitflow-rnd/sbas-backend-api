@@ -1,8 +1,14 @@
 package org.sbas.repositories
 
+import com.linecorp.kotlinjdsl.dsl.jpql.jpql
+import com.linecorp.kotlinjdsl.render.jpql.JpqlRenderContext
+import com.linecorp.kotlinjdsl.support.hibernate.extension.createQuery
 import io.quarkus.hibernate.orm.panache.kotlin.PanacheRepositoryBase
 import io.quarkus.panache.common.Sort
 import jakarta.enterprise.context.ApplicationScoped
+import jakarta.inject.Inject
+import jakarta.persistence.EntityManager
+import org.sbas.dtos.SvrtInfoRsps
 import org.sbas.entities.svrt.*
 
 @ApplicationScoped
@@ -19,6 +25,12 @@ class SvrtPtRepository : PanacheRepositoryBase<SvrtPt, SvrtPtId> {
 
 @ApplicationScoped
 class SvrtAnlyRepository : PanacheRepositoryBase<SvrtAnly, SvrtAnlyId> {
+
+  @Inject
+  private lateinit var entityManager: EntityManager
+
+  @Inject
+  private lateinit var context: JpqlRenderContext
 
   fun getLastAnlySeqValue(): Int? {
     val query = "select MAX(sa.id.anlySeq) from SvrtAnly sa"
@@ -47,6 +59,27 @@ class SvrtAnlyRepository : PanacheRepositoryBase<SvrtAnly, SvrtAnlyId> {
       "CovSF" to row[7].toString(),
     )
     }.toList()
+  }
+
+  fun getSvrtInfo(ptId: String): MutableList<SvrtInfoRsps>? {
+    val query = jpql {
+      selectNew<SvrtInfoRsps>(
+        path(SvrtAnly::id)(SvrtAnlyId::ptId), path(SvrtAnly::id)(SvrtAnlyId::hospId), path(SvrtAnly::id)(SvrtAnlyId::anlyDt),
+        path(SvrtAnly::id)(SvrtAnlyId::msreDt), path(SvrtAnly::prdtDt),
+        path(SvrtAnly::covSf), path(SvrtColl::oxygenApply),
+      ).from(
+        entity(SvrtAnly::class),
+        join(SvrtColl::class).on(
+          path(SvrtAnly::id)(SvrtAnlyId::ptId).eq(path(SvrtColl::id)(SvrtCollId::ptId))
+            .and(path(SvrtAnly::id)(SvrtAnlyId::hospId).eq(path(SvrtColl::id)(SvrtCollId::hospId)))
+            .and(path(SvrtAnly::id)(SvrtAnlyId::anlySeq).eq(path(SvrtColl::id)(SvrtCollId::collSeq)))
+        ),
+      ).whereAnd(
+        path(SvrtAnly::id)(SvrtAnlyId::ptId).eq(ptId),
+      )
+    }
+
+    return entityManager.createQuery(query, context).resultList
   }
 
   /**
