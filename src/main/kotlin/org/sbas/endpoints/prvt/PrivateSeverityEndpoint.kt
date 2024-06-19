@@ -18,7 +18,7 @@ import org.sbas.services.SvrtService
 class PrivateSeverityEndpoint {
 
   @Inject
-  lateinit var nubisonAiSeverityAnalysisHandler: NubisonAiSeverityAnalysisHandler
+  lateinit var severityAnalysisHandler: NubisonAiSeverityAnalysisHandler
 
   @Inject
   lateinit var svrtService: SvrtService
@@ -27,7 +27,7 @@ class PrivateSeverityEndpoint {
   @GET
   @Path("analysis/{pid}")
   fun severityAnalysis(@RestPath pid: String): Response {
-    val result = nubisonAiSeverityAnalysisHandler.analyse(pid)
+    val result = severityAnalysisHandler.analyse(pid)
     return Response.ok(result).build()
   }
 

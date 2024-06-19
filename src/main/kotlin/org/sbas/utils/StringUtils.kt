@@ -42,9 +42,9 @@ class StringUtils {
 
     fun getYyyyMmDdWithHyphen(date: String): String {
       val formatter = SimpleDateFormat(DATE_FORMAT_DD)
-      val _date = formatter.parse(date)
+      val parsedDate = formatter.parse(date)
       val simpleDateFormat = SimpleDateFormat(DATE_FORMAT_DD_HYPHEN)
-      return simpleDateFormat.format(_date)
+      return simpleDateFormat.format(parsedDate)
     }
 
     fun getDstr1Cd(addr: String): String {
