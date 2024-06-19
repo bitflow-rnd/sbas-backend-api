@@ -201,8 +201,7 @@ class InfoHospRepository : PanacheRepositoryBase<InfoHosp, String> {
 @ApplicationScoped
 class InfoHospDetailRepository : PanacheRepositoryBase<InfoHospDetail, String> {
 
-    fun updateDetailInfo() {
-
-    }
-
+  fun findByHospId(hospId: String): InfoHospDetail? {
+    return find("hospId = '$hospId'").firstResult()
+  }
 }

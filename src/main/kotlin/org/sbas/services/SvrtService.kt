@@ -117,7 +117,17 @@ class SvrtService(
   fun saveSvrtAnly(pid: String) {
     val svrtCollList = svrtCollRepository.findByPid(pid)
     val covSfList = svrtAnlyHandler.analyseV4(pid, svrtCollList)
-
+    svrtCollList.forEach { svrtColl ->
+      SvrtAnlyId(
+        ptId = svrtColl.id.ptId,
+        hospId = svrtColl.id.hospId,
+        rgstSeq = svrtColl.id.rgstSeq,
+        msreDt = svrtColl.id.msreDt,
+        collSeq = svrtColl.id.collSeq,
+        anlyDt = StringUtils.getYyyyMmDd(),
+        anlySeq = getLastAnlySeqValue()!! + 1
+      )
+    }
   }
 
   fun getLastAnlySeqValue(): Int? {

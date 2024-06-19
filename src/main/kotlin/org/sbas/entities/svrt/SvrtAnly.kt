@@ -37,7 +37,6 @@ class SvrtAnly(
     @Column(name = "svrt_prob_std", length = 6)
     var svrtProbStd: String? = null, // 중증 확률
 
-
 ) : CommonEntity()
 
 @Embeddable

@@ -68,6 +68,9 @@ class BedAssignService {
   private lateinit var activityHistoryRepository: UserActivityHistoryRepository
 
   @Inject
+  private lateinit var infoHospDetailRepository: InfoHospDetailRepository
+
+  @Inject
   private lateinit var svrtPtRepository: SvrtPtRepository
 
   @Inject
@@ -222,6 +225,7 @@ class BedAssignService {
     val infoHospList = infoHospRepository.findAvalHospList(dstr1Cd, dstr2Cd, param)
     log.debug("getAvalHospList >>>>>>>>>>>>>> ${infoHospList.size}")
     val list = infoHospList.map { avalHospDto ->
+      val infoHospDetail = infoHospDetailRepository.findByHospId(avalHospDto.hospId)
       val distance = calculateDistance(
         lat1 = findBdasReq.dprtDstrLat!!.toDouble(),
         lon1 = findBdasReq.dprtDstrLon!!.toDouble(),
@@ -249,6 +253,8 @@ class BedAssignService {
         mri = avalHospDto.mri,
         bloodVesselImaging = avalHospDto.bloodVesselImaging,
         bodyTemperatureControl = avalHospDto.bodyTemperatureControl,
+        facilityStatus = infoHospDetail?.facilityStatus,
+        medicalTeamCount = infoHospDetail?.medicalTeamCount,
       )
       //        }.filter { response -> response.hospId !in findBdasReqAprv.map { it.reqHospId } }
     }
