@@ -8,7 +8,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import org.jboss.logging.Logger
-import org.sbas.restparameters.EgenApiEmrrmRltmUsefulSckbdInfoParams
+import org.sbas.restdtos.EgenApiEmrrmRltmUsefulSckbdInfoParams
 import org.sbas.services.EgenService
 import org.sbas.services.SvrtService
 

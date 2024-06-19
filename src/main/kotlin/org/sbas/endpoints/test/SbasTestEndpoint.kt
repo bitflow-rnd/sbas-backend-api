@@ -11,12 +11,12 @@ import jakarta.ws.rs.core.SecurityContext
 import org.eclipse.microprofile.openapi.annotations.tags.Tag
 import org.jboss.logging.Logger
 import org.sbas.handlers.GeocodingHandler
-import org.sbas.restparameters.NaverGeocodingApiParams
-import org.sbas.restresponses.NaverGeocodingApiResponse
-import org.sbas.restresponses.NaverReverseGeocodingApiResponse
+import org.sbas.handlers.NubisonAiSeverityAnalysisHandler
+import org.sbas.restdtos.NaverGeocodingApiParams
+import org.sbas.restdtos.response.NaverGeocodingApiResponse
+import org.sbas.restdtos.response.NaverReverseGeocodingApiResponse
 import org.sbas.services.FirebaseService
 import org.sbas.services.SvrtService
-
 
 @Tag(name = "테스트", description = "내맘대로 테스트")
 @Path("v1/test")
@@ -37,6 +37,9 @@ class SbasTestEndpoint {
     @Inject
     lateinit var svrtService: SvrtService
 
+    @Inject
+    lateinit var severityAnalysisHandler: NubisonAiSeverityAnalysisHandler
+
 //    @GET
 //    @Path("user")
 //    @RolesAllowed("USER", "ADMIN")
@@ -49,7 +52,7 @@ class SbasTestEndpoint {
     @POST
     @Path("geocoding-test")
     @PermitAll
-    fun geocodingTest(@Valid params: NaverGeocodingApiParams): NaverGeocodingApiResponse{
+    fun geocodingTest(@Valid params: NaverGeocodingApiParams): NaverGeocodingApiResponse {
         // test
         return geoHandler.getGeocoding(params)
     }

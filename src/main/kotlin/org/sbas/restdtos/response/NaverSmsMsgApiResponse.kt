@@ -1,4 +1,4 @@
-package org.sbas.restresponses
+package org.sbas.restdtos.response
 
 data class NaverSmsMsgApiResponse(
         var statusCode: String? = null,

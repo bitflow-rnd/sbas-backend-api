@@ -5,16 +5,16 @@ import jakarta.enterprise.context.ApplicationScoped
 import jakarta.inject.Inject
 import org.eclipse.microprofile.rest.client.inject.RestClient
 import org.jboss.logging.Logger
-import org.json.JSONObject
 import org.sbas.entities.svrt.SvrtAnly
 import org.sbas.entities.svrt.SvrtAnlyId
+import org.sbas.entities.svrt.SvrtColl
 import org.sbas.repositories.SvrtCollRepository
 import org.sbas.repositories.SvrtPtRepository
 import org.sbas.restclients.NubisonAiSeverityAnalysisRestClient
-import org.sbas.restparameters.MntrInfo
-import org.sbas.restparameters.NubisonAiSeverityAnalysisResponse
-import org.sbas.restparameters.NubisonSvrtAnlyInputData
-import org.sbas.restparameters.NubisonSvrtAnlyRequest
+import org.sbas.restdtos.MntrInfo
+import org.sbas.restdtos.NubisonAiSeverityAnalysisResponse
+import org.sbas.restdtos.NubisonSvrtAnlyInputData
+import org.sbas.restdtos.NubisonSvrtAnlyRequest
 import org.sbas.services.SvrtService
 import org.sbas.utils.StringUtils
 import java.time.LocalDate
@@ -25,6 +25,9 @@ class NubisonAiSeverityAnalysisHandler {
 
   @Inject
   private lateinit var log: Logger
+
+  @Inject
+  private lateinit var objectMapper: ObjectMapper
   
   @RestClient
   private lateinit var nubisonAiSeverityAnalysisRestClient: NubisonAiSeverityAnalysisRestClient
@@ -132,10 +135,8 @@ class NubisonAiSeverityAnalysisHandler {
     }
   }
 
-  fun analyseV4(pid: String) {
+  fun analyseV4(pid: String, svrtCollList: List<SvrtColl>): List<Float> {
     val mntrInfo = MntrInfo()
-    val svrtCollList = svrtCollRepository.findByPid(pid)
-    log.debug(svrtCollList.size)
     svrtCollList.forEach { svrtColl ->
       if (svrtColl.isMntrInfoValueBlank()) {
         return@forEach
@@ -144,14 +145,12 @@ class NubisonAiSeverityAnalysisHandler {
       mntrInfo.inputData(date, svrtColl)
     }
 
-    val objectMapper = ObjectMapper()
     val json = objectMapper.writeValueAsString(mntrInfo)
-    val quote = JSONObject.quote(json.toString())
     val requestBody = NubisonSvrtAnlyRequest(inputs = listOf(NubisonSvrtAnlyInputData(data = listOf(json))))
     val res = nubisonAiSeverityAnalysisRestClient.inferV4(
       objectMapper.writeValueAsString(requestBody)
     )
-    log.debug(res)
+    return res.outputs[0].data
   }
 
 

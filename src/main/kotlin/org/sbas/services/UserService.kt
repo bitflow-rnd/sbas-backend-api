@@ -23,8 +23,8 @@ import org.sbas.repositories.UserActivityHistoryRepository
 import org.sbas.responses.CommonListResponse
 import org.sbas.responses.CommonResponse
 import org.sbas.restclients.NaverSensRestClient
-import org.sbas.restparameters.NaverSmsMsgApiParams
-import org.sbas.restparameters.NaverSmsReqMsgs
+import org.sbas.restdtos.NaverSmsMsgApiParams
+import org.sbas.restdtos.NaverSmsReqMsgs
 import org.sbas.utils.CustomizedException
 import org.sbas.utils.TokenUtils
 

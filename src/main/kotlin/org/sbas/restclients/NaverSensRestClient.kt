@@ -6,8 +6,8 @@ import jakarta.ws.rs.Path
 import jakarta.ws.rs.PathParam
 import org.eclipse.microprofile.rest.client.annotation.RegisterClientHeaders
 import org.eclipse.microprofile.rest.client.inject.RegisterRestClient
-import org.sbas.restparameters.NaverSmsMsgApiParams
-import org.sbas.restresponses.NaverSmsMsgApiResponse
+import org.sbas.restdtos.NaverSmsMsgApiParams
+import org.sbas.restdtos.response.NaverSmsMsgApiResponse
 import org.sbas.utils.headerFactory.RequestNaverSmsHeaderFactory
 
 

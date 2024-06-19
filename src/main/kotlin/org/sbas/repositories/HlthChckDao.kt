@@ -12,7 +12,7 @@ import org.sbas.dtos.SrvrSstmBsic
 import org.sbas.parameters.HlthChckHedrRqst
 import org.sbas.responses.HlthChckHedrRsps
 import org.sbas.restclients.MyIpDao
-import org.sbas.restresponses.MyIpApiRsps
+import org.sbas.restdtos.response.MyIpApiRsps
 import org.sbas.utils.LocaleUtil
 import org.sbas.utils.StngUtil
 import java.net.InetAddress

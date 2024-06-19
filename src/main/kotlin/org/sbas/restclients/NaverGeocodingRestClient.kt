@@ -5,8 +5,8 @@ import jakarta.ws.rs.Path
 import jakarta.ws.rs.QueryParam
 import org.eclipse.microprofile.rest.client.annotation.RegisterClientHeaders
 import org.eclipse.microprofile.rest.client.inject.RegisterRestClient
-import org.sbas.restresponses.NaverGeocodingApiResponse
-import org.sbas.restresponses.NaverReverseGeocodingApiResponse
+import org.sbas.restdtos.response.NaverGeocodingApiResponse
+import org.sbas.restdtos.response.NaverReverseGeocodingApiResponse
 import org.sbas.utils.headerFactory.RequestNaverGeocodingHeaderFactory
 
 /**

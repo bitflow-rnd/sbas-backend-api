@@ -22,7 +22,7 @@ import org.sbas.responses.CommonResponse
 import org.sbas.responses.patient.DiseaseInfoResponse
 import org.sbas.responses.patient.TransInfoResponse
 import org.sbas.responses.patient.toTransInfoResponse
-import org.sbas.restparameters.NaverGeocodingApiParams
+import org.sbas.restdtos.NaverGeocodingApiParams
 import org.sbas.utils.CustomizedException
 import kotlin.math.acos
 import kotlin.math.cos

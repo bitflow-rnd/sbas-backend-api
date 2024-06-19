@@ -1,4 +1,4 @@
-package org.sbas.restparameters
+package org.sbas.restdtos
 
 import org.sbas.utils.annotation.NoArg
 

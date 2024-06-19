@@ -10,12 +10,14 @@ import org.sbas.entities.svrt.SvrtAnly
 import org.sbas.entities.svrt.SvrtAnlyId
 import org.sbas.entities.svrt.SvrtColl
 import org.sbas.entities.svrt.SvrtCollId
+import org.sbas.handlers.NubisonAiSeverityAnalysisHandler
 import org.sbas.repositories.SvrtAnlyRepository
 import org.sbas.repositories.SvrtCollRepository
 import org.sbas.repositories.SvrtPtRepository
 import org.sbas.responses.CommonResponse
 import org.sbas.restclients.FatimaHisRestClient
 import org.sbas.restclients.HisRestClientRequest
+import org.sbas.restclients.KnuhHisRestClient
 import org.sbas.utils.StringUtils
 import org.sbas.utils.StringUtils.Companion.getYyyyMmDdWithHyphen
 import org.sbas.utils.plusDays
@@ -26,7 +28,9 @@ class SvrtService(
   private val svrtAnlyRepository: SvrtAnlyRepository,
   private val svrtCollRepository: SvrtCollRepository,
   private val svrtPtRepository: SvrtPtRepository,
+  private val svrtAnlyHandler: NubisonAiSeverityAnalysisHandler,
   @RestClient private val fatimaHisRestClient: FatimaHisRestClient,
+  @RestClient private val knuhHisRestClient: KnuhHisRestClient,
 ) {
 
   fun getSvrtAnlyById(id: SvrtAnlyId): SvrtAnly? {
@@ -110,6 +114,12 @@ class SvrtService(
     return JSONObject.quote(json.toString())
   }
 
+  fun saveSvrtAnly(pid: String) {
+    val svrtCollList = svrtCollRepository.findByPid(pid)
+    val covSfList = svrtAnlyHandler.analyseV4(pid, svrtCollList)
+
+  }
+
   fun getLastAnlySeqValue(): Int? {
     return svrtAnlyRepository.getLastAnlySeqValue()
   }
@@ -142,6 +152,56 @@ class SvrtService(
     }
 
     val svrtMntrInfo = fatimaSvrtMntrInfo.body.last()
+    val svrtColl = svrtMntrInfo.toSvrtColl(
+      ptId = svrtPt.id.ptId,
+      hospId = svrtPt.id.hospId,
+      rgstSeq = svrtPt.id.rgstSeq,
+      collSeq = svrtColls.lastOrNull()?.id?.collSeq?.plus(1) ?: 1,
+    )
+    svrtCollRepository.persist(svrtColl)
+  }
+
+  @Transactional
+  fun saveKnuhMntrInfoWithSample(pid: String) {
+    val svrtPt = svrtPtRepository.findByPid(pid) ?: return
+    val svrtColls = svrtCollRepository.findByPidAndHospId(pid, svrtPt.id.hospId)
+    val basedd = svrtColls.lastOrNull()?.id?.msreDt?.plusDays(1) ?: svrtPt.monStrtDt
+
+    val sampleData = HisRestClientRequest(pid, basedd)
+    val knuhSvrtMntrInfo = knuhHisRestClient.getKnuhSvrtMntrInfo(sampleData)
+    log.debug("knuhSvrtMntrInfo: $knuhSvrtMntrInfo")
+
+    if (knuhSvrtMntrInfo.body.isEmpty()) {
+      svrtPt.endMonitoring(StringUtils.getYyyyMmDd(), StringUtils.getHhMmSs())
+      return
+    }
+
+    val svrtMntrInfo = knuhSvrtMntrInfo.body.last()
+    val svrtColl = svrtMntrInfo.toSvrtColl(
+      ptId = svrtPt.id.ptId,
+      hospId = svrtPt.id.hospId,
+      rgstSeq = svrtPt.id.rgstSeq,
+      collSeq = svrtColls.lastOrNull()?.id?.collSeq?.plus(1) ?: 1,
+    )
+    svrtCollRepository.persist(svrtColl)
+  }
+
+  @Transactional
+  fun saveKnuchMntrInfoWithSample(pid: String) {
+    val svrtPt = svrtPtRepository.findByPid(pid) ?: return
+    val svrtColls = svrtCollRepository.findByPidAndHospId(pid, svrtPt.id.hospId)
+    val basedd = svrtColls.lastOrNull()?.id?.msreDt?.plusDays(1) ?: svrtPt.monStrtDt
+
+    val sampleData = HisRestClientRequest(pid, basedd)
+    val knuchSvrtMntrInfo = knuhHisRestClient.getKnuchSvrtMntrInfo(sampleData)
+    log.debug("knuchSvrtMntrInfo: $knuchSvrtMntrInfo")
+
+    if (knuchSvrtMntrInfo.body.isEmpty()) {
+      svrtPt.endMonitoring(StringUtils.getYyyyMmDd(), StringUtils.getHhMmSs())
+      return
+    }
+
+    val svrtMntrInfo = knuchSvrtMntrInfo.body.last()
     val svrtColl = svrtMntrInfo.toSvrtColl(
       ptId = svrtPt.id.ptId,
       hospId = svrtPt.id.hospId,

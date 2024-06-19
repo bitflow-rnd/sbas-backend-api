@@ -1,4 +1,4 @@
-package org.sbas.restresponses
+package org.sbas.restdtos.response
 
 import org.sbas.utils.annotation.NoArg
 

@@ -3,7 +3,7 @@ package org.sbas.restclients
 import jakarta.ws.rs.POST
 import jakarta.ws.rs.Path
 import org.eclipse.microprofile.rest.client.inject.RegisterRestClient
-import org.sbas.restresponses.HisApiResponse
+import org.sbas.restdtos.response.HisApiResponse
 
 /**
  * HIS API를 처리하는 클라이언트

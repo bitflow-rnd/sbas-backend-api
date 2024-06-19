@@ -1,4 +1,4 @@
-package org.sbas.restparameters
+package org.sbas.restdtos
 
 import com.fasterxml.jackson.annotation.JsonProperty
 import org.sbas.entities.svrt.SvrtColl

@@ -10,10 +10,10 @@ import org.eclipse.microprofile.openapi.annotations.Operation
 import org.eclipse.microprofile.openapi.annotations.tags.Tag
 import org.jboss.logging.Logger
 import org.sbas.constants.EgenCmMid
-import org.sbas.restparameters.EgenApiBassInfoParams
-import org.sbas.restparameters.EgenApiEmrrmRltmUsefulSckbdInfoParams
-import org.sbas.restparameters.EgenApiLcInfoParams
-import org.sbas.restparameters.EgenApiListInfoParams
+import org.sbas.restdtos.EgenApiBassInfoParams
+import org.sbas.restdtos.EgenApiEmrrmRltmUsefulSckbdInfoParams
+import org.sbas.restdtos.EgenApiLcInfoParams
+import org.sbas.restdtos.EgenApiListInfoParams
 import org.sbas.services.EgenService
 
 @Tag(name = "E-Gen 연동 관리(어드민 권한용)", description = "System Admin 사용자 - E-Gen API를 통한 데이터 동기화, 등록, 수정, 삭제 등")

@@ -5,7 +5,7 @@ import jakarta.ws.rs.POST
 import jakarta.ws.rs.Path
 import jakarta.ws.rs.Produces
 import org.eclipse.microprofile.rest.client.inject.RegisterRestClient
-import org.sbas.restparameters.NubisonAiSeverityAnalysisResponse
+import org.sbas.restdtos.NubisonAiSeverityAnalysisResponse
 
 
 @RegisterRestClient
