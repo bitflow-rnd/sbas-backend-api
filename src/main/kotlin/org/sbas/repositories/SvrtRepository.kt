@@ -118,8 +118,8 @@ class SvrtCollRepository : PanacheRepositoryBase<SvrtColl, SvrtCollId> {
   /**
    * Get list of rows from svrt_coll table by fields msre_dt and pid
    */
-  fun findByPid(pid: String): List<SvrtColl> {
-    return find("select sc from SvrtColl sc where sc.pid = '$pid'").list()
+  fun findByPidOrderByMsreDtAsc(pid: String): List<SvrtColl> {
+    return find("select sc from SvrtColl sc where sc.pid = '$pid' order by sc.id.msreDt").list()
   }
 
   fun findByPtId(ptId: String): List<SvrtColl> {

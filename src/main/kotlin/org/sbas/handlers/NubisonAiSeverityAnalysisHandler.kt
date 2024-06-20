@@ -138,9 +138,6 @@ class NubisonAiSeverityAnalysisHandler {
   fun analyseV4(pid: String, svrtCollList: List<SvrtColl>): List<Float> {
     val mntrInfo = MntrInfo()
     svrtCollList.forEach { svrtColl ->
-      if (svrtColl.isMntrInfoValueBlank()) {
-        return@forEach
-      }
       val date = formatDateString(svrtColl.id.msreDt)
       mntrInfo.inputData(date, svrtColl)
     }
@@ -152,7 +149,6 @@ class NubisonAiSeverityAnalysisHandler {
     )
     return res.outputs[0].data
   }
-
 
   private fun formatDateString(date: String): String {
     val year = date.substring(0, 4)

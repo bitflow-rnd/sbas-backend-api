@@ -6,10 +6,7 @@ import jakarta.transaction.Transactional
 import org.eclipse.microprofile.rest.client.inject.RestClient
 import org.jboss.logging.Logger
 import org.json.JSONObject
-import org.sbas.entities.svrt.SvrtAnly
-import org.sbas.entities.svrt.SvrtAnlyId
-import org.sbas.entities.svrt.SvrtColl
-import org.sbas.entities.svrt.SvrtCollId
+import org.sbas.entities.svrt.*
 import org.sbas.handlers.NubisonAiSeverityAnalysisHandler
 import org.sbas.repositories.SvrtAnlyRepository
 import org.sbas.repositories.SvrtCollRepository
@@ -57,7 +54,7 @@ class SvrtService(
   }
 
   fun getSvrtCollByPidAndMsreDt(pid: String): List<SvrtColl>? {
-    return svrtCollRepository.findByPid(pid)
+    return svrtCollRepository.findByPidOrderByMsreDtAsc(pid)
   }
 
   /**
@@ -114,19 +111,31 @@ class SvrtService(
     return JSONObject.quote(json.toString())
   }
 
+  @Transactional
   fun saveSvrtAnly(pid: String) {
-    val svrtCollList = svrtCollRepository.findByPid(pid)
-    val covSfList = svrtAnlyHandler.analyseV4(pid, svrtCollList)
-    svrtCollList.forEach { svrtColl ->
-      SvrtAnlyId(
+    val svrtCollList = svrtCollRepository.findByPidOrderByMsreDtAsc(pid)
+    val filteredSvrtCollList = svrtCollList.filter { !it.isMntrInfoValueBlank() }
+    val covSfList = svrtAnlyHandler.analyseV4(pid, filteredSvrtCollList)
+
+    filteredSvrtCollList.forEachIndexed { idx, svrtColl ->
+      val svrtAnlyId = SvrtAnlyId(
         ptId = svrtColl.id.ptId,
         hospId = svrtColl.id.hospId,
         rgstSeq = svrtColl.id.rgstSeq,
         msreDt = svrtColl.id.msreDt,
         collSeq = svrtColl.id.collSeq,
         anlyDt = StringUtils.getYyyyMmDd(),
-        anlySeq = getLastAnlySeqValue()!! + 1
+        anlySeq = idx + 1,
       )
+      val svrtAnly = SvrtAnly(
+        id = svrtAnlyId,
+        pid = pid,
+        collDt = StringUtils.convertInstantToYyyyMMdd(svrtColl.rgstDttm),
+        collTm = StringUtils.convertInstantToHhmmss(svrtColl.rgstDttm),
+        anlyTm = StringUtils.getHhMmSs(),
+        covSf = covSfList[idx].toString(),
+      )
+      svrtAnlyRepository.persist(svrtAnly)
     }
   }
 

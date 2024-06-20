@@ -28,7 +28,7 @@ class SvrtAnly(
     @Column(name = "prdt_dt", length = 8)
     var prdtDt: String? = null, // 예측 날짜
 
-    @Column(name = "covsf", length = 6)
+    @Column(name = "covsf", length = 20)
     var covSf: String? = null,
 
     @Column(name = "svrt_prob_mean", length = 6)

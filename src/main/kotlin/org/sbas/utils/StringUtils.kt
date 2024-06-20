@@ -1,7 +1,9 @@
 package org.sbas.utils
 
 import java.text.SimpleDateFormat
+import java.time.Instant
 import java.time.LocalDate
+import java.time.ZoneId
 import java.time.format.DateTimeFormatter
 import java.util.*
 
@@ -45,6 +47,18 @@ class StringUtils {
       val parsedDate = formatter.parse(date)
       val simpleDateFormat = SimpleDateFormat(DATE_FORMAT_DD_HYPHEN)
       return simpleDateFormat.format(parsedDate)
+    }
+
+    fun convertInstantToYyyyMMdd(instant: Instant): String {
+      val formatter = DateTimeFormatter.ofPattern(DATE_FORMAT_DD)
+      val dateTime = instant.atZone(ZoneId.systemDefault()).toLocalDateTime()
+      return dateTime.format(formatter)
+    }
+
+    fun convertInstantToHhmmss(instant: Instant): String {
+      val formatter = DateTimeFormatter.ofPattern(TIME_FORMAT_HMS)
+      val dateTime = instant.atZone(ZoneId.systemDefault()).toLocalDateTime()
+      return dateTime.format(formatter)
     }
 
     fun getDstr1Cd(addr: String): String {
