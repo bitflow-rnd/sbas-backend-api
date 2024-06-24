@@ -114,10 +114,11 @@ class SvrtService(
   @Transactional
   fun saveSvrtAnly(pid: String) {
     val svrtCollList = svrtCollRepository.findByPidOrderByMsreDtAsc(pid)
-    val filteredSvrtCollList = svrtCollList.filter { !it.isMntrInfoValueBlank() }
-    val covSfList = svrtAnlyHandler.analyseV4(pid, filteredSvrtCollList)
+    val filteredSvrtCollList = svrtCollList.filter { !it.isMntrInfoValueBlank() } // 2
+    val covSfList = svrtAnlyHandler.analyseV4(pid, filteredSvrtCollList) // 5
 
-    filteredSvrtCollList.forEachIndexed { idx, svrtColl ->
+    covSfList.forEachIndexed { idx, covSf ->
+      val svrtColl = filteredSvrtCollList.getOrElse(idx) { filteredSvrtCollList.last() }
       val svrtAnlyId = SvrtAnlyId(
         ptId = svrtColl.id.ptId,
         hospId = svrtColl.id.hospId,
@@ -133,7 +134,9 @@ class SvrtService(
         collDt = StringUtils.convertInstantToYyyyMMdd(svrtColl.rgstDttm),
         collTm = StringUtils.convertInstantToHhmmss(svrtColl.rgstDttm),
         anlyTm = StringUtils.getHhMmSs(),
-        covSf = covSfList[idx].toString(),
+        covSf = covSf.toString(),
+        prdtDt = if (idx > filteredSvrtCollList.size) StringUtils.getYyyyMmDd()
+          .plusDays(idx - filteredSvrtCollList.size) else null,
       )
       svrtAnlyRepository.persist(svrtAnly)
     }

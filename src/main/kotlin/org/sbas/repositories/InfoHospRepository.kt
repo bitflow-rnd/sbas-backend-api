@@ -142,7 +142,6 @@ class InfoHospRepository : PanacheRepositoryBase<InfoHosp, String> {
                 join(InfoBed::class).on(path(InfoHosp::hospId).eq(path(InfoBed::hospId)))
             ).whereAnd(
                 path(InfoHosp::dstr1Cd).eq(dstr1Cd),
-                dstr2Cd?.run { path(InfoHosp::dstr2Cd).eq(dstr2Cd) },
                 param.dutyName?.run { path(InfoHosp::dutyName).like("%$this%") },
                 path(InfoHosp::dutyName).`in`("경북대학교병원", "칠곡경북대학교병원", "대구파티마병원", "대구의료원"),
             )

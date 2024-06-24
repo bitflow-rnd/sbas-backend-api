@@ -44,6 +44,7 @@ data class SvrtMntrInfo(
   val spo2: String,
   val tag: String,
   val wbc: String,
+  val oxyapp: String,
 ) {
   fun toSvrtColl(ptId: String, hospId: String, rgstSeq: Int, collSeq: Int): SvrtColl {
     return SvrtColl(
@@ -80,7 +81,7 @@ data class SvrtMntrInfo(
       dbp = dbp,
       sbp = sbp,
       spo2 = spo2,
-      oxygenApply = "",
+      oxygenApply = oxyapp,
     )
   }
 }

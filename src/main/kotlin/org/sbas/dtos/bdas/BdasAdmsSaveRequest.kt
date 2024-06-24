@@ -37,6 +37,19 @@ data class BdasAdmsSaveRequest(
     }
   }
 
+  fun toSvrtPtEntity(rgstSeq: Int): SvrtPt {
+    return SvrtPt(
+      id = SvrtPtId(
+        ptId = ptId,
+        hospId = hospId,
+        rgstSeq = rgstSeq,
+      ),
+      pid = pid ?: ptId,
+      monStrtDt = monStrtDt ?: StringUtils.getYyyyMmDd(),
+      monStrtTm = monStrtTm ?: StringUtils.getHhMmSs(),
+    )
+  }
+
   private fun toAdmsEntity(admsSeq: Int): BdasAdms {
     return BdasAdms(
       id = BdasAdmsId(ptId = ptId, bdasSeq = bdasSeq, admsSeq),
@@ -71,19 +84,6 @@ data class BdasAdmsSaveRequest(
       hospId = hospId,
       msg = msg,
       admsStatCd = AdmsStatCd.IOST0003.name,
-    )
-  }
-
-  fun toSvrtPtEntity(rgstSeq: Int): SvrtPt {
-    return SvrtPt(
-      id = SvrtPtId(
-        ptId = ptId,
-        hospId = hospId,
-        rgstSeq = rgstSeq,
-      ),
-      pid = pid ?: ptId,
-      monStrtDt = monStrtDt ?: StringUtils.getYyyyMmDd(),
-      monStrtTm = monStrtTm ?: StringUtils.getHhMmSs(),
     )
   }
 }

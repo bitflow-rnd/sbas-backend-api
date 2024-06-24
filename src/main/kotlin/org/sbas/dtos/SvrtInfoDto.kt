@@ -5,7 +5,7 @@ data class SvrtInfoRsps(
   val hospId: String,
   val anlyDt: String,
   val msreDt: String,
-  val prdtDt: String,
+  val prdtDt: String?,
   val covSf: String,
   val oxygenApply: String,
 )
