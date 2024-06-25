@@ -76,6 +76,9 @@ class SvrtAnlyRepository : PanacheRepositoryBase<SvrtAnly, SvrtAnlyId> {
         ),
       ).whereAnd(
         path(SvrtAnly::id)(SvrtAnlyId::ptId).eq(ptId),
+      ).orderBy(
+        path(SvrtAnly::id)(SvrtAnlyId::msreDt).asc(),
+        path(SvrtAnly::prdtDt).asc().nullsFirst(),
       )
     }
 

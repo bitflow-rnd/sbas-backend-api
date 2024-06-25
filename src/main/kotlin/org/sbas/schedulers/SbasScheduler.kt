@@ -66,8 +66,10 @@ class SbasScheduler {
   fun saveSvrtColl() {
     // 0030001, 20220103 ~ 20220112
     // 0030002, 20211221 ~ 20211225
-    svrtService.saveFatimaMntrInfoWithSample("0030001")
-    svrtService.saveFatimaMntrInfoWithSample("0030002")
+    val fatimaSampleList = listOf("0030001", "0030002", "0030003", "0030004", "0030005")
+    fatimaSampleList.forEach { pid ->
+      svrtService.saveFatimaMntrInfoWithSample(pid)
+    }
   }
 
   //    @Scheduled(every = "24h")
