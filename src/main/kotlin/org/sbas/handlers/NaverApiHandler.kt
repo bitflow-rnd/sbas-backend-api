@@ -11,10 +11,10 @@ import org.sbas.constants.enums.NatiCd
 import org.sbas.repositories.BaseCodeRepository
 import org.sbas.responses.patient.EpidResult
 import org.sbas.restclients.NaverOcrRestClient
-import org.sbas.restparameters.NaverGeocodingApiParams
-import org.sbas.restparameters.NaverOcrApiParams
-import org.sbas.restparameters.OcrApiImagesParam
-import org.sbas.restresponses.FieldName
+import org.sbas.restdtos.NaverGeocodingApiParams
+import org.sbas.restdtos.NaverOcrApiParams
+import org.sbas.restdtos.OcrApiImagesParam
+import org.sbas.restdtos.response.FieldName
 import org.sbas.utils.StringUtils
 
 
