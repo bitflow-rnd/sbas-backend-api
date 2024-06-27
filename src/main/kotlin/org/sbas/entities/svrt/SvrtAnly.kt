@@ -11,7 +11,7 @@ import java.io.Serializable
 @Table(name = "svrt_anly")
 class SvrtAnly(
     @EmbeddedId
-    var id: SvrtAnlyId? = null,
+    var id: SvrtAnlyId,
 
     @Column(name = "pid", nullable = false, length = 10)
     var pid: String, // 병원 PID

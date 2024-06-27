@@ -68,13 +68,11 @@ class SbasScheduler {
     // 0030002, 20211221 ~ 20211225
     val fatimaSampleList = listOf("0030001", "0030002", "0030003", "0030004", "0030005")
     fatimaSampleList.forEach { pid ->
-      svrtService.saveFatimaMntrInfoWithSample(pid)
+      val svrtColl = svrtService.saveFatimaMntrInfoWithSample(pid)
+      if (svrtColl != null) {
+
+      }
+      //      svrtService.saveSvrtAnly(pid)
     }
   }
-
-  //    @Scheduled(every = "24h")
-  //    fun saveHsptlInfos() {
-  //        val res = egenService.saveHospitalByScheduler()
-  //    }
-
 }

@@ -37,6 +37,13 @@ class SvrtAnlyRepository : PanacheRepositoryBase<SvrtAnly, SvrtAnlyId> {
     return getEntityManager().createQuery(query).singleResult as Int?
   }
 
+  fun findAllByPtIdAndHospIdAndCollSeq(ptId: String, hospId: String, collSeq: Int): List<SvrtAnly> {
+    return find("id.ptId = ?1 and id.hospId = ?2 and id.collSeq = ?3",
+      Sort.by("id.anlySeq", Sort.Direction.Ascending),
+      ptId, hospId, collSeq,
+    ).list()
+  }
+
   /**
    * Get data from last analysis by ptId
    */
@@ -72,13 +79,12 @@ class SvrtAnlyRepository : PanacheRepositoryBase<SvrtAnly, SvrtAnlyId> {
         join(SvrtColl::class).on(
           path(SvrtAnly::id)(SvrtAnlyId::ptId).eq(path(SvrtColl::id)(SvrtCollId::ptId))
             .and(path(SvrtAnly::id)(SvrtAnlyId::hospId).eq(path(SvrtColl::id)(SvrtCollId::hospId)))
-            .and(path(SvrtAnly::id)(SvrtAnlyId::anlySeq).eq(path(SvrtColl::id)(SvrtCollId::collSeq)))
+            .and(path(SvrtAnly::id)(SvrtAnlyId::collSeq).eq(path(SvrtColl::id)(SvrtCollId::collSeq)))
         ),
       ).whereAnd(
         path(SvrtAnly::id)(SvrtAnlyId::ptId).eq(ptId),
       ).orderBy(
-        path(SvrtAnly::id)(SvrtAnlyId::msreDt).asc(),
-        path(SvrtAnly::prdtDt).asc().nullsFirst(),
+        path(SvrtAnly::id)(SvrtAnlyId::anlySeq).asc(),
       )
     }
 
@@ -125,12 +131,11 @@ class SvrtCollRepository : PanacheRepositoryBase<SvrtColl, SvrtCollId> {
     return find("select sc from SvrtColl sc where sc.pid = '$pid' order by sc.id.msreDt").list()
   }
 
-  fun findByPtId(ptId: String): List<SvrtColl> {
+  fun findAllByPtIdOrderByCollSeqAsc(ptId: String): List<SvrtColl> {
     return find("id.ptId = ?1", Sort.by("id.collSeq", Sort.Direction.Ascending), ptId).list()
   }
 
   fun findByPidAndHospId(pid: String, hospId: String): List<SvrtColl> {
     return find("pid = ?1 and id.hospId = ?2", pid, hospId).list()
   }
-
 }

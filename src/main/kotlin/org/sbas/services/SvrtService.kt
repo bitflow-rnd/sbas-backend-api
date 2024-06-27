@@ -6,6 +6,7 @@ import jakarta.transaction.Transactional
 import org.eclipse.microprofile.rest.client.inject.RestClient
 import org.jboss.logging.Logger
 import org.json.JSONObject
+import org.sbas.dtos.SvrtInfoRsps
 import org.sbas.entities.svrt.*
 import org.sbas.handlers.NubisonAiSeverityAnalysisHandler
 import org.sbas.repositories.SvrtAnlyRepository
@@ -35,8 +36,27 @@ class SvrtService(
   }
 
   fun getLastSvrtAnlyByPtId(ptId: String): CommonResponse<*> {
-    val svrtInfo = svrtAnlyRepository.getSvrtInfo(ptId)
-    return CommonResponse(svrtInfo)
+//    val svrtInfo = svrtAnlyRepository.getSvrtInfo(ptId)
+    val latestSvrtColl = svrtCollRepository.findAllByPtIdOrderByCollSeqAsc(ptId).last()
+    val svrtAnlyList = svrtAnlyRepository.findAllByPtIdAndHospIdAndCollSeq(
+      ptId = ptId,
+      hospId = latestSvrtColl.id.hospId,
+      collSeq = latestSvrtColl.id.collSeq
+    )
+    val rsps = svrtAnlyList.map {
+      val svrtInfoRsps = SvrtInfoRsps(
+        ptId = it.id.ptId,
+        hospId = it.id.hospId,
+        anlyDt = it.id.anlyDt,
+        msreDt = it.id.msreDt,
+        prdtDt = it.prdtDt,
+        covSf = it.covSf.toString(),
+        oxygenApply = if (it.prdtDt == null) latestSvrtColl.oxygenApply!! else "-",
+      )
+      svrtInfoRsps
+    }
+
+    return CommonResponse(rsps)
   }
 
   @Transactional
@@ -135,8 +155,8 @@ class SvrtService(
         collTm = StringUtils.convertInstantToHhmmss(svrtColl.rgstDttm),
         anlyTm = StringUtils.getHhMmSs(),
         covSf = covSf.toString(),
-        prdtDt = if (idx > filteredSvrtCollList.size) StringUtils.getYyyyMmDd()
-          .plusDays(idx - filteredSvrtCollList.size) else null,
+        prdtDt = if (idx >= filteredSvrtCollList.size) StringUtils.getYyyyMmDd()
+          .plusDays(idx - filteredSvrtCollList.size + 1) else null,
       )
       svrtAnlyRepository.persist(svrtAnly)
     }
@@ -155,32 +175,40 @@ class SvrtService(
   }
 
   fun findSeverityInfos(ptId: String): CommonResponse<List<SvrtColl>> {
-    return CommonResponse(svrtCollRepository.findByPtId(ptId))
+    return CommonResponse(svrtCollRepository.findAllByPtIdOrderByCollSeqAsc(ptId))
   }
 
   @Transactional
-  fun saveFatimaMntrInfoWithSample(pid: String) {
-    val svrtPt = svrtPtRepository.findByPid(pid) ?: return
-    val svrtColls = svrtCollRepository.findByPidAndHospId(pid, svrtPt.id.hospId)
-    val basedd = svrtColls.lastOrNull()?.id?.msreDt?.plusDays(1) ?: svrtPt.monStrtDt
+  fun saveFatimaMntrInfoWithSample(pid: String): SvrtColl? {
+    val svrtPt = svrtPtRepository.findByPid(pid) ?: return null
 
-    val sampleData = HisRestClientRequest(pid, basedd)
-    val fatimaSvrtMntrInfo = fatimaHisRestClient.getFatimaSvrtMntrInfo(sampleData)
-    log.debug("fatimaSvrtMntrInfo: $fatimaSvrtMntrInfo")
+    // 관찰 종료일이 없는 경우에만 수집
+    if (svrtPt.monEndDt != null) {
+      val svrtColls = svrtCollRepository.findByPidAndHospId(pid, svrtPt.id.hospId)
+      val basedd = svrtColls.lastOrNull()?.id?.msreDt?.plusDays(1) ?: svrtPt.monStrtDt
 
-    if (fatimaSvrtMntrInfo.body.isEmpty()) {
-      svrtPt.endMonitoring(StringUtils.getYyyyMmDd(), StringUtils.getHhMmSs())
-      return
+      val sampleData = HisRestClientRequest(pid, basedd)
+      val fatimaSvrtMntrInfo = fatimaHisRestClient.getFatimaSvrtMntrInfo(sampleData)
+      log.debug("fatimaSvrtMntrInfo: $fatimaSvrtMntrInfo")
+
+      // 리스트가 비어있거나, 마지막 데이터의 msreDt가 basedd와 다르면 endMonitoring
+      if (fatimaSvrtMntrInfo.body.isEmpty() || fatimaSvrtMntrInfo.body.last().msreDt != basedd) {
+        svrtPt.endMonitoring(basedd, StringUtils.getHhMmSs())
+        return null
+      }
+
+      val svrtMntrInfo = fatimaSvrtMntrInfo.body.last()
+      val svrtColl = svrtMntrInfo.toSvrtColl(
+        ptId = svrtPt.id.ptId,
+        hospId = svrtPt.id.hospId,
+        rgstSeq = svrtPt.id.rgstSeq,
+        collSeq = svrtColls.lastOrNull()?.id?.collSeq?.plus(1) ?: 1,
+      )
+      svrtCollRepository.persist(svrtColl)
+      return svrtColl
+    } else {
+      return null
     }
-
-    val svrtMntrInfo = fatimaSvrtMntrInfo.body.last()
-    val svrtColl = svrtMntrInfo.toSvrtColl(
-      ptId = svrtPt.id.ptId,
-      hospId = svrtPt.id.hospId,
-      rgstSeq = svrtPt.id.rgstSeq,
-      collSeq = svrtColls.lastOrNull()?.id?.collSeq?.plus(1) ?: 1,
-    )
-    svrtCollRepository.persist(svrtColl)
   }
 
   @Transactional

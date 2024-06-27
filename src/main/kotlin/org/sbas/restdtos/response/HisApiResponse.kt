@@ -46,18 +46,6 @@ data class SvrtMntrInfo(
   val wbc: String,
   var oxyapp: String,
 ) {
-  init {
-    if (oxyapp.contains("R/A") || oxyapp.contains("RA")) {
-      oxyapp = "ROOM AIR"
-    } else if (oxyapp.contains("nasal")) {
-      oxyapp = "NASAL"
-    } else if (oxyapp.contains("mask")) {
-      oxyapp = "MASK"
-    } else if (oxyapp.contains("ventilator")) {
-      oxyapp = "VENTILATOR"
-    }
-  }
-
   fun toSvrtColl(ptId: String, hospId: String, rgstSeq: Int, collSeq: Int): SvrtColl {
     return SvrtColl(
       id = SvrtCollId(
