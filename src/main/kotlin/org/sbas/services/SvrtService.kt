@@ -36,7 +36,7 @@ class SvrtService(
   }
 
   fun getLastSvrtAnlyByPtId(ptId: String): CommonResponse<*> {
-//    val svrtInfo = svrtAnlyRepository.getSvrtInfo(ptId)
+    val svrtInfo = svrtAnlyRepository.getSvrtInfo(ptId)
     val latestSvrtColl = svrtCollRepository.findAllByPtIdOrderByCollSeqAsc(ptId).last()
     val svrtAnlyList = svrtAnlyRepository.findAllByPtIdAndHospIdAndCollSeq(
       ptId = ptId,
@@ -56,7 +56,7 @@ class SvrtService(
       svrtInfoRsps
     }
 
-    return CommonResponse(rsps)
+    return CommonResponse(svrtInfo)
   }
 
   @Transactional
@@ -183,7 +183,7 @@ class SvrtService(
     val svrtPt = svrtPtRepository.findByPid(pid) ?: return null
 
     // 관찰 종료일이 없는 경우에만 수집
-    if (svrtPt.monEndDt != null) {
+    if (svrtPt.monEndDt == null) {
       val svrtColls = svrtCollRepository.findByPidAndHospId(pid, svrtPt.id.hospId)
       val basedd = svrtColls.lastOrNull()?.id?.msreDt?.plusDays(1) ?: svrtPt.monStrtDt
 
