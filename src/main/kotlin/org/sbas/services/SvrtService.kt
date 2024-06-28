@@ -212,52 +212,68 @@ class SvrtService(
   }
 
   @Transactional
-  fun saveKnuhMntrInfoWithSample(pid: String) {
-    val svrtPt = svrtPtRepository.findByPid(pid) ?: return
-    val svrtColls = svrtCollRepository.findByPidAndHospId(pid, svrtPt.id.hospId)
-    val basedd = svrtColls.lastOrNull()?.id?.msreDt?.plusDays(1) ?: svrtPt.monStrtDt
+  fun saveKnuhMntrInfoWithSample(pid: String): SvrtColl? {
+    val svrtPt = svrtPtRepository.findByPid(pid) ?: return null
 
-    val sampleData = HisRestClientRequest(pid, basedd)
-    val knuhSvrtMntrInfo = knuhHisRestClient.getKnuhSvrtMntrInfo(sampleData)
-    log.debug("knuhSvrtMntrInfo: $knuhSvrtMntrInfo")
+    // 관찰 종료일이 없는 경우에만 수집
+    if (svrtPt.monEndDt == null) {
+      val svrtColls = svrtCollRepository.findByPidAndHospId(pid, svrtPt.id.hospId)
+      val basedd = svrtColls.lastOrNull()?.id?.msreDt?.plusDays(1) ?: svrtPt.monStrtDt
 
-    if (knuhSvrtMntrInfo.body.isEmpty()) {
-      svrtPt.endMonitoring(StringUtils.getYyyyMmDd(), StringUtils.getHhMmSs())
-      return
+      val sampleData = HisRestClientRequest(pid, basedd)
+      val fatimaSvrtMntrInfo = knuhHisRestClient.getKnuhSvrtMntrInfo(sampleData)
+      log.debug("fatimaSvrtMntrInfo: $fatimaSvrtMntrInfo")
+
+      // 리스트가 비어있거나, 마지막 데이터의 msreDt가 basedd와 다르면 endMonitoring
+      if (fatimaSvrtMntrInfo.body.isEmpty() || fatimaSvrtMntrInfo.body.last().msreDt != basedd) {
+        svrtPt.endMonitoring(basedd, StringUtils.getHhMmSs())
+        return null
+      }
+
+      val svrtMntrInfo = fatimaSvrtMntrInfo.body.last()
+      val svrtColl = svrtMntrInfo.toSvrtColl(
+        ptId = svrtPt.id.ptId,
+        hospId = svrtPt.id.hospId,
+        rgstSeq = svrtPt.id.rgstSeq,
+        collSeq = svrtColls.lastOrNull()?.id?.collSeq?.plus(1) ?: 1,
+      )
+      svrtCollRepository.persist(svrtColl)
+      return svrtColl
+    } else {
+      return null
     }
-
-    val svrtMntrInfo = knuhSvrtMntrInfo.body.last()
-    val svrtColl = svrtMntrInfo.toSvrtColl(
-      ptId = svrtPt.id.ptId,
-      hospId = svrtPt.id.hospId,
-      rgstSeq = svrtPt.id.rgstSeq,
-      collSeq = svrtColls.lastOrNull()?.id?.collSeq?.plus(1) ?: 1,
-    )
-    svrtCollRepository.persist(svrtColl)
   }
 
   @Transactional
-  fun saveKnuchMntrInfoWithSample(pid: String) {
-    val svrtPt = svrtPtRepository.findByPid(pid) ?: return
-    val svrtColls = svrtCollRepository.findByPidAndHospId(pid, svrtPt.id.hospId)
-    val basedd = svrtColls.lastOrNull()?.id?.msreDt?.plusDays(1) ?: svrtPt.monStrtDt
+  fun saveKnuchMntrInfoWithSample(pid: String): SvrtColl? {
+    val svrtPt = svrtPtRepository.findByPid(pid) ?: return null
 
-    val sampleData = HisRestClientRequest(pid, basedd)
-    val knuchSvrtMntrInfo = knuhHisRestClient.getKnuchSvrtMntrInfo(sampleData)
-    log.debug("knuchSvrtMntrInfo: $knuchSvrtMntrInfo")
+    // 관찰 종료일이 없는 경우에만 수집
+    if (svrtPt.monEndDt == null) {
+      val svrtColls = svrtCollRepository.findByPidAndHospId(pid, svrtPt.id.hospId)
+      val basedd = svrtColls.lastOrNull()?.id?.msreDt?.plusDays(1) ?: svrtPt.monStrtDt
 
-    if (knuchSvrtMntrInfo.body.isEmpty()) {
-      svrtPt.endMonitoring(StringUtils.getYyyyMmDd(), StringUtils.getHhMmSs())
-      return
+      val sampleData = HisRestClientRequest(pid, basedd)
+      val fatimaSvrtMntrInfo = knuhHisRestClient.getKnuchSvrtMntrInfo(sampleData)
+      log.debug("fatimaSvrtMntrInfo: $fatimaSvrtMntrInfo")
+
+      // 리스트가 비어있거나, 마지막 데이터의 msreDt가 basedd와 다르면 endMonitoring
+      if (fatimaSvrtMntrInfo.body.isEmpty() || fatimaSvrtMntrInfo.body.last().msreDt != basedd) {
+        svrtPt.endMonitoring(basedd, StringUtils.getHhMmSs())
+        return null
+      }
+
+      val svrtMntrInfo = fatimaSvrtMntrInfo.body.last()
+      val svrtColl = svrtMntrInfo.toSvrtColl(
+        ptId = svrtPt.id.ptId,
+        hospId = svrtPt.id.hospId,
+        rgstSeq = svrtPt.id.rgstSeq,
+        collSeq = svrtColls.lastOrNull()?.id?.collSeq?.plus(1) ?: 1,
+      )
+      svrtCollRepository.persist(svrtColl)
+      return svrtColl
+    } else {
+      return null
     }
-
-    val svrtMntrInfo = knuchSvrtMntrInfo.body.last()
-    val svrtColl = svrtMntrInfo.toSvrtColl(
-      ptId = svrtPt.id.ptId,
-      hospId = svrtPt.id.hospId,
-      rgstSeq = svrtPt.id.rgstSeq,
-      collSeq = svrtColls.lastOrNull()?.id?.collSeq?.plus(1) ?: 1,
-    )
-    svrtCollRepository.persist(svrtColl)
   }
 }

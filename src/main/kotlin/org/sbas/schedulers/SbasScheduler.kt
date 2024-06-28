@@ -60,19 +60,27 @@ class SbasScheduler {
   }
 
   /**
-   * 매일 오후 11시 50분에 실행
+   * 매일 오전, 오후 11시 50분에 실행
    */
-  @Scheduled(cron = "0 50 23 * * ?")
+//  @Scheduled(cron = "0 50 23 * * ?")
+  @Schedules(
+    value = [
+      Scheduled(cron = "0 50 11 * * ?"),
+      Scheduled(cron = "0 50 23 * * ?"),
+    ]
+  )
   fun saveSvrtColl() {
-    // 0030001, 20220103 ~ 20220112
-    // 0030002, 20211221 ~ 20211225
+    val knuchSampleList = listOf("0010001", "0010002", "0010003", "0010004", "0010005")
+    val knuhSampleList = listOf("0020001", "0020002", "0020003", "0020004", "0020005")
     val fatimaSampleList = listOf("0030001", "0030002", "0030003", "0030004", "0030005")
     fatimaSampleList.forEach { pid ->
       val svrtColl = svrtService.saveFatimaMntrInfoWithSample(pid)
-      if (svrtColl != null) {
-
-      }
-      //      svrtService.saveSvrtAnly(pid)
+    }
+    knuchSampleList.forEach { pid ->
+      val svrtColl = svrtService.saveKnuchMntrInfoWithSample(pid)
+    }
+    knuhSampleList.forEach { pid ->
+      val svrtColl = svrtService.saveKnuhMntrInfoWithSample(pid)
     }
   }
 }
