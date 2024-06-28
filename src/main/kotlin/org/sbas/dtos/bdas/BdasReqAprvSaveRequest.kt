@@ -7,6 +7,8 @@ import jakarta.validation.constraints.NotNull
 import jakarta.validation.constraints.Pattern
 import org.sbas.entities.bdas.BdasReqAprv
 import org.sbas.entities.bdas.BdasReqAprvId
+import org.sbas.entities.info.FacilityStatus
+import org.sbas.entities.info.MedicalTeamCount
 
 data class BdasReqAprvSaveRequest(
     @field: NotBlank
@@ -68,27 +70,30 @@ data class BdasAprvResponse(
 )
 
 data class AvalHospListResponse(
-    val hospId: String,
-    val hospNm: String,
-    @JsonIgnore
+  val hospId: String,
+  val hospNm: String,
+  val dutyDivNam: String?,
+  @JsonIgnore
     val doubleDistance: Double,
-    val distance: String?,
-    val addr: String,
+  val distance: String?,
+  val addr: String,
 //    val tagList = mutableListOf<String>()
-    val gnbdIcu: Int, // hv22 54
-    val npidIcu: Int, // hv23 55
-    val gnbdSvrt: Int, // hv24 56
-    val gnbdSmsv: Int, // hv25
-    val gnbdModr: Int, // hv26
-    val ventilator: String?,
-    val ventilatorPreemie: String?,
-    val incubator: String?,
-    val ecmo: String?,
-    val highPressureOxygen: String?,
-    val ct: String?,
-    val mri: String?,
-    val bloodVesselImaging: String?,
-    val bodyTemperatureControl: String?,
+  val gnbdIcu: Int, // hv22 54
+  val npidIcu: Int, // hv23 55
+  val gnbdSvrt: Int, // hv24 56
+  val gnbdSmsv: Int, // hv25
+  val gnbdModr: Int, // hv26
+  val ventilator: String?,
+  val ventilatorPreemie: String?,
+  val incubator: String?,
+  val ecmo: String?,
+  val highPressureOxygen: String?,
+  val ct: String?,
+  val mri: String?,
+  val bloodVesselImaging: String?,
+  val bodyTemperatureControl: String?,
+  var facilityStatus: FacilityStatus?,
+  var medicalTeamCount: MedicalTeamCount?,
 ) {
     val tagList: MutableList<String>
         get() {

@@ -3,3 +3,15 @@
 !build/*-runner.jar
 !build/lib/*
 !build/quarkus-app/*
+!build/quarkus-app/lib/
+
+!src/
+!gradle/
+!gradle.properties
+!gradlew
+!settings.gradle.kts
+!build.gradle.kts
+
+.vscode
+.idea
+.readmes

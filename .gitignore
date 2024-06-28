@@ -1,13 +1,15 @@
 # Gradle
 .gradle/
 build/
+out/
+libs/
+lib-gen8id/
 
 # Eclipse
 .project
 .classpath
 .settings/
 bin/
-out/
 
 # IntelliJ
 .idea
@@ -35,3 +37,6 @@ nb-configuration.xml
 
 # Local environment
 .env
+
+# Plugin directory
+/.quarkus/cli/plugins/

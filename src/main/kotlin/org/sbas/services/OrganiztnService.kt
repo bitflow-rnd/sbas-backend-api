@@ -21,7 +21,7 @@ import org.sbas.handlers.GeocodingHandler
 import org.sbas.repositories.*
 import org.sbas.responses.CommonListResponse
 import org.sbas.responses.CommonResponse
-import org.sbas.restparameters.*
+import org.sbas.restdtos.*
 import org.sbas.utils.CustomizedException
 import org.sbas.utils.StringUtils
 import java.io.File

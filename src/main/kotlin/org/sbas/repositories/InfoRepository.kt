@@ -35,8 +35,9 @@ class InfoPtRepository : PanacheRepositoryBase<InfoPt, String> {
 
         val query = "select new org.sbas.dtos.info.InfoPtSearchDto(pt.ptId, br.id.bdasSeq, pt.ptNm, pt.gndr, pt.rrno1, " +
                 "pt.dstr1Cd, fn_get_cd_nm('SIDO', pt.dstr1Cd), pt.dstr2Cd, fn_get_cd_nm('SIDO'||pt.dstr1Cd, pt.dstr2Cd), " +
-                "bap.hospId, ih.dutyName, pt.mpno, pt.natiCd, pt.natiNm, br.bedStatCd, pt.rgstDttm, pt.updtDttm, " +
-                "br.ptTypeCd, br.svrtTypeCd, br.undrDsesCd, fn_get_age(pt.rrno1, pt.rrno2), pt.ptId in (select sa.id.ptId from SvrtAnly sa)) " +
+                "bap.hospId, ih.dutyName, pt.mpno, pt.natiCd, pt.natiNm, br.bedStatCd, pt.rgstDttm, pt.updtDttm, br.svrtIptTypeCd, " +
+                "br.ptTypeCd, br.svrtTypeCd, br.undrDsesCd, fn_get_age(pt.rrno1, pt.rrno2), " +
+                "(pt.ptId in (select sa.id.ptId from SvrtAnly sa) or pt.ptId in (select sp.id.ptId from SvrtPt sp))) " +
                 "from InfoPt pt " +
                 "left join BdasReq br on pt.ptId = br.id.ptId " +
                 "left join BdasAprv bap on (br.id.bdasSeq = bap.id.bdasSeq and bap.aprvYn = 'Y') " +
@@ -108,7 +109,8 @@ class InfoPtRepository : PanacheRepositoryBase<InfoPt, String> {
         cond += param.mpno?.run { " or pt.mpno like '%$this%') " } ?: ") "
         cond += param.ptId?.run { " and pt.ptId like '%$this%' " } ?: ""
 
-        cond += param.sever?.run { " and pt.ptId in (select sa.id.ptId from SvrtAnly sa) " } ?: ""
+        cond += param.sever?.run { " and (pt.ptId in (select sa.id.ptId from SvrtAnly sa) " +
+          "or pt.ptId in (select sp.id.ptId from SvrtPt sp)) " } ?: ""
         cond += param.gndr?.run { " and pt.gndr like '%$this%' " } ?: ""
         cond += param.natiCd?.run { " and pt.natiCd like '%$this%' " } ?: ""
         cond += param.dstr1Cd?.run { " and pt.dstr1Cd like '%$this%' " } ?: ""

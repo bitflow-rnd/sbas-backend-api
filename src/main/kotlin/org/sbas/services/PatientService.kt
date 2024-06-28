@@ -55,6 +55,9 @@ class PatientService {
     private lateinit var bdasReqRepository: BdasReqRepository
 
     @Inject
+    private lateinit var svrtPtRepository: SvrtPtRepository
+
+    @Inject
     private lateinit var fileHandler: FileHandler
 
     @Inject
@@ -76,7 +79,7 @@ class PatientService {
     fun saveInfoPt(infoPtDto: InfoPtDto): CommonResponse<String?> {
         //환자 주소(bascAddr)로 dstr1Cd, dstr2Cd 구하기
         val split = infoPtDto.bascAddr.split(" ")
-        val dstr1Cd = StringUtils.getdstr1Cd(split[0])
+        val dstr1Cd = StringUtils.getDstr1Cd(split[0])
         val findBaseCode = baseCodeRepository.findByDstr1CdAndCdNm(dstr1Cd, split[1])
         val infoPt = infoPtDto.toEntity(dstr1Cd, findBaseCode.id.cdId)
 
@@ -134,7 +137,7 @@ class PatientService {
 
         //환자 주소(bascAddr)로 dstr1Cd, dstr2Cd 구하기
         val split = infoPtDto.bascAddr.split(" ")
-        val dstr1Cd = StringUtils.getdstr1Cd(split[0])
+        val dstr1Cd = StringUtils.getDstr1Cd(split[0])
         val findBaseCode = baseCodeRepository.findByDstr1CdAndCdNm(dstr1Cd, split[1])
         infoPtDto.dstr1Cd = dstr1Cd
         infoPtDto.dstr2Cd = findBaseCode.id.cdId
@@ -158,6 +161,7 @@ class PatientService {
     fun findBasicInfo(ptId: String): CommonResponse<*> {
         val infoPt = infoPtRepository.findById(ptId) ?: throw NotFoundException("$ptId not found")
         val bdasReq = bdasReqRepository.findByPtIdWithLatestBdasSeq(ptId)
+        val svrtPt = svrtPtRepository.findByPtId(ptId)
 
         val bedStatCd: String = bdasReq?.bedStatCd ?: "BAST0001"
 
@@ -188,6 +192,7 @@ class PatientService {
             bedStatNm = bedStatCd.let { BedStatCd.valueOf(it).cdNm },
             undrDsesCd = infoPt.undrDsesCd,
             undrDsesEtc = infoPt.undrDsesEtc,
+            monitoring = svrtPt.isNotEmpty(),
         )
 
         return CommonResponse(infoPtBasicInfo)

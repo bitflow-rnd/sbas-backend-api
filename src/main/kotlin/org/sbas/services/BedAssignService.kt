@@ -9,10 +9,11 @@ import org.eclipse.microprofile.jwt.JsonWebToken
 import org.jboss.logging.Logger
 import org.sbas.component.InfoCrewComponent
 import org.sbas.component.base.BaseCodeReader
+import org.sbas.constants.enums.AdmsStatCd
 import org.sbas.constants.enums.BedStatCd
 import org.sbas.constants.enums.TimeLineStatCd
 import org.sbas.dtos.bdas.*
-import org.sbas.entities.bdas.BdasAprvId
+import org.sbas.entities.bdas.BdasAdms
 import org.sbas.entities.bdas.BdasReqId
 import org.sbas.handlers.GeocodingHandler
 import org.sbas.repositories.*
@@ -21,7 +22,7 @@ import org.sbas.responses.CommonResponse
 import org.sbas.responses.patient.DiseaseInfoResponse
 import org.sbas.responses.patient.TransInfoResponse
 import org.sbas.responses.patient.toTransInfoResponse
-import org.sbas.restparameters.NaverGeocodingApiParams
+import org.sbas.restdtos.NaverGeocodingApiParams
 import org.sbas.utils.CustomizedException
 import kotlin.math.acos
 import kotlin.math.cos
@@ -65,6 +66,12 @@ class BedAssignService {
 
   @Inject
   private lateinit var activityHistoryRepository: UserActivityHistoryRepository
+
+  @Inject
+  private lateinit var infoHospDetailRepository: InfoHospDetailRepository
+
+  @Inject
+  private lateinit var svrtPtRepository: SvrtPtRepository
 
   @Inject
   private lateinit var geoHandler: GeocodingHandler
@@ -208,16 +215,17 @@ class BedAssignService {
    * 가용 병원 목록 조회
    */
   @Transactional
-  fun getAvalHospList(ptId: String, bdasSeq: Int): CommonResponse<*> {
+  fun getAvalHospList(ptId: String, bdasSeq: Int, param: AvalHospListRequest): CommonResponse<*> {
     val findBdasReq = bdasReqRepository.findByPtIdAndBdasSeq(ptId, bdasSeq)
 
     val dstr1Cd = findBdasReq.reqDstr1Cd
     val dstr2Cd: String? = findBdasReq.reqDstr2Cd
 
     // 병상 배정 요청시 선택한 dstr1Cd, dstr2Cd에 해당하는 infoHosp 목록
-    val infoHospList = infoHospRepository.findAvalHospListBydstr1Cd(dstr1Cd, dstr2Cd)
+    val infoHospList = infoHospRepository.findAvalHospList(dstr1Cd, dstr2Cd, param)
     log.debug("getAvalHospList >>>>>>>>>>>>>> ${infoHospList.size}")
     val list = infoHospList.map { avalHospDto ->
+      val infoHospDetail = infoHospDetailRepository.findByHospId(avalHospDto.hospId)
       val distance = calculateDistance(
         lat1 = findBdasReq.dprtDstrLat!!.toDouble(),
         lon1 = findBdasReq.dprtDstrLon!!.toDouble(),
@@ -227,6 +235,7 @@ class BedAssignService {
       AvalHospListResponse(
         hospId = avalHospDto.hospId,
         hospNm = avalHospDto.dutyName!!,
+        dutyDivNam = avalHospDto.dutyDivNam,
         doubleDistance = distance,
         distance = convertToStringDistance(distance),
         addr = avalHospDto.dutyAddr!!,
@@ -244,6 +253,8 @@ class BedAssignService {
         mri = avalHospDto.mri,
         bloodVesselImaging = avalHospDto.bloodVesselImaging,
         bodyTemperatureControl = avalHospDto.bodyTemperatureControl,
+        facilityStatus = infoHospDetail?.facilityStatus,
+        medicalTeamCount = infoHospDetail?.medicalTeamCount,
       )
       //        }.filter { response -> response.hospId !in findBdasReqAprv.map { it.reqHospId } }
     }
@@ -377,6 +388,8 @@ class BedAssignService {
 
     findBdasReq.changeBedStatTo(BedStatCd.BAST0006.name)
 
+    activityHistoryRepository.save(saveRequest.convertToActivityHistory(jwt.name))
+
     return CommonResponse("이송 정보 등록 성공")
   }
 
@@ -385,17 +398,19 @@ class BedAssignService {
     val findBdasReq  = bdasReqRepository.findByPtIdAndBdasSeq(saveRequest.ptId, saveRequest.bdasSeq)
     val findBdasAdms = bdasAdmsRepository.findByIdOrderByAdmsSeqDesc(saveRequest.ptId, saveRequest.bdasSeq)
 
-    val entity = if (findBdasAdms == null) {
-      saveRequest.toEntity(saveRequest.admsStatCd, 1)
-    } else {
-      if (findBdasAdms.isAdmsStatCdDuplicate(saveRequest.admsStatCd)) {
-        throw CustomizedException("입/퇴원 상태(admsStatCd) 중복입니다.", Response.Status.BAD_REQUEST)
-      }
-      saveRequest.toEntity(saveRequest.admsStatCd, findBdasAdms.id.admsSeq + 1)
+    val admsSeq = if (findBdasAdms == null) 1 else findBdasAdms.id.admsSeq + 1
+    val svrtPtEntity = saveRequest.toSvrtPtEntity(admsSeq)
+    val entity: BdasAdms = saveRequest.toEntity(AdmsStatCd.valueOf(saveRequest.admsStatCd), admsSeq)
+
+    // 입원일 경우 중증 관찰 환자 등록
+    if (saveRequest.admsStatCd == AdmsStatCd.IOST0001.name) {
+      svrtPtRepository.persist(svrtPtEntity)
     }
 
     bdasAdmsRepository.persist(entity)
     findBdasReq.changeBedStatTo(BedStatCd.BAST0007.name)
+
+    activityHistoryRepository.save(saveRequest.convertToActivityHistory(jwt.name))
 
     return CommonResponse("${entity.id.ptId} ${entity.id.bdasSeq} 입퇴원 정보 등록 성공")
   }
@@ -447,6 +462,11 @@ class BedAssignService {
   @Transactional
   fun findBedAsgnListForWeb(param: BdasListSearchParam): CommonListResponse<BdasListDto> {
     val findBdasList = bdasReqRepository.findBdasListForWeb(param)
+    findBdasList.forEach {
+      it.ptTypeCdNm = baseCodeReader.getBaseCodeCdNm("PTTP", it.ptTypeCd)?.joinToString(";")
+      it.svrtTypeCdNm = baseCodeReader.getBaseCodeCdNm("SVTP", it.svrtTypeCd)?.joinToString(";")
+      it.undrDsesCdNm = baseCodeReader.getBaseCodeCdNm("UDDS", it.undrDsesCd)?.joinToString(";")
+    }
     val count = bdasReqRepository.countBdasList(param)
     return CommonListResponse(findBdasList, count.toInt())
   }
@@ -586,6 +606,9 @@ class BedAssignService {
         }
 
         6 -> {
+          infoPtRepository.delete("ptId = '$ptId'")
+          bdasEsvyRepository.delete("ptId = '$ptId'")
+          bdasReqRepository.delete("id.ptId = '$ptId'")
           bdasReqAprvRepository.delete("id.ptId = '$ptId'")
           bdasAprvRepository.delete("id.ptId = '$ptId'")
           bdasTrnsRepository.delete("id.ptId = '$ptId'")

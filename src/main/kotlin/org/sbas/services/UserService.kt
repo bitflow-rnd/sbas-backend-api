@@ -23,8 +23,8 @@ import org.sbas.repositories.UserActivityHistoryRepository
 import org.sbas.responses.CommonListResponse
 import org.sbas.responses.CommonResponse
 import org.sbas.restclients.NaverSensRestClient
-import org.sbas.restparameters.NaverSmsMsgApiParams
-import org.sbas.restparameters.NaverSmsReqMsgs
+import org.sbas.restdtos.NaverSmsMsgApiParams
+import org.sbas.restdtos.NaverSmsReqMsgs
 import org.sbas.utils.CustomizedException
 import org.sbas.utils.TokenUtils
 
@@ -91,7 +91,7 @@ class UserService {
      * 관리자 사용자 정보 관리 화면에서 사용자 목록 조회
      */
     @Transactional
-    fun getUsers(param: InfoUserSearchParam): CommonListResponse<InfoUserListDto> {
+    fun getUsers(param: InfoUserSearchParam): CommonListResponse<UserDetailResponse> {
         val list = userRepository.findInfoUserList(param)
         list.forEach { it.userStatCdNm = it.userStatCd!!.cdNm }
         val count = userRepository.countInfoUserList(param)
@@ -277,7 +277,8 @@ class UserService {
     @Transactional
     fun getAllUsers(pageRequest: PageRequest): CommonResponse<PagingListDto> {
         // TODO 응답 수정
-        val findUsers = userRepository.findInfoUserDetail()
+        val findUsers = userRepository.findAllInfoUser()
+        findUsers.forEach { it.userStatCdNm = it.userStatCd!!.cdNm }
         val totalCnt = userRepository.count()
         val response = PagingListDto(totalCnt, findUsers)
         return CommonResponse(response)

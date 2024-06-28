@@ -11,10 +11,10 @@ import org.sbas.constants.enums.NatiCd
 import org.sbas.repositories.BaseCodeRepository
 import org.sbas.responses.patient.EpidResult
 import org.sbas.restclients.NaverOcrRestClient
-import org.sbas.restparameters.NaverGeocodingApiParams
-import org.sbas.restparameters.NaverOcrApiParams
-import org.sbas.restparameters.OcrApiImagesParam
-import org.sbas.restresponses.FieldName
+import org.sbas.restdtos.NaverGeocodingApiParams
+import org.sbas.restdtos.NaverOcrApiParams
+import org.sbas.restdtos.OcrApiImagesParam
+import org.sbas.restdtos.response.FieldName
 import org.sbas.utils.StringUtils
 
 
@@ -150,7 +150,7 @@ class NaverApiHandler {
         }
 
         // 코드
-        val dstr1Cd = StringUtils.getdstr1Cd(addrList[0])
+        val dstr1Cd = StringUtils.getDstr1Cd(addrList[0])
         val baseCode = baseCodeRepository.findByDstr1CdAndCdNm(dstr1Cd, addrList[1])
         val dstr2Cd = baseCode.id.cdId
 
@@ -181,7 +181,7 @@ class NaverApiHandler {
                 it.types!![0] to it.longName!!
             }
         }
-        val dstr1Cd = StringUtils.getdstr1Cd(resultMap["SIDO"]!!)
+        val dstr1Cd = StringUtils.getDstr1Cd(resultMap["SIDO"]!!)
         val baseCode = baseCodeRepository.findByDstr1CdAndCdNm(dstr1Cd, resultMap["SIGUGUN"]!!)
         val dstr2Cd = baseCode.id.cdId
 

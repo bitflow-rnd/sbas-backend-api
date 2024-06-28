@@ -4,7 +4,6 @@ import jakarta.persistence.*
 import org.sbas.entities.CommonEntity
 import java.io.Serializable
 
-
 /**
  * 중증 관찰 정보
  */
@@ -12,7 +11,7 @@ import java.io.Serializable
 @Table(name = "svrt_coll")
 class SvrtColl(
     @EmbeddedId
-    var id: SvrtCollId? = null,
+    var id: SvrtCollId,
 
     @Column(name = "pid", nullable = false, length = 10)
     var pid: String, // 병원 PID
@@ -40,9 +39,6 @@ class SvrtColl(
 
     @Column(name = "rslt_tm", nullable = false, length = 6)
     var rsltTm: String, // 결과 시간
-
-    @Column(name = "hist_cd", nullable = false, length = 8)
-    var histCd: String, // 이력 코드
 
     @Column(name = "alt", length = 10)
     var alt: String? = null, // ALT
@@ -99,8 +95,22 @@ class SvrtColl(
     var sbp: String? = null, // 수축기 혈압
 
     @Column(name = "spo2", length = 10)
-    var spo2: String? = null // 산소포화도
-) : CommonEntity()
+    var spo2: String? = null, // 산소포화도
+
+    @Column(name = "oxygen", length = 12)
+    var oxygenApply: String? = null, // 산소치료수준
+) : CommonEntity() {
+  fun isMntrInfoValueBlank(): Boolean {
+    val values = listOf(
+      bun, cre, hem, ldh,
+      lym, neu, pla, pot,
+      sod, wbc, crp,
+      bdtp, resp, dbp, hr,
+      sbp, spo2, oxygenApply,
+    )
+    return values.any { it.isNullOrBlank() }
+  }
+}
 
 @Embeddable
 data class SvrtCollId(

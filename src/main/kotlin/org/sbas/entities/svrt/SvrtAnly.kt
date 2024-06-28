@@ -11,7 +11,7 @@ import java.io.Serializable
 @Table(name = "svrt_anly")
 class SvrtAnly(
     @EmbeddedId
-    var id: SvrtAnlyId? = null,
+    var id: SvrtAnlyId,
 
     @Column(name = "pid", nullable = false, length = 10)
     var pid: String, // 병원 PID
@@ -28,12 +28,14 @@ class SvrtAnly(
     @Column(name = "prdt_dt", length = 8)
     var prdtDt: String? = null, // 예측 날짜
 
+    @Column(name = "covsf", length = 20)
+    var covSf: String? = null,
+
     @Column(name = "svrt_prob_mean", length = 6)
     var svrtProbMean: String? = null, // 중증 확률
 
     @Column(name = "svrt_prob_std", length = 6)
     var svrtProbStd: String? = null, // 중증 확률
-
 
 ) : CommonEntity()
 

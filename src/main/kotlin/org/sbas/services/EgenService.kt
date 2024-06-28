@@ -21,10 +21,10 @@ import org.sbas.entities.info.InfoHosp
 import org.sbas.repositories.*
 import org.sbas.responses.CommonResponse
 import org.sbas.restclients.EgenRestClient
-import org.sbas.restparameters.EgenApiBassInfoParams
-import org.sbas.restparameters.EgenApiEmrrmRltmUsefulSckbdInfoParams
-import org.sbas.restparameters.EgenApiLcInfoParams
-import org.sbas.restparameters.EgenApiListInfoParams
+import org.sbas.restdtos.EgenApiBassInfoParams
+import org.sbas.restdtos.EgenApiEmrrmRltmUsefulSckbdInfoParams
+import org.sbas.restdtos.EgenApiLcInfoParams
+import org.sbas.restdtos.EgenApiListInfoParams
 import org.sbas.utils.CustomizedException
 
 
@@ -332,7 +332,7 @@ class EgenService {
 
     fun saveUsefulSckbdInfo(param: EgenApiEmrrmRltmUsefulSckbdInfoParams) {
 //        val (jsonObjectIntPair, totalCount) = getEmrrmRltmUsefulSckbdInfoInqire(param)
-        SidoCd.values().forEach {
+        SidoCd.entries.forEach {
             if (it.cdNm == "강원도") {
                 param.stage1 = "강원특별자치도"
             } else {

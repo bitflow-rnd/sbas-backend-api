@@ -114,8 +114,9 @@ data class InfoPtSearchDto(
     val bedStatCd: String?,
     val rgstDttm: Instant?,
     val updtDttm: Instant?,
+    val svrtIptTypeCd: String?,
     @JsonIgnore val ptTypeCd: String?,
-    @JsonIgnore val svrtTypeCd: String?,
+    val svrtTypeCd: String?,
     @JsonIgnore val undrDsesCd: String?,
     val age: Int?,
     val monitoring: Boolean?
@@ -138,6 +139,9 @@ data class InfoPtSearchDto(
             }
             return tagList
         }
+
+  val svrtIptTypeCdNm: String? = svrtIptTypeCd?.let { SvrtIptTypeCd.valueOf(it).cdNm }
+  val svrtTypeCdNm: String? = svrtTypeCd?.let { SvrtTypeCd.valueOf(it).cdNm }
 }
 
 /**
@@ -169,6 +173,7 @@ data class InfoPtBasicInfo(
     val bedStatNm: String?,
     val undrDsesCd: List<UndrDsesCd>?,
     val undrDsesEtc: String?,
+    val monitoring: Boolean = false,
 ) {
     val undrDsesCdNm: List<String>? = undrDsesCd?.map { it.cdNm }
 }

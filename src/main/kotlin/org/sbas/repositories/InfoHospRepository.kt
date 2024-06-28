@@ -8,6 +8,7 @@ import jakarta.enterprise.context.ApplicationScoped
 import jakarta.inject.Inject
 import jakarta.persistence.EntityManager
 import org.jboss.logging.Logger
+import org.sbas.dtos.bdas.AvalHospListRequest
 import org.sbas.dtos.info.*
 import org.sbas.entities.info.InfoBed
 import org.sbas.entities.info.InfoHosp
@@ -127,10 +128,10 @@ class InfoHospRepository : PanacheRepositoryBase<InfoHosp, String> {
 //        return entityManager.createQuery(query, context).resultList
     }
 
-    fun findAvalHospListBydstr1Cd(dstr1Cd: String, dstr2Cd: String?): MutableList<AvalHospDto> {
+    fun findAvalHospList(dstr1Cd: String, dstr2Cd: String?, param: AvalHospListRequest): MutableList<AvalHospDto> {
         val query = jpql {
             selectNew<AvalHospDto>(
-                path(InfoHosp::hospId), path(InfoHosp::dutyName), path(InfoHosp::wgs84Lon), path(InfoHosp::wgs84Lat),
+                path(InfoHosp::hospId), path(InfoHosp::dutyName), path(InfoHosp::dutyDivNam), path(InfoHosp::wgs84Lon), path(InfoHosp::wgs84Lat),
                 path(InfoHosp::dutyAddr), path(InfoBed::gnbdIcu), path(InfoBed::npidIcu), path(InfoBed::gnbdSvrt),
                 path(InfoBed::gnbdSmsv), path(InfoBed::gnbdModr),
                 path(InfoBed::ventilator), path(InfoBed::ventilatorPreemie), path(InfoBed::incubator), path(InfoBed::ecmo),
@@ -141,7 +142,8 @@ class InfoHospRepository : PanacheRepositoryBase<InfoHosp, String> {
                 join(InfoBed::class).on(path(InfoHosp::hospId).eq(path(InfoBed::hospId)))
             ).whereAnd(
                 path(InfoHosp::dstr1Cd).eq(dstr1Cd),
-                dstr2Cd?.run { path(InfoHosp::dstr2Cd).eq(dstr2Cd) }
+                param.dutyName?.run { path(InfoHosp::dutyName).like("%$this%") },
+                path(InfoHosp::dutyName).`in`("경북대학교병원", "칠곡경북대학교병원", "대구파티마병원", "대구의료원"),
             )
         }
 
@@ -198,8 +200,7 @@ class InfoHospRepository : PanacheRepositoryBase<InfoHosp, String> {
 @ApplicationScoped
 class InfoHospDetailRepository : PanacheRepositoryBase<InfoHospDetail, String> {
 
-    fun updateDetailInfo() {
-
-    }
-
+  fun findByHospId(hospId: String): InfoHospDetail? {
+    return find("hospId = '$hospId'").firstResult()
+  }
 }

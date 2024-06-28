@@ -31,6 +31,14 @@ enum class PtTypeCd(val cdNm: String) {
 }
 
 /**
+ * 중증도 입력 유형 코드
+ */
+enum class SvrtIptTypeCd(val cdNm: String) {
+  SVIP0001("직접선택"),
+  SVIP0002("생체정보입력"),
+}
+
+/**
  * 중증 유형 코드
  */
 enum class SvrtTypeCd(val cdNm: String) {
@@ -85,6 +93,12 @@ enum class BnrnTypeCd(val cdNm: String) {
     BNRN0005("응급실 과밀화3"),
     BNRN0006("장비 부족"),
     BNRN0007("기타"),
+}
+
+enum class AdmsStatCd(val cdNm: String) {
+  IOST0001("입원"),
+  IOST0002("퇴원"),
+  IOST0003("자택회송"),
 }
 
 enum class DprtTypeCd(val cdNm: String) {

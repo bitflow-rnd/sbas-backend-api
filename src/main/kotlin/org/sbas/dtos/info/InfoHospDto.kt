@@ -143,6 +143,7 @@ data class InfoHospId(
 data class AvalHospDto(
     val hospId: String,
     val dutyName: String?,
+    val dutyDivNam: String?,
     val wgs84Lon: String?,
     val wgs84Lat: String?,
     val dutyAddr: String?,

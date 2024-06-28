@@ -10,6 +10,7 @@ import jakarta.persistence.EntityManager
 import jakarta.transaction.Transactional
 import kotlinx.coroutines.runBlocking
 import org.eclipse.microprofile.jwt.JsonWebToken
+import org.sbas.constants.enums.UserStatCd
 import org.sbas.dtos.info.*
 import org.sbas.entities.info.InfoPt
 import org.sbas.entities.info.InfoUser
@@ -37,15 +38,37 @@ class InfoUserRepository : PanacheRepositoryBase<InfoUser, String> {
 
 //    fun getMyUserDetail(userId: String) = find("from InfoUser where id = $userId").firstResult()
 
-    fun findInfoUserList(param: InfoUserSearchParam): List<InfoUserListDto> {
-        val (cond, offset) = conditionAndOffset(param)
+    fun findInfoUserList(param: InfoUserSearchParam): List<UserDetailResponse> {
+//      val (cond, offset) = conditionAndOffset(param)
 
-        val query = "select new org.sbas.dtos.info.InfoUserListDto(iu.id, iu.dutyDstr1Cd, fn_get_cd_nm('SIDO', iu.dutyDstr1Cd), iu.telno, iu.ptTypeCd, " +
-            "iu.instTypeCd, iu.instNm, iu.userNm, iu.jobCd, iu.authCd, iu.rgstDttm, iu.userStatCd, iu.rgstUserId, iu.instId, iu.ocpCd, iu.updtDttm, false) " +
-            "from InfoUser iu " +
-            "where " + "$cond " + "order by iu.updtDttm desc"
+      val query = jpql {
+        selectNew<UserDetailResponse>(
+          path(InfoUser::id), path(InfoUser::userNm), path(InfoUser::gndr), path(InfoUser::telno),
+          path(InfoUser::jobCd), path(InfoUser::ocpCd), path(InfoUser::ptTypeCd),
+          path(InfoUser::instTypeCd), path(InfoUser::instId), path(InfoUser::instNm), path(InfoUser::dutyDstr1Cd),
+          function(String::class, "fn_get_cd_nm", stringLiteral("SIDO"), path(InfoUser::dutyDstr1Cd)),
+          path(InfoUser::dutyDstr2Cd),
+          function(String::class, "fn_get_dstr_cd2_nm", path(InfoUser::dutyDstr1Cd), path(InfoUser::dutyDstr2Cd)),
+          path(InfoUser::btDt), path(InfoUser::authCd), path(InfoUser::attcId), path(InfoUser::userStatCd), stringLiteral("userStatCdNm"),
+          path(InfoUser::rgstDttm), path(InfoUser::updtDttm), path(InfoUser::aprvDttm),
+        ).from(
+          entity(InfoUser::class)
+        ).whereAnd(
+          param.userNm?.run { path(InfoUser::userNm).like("%${this}%") },
+          param.telno?.run { path(InfoUser::telno).like("%${this}%") },
+          param.ptTypeCd?.run { path(InfoUser::ptTypeCd).`in`(this.split(",")) },
+          param.instTypeCd?.run { path(InfoUser::instTypeCd).`in`(this.split(",")) },
+          param.userStatCdStr?.run { path(InfoUser::userStatCd).`in`(this.split(",").map { UserStatCd.valueOf(it) }) },
+          param.dstr1Cd?.run {path(InfoUser::dutyDstr1Cd).eq(param.dstr1Cd)},
+          param.dstr2Cd?.run {path(InfoUser::dutyDstr2Cd).eq(param.dstr2Cd)},
+        ).orderBy(
+          path(InfoUser::updtDttm).desc()
+        )
+      }
 
-        return entityManager.createQuery(query, InfoUserListDto::class.java).setMaxResults(15).setFirstResult(offset).resultList
+      val offset = param.page?.run { this.minus(1).times(15) } ?: 0
+
+      return entityManager.createQuery(query, context).setMaxResults(15).setFirstResult(offset).resultList
     }
 
     fun findInfoUsersFromUser(param : InfoUserSearchFromUserParam): List<InfoUserListDto> {
@@ -69,7 +92,6 @@ class InfoUserRepository : PanacheRepositoryBase<InfoUser, String> {
         }
 
         return userList
-
     }
 
     fun findContactedInfoUserListByUserId(userId: String): List<InfoUserListDto> {
@@ -103,7 +125,6 @@ class InfoUserRepository : PanacheRepositoryBase<InfoUser, String> {
 
         cond += param.dstr1Cd?.run { " and iu.dutyDstr1Cd = '$this' " } ?: ""
         cond += param.dstr2Cd?.run { " and iu.dutyDstr2Cd = '$this' " } ?: ""
-        cond += param.instNm?.run { " and iu.instNm like '%$this%' " } ?: ""
 
         val offset = param.page?.run { this.minus(1).times(15) } ?: 0
 
@@ -154,12 +175,6 @@ class InfoUserRepository : PanacheRepositoryBase<InfoUser, String> {
         return count("telno = '$telno'") == 1L
     }
 
-    fun findAllUsers(pageRequest: PageRequest): List<InfoUser> {
-        val page = pageRequest.page ?: 1
-        val size = pageRequest.size ?: 10
-        return find("order by id").page(page - 1, size).list()
-    }
-
     fun findBdasUserByReqDstrCd(dstr1Cd: String?, dstr2Cd: String?): List<InfoUser> {
         val query = if (dstr2Cd != null) {
             "dutyDstr1Cd = '$dstr1Cd' and dutyDstr2Cd = '$dstr2Cd' and (jobCd = 'PMGR0002' OR jobCd like '병상승인%')"
@@ -179,7 +194,7 @@ class InfoUserRepository : PanacheRepositoryBase<InfoUser, String> {
         return getEntityManager().createQuery(query, HospMedInfo::class.java).resultList
     }
 
-    fun findInfoUserDetail(): List<UserDetailResponse> {
+    fun findAllInfoUser(): List<UserDetailResponse> {
         val query = jpql {
             selectNew<UserDetailResponse>(
                 path(InfoUser::id), path(InfoUser::userNm), path(InfoUser::gndr), path(InfoUser::telno),
@@ -188,7 +203,8 @@ class InfoUserRepository : PanacheRepositoryBase<InfoUser, String> {
                 function(String::class, "fn_get_cd_nm", stringLiteral("SIDO"), path(InfoUser::dutyDstr1Cd)),
                 path(InfoUser::dutyDstr2Cd),
                 function(String::class, "fn_get_dstr_cd2_nm", path(InfoUser::dutyDstr1Cd), path(InfoUser::dutyDstr2Cd)),
-                path(InfoUser::btDt), path(InfoUser::authCd), path(InfoUser::attcId), path(InfoUser::userStatCd), path(InfoUser::updtDttm),
+                path(InfoUser::btDt), path(InfoUser::authCd), path(InfoUser::attcId), path(InfoUser::userStatCd), stringLiteral("userStatCdNm"),
+                path(InfoUser::rgstDttm), path(InfoUser::updtDttm), path(InfoUser::aprvDttm),
             ).from(
                 entity(InfoUser::class)
             )
@@ -206,7 +222,8 @@ class InfoUserRepository : PanacheRepositoryBase<InfoUser, String> {
                 function(String::class, "fn_get_cd_nm", stringLiteral("SIDO"), path(InfoUser::dutyDstr1Cd)),
                 path(InfoUser::dutyDstr2Cd),
                 function(String::class, "fn_get_dstr_cd2_nm", path(InfoUser::dutyDstr1Cd), path(InfoUser::dutyDstr2Cd)),
-                path(InfoUser::btDt), path(InfoUser::authCd), path(InfoUser::attcId), path(InfoUser::userStatCd), path(InfoUser::updtDttm),
+                path(InfoUser::btDt), path(InfoUser::authCd), path(InfoUser::attcId), path(InfoUser::userStatCd), stringLiteral("userStatCdNm"),
+                path(InfoUser::rgstDttm), path(InfoUser::updtDttm), path(InfoUser::aprvDttm),
             ).from(
                 entity(InfoUser::class)
             ).whereAnd(
@@ -219,7 +236,7 @@ class InfoUserRepository : PanacheRepositoryBase<InfoUser, String> {
 
         val result = infoUserDetail.first()
         result.isFavorite = isFavorite
-
+        result.userStatCdNm = result.userStatCd?.name
         return result
     }
 }
