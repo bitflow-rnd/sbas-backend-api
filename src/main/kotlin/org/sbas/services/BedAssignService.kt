@@ -472,6 +472,29 @@ class BedAssignService {
   }
 
   @Transactional
+  fun countBedStatCd(param: BdasListSearchParam): CommonResponse<*> {
+    val res = listOf(
+      BedStatCdCount("BAST0003", 0),
+      BedStatCdCount("BAST0004", 0),
+      BedStatCdCount("BAST0005", 0),
+      BedStatCdCount("BAST0006", 0),
+      BedStatCdCount("BAST00078", 0),
+    )
+    val count = bdasReqRepository.countBedStatCd(param)
+    count.forEach { bedStatCdCount ->
+      when (bedStatCdCount.code) {
+        "BAST0003" -> { res[0].count += bedStatCdCount.count }
+        "BAST0004" -> { res[1].count += bedStatCdCount.count }
+        "BAST0005" -> { res[2].count += bedStatCdCount.count }
+        "BAST0006" -> { res[3].count += bedStatCdCount.count }
+        "BAST0007" -> { res[4].count += bedStatCdCount.count }
+        "BAST0008" -> { res[4].count += bedStatCdCount.count }
+      }
+    }
+    return CommonResponse(res)
+  }
+
+  @Transactional
   fun getTimeLine(ptId: String, bdasSeq: Int): CommonResponse<*> {
     val findBdasReq = bdasReqRepository.findByPtIdAndBdasSeq(ptId, bdasSeq)
     val bedStatCd = findBdasReq.bedStatCd

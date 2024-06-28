@@ -74,6 +74,20 @@ class BdasReqRepository : PanacheRepositoryBase<BdasReq, BdasReqId> {
         return entityManager.createQuery(query).singleResult as Long
     }
 
+    fun countBedStatCd(param: BdasListSearchParam): MutableList<BedStatCdCount> {
+      val (cond, _) = conditionAndOffset(param)
+      val query = "select new org.sbas.dtos.bdas.BedStatCdCount(br.bedStatCd, count(br.bedStatCd)) " +
+          "from BdasReq br " +
+          "join InfoPt pt on br.id.ptId = pt.ptId " +
+          "join BdasEsvy be on br.id.bdasSeq = be.bdasSeq " +
+          "left join BdasAdms ba on br.id.bdasSeq = ba.id.bdasSeq " +
+          "where br.id.bdasSeq in (select max(id.bdasSeq) as bdasSeq from BdasReq group by id.ptId) " +
+          "$cond " +
+          "group by br.bedStatCd " +
+          "order by br.bedStatCd "
+      return entityManager.createQuery(query, BedStatCdCount::class.java).resultList
+    }
+
     private fun conditionAndOffset(param: BdasListSearchParam): Pair<String, Int> {
         var cond = param.ptNm?.run { " and (pt.ptNm like '%$this%' " } ?: "and (1=1"
         cond += param.rrno1?.run { " or pt.rrno1 like '%$this%' " } ?: ""

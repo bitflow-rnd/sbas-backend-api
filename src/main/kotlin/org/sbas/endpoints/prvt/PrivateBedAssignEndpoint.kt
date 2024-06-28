@@ -81,6 +81,13 @@ class PrivateBedAssignEndpoint {
     return Response.ok(bedAssignService.findBedAsgnListForWeb(param)).build()
   }
 
+  @Operation(summary = "병상배정코드 카운트(웹)", description = "")
+  @GET
+  @Path("bedstat-count")
+  fun countBedStat(@BeanParam param: BdasListSearchParam): Response {
+    return Response.ok(bedAssignService.countBedStatCd(param)).build()
+  }
+
   @GET
   @Path("remove/{ptId}/{step}")
   fun remove(@RestPath ptId: String?, @RestPath step: Int?): Response {
