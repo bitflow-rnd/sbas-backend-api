@@ -78,11 +78,18 @@ class SbasTestEndpoint {
   @GET
   @Path("test")
   fun test() {
-    val sampleInputData = mutableMapOf(
-      "0030001" to "20220103,20220108",
-      "0030002" to "20211221"
-    )
-    svrtService.saveFatimaMntrInfoWithSample("0030001")
+    val knuchSampleList = listOf("0010001", "0010002", "0010003", "0010004", "0010005")
+    val knuhSampleList = listOf("0020001", "0020002", "0020003", "0020004", "0020005")
+    val fatimaSampleList = listOf("0030001", "0030002", "0030003", "0030004", "0030005")
+    fatimaSampleList.forEach { pid ->
+      val svrtColl = svrtService.saveFatimaMntrInfoWithSample(pid)
+    }
+    knuchSampleList.forEach { pid ->
+      val svrtColl = svrtService.saveKnuchMntrInfoWithSample(pid)
+    }
+    knuhSampleList.forEach { pid ->
+      val svrtColl = svrtService.saveKnuhMntrInfoWithSample(pid)
+    }
   }
 
 }
