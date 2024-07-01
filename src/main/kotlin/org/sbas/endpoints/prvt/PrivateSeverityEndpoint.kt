@@ -8,28 +8,15 @@ import jakarta.ws.rs.core.Response
 import org.eclipse.microprofile.openapi.annotations.Operation
 import org.eclipse.microprofile.openapi.annotations.tags.Tag
 import org.jboss.resteasy.reactive.RestPath
-import org.sbas.handlers.NubisonAiSeverityAnalysisHandler
 import org.sbas.responses.CommonResponse
 import org.sbas.services.SvrtService
-
 
 @Tag(name = "Managing severity", description = "Severity analysis")
 @Path("v1/private/severity")
 class PrivateSeverityEndpoint {
 
   @Inject
-  lateinit var severityAnalysisHandler: NubisonAiSeverityAnalysisHandler
-
-  @Inject
   lateinit var svrtService: SvrtService
-
-  @Operation(summary = "Get severity analysis from inference.nubison.ai", description = "")
-  @GET
-  @Path("analysis/{pid}")
-  fun severityAnalysis(@RestPath pid: String): Response {
-    val result = severityAnalysisHandler.analyse(pid)
-    return Response.ok(result).build()
-  }
 
   @Operation(
     summary = "Get latest severity probs",
@@ -47,6 +34,13 @@ class PrivateSeverityEndpoint {
   @Path("infos/{ptId}")
   fun severityInfo(@RestPath ptId: String): Response {
     return Response.ok(svrtService.findSeverityInfos(ptId)).build()
+  }
+
+  @Operation(summary = "환자 중증정보 목록 조회", description = "")
+  @GET
+  @Path("list")
+  fun svrtPtList(): Response {
+    return Response.ok().build()
   }
 
 }

@@ -84,11 +84,16 @@ class SvrtAnlyRepository : PanacheRepositoryBase<SvrtAnly, SvrtAnlyId> {
       ).whereAnd(
         path(SvrtAnly::id)(SvrtAnlyId::ptId).eq(ptId),
       ).orderBy(
-        path(SvrtAnly::id)(SvrtAnlyId::anlySeq).asc(),
+        path(SvrtAnly::id)(SvrtAnlyId::msreDt).asc(),
+        path(SvrtAnly::prdtDt).asc().nullsFirst(),
       )
     }
 
     return entityManager.createQuery(query, context).resultList
+  }
+
+  fun findByPtIdAndPidOrderByAnlySeqAsc(ptId: String, pid: String): SvrtAnly? {
+    return find("id.ptId = ?1 and pid = ?2", Sort.by("id.anlySeq", Sort.Direction.Ascending), ptId, pid).firstResult()
   }
 
   /**
