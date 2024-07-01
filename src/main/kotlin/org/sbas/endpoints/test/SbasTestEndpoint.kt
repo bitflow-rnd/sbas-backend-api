@@ -37,9 +37,6 @@ class SbasTestEndpoint {
     @Inject
     lateinit var svrtService: SvrtService
 
-    @Inject
-    lateinit var severityAnalysisHandler: NubisonAiSeverityAnalysisHandler
-
 //    @GET
 //    @Path("user")
 //    @RolesAllowed("USER", "ADMIN")
@@ -78,11 +75,29 @@ class SbasTestEndpoint {
   @GET
   @Path("test")
   fun test() {
+    val knuchSampleList = listOf("0010001", "0010002", "0010003", "0010004", "0010005")
+    val knuhSampleList = listOf("0020001", "0020002", "0020003", "0020004", "0020005")
+    val fatimaSampleList = listOf("0030001", "0030002", "0030003", "0030004", "0030005")
+    val sampleList = knuchSampleList + knuhSampleList + fatimaSampleList
+
+    sampleList.forEach { pid ->
+      val svrtColl = svrtService.saveFatimaMntrInfoWithSample(pid)
+      if (svrtColl != null) {
+        svrtService.saveSvrtAnly(svrtColl.id.ptId, pid)
+      }
+    }
+  }
+
+  @GET
+  @Path("test2")
+  fun test2() {
     val sampleInputData = mutableMapOf(
       "0030001" to "20220103,20220108",
       "0030002" to "20211221"
     )
-    svrtService.saveFatimaMntrInfoWithSample("0030001")
+    val fatimaSampleList = listOf("0030001", "0030002", "0030003", "0030004", "0030005")
+    fatimaSampleList.forEach { pid ->
+    }
   }
 
 }

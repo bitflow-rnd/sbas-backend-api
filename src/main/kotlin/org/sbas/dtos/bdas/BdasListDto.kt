@@ -86,3 +86,8 @@ data class BdasListSearchParam(
     @field: QueryParam("reqBedTypeCd") var reqBedTypeCd: String?,
     @field: QueryParam("page") var page: Int?,
 )
+
+data class BedStatCdCount(
+  val code: String,
+  var count: Long,
+)

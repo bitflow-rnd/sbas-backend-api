@@ -109,8 +109,7 @@ class InfoPtRepository : PanacheRepositoryBase<InfoPt, String> {
         cond += param.mpno?.run { " or pt.mpno like '%$this%') " } ?: ") "
         cond += param.ptId?.run { " and pt.ptId like '%$this%' " } ?: ""
 
-        cond += param.sever?.run { " and (pt.ptId in (select sa.id.ptId from SvrtAnly sa) " +
-          "or pt.ptId in (select sp.id.ptId from SvrtPt sp)) " } ?: ""
+        cond += param.sever?.run { " and pt.ptId in (select sp.id.ptId from SvrtPt sp) " } ?: ""
         cond += param.gndr?.run { " and pt.gndr like '%$this%' " } ?: ""
         cond += param.natiCd?.run { " and pt.natiCd like '%$this%' " } ?: ""
         cond += param.dstr1Cd?.run { " and pt.dstr1Cd like '%$this%' " } ?: ""
