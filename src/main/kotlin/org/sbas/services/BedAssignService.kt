@@ -15,6 +15,8 @@ import org.sbas.constants.enums.TimeLineStatCd
 import org.sbas.dtos.bdas.*
 import org.sbas.entities.bdas.BdasAdms
 import org.sbas.entities.bdas.BdasReqId
+import org.sbas.entities.info.FacilityStatus
+import org.sbas.entities.info.MedicalTeamCount
 import org.sbas.handlers.GeocodingHandler
 import org.sbas.repositories.*
 import org.sbas.responses.CommonListResponse
@@ -253,8 +255,8 @@ class BedAssignService {
         mri = avalHospDto.mri,
         bloodVesselImaging = avalHospDto.bloodVesselImaging,
         bodyTemperatureControl = avalHospDto.bodyTemperatureControl,
-        facilityStatus = infoHospDetail?.facilityStatus,
-        medicalTeamCount = infoHospDetail?.medicalTeamCount,
+        facilityStatus = infoHospDetail?.facilityStatus ?: FacilityStatus(),
+        medicalTeamCount = infoHospDetail?.medicalTeamCount ?: MedicalTeamCount(),
       )
       //        }.filter { response -> response.hospId !in findBdasReqAprv.map { it.reqHospId } }
     }

@@ -44,29 +44,29 @@ class InfoHospDetail(
 @Embeddable
 data class FacilityStatus(
     @Column(name = "child_birth_yn", nullable = false)
-    val childBirthYn: Boolean,
+    val childBirthYn: Boolean = false,
     @Column(name = "dialysis_yn", nullable = false)
-    val dialysisYn: Boolean,
+    val dialysisYn: Boolean = false,
     @Column(name = "child_yn", nullable = false)
-    val childYn: Boolean,
+    val childYn: Boolean = false,
     @Column(name = "nursing_hospital_yn", nullable = false)
-    val nursingHospitalYn: Boolean,
+    val nursingHospitalYn: Boolean = false,
     @Column(name = "mental_patient_yn", nullable = false)
-    val mentalPatientYn: Boolean,
+    val mentalPatientYn: Boolean = false,
     @Column(name = "negative_pressure_room_yn", nullable = false)
-    val negativePressureRoomYn: Boolean,
+    val negativePressureRoomYn: Boolean = false,
 )
 
 @Embeddable
 data class MedicalTeamCount(
     @Column(name = "child_birth_med", nullable = false)
-    val childBirthMed: Int,
+    val childBirthMed: Int = 0,
     @Column(name = "dialysis_med", nullable = false)
-    val dialysisMed: Int,
+    val dialysisMed: Int = 0,
     @Column(name = "child_med", nullable = false)
-    val childMed: Int,
+    val childMed: Int = 0,
     @Column(name = "nursing_hospital_med", nullable = false)
-    val nursingHospitalMed: Int,
+    val nursingHospitalMed: Int = 0,
     @Column(name = "mental_patient_med", nullable = false)
-    val mentalPatientMed: Int,
+    val mentalPatientMed: Int = 0,
 )
