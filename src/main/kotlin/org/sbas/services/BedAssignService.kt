@@ -90,6 +90,9 @@ class BedAssignService {
   @Inject
   private lateinit var jwt: JsonWebToken
 
+  @Inject
+  private lateinit var svrtService: SvrtService
+
   /**
    * 질병 정보 등록
    */
@@ -407,6 +410,9 @@ class BedAssignService {
     // 입원일 경우 중증 관찰 환자 등록
     if (saveRequest.admsStatCd == AdmsStatCd.IOST0001.name) {
       svrtPtRepository.persist(svrtPtEntity)
+      // TODO
+      svrtService.saveMntrInfoWithSample(saveRequest.pid!!)
+      svrtService.saveSvrtAnly(saveRequest.ptId, saveRequest.pid)
     }
 
     bdasAdmsRepository.persist(entity)

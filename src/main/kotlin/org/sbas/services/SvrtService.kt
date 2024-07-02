@@ -43,7 +43,6 @@ class SvrtService(
     val svrtAnlyList = svrtAnlyRepository.findAllByPtIdAndHospIdAndCollSeq(
       ptId = ptId,
       hospId = latestSvrtColl.id.hospId,
-      collSeq = latestSvrtColl.id.collSeq
     )
     val rsps = svrtAnlyList.map {
       val svrtInfoRsps = SvrtInfoRsps(
@@ -58,7 +57,7 @@ class SvrtService(
       svrtInfoRsps
     }
 
-    return CommonResponse(svrtInfo)
+    return CommonResponse(rsps)
   }
 
   fun findSeverityInfos(ptId: String): CommonResponse<List<SvrtColl>> {

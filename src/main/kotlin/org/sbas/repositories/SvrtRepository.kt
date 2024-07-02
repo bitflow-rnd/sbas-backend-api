@@ -46,11 +46,11 @@ class SvrtAnlyRepository : PanacheRepositoryBase<SvrtAnly, SvrtAnlyId> {
     return getEntityManager().createQuery(query).singleResult as Int?
   }
 
-  fun findAllByPtIdAndHospIdAndCollSeq(ptId: String, hospId: String, collSeq: Int): List<SvrtAnly> {
-    return find("id.ptId = ?1 and id.hospId = ?2 and id.collSeq = ?3",
-      Sort.by("id.anlySeq", Sort.Direction.Ascending),
-      ptId, hospId, collSeq,
-    ).list()
+  fun findAllByPtIdAndHospIdAndCollSeq(ptId: String, hospId: String): List<SvrtAnly> {
+    val query = "select sa from SvrtAnly sa where sa.id.ptId = '$ptId' and sa.id.hospId = '$hospId' and " +
+      "sa.id.anlySeq = (select max(sa2.id.anlySeq) from SvrtAnly sa2 where sa2.id.ptId = '$ptId' and sa2.id.hospId = '$hospId') " +
+      "order by sa.id.collSeq asc "
+    return getEntityManager().createQuery(query, SvrtAnly::class.java).resultList
   }
 
   /**

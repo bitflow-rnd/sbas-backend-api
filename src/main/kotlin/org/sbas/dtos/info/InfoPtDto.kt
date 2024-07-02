@@ -121,6 +121,7 @@ data class InfoPtSearchDto(
     val age: Int?,
     val monitoring: Boolean?,
     val admsDt: String?,
+    val covSf: String?,
 ) {
     val bedStatCdNm: String? = bedStatCd?.let { BedStatCd.valueOf(it).cdNm }
     val tagList: MutableList<String>
