@@ -30,6 +30,10 @@ class PrivateSeverityEndpoint {
     return Response.ok(result).build()
   }
 
+  @Operation(
+    summary = "중증 관찰 환자 정보 조회",
+    description = "중증 관찰 환자의 생체 정보를 조회"
+  )
   @GET
   @Path("infos/{ptId}")
   fun severityInfo(@RestPath ptId: String): Response {

@@ -60,7 +60,7 @@ class SvrtService(
   }
 
   @Transactional
-  fun saveFatimaMntrInfoWithSample(pid: String): SvrtColl? {
+  fun saveMntrInfoWithSample(pid: String): SvrtColl? {
     val svrtPt = svrtPtRepository.findByPid(pid) ?: return null
 
     // 관찰 종료일이 없는 경우에만 수집
@@ -104,7 +104,7 @@ class SvrtService(
   fun saveSvrtAnly(ptId: String, pid: String) {
     val svrtCollList = svrtCollRepository.findByPidOrderByMsreDtAsc(pid)
     val filteredSvrtCollList = svrtCollList.filter { !it.isMntrInfoValueBlank() } // 2
-    val covSfList = svrtAnlyHandler.analyseV4(pid, filteredSvrtCollList) // 5
+    val covSfList = svrtAnlyHandler.analyse(pid, filteredSvrtCollList) // 5
     val findSvrtAnly = svrtAnlyRepository.findByPtIdAndPidOrderByAnlySeqAsc(ptId, pid)
 
     covSfList.forEachIndexed { idx, covSf ->
