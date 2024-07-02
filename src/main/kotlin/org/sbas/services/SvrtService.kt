@@ -87,10 +87,10 @@ class SvrtService(
 
       val body = hisApiResponse!!.body
       // 리스트가 비어있거나, 마지막 데이터의 msreDt가 basedd와 다르면 endMonitoring
-            if (body.isEmpty() || body.last().msreDt != basedd) {
-              svrtPt.endMonitoring(basedd, StringUtils.getHhMmSs())
-              return null
-            }
+      if (body.isEmpty() || body.last().msreDt != basedd) {
+        svrtPt.endMonitoring(basedd, StringUtils.getHhMmSs())
+        return null
+      }
 
       val svrtMntrInfo = body.last()
       val svrtColl = svrtMntrInfo.toSvrtColl(
@@ -109,6 +109,7 @@ class SvrtService(
   @Transactional
   fun saveSvrtAnly(ptId: String, pid: String) {
     val svrtCollList = svrtCollRepository.findByPidOrderByRsltDtAsc(pid) // 3
+    if (svrtCollList.isEmpty()) return
 //    val filteredSvrtCollList = svrtCollList.filter { !it.isMntrInfoValueBlank() }
     val covSfList = svrtAnlyHandler.analyse(pid, svrtCollList) // 6
     val findSvrtAnly = svrtAnlyRepository.findByPtIdAndPidOrderByAnlySeqAsc(ptId, pid)
