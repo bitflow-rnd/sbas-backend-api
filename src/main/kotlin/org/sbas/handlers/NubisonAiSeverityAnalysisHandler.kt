@@ -23,7 +23,7 @@ class NubisonAiSeverityAnalysisHandler {
   @RestClient
   private lateinit var nubisonAiSeverityAnalysisRestClient: NubisonAiSeverityAnalysisRestClient
 
-  fun analyseV4(pid: String, svrtCollList: List<SvrtColl>): List<Float> {
+  fun analyse(pid: String, svrtCollList: List<SvrtColl>): List<Float> {
     val mntrInfo = MntrInfo()
     svrtCollList.forEach { svrtColl ->
       val date = formatDateString(svrtColl.id.msreDt)
@@ -32,7 +32,7 @@ class NubisonAiSeverityAnalysisHandler {
 
     val json = objectMapper.writeValueAsString(mntrInfo)
     val requestBody = NubisonSvrtAnlyRequest(inputs = listOf(NubisonSvrtAnlyInputData(data = listOf(json))))
-    val res = nubisonAiSeverityAnalysisRestClient.inferV4(
+    val res = nubisonAiSeverityAnalysisRestClient.inferV5(
       objectMapper.writeValueAsString(requestBody)
     )
     return res.outputs[0].data
@@ -40,8 +40,8 @@ class NubisonAiSeverityAnalysisHandler {
 
   private fun formatDateString(date: String): String {
     val year = date.substring(0, 4)
-    val month = date.substring(4, 6).toInt()
-    val day = date.substring(6, 8).toInt()
-    return "$year.$month.$day"
+    val month = date.substring(4, 6)
+    val day = date.substring(6, 8)
+    return "$year-$month-$day"
   }
 }

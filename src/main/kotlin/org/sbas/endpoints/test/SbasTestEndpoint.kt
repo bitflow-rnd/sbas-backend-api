@@ -11,7 +11,6 @@ import jakarta.ws.rs.core.SecurityContext
 import org.eclipse.microprofile.openapi.annotations.tags.Tag
 import org.jboss.logging.Logger
 import org.sbas.handlers.GeocodingHandler
-import org.sbas.handlers.NubisonAiSeverityAnalysisHandler
 import org.sbas.restdtos.NaverGeocodingApiParams
 import org.sbas.restdtos.response.NaverGeocodingApiResponse
 import org.sbas.restdtos.response.NaverReverseGeocodingApiResponse
@@ -81,7 +80,7 @@ class SbasTestEndpoint {
     val sampleList = knuchSampleList + knuhSampleList + fatimaSampleList
 
     sampleList.forEach { pid ->
-      val svrtColl = svrtService.saveFatimaMntrInfoWithSample(pid)
+      val svrtColl = svrtService.saveMntrInfoWithSample(pid)
       if (svrtColl != null) {
         svrtService.saveSvrtAnly(svrtColl.id.ptId, pid)
       }

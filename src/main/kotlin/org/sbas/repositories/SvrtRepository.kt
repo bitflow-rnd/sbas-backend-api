@@ -21,6 +21,14 @@ class SvrtPtRepository : PanacheRepositoryBase<SvrtPt, SvrtPtId> {
   fun findByPid(pid: String): SvrtPt? {
     return find("pid = ?1", pid).firstResult()
   }
+
+  fun findAllWithMaxRgstSeq(): List<SvrtPt> {
+    return findAll().list()
+      .groupBy { svrtPt -> svrtPt.id.ptId }
+      .mapValues { entry -> entry.value.maxByOrNull { svrtPt -> svrtPt.id.rgstSeq }!! }
+      .values
+      .toList()
+  }
 }
 
 @ApplicationScoped

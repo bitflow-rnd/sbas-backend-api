@@ -30,6 +30,10 @@ class SvrtService(
   @RestClient private val fatimaHisRestClient: FatimaHisRestClient,
   @RestClient private val knuhHisRestClient: KnuhHisRestClient,
 ) {
+  fun findAllSvrtPt() {
+    val all = svrtPtRepository.findAllWithMaxRgstSeq()
+  }
+
   fun getLastSvrtAnlyByPtId(ptId: String): CommonResponse<*> {
     val svrtInfo = svrtAnlyRepository.getSvrtInfo(ptId)
 
@@ -60,7 +64,7 @@ class SvrtService(
   }
 
   @Transactional
-  fun saveFatimaMntrInfoWithSample(pid: String): SvrtColl? {
+  fun saveMntrInfoWithSample(pid: String): SvrtColl? {
     val svrtPt = svrtPtRepository.findByPid(pid) ?: return null
 
     // 관찰 종료일이 없는 경우에만 수집
@@ -81,10 +85,10 @@ class SvrtService(
 
       val body = hisApiResponse!!.body
       // 리스트가 비어있거나, 마지막 데이터의 msreDt가 basedd와 다르면 endMonitoring
-      //      if (body.isEmpty() || body.last().msreDt != basedd) {
-      //        svrtPt.endMonitoring(basedd, StringUtils.getHhMmSs())
-      //        return null
-      //      }
+            if (body.isEmpty() || body.last().msreDt != basedd) {
+              svrtPt.endMonitoring(basedd, StringUtils.getHhMmSs())
+              return null
+            }
 
       val svrtMntrInfo = body.last()
       val svrtColl = svrtMntrInfo.toSvrtColl(
@@ -102,19 +106,19 @@ class SvrtService(
 
   @Transactional
   fun saveSvrtAnly(ptId: String, pid: String) {
-    val svrtCollList = svrtCollRepository.findByPidOrderByMsreDtAsc(pid)
-    val filteredSvrtCollList = svrtCollList.filter { !it.isMntrInfoValueBlank() } // 2
-    val covSfList = svrtAnlyHandler.analyseV4(pid, filteredSvrtCollList) // 5
+    val svrtCollList = svrtCollRepository.findByPidOrderByMsreDtAsc(pid) // 3
+//    val filteredSvrtCollList = svrtCollList.filter { !it.isMntrInfoValueBlank() }
+    val covSfList = svrtAnlyHandler.analyse(pid, svrtCollList) // 6
     val findSvrtAnly = svrtAnlyRepository.findByPtIdAndPidOrderByAnlySeqAsc(ptId, pid)
 
-    covSfList.forEachIndexed { idx, covSf ->
-      val svrtColl = filteredSvrtCollList.getOrElse(idx) { filteredSvrtCollList.last() }
+    covSfList.forEachIndexed { idx, covSf -> // 0 1 2 3 4 5
+      val svrtColl = svrtCollList.getOrElse(idx) { svrtCollList.last() }
       val svrtAnlyId = SvrtAnlyId(
         ptId = svrtColl.id.ptId,
         hospId = svrtColl.id.hospId,
         rgstSeq = svrtColl.id.rgstSeq,
         msreDt = svrtColl.id.msreDt,
-        collSeq = svrtColl.id.collSeq,
+        collSeq = if (idx < svrtCollList.size) svrtColl.id.collSeq else idx + 1,
         anlyDt = StringUtils.getYyyyMmDd(),
         anlySeq = findSvrtAnly?.id?.anlySeq?.plus(1) ?: 1,
       )
@@ -125,8 +129,8 @@ class SvrtService(
         collTm = StringUtils.convertInstantToHhmmss(svrtColl.rgstDttm),
         anlyTm = StringUtils.getHhMmSs(),
         covSf = covSf.toString(),
-        prdtDt = if (idx >= filteredSvrtCollList.size) StringUtils.getYyyyMmDd()
-          .plusDays(idx - filteredSvrtCollList.size + 1) else null,
+        prdtDt = if (idx >= svrtCollList.size) StringUtils.getYyyyMmDd()
+          .plusDays(idx - svrtCollList.size + 1) else null,
       )
       svrtAnlyRepository.persist(svrtAnly)
     }
