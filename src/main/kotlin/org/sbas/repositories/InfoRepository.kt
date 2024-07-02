@@ -37,11 +37,13 @@ class InfoPtRepository : PanacheRepositoryBase<InfoPt, String> {
                 "pt.dstr1Cd, fn_get_cd_nm('SIDO', pt.dstr1Cd), pt.dstr2Cd, fn_get_cd_nm('SIDO'||pt.dstr1Cd, pt.dstr2Cd), " +
                 "bap.hospId, ih.dutyName, pt.mpno, pt.natiCd, pt.natiNm, br.bedStatCd, pt.rgstDttm, pt.updtDttm, br.svrtIptTypeCd, " +
                 "br.ptTypeCd, br.svrtTypeCd, br.undrDsesCd, fn_get_age(pt.rrno1, pt.rrno2), " +
-                "(pt.ptId in (select sa.id.ptId from SvrtAnly sa) or pt.ptId in (select sp.id.ptId from SvrtPt sp))) " +
+                "(pt.ptId in (select sa.id.ptId from SvrtAnly sa) or pt.ptId in (select sp.id.ptId from SvrtPt sp)), " +
+                "ip.monStrtDt ) " +
                 "from InfoPt pt " +
                 "left join BdasReq br on pt.ptId = br.id.ptId " +
                 "left join BdasAprv bap on (br.id.bdasSeq = bap.id.bdasSeq and bap.aprvYn = 'Y') " +
                 "left join InfoHosp ih on bap.hospId = ih.hospId " +
+                "left join SvrtPt ip on pt.ptId = ip.id.ptId " +
                 "where (br.id.bdasSeq in ((select max(id.bdasSeq) as bdasSeq from BdasReq group by id.ptId)) or br.id.bdasSeq is null) " +
                 "$cond " +
                 "order by pt.updtDttm desc "

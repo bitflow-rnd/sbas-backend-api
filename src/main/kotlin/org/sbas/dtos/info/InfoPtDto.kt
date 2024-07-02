@@ -119,7 +119,8 @@ data class InfoPtSearchDto(
     val svrtTypeCd: String?,
     @JsonIgnore val undrDsesCd: String?,
     val age: Int?,
-    val monitoring: Boolean?
+    val monitoring: Boolean?,
+    val admsDt: String?,
 ) {
     val bedStatCdNm: String? = bedStatCd?.let { BedStatCd.valueOf(it).cdNm }
     val tagList: MutableList<String>
