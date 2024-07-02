@@ -12,8 +12,8 @@ import org.eclipse.microprofile.openapi.annotations.tags.Tag
 import org.jboss.logging.Logger
 import org.sbas.constants.SbasConst
 import org.sbas.dtos.info.InfoUserSaveReq
-import org.sbas.entities.info.InfoUser
 import org.sbas.parameters.CheckCertNoRequest
+import org.sbas.parameters.FindIdRequest
 import org.sbas.parameters.LoginRequest
 import org.sbas.parameters.SmsSendRequest
 import org.sbas.responses.CommonResponse
@@ -81,8 +81,9 @@ class PublicUserEndpoint {
     @Operation(summary = "아이디찾기", description = "아이디 찾기 API")
     @POST
     @Path("find-id")
-    fun findId(@Valid infoUser: InfoUser): Response {
-        return Response.ok(userService.findId(infoUser)).build()
+    @PermitAll
+    fun findId(@Valid findIdRequest: FindIdRequest): Response {
+        return Response.ok(userService.findId(findIdRequest)).build()
     }
 
 }

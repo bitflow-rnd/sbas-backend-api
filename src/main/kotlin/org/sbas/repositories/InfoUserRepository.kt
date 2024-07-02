@@ -16,7 +16,7 @@ import org.sbas.entities.info.InfoPt
 import org.sbas.entities.info.InfoUser
 import org.sbas.entities.info.UserActivityHistory
 import org.sbas.entities.info.UserFcmToken
-import org.sbas.parameters.PageRequest
+import org.sbas.parameters.FindIdRequest
 
 @ApplicationScoped
 class InfoUserRepository : PanacheRepositoryBase<InfoUser, String> {
@@ -165,7 +165,7 @@ class InfoUserRepository : PanacheRepositoryBase<InfoUser, String> {
     }
 
 
-    fun findId(infoUser: InfoUser): InfoUser? = find("select u from InfoUser u where u.userNm = '${infoUser.userNm}' and u.telno = '${infoUser.telno}'").firstResult()
+    fun findId(findIdRequest: FindIdRequest): InfoUser? = find("select u from InfoUser u where u.userNm = '${findIdRequest.userNm}' and u.telno = '${findIdRequest.telno}'").firstResult()
 
     fun existByUserId(userId: String?): Boolean {
         return count("id = '$userId'") == 1L
