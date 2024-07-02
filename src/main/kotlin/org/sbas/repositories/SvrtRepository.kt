@@ -138,12 +138,9 @@ class SvrtAnlyRepository : PanacheRepositoryBase<SvrtAnly, SvrtAnlyId> {
 @ApplicationScoped
 class SvrtCollRepository : PanacheRepositoryBase<SvrtColl, SvrtCollId> {
 
-  /**
-   * Get list of rows from svrt_coll table by fields msre_dt and pid
-   */
-  fun findByPidOrderByRsltDtAsc(pid: String): List<SvrtColl> {
+  fun findByPtIdAndPidOrderByRsltDtAsc(ptId: String, pid: String): List<SvrtColl> {
     val today = StringUtils.getYyyyMmDd()
-    return find("select sc from SvrtColl sc where sc.pid = '$pid' and sc.rsltDt <= '$today' order by sc.rsltDt").list()
+    return find("select sc from SvrtColl sc where sc.id.ptId = '$ptId' sc.pid = '$pid' and sc.rsltDt <= '$today' order by sc.rsltDt").list()
   }
 
   fun findAllByPtIdOrderByCollSeqAsc(ptId: String): List<SvrtColl> {

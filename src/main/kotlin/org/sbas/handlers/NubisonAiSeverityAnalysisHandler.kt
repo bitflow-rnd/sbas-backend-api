@@ -23,7 +23,7 @@ class NubisonAiSeverityAnalysisHandler {
   @RestClient
   private lateinit var nubisonAiSeverityAnalysisRestClient: NubisonAiSeverityAnalysisRestClient
 
-  fun analyse(pid: String, svrtCollList: List<SvrtColl>): List<Float> {
+  fun analyse(svrtCollList: List<SvrtColl>): List<Float> {
     val mntrInfo = MntrInfo()
     svrtCollList.forEach { svrtColl ->
       val date = formatDateString(svrtColl.id.msreDt)
