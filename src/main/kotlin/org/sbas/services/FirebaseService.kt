@@ -147,6 +147,7 @@ class FirebaseService {
     }
   }
 
+  @Transactional
   fun addPushKey(userId: String, pushKey: String): CommonResponse<String> {
     val userFcmToken = UserFcmToken(userId = userId, reregistrationToken = pushKey)
     val findUserFcmTokens = userFcmTokenRepository.findAllByUserId(userId)
