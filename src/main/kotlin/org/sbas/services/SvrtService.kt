@@ -38,27 +38,30 @@ class SvrtService(
 
   fun getLastSvrtAnlyByPtId(ptId: String): CommonResponse<*> {
     val svrtInfo = svrtAnlyRepository.getSvrtInfo(ptId)
+    val latestSvrtPt = svrtPtRepository.findByPtId(ptId).maxByOrNull { it.id.rgstSeq }
+      ?: return CommonResponse(null)
+    val latestSvrtColl = svrtCollRepository.findByPtIdAndHospId(latestSvrtPt.id.ptId, latestSvrtPt.id.hospId)
 
-    val latestSvrtColl = svrtCollRepository.findAllByPtIdOrderByCollSeqAsc(ptId).last()
     val svrtAnlyList = svrtAnlyRepository.findAllByPtIdAndHospIdAndCollSeq(
       ptId = ptId,
-      hospId = latestSvrtColl.id.hospId,
-      collSeq = latestSvrtColl.id.collSeq
+      hospId = latestSvrtPt.id.hospId,
     )
-    val rsps = svrtAnlyList.map {
+    val rsps = svrtAnlyList.map { svrtAnly ->
       val svrtInfoRsps = SvrtInfoRsps(
-        ptId = it.id.ptId,
-        hospId = it.id.hospId,
-        anlyDt = it.id.anlyDt,
-        msreDt = it.id.msreDt,
-        prdtDt = it.prdtDt,
-        covSf = it.covSf.toString(),
-        oxygenApply = if (it.prdtDt == null) latestSvrtColl.oxygenApply!! else "-",
+        ptId = svrtAnly.id.ptId,
+        hospId = svrtAnly.id.hospId,
+        anlyDt = svrtAnly.id.anlyDt,
+        msreDt = svrtAnly.id.msreDt,
+        prdtDt = svrtAnly.prdtDt,
+        covSf = svrtAnly.covSf.toString(),
+        oxygenApply = if (svrtAnly.prdtDt == null) latestSvrtColl.find { svrtColl ->
+          svrtColl.id.ptId == svrtAnly.id.ptId && svrtColl.id.hospId == svrtAnly.id.hospId
+        }?.oxygenApply!! else "-",
       )
       svrtInfoRsps
     }
 
-    return CommonResponse(svrtInfo)
+    return CommonResponse(rsps)
   }
 
   fun findSeverityInfos(ptId: String): CommonResponse<List<SvrtColl>> {

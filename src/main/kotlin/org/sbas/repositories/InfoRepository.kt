@@ -12,6 +12,7 @@ import jakarta.ws.rs.NotFoundException
 import org.jboss.logging.Logger
 import org.sbas.dtos.info.*
 import org.sbas.entities.info.*
+import org.sbas.utils.StringUtils
 import java.time.Instant
 
 @ApplicationScoped
@@ -32,18 +33,20 @@ class InfoPtRepository : PanacheRepositoryBase<InfoPt, String> {
 
     fun findInfoPtList(param: InfoPtSearchParam): List<InfoPtSearchDto> {
         val (cond, offset) = conditionAndOffset(param)
-
+        val today = StringUtils.getYyyyMmDd()
         val query = "select new org.sbas.dtos.info.InfoPtSearchDto(pt.ptId, br.id.bdasSeq, pt.ptNm, pt.gndr, pt.rrno1, " +
                 "pt.dstr1Cd, fn_get_cd_nm('SIDO', pt.dstr1Cd), pt.dstr2Cd, fn_get_cd_nm('SIDO'||pt.dstr1Cd, pt.dstr2Cd), " +
                 "bap.hospId, ih.dutyName, pt.mpno, pt.natiCd, pt.natiNm, br.bedStatCd, pt.rgstDttm, pt.updtDttm, br.svrtIptTypeCd, " +
                 "br.ptTypeCd, br.svrtTypeCd, br.undrDsesCd, fn_get_age(pt.rrno1, pt.rrno2), " +
                 "(pt.ptId in (select sa.id.ptId from SvrtAnly sa) or pt.ptId in (select sp.id.ptId from SvrtPt sp)), " +
-                "ip.monStrtDt ) " +
+                "ip.monStrtDt, sa.covSf ) " +
                 "from InfoPt pt " +
                 "left join BdasReq br on pt.ptId = br.id.ptId " +
                 "left join BdasAprv bap on (br.id.bdasSeq = bap.id.bdasSeq and bap.aprvYn = 'Y') " +
                 "left join InfoHosp ih on bap.hospId = ih.hospId " +
                 "left join SvrtPt ip on pt.ptId = ip.id.ptId " +
+                "left join SvrtAnly sa on ip.id.ptId = sa.id.ptId and ip.pid = sa.pid and (sa.id.msreDt = '$today' and sa.prdtDt is null) " +
+                "and sa.id.anlySeq = (select max(sa2.id.anlySeq) from SvrtAnly sa2 where sa2.id.ptId = pt.ptId and sa2.id.hospId = bap.hospId) " +
                 "where (br.id.bdasSeq in ((select max(id.bdasSeq) as bdasSeq from BdasReq group by id.ptId)) or br.id.bdasSeq is null) " +
                 "$cond " +
                 "order by pt.updtDttm desc "

@@ -249,8 +249,8 @@ class UserService {
      * 아이디 찾기
      */
     @Transactional
-    fun findId(infoUser: InfoUser): CommonResponse<String?> {
-        val findUser = userRepository.findId(infoUser)
+    fun findId(findIdRequest: FindIdRequest): CommonResponse<String?> {
+        val findUser = userRepository.findId(findIdRequest)
             ?: throw CustomizedException("등록된 ID가 없습니다.", Response.Status.NOT_FOUND)
 
         return CommonResponse(findUser.id)

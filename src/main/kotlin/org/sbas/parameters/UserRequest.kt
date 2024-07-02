@@ -52,3 +52,10 @@ data class SendPushRequest(
     @JsonProperty("from")
     var from: String,
 )
+
+data class FindIdRequest(
+  @JsonProperty("userNm")
+  var userNm: String,
+  @JsonProperty("telno")
+  var telno: String,
+)
