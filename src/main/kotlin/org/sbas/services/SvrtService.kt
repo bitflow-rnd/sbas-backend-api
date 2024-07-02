@@ -32,8 +32,7 @@ class SvrtService(
   @RestClient private val knuhHisRestClient: KnuhHisRestClient,
 ) {
   fun findAllSvrtPt(): List<SvrtPt> {
-    val all = svrtPtRepository.findAllWithMaxRgstSeq()
-    return all
+    return svrtPtRepository.findAllWithMaxRgstSeq()
   }
 
   fun getLastSvrtAnlyByPtId(ptId: String): CommonResponse<*> {
@@ -74,8 +73,8 @@ class SvrtService(
 
     // 관찰 종료일이 없는 경우에만 수집
     if (svrtPt.monEndDt == null) {
-      val svrtColls = svrtCollRepository.findByPidAndHospId(pid, svrtPt.id.hospId)
-      val basedd = svrtColls.lastOrNull()?.id?.msreDt?.plusDays(1) ?: svrtPt.monStrtDt
+      val svrtColls = svrtCollRepository.findByPidAndHospId(pid, svrtPt.id.hospId).sortedBy { it.id.collSeq }
+      val basedd = svrtColls.lastOrNull()?.rsltDt?.plusDays(1) ?: svrtPt.monStrtDt
 
       val sampleData = HisRestClientRequest(pid, basedd)
       var hisApiResponse: HisApiResponse? = null
@@ -90,7 +89,7 @@ class SvrtService(
 
       val body = hisApiResponse!!.body
       // 리스트가 비어있거나, 마지막 데이터의 msreDt가 basedd와 다르면 endMonitoring
-      if (body.isEmpty() || body.last().msreDt != basedd) {
+      if (body.isEmpty() || body.last().rsltDt != basedd) {
         svrtPt.endMonitoring(basedd, StringUtils.getHhMmSs())
         return null
       }
@@ -111,10 +110,10 @@ class SvrtService(
 
   @Transactional
   fun saveSvrtAnly(ptId: String, pid: String) {
-    val svrtCollList = svrtCollRepository.findByPidOrderByRsltDtAsc(pid) // 3
+    val svrtCollList = svrtCollRepository.findByPtIdAndPidOrderByRsltDtAsc(ptId, pid) // 3
     if (svrtCollList.isEmpty()) return
 //    val filteredSvrtCollList = svrtCollList.filter { !it.isMntrInfoValueBlank() }
-    val covSfList = svrtAnlyHandler.analyse(pid, svrtCollList) // 6
+    val covSfList = svrtAnlyHandler.analyse(svrtCollList) // 주어진 날짜 + 3일까지의 예측값(+1, +2, +3)
     val findSvrtAnly = svrtAnlyRepository.findByPtIdAndPidOrderByAnlySeqAsc(ptId, pid)
 
     covSfList.forEachIndexed { idx, covSf -> // 0 1 2 3 4 5
@@ -124,6 +123,8 @@ class SvrtService(
         hospId = svrtColl.id.hospId,
         rgstSeq = svrtColl.id.rgstSeq,
         msreDt = svrtColl.id.msreDt,
+        // covSfList 의 size는 svrtCollList.size 보다 3개 많음.
+        // -> svrtCollList.size 만큼은 svrtColl의 collSeq 사용, 나머지(예측값들)는 idx + 1
         collSeq = if (idx < svrtCollList.size) svrtColl.id.collSeq else idx + 1,
         anlyDt = StringUtils.getYyyyMmDd(),
         anlySeq = findSvrtAnly?.id?.anlySeq?.plus(1) ?: 1,
