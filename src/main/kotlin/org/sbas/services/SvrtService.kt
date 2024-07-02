@@ -8,6 +8,7 @@ import org.sbas.dtos.SvrtInfoRsps
 import org.sbas.entities.svrt.SvrtAnly
 import org.sbas.entities.svrt.SvrtAnlyId
 import org.sbas.entities.svrt.SvrtColl
+import org.sbas.entities.svrt.SvrtPt
 import org.sbas.handlers.NubisonAiSeverityAnalysisHandler
 import org.sbas.repositories.SvrtAnlyRepository
 import org.sbas.repositories.SvrtCollRepository
@@ -30,8 +31,9 @@ class SvrtService(
   @RestClient private val fatimaHisRestClient: FatimaHisRestClient,
   @RestClient private val knuhHisRestClient: KnuhHisRestClient,
 ) {
-  fun findAllSvrtPt() {
+  fun findAllSvrtPt(): List<SvrtPt> {
     val all = svrtPtRepository.findAllWithMaxRgstSeq()
+    return all
   }
 
   fun getLastSvrtAnlyByPtId(ptId: String): CommonResponse<*> {

@@ -90,13 +90,16 @@ class SbasTestEndpoint {
   @GET
   @Path("test2")
   fun test2() {
-    val sampleInputData = mutableMapOf(
-      "0030001" to "20220103,20220108",
-      "0030002" to "20211221"
-    )
-    val fatimaSampleList = listOf("0030001", "0030002", "0030003", "0030004", "0030005")
-    fatimaSampleList.forEach { pid ->
+    val svrtPt = svrtService.findAllSvrtPt()
+    svrtPt.forEach { pt ->
+      svrtService.saveSvrtAnly(pt.id.ptId, pt.pid)
     }
+  }
+
+  @GET
+  @Path("test3")
+  fun test3() {
+    svrtService.findAllSvrtPt()
   }
 
 }
