@@ -10,6 +10,7 @@ import jakarta.inject.Inject
 import jakarta.persistence.EntityManager
 import org.sbas.dtos.SvrtInfoRsps
 import org.sbas.entities.svrt.*
+import org.sbas.utils.StringUtils
 
 @ApplicationScoped
 class SvrtPtRepository : PanacheRepositoryBase<SvrtPt, SvrtPtId> {
@@ -140,8 +141,9 @@ class SvrtCollRepository : PanacheRepositoryBase<SvrtColl, SvrtCollId> {
   /**
    * Get list of rows from svrt_coll table by fields msre_dt and pid
    */
-  fun findByPidOrderByMsreDtAsc(pid: String): List<SvrtColl> {
-    return find("select sc from SvrtColl sc where sc.pid = '$pid' order by sc.id.msreDt").list()
+  fun findByPidOrderByRsltDtAsc(pid: String): List<SvrtColl> {
+    val today = StringUtils.getYyyyMmDd()
+    return find("select sc from SvrtColl sc where sc.pid = '$pid' and sc.rsltDt <= '$today' order by sc.rsltDt").list()
   }
 
   fun findAllByPtIdOrderByCollSeqAsc(ptId: String): List<SvrtColl> {
