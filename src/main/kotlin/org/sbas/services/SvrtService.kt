@@ -108,7 +108,7 @@ class SvrtService(
 
   @Transactional
   fun saveSvrtAnly(ptId: String, pid: String) {
-    val svrtCollList = svrtCollRepository.findByPidOrderByMsreDtAsc(pid) // 3
+    val svrtCollList = svrtCollRepository.findByPidOrderByRsltDtAsc(pid) // 3
 //    val filteredSvrtCollList = svrtCollList.filter { !it.isMntrInfoValueBlank() }
     val covSfList = svrtAnlyHandler.analyse(pid, svrtCollList) // 6
     val findSvrtAnly = svrtAnlyRepository.findByPtIdAndPidOrderByAnlySeqAsc(ptId, pid)
