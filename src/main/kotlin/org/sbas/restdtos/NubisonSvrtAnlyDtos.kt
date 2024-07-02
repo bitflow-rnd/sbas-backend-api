@@ -38,7 +38,7 @@ data class MntrInfo(
   @field:JsonProperty("PULSE") val hr: MutableMap<String, Float?> = mutableMapOf(),
   @field:JsonProperty("SBP") val sbp: MutableMap<String, Float?> = mutableMapOf(),
   @field:JsonProperty("SPO2") val spo2: MutableMap<String, Float?> = mutableMapOf(),
-  @field:JsonProperty("Oxygen apply") val oxygenApply: MutableMap<String, String?> = mutableMapOf(),
+  @field:JsonProperty("Oxygen") val oxygenApply: MutableMap<String, String?> = mutableMapOf(),
 ) {
   fun inputData(date: String, svrtColl: SvrtColl) {
     this.apply {

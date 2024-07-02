@@ -40,8 +40,8 @@ class NubisonAiSeverityAnalysisHandler {
 
   private fun formatDateString(date: String): String {
     val year = date.substring(0, 4)
-    val month = date.substring(4, 6).toInt()
-    val day = date.substring(6, 8).toInt()
+    val month = date.substring(4, 6)
+    val day = date.substring(6, 8)
     return "$year-$month-$day"
   }
 }
