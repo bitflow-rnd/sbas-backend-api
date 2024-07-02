@@ -150,6 +150,10 @@ class SvrtCollRepository : PanacheRepositoryBase<SvrtColl, SvrtCollId> {
     return find("id.ptId = ?1", Sort.by("id.collSeq", Sort.Direction.Ascending), ptId).list()
   }
 
+  fun findByPtIdAndHospId(ptId: String, hospId: String): List<SvrtColl> {
+    return find("id.ptId = ?1 and id.hospId = ?2", ptId, hospId).list()
+  }
+
   fun findByPidAndHospId(pid: String, hospId: String): List<SvrtColl> {
     return find("pid = ?1 and id.hospId = ?2", pid, hospId).list()
   }
