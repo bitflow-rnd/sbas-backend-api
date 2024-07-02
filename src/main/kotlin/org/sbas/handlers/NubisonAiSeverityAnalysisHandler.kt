@@ -42,6 +42,6 @@ class NubisonAiSeverityAnalysisHandler {
     val year = date.substring(0, 4)
     val month = date.substring(4, 6).toInt()
     val day = date.substring(6, 8).toInt()
-    return "$year.$month.$day"
+    return "$year-$month-$day"
   }
 }
