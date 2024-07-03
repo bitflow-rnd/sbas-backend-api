@@ -29,7 +29,14 @@ class BaseCodeReader(
         return baseCodes
     }
 
+  /**
+   * 2024.07.03 승인대기목록에서 익셉션 발생 우회 처리, 그 외 수정필요사항은 필요 시 나중에 할것
+   */
     fun getBaseCodeCdNm(cdGrpId: String, stringCode: String?): List<String>? {
+
+      if (stringCode.isNullOrBlank()) {
+        return null
+      }
         val completableFuture =
             cache.`as`(CaffeineCache::class.java).getIfPresent<List<BaseCode>>(cdGrpId)
         val baseCodes = if (completableFuture == null) {
@@ -38,8 +45,10 @@ class BaseCodeReader(
             completableFuture.get()
         }
 
-        val list = stringCode?.split(";")?.map { code ->
-            baseCodes.firstOrNull { it.id.cdId == code }?.cdNm ?: throw NotFoundException("해당 코드를 찾을 수 없습니다.")
+      println("cdGrpId/stringCode $cdGrpId $stringCode")
+
+        val list = stringCode.split(";")?.map { code ->
+            baseCodes.firstOrNull { it.id.cdId == code }?.cdNm ?: throw NotFoundException("Code not found - $code")
         }
         return list
     }
