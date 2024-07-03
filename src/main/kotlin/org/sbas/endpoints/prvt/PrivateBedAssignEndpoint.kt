@@ -77,8 +77,13 @@ class PrivateBedAssignEndpoint {
   @Operation(summary = "병상배정 목록(웹)", description = "")
   @GET
   @Path("list-web")
-  fun listForWeb(@BeanParam param: BdasListSearchParam): Response {
-    return Response.ok(bedAssignService.findBedAsgnListForWeb(param)).build()
+  fun listForWeb(@BeanParam param: BdasListSearchParam): Response? {
+    try {
+      return Response.ok(bedAssignService.findBedAsgnListForWeb(param)).build()
+    } catch(e: Exception) {
+      e.printStackTrace()
+    }
+    return null
   }
 
   @Operation(summary = "병상배정코드 카운트(웹)", description = "")
