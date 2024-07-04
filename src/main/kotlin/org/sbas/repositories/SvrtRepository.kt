@@ -101,8 +101,8 @@ class SvrtAnlyRepository : PanacheRepositoryBase<SvrtAnly, SvrtAnlyId> {
     return entityManager.createQuery(query, context).resultList
   }
 
-  fun findByPtIdAndPidOrderByAnlySeqAsc(ptId: String, pid: String): SvrtAnly? {
-    return find("id.ptId = ?1 and pid = ?2", Sort.by("id.anlySeq", Sort.Direction.Ascending), ptId, pid).firstResult()
+  fun findMaxAnlySeqByPtIdAndPid(ptId: String, pid: String): SvrtAnly? {
+    return find("id.ptId = ?1 and pid = ?2", Sort.by("id.anlySeq", Sort.Direction.Descending), ptId, pid).firstResult()
   }
 
   /**

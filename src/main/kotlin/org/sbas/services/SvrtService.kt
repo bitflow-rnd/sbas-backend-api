@@ -114,7 +114,7 @@ class SvrtService(
     if (svrtCollList.isEmpty()) return
 //    val filteredSvrtCollList = svrtCollList.filter { !it.isMntrInfoValueBlank() }
     val covSfList = svrtAnlyHandler.analyse(svrtCollList) // 주어진 날짜 + 3일까지의 예측값(+1, +2, +3)
-    val findSvrtAnly = svrtAnlyRepository.findByPtIdAndPidOrderByAnlySeqAsc(ptId, pid)
+    val findSvrtAnly = svrtAnlyRepository.findMaxAnlySeqByPtIdAndPid(ptId, pid)
 
     covSfList.forEachIndexed { idx, covSf -> // 0 1 2 3 4 5
       val svrtColl = svrtCollList.getOrElse(idx) { svrtCollList.last() }
