@@ -59,3 +59,12 @@ data class FindIdRequest(
   @JsonProperty("telno")
   var telno: String,
 )
+
+data class InitPwRequest(
+  @JsonProperty("userNm")
+  var userNm: String,
+  @JsonProperty("id")
+  var id: String,
+  @JsonProperty("telno")
+  var telno: String,
+)

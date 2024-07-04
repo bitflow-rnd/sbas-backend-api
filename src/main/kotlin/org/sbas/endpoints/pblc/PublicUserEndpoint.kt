@@ -12,10 +12,7 @@ import org.eclipse.microprofile.openapi.annotations.tags.Tag
 import org.jboss.logging.Logger
 import org.sbas.constants.SbasConst
 import org.sbas.dtos.info.InfoUserSaveReq
-import org.sbas.parameters.CheckCertNoRequest
-import org.sbas.parameters.FindIdRequest
-import org.sbas.parameters.LoginRequest
-import org.sbas.parameters.SmsSendRequest
+import org.sbas.parameters.*
 import org.sbas.responses.CommonResponse
 import org.sbas.services.UserService
 
@@ -85,5 +82,13 @@ class PublicUserEndpoint {
     fun findId(@Valid findIdRequest: FindIdRequest): Response {
         return Response.ok(userService.findId(findIdRequest)).build()
     }
+
+  @Operation(summary = "비밀번호 초기화", description = "비밀번호 초기화 API")
+  @POST
+  @Path("init-pw")
+  @PermitAll
+  fun initPw(@Valid initPwRequest: InitPwRequest): Response {
+    return Response.ok(userService.initPw(initPwRequest)).build()
+  }
 
 }
