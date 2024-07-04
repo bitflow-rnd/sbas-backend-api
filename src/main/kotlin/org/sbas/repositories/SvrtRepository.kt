@@ -37,12 +37,7 @@ class SvrtPtRepository : PanacheRepositoryBase<SvrtPt, SvrtPtId> {
   }
 
   fun findSvrtPtList(param: InfoPtSearchParam): List<SvrtPtSearchDto> {
-    var cond = param.ptNm?.run { " and (pt.ptNm like '%$this%' " } ?: "and (1=1"
-    cond += param.rrno1?.run { " or pt.rrno1 like '%$this%' " } ?: ""
-    cond += param.mpno?.run { " or pt.mpno like '%$this%') " } ?: ") "
-    cond += param.ptId?.run { " and pt.ptId like '%$this%' " } ?: ""
-    cond += param.hospNm?.run { " and ih.dutyName like '%$this%' " } ?: ""
-
+    val cond = searchCondition(param)
     val today = StringUtils.getYyyyMmDd()
     val query = "select new org.sbas.dtos.SvrtPtSearchDto(pt.ptId, br.id.bdasSeq, pt.ptNm, pt.gndr, pt.rrno1, " +
       "pt.dstr1Cd, fn_get_cd_nm('SIDO', pt.dstr1Cd), pt.dstr2Cd, fn_get_cd_nm('SIDO'||pt.dstr1Cd, pt.dstr2Cd), " +
@@ -67,12 +62,7 @@ class SvrtPtRepository : PanacheRepositoryBase<SvrtPt, SvrtPtId> {
   }
 
   fun countSvrtPtList(param: InfoPtSearchParam): Long {
-    var cond = param.ptNm?.run { " and (pt.ptNm like '%$this%' " } ?: "and (1=1"
-    cond += param.rrno1?.run { " or pt.rrno1 like '%$this%' " } ?: ""
-    cond += param.mpno?.run { " or pt.mpno like '%$this%') " } ?: ") "
-    cond += param.ptId?.run { " and pt.ptId like '%$this%' " } ?: ""
-    cond += param.hospNm?.run { " and ih.dutyName like '%$this%' " } ?: ""
-
+    val cond = searchCondition(param)
     val today = StringUtils.getYyyyMmDd()
     val query = "select count(pt.ptId) " +
       "from InfoPt pt " +
@@ -87,6 +77,18 @@ class SvrtPtRepository : PanacheRepositoryBase<SvrtPt, SvrtPtId> {
       "$cond "
 
     return entityManager.createQuery(query).singleResult as Long
+  }
+
+  private fun searchCondition(param: InfoPtSearchParam): String {
+    var cond = param.ptNm?.run { " and (pt.ptNm like '%$this%' " } ?: "and (1=1"
+    cond += param.rrno1?.run { " or pt.rrno1 like '%$this%' " } ?: ""
+    cond += param.mpno?.run { " or pt.mpno like '%$this%') " } ?: ") "
+    cond += param.ptId?.run { " and pt.ptId like '%$this%' " } ?: ""
+
+    cond += param.dstr1Cd?.run { " and pt.dstr1Cd like '%$this%' " } ?: ""
+    cond += param.dstr2Cd?.run { " and pt.dstr2Cd like '%$this%' " } ?: ""
+    cond += param.hospNm?.run { " and ih.dutyName like '%$this%' " } ?: ""
+    return cond
   }
 }
 
