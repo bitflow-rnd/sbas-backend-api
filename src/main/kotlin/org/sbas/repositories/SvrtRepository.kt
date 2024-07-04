@@ -9,11 +9,16 @@ import jakarta.enterprise.context.ApplicationScoped
 import jakarta.inject.Inject
 import jakarta.persistence.EntityManager
 import org.sbas.dtos.SvrtInfoRsps
+import org.sbas.dtos.SvrtPtSearchDto
+import org.sbas.dtos.info.InfoPtSearchParam
 import org.sbas.entities.svrt.*
 import org.sbas.utils.StringUtils
 
 @ApplicationScoped
 class SvrtPtRepository : PanacheRepositoryBase<SvrtPt, SvrtPtId> {
+
+  @Inject
+  private lateinit var entityManager: EntityManager
 
   fun findByPtId(ptId: String): List<SvrtPt> {
     return find("id.ptId = ?1", ptId).list()
@@ -30,6 +35,59 @@ class SvrtPtRepository : PanacheRepositoryBase<SvrtPt, SvrtPtId> {
       .values
       .toList()
   }
+
+  fun findSvrtPtList(param: InfoPtSearchParam): List<SvrtPtSearchDto> {
+    var cond = param.ptNm?.run { " and (pt.ptNm like '%$this%' " } ?: "and (1=1"
+    cond += param.rrno1?.run { " or pt.rrno1 like '%$this%' " } ?: ""
+    cond += param.mpno?.run { " or pt.mpno like '%$this%') " } ?: ") "
+    cond += param.ptId?.run { " and pt.ptId like '%$this%' " } ?: ""
+    cond += param.hospNm?.run { " and ih.dutyName like '%$this%' " } ?: ""
+
+    val today = StringUtils.getYyyyMmDd()
+    val query = "select new org.sbas.dtos.SvrtPtSearchDto(pt.ptId, br.id.bdasSeq, pt.ptNm, pt.gndr, pt.rrno1, " +
+      "pt.dstr1Cd, fn_get_cd_nm('SIDO', pt.dstr1Cd), pt.dstr2Cd, fn_get_cd_nm('SIDO'||pt.dstr1Cd, pt.dstr2Cd), " +
+      "bap.hospId, ih.dutyName, pt.mpno, pt.natiCd, pt.natiNm, sa.updtDttm, " +
+      "br.ptTypeCd, br.svrtTypeCd, br.undrDsesCd, " +
+      "ip.monStrtDt, null ) " +
+      "from InfoPt pt " +
+      "join SvrtPt ip on pt.ptId = ip.id.ptId " +
+      "left join BdasReq br on pt.ptId = br.id.ptId " +
+      "left join BdasAprv bap on (br.id.bdasSeq = bap.id.bdasSeq and bap.aprvYn = 'Y') " +
+      "left join InfoHosp ih on bap.hospId = ih.hospId " +
+      "left join SvrtAnly sa on ip.id.ptId = sa.id.ptId and ip.pid = sa.pid and (sa.id.msreDt = '$today' and sa.prdtDt is null) " +
+      "and sa.id.anlySeq = (select max(sa2.id.anlySeq) from SvrtAnly sa2 where sa2.id.ptId = pt.ptId and sa2.id.hospId = bap.hospId) " +
+      "where (br.id.bdasSeq in ((select max(id.bdasSeq) as bdasSeq from BdasReq group by id.ptId)) or br.id.bdasSeq is null) " +
+      "and br.bedStatCd = 'BAST0007' " +
+      "$cond " +
+      "order by sa.updtDttm desc "
+
+    val offset = param.page?.run { this.minus(1).times(15) } ?: 0
+    return entityManager.createQuery(query, SvrtPtSearchDto::class.java).setMaxResults(15)
+      .setFirstResult(offset).resultList
+  }
+
+  fun countSvrtPtList(param: InfoPtSearchParam): Long {
+    var cond = param.ptNm?.run { " and (pt.ptNm like '%$this%' " } ?: "and (1=1"
+    cond += param.rrno1?.run { " or pt.rrno1 like '%$this%' " } ?: ""
+    cond += param.mpno?.run { " or pt.mpno like '%$this%') " } ?: ") "
+    cond += param.ptId?.run { " and pt.ptId like '%$this%' " } ?: ""
+    cond += param.hospNm?.run { " and ih.dutyName like '%$this%' " } ?: ""
+
+    val today = StringUtils.getYyyyMmDd()
+    val query = "select count(pt.ptId) " +
+      "from InfoPt pt " +
+      "join SvrtPt ip on pt.ptId = ip.id.ptId " +
+      "left join BdasReq br on pt.ptId = br.id.ptId " +
+      "left join BdasAprv bap on (br.id.bdasSeq = bap.id.bdasSeq and bap.aprvYn = 'Y') " +
+      "left join InfoHosp ih on bap.hospId = ih.hospId " +
+      "left join SvrtAnly sa on ip.id.ptId = sa.id.ptId and ip.pid = sa.pid and (sa.id.msreDt = '$today' and sa.prdtDt is null) " +
+      "and sa.id.anlySeq = (select max(sa2.id.anlySeq) from SvrtAnly sa2 where sa2.id.ptId = pt.ptId and sa2.id.hospId = bap.hospId) " +
+      "where (br.id.bdasSeq in ((select max(id.bdasSeq) as bdasSeq from BdasReq group by id.ptId)) or br.id.bdasSeq is null) " +
+      "and br.bedStatCd = 'BAST0007' " +
+      "$cond "
+
+    return entityManager.createQuery(query).singleResult as Long
+  }
 }
 
 @ApplicationScoped
@@ -41,40 +99,11 @@ class SvrtAnlyRepository : PanacheRepositoryBase<SvrtAnly, SvrtAnlyId> {
   @Inject
   private lateinit var context: JpqlRenderContext
 
-  fun getLastAnlySeqValue(): Int? {
-    val query = "select MAX(sa.id.anlySeq) from SvrtAnly sa"
-    return getEntityManager().createQuery(query).singleResult as Int?
-  }
-
   fun findAllByPtIdAndHospIdAndCollSeq(ptId: String, hospId: String): List<SvrtAnly> {
     val query = "select sa from SvrtAnly sa where sa.id.ptId = '$ptId' and sa.id.hospId = '$hospId' and " +
       "sa.id.anlySeq = (select max(sa2.id.anlySeq) from SvrtAnly sa2 where sa2.id.ptId = '$ptId' and sa2.id.hospId = '$hospId') " +
       "order by sa.id.collSeq asc "
     return getEntityManager().createQuery(query, SvrtAnly::class.java).resultList
-  }
-
-  /**
-   * Get data from last analysis by ptId
-   */
-  fun getSvrtAnlyByPtId(ptId: String): MutableList<*> {
-    val query = "select pt_id, hosp_id, anly_dt, msre_dt, prdt_dt, svrt_prob_mean, svrt_prob_std, covsf " +
-      "from svrt_anly as sa " +
-      "where sa.anly_seq = (select max(anly_seq) from svrt_anly where pt_id = '$ptId') and pt_id = '$ptId' " +
-      "order by sa.prdt_dt"
-    val result = getEntityManager().createNativeQuery(query).resultList as MutableList<*>
-
-    return result.stream().map { row ->
-      row as Array<*>; mapOf<String, String>(
-      "ptId" to row[0].toString(),
-      "hospId" to row[1].toString(),
-      "anlyDt" to row[2].toString(),
-      "msreDt" to row[3].toString(),
-      "prdtDt" to row[4].toString(),
-      "svrtProbMean" to row[5].toString(),
-      "svrtProbStd" to row[6].toString(),
-      "CovSF" to row[7].toString(),
-    )
-    }.toList()
   }
 
   fun getSvrtInfo(ptId: String): MutableList<SvrtInfoRsps>? {
@@ -103,35 +132,6 @@ class SvrtAnlyRepository : PanacheRepositoryBase<SvrtAnly, SvrtAnlyId> {
 
   fun findMaxAnlySeqByPtIdAndPid(ptId: String, pid: String): SvrtAnly? {
     return find("id.ptId = ?1 and pid = ?2", Sort.by("id.anlySeq", Sort.Direction.Descending), ptId, pid).firstResult()
-  }
-
-  /**
-   * Get data from last analysis of severity for current patient by his pt_id
-   */
-  fun getLastSvrtAnlyByPtId(ptId: String): MutableList<*> {
-
-    val query = "select pt_id, hosp_id, anly_dt, msre_dt, prdt_dt, svrt_prob_mean, svrt_prob_std " +
-      "from (select distinct on (sa.rgst_seq) sa.* " +
-      "from svrt_anly as sa order by sa.rgst_seq, sa.anly_seq desc, sa.coll_seq) as first " +
-      "where pt_id = '$ptId' " +
-      "union " +
-      "select pt_id, hosp_id, anly_dt, msre_dt, prdt_dt, svrt_prob_mean, svrt_prob_std " +
-      "from svrt_anly as second " +
-      "where second.msre_dt = (select max(msre_dt) from svrt_anly) and pt_id = '$ptId' " +
-      "order by prdt_dt"
-
-    val result = getEntityManager().createNativeQuery(query).resultList as MutableList<*>
-
-    return result.stream().map { row ->
-      row as Array<*>; mapOf<String, String>(
-      "ptId" to row[0].toString(),
-      "hospId" to row[1].toString(),
-      "anlyDt" to row[2].toString(),
-      "msreDt" to row[3].toString(),
-      "prdtDt" to row[4].toString(),
-      "svrtProb" to row[5].toString()
-    )
-    }.toList()
   }
 }
 

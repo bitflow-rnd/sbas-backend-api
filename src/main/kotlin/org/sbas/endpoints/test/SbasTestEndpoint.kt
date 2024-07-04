@@ -36,15 +36,6 @@ class SbasTestEndpoint {
     @Inject
     lateinit var svrtService: SvrtService
 
-//    @GET
-//    @Path("user")
-//    @RolesAllowed("USER", "ADMIN")
-//    fun getUser(): Response {
-//        return Response.ok(object {
-//            val token: JsonWebToken = serv1.getUser()
-//        }).build()
-//    }
-
     @POST
     @Path("geocoding-test")
     @PermitAll
@@ -95,11 +86,4 @@ class SbasTestEndpoint {
       svrtService.saveSvrtAnly(pt.id.ptId, pt.pid)
     }
   }
-
-  @GET
-  @Path("test3")
-  fun test3() {
-    svrtService.findAllSvrtPt()
-  }
-
 }
