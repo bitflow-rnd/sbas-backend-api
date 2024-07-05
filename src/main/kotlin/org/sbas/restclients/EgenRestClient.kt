@@ -69,18 +69,6 @@ interface EgenRestClient {
                                           @QueryParam("numOfRows") numOfRows: String?): String
 
     /**
-     * 중증질환자 수용가능정보 조회
-     */
-    @GET
-    @Path("ErmctInfoInqireService/getSrsillDissAceptncPosblInfoInqire")
-    fun getSrsillDissAceptncPosblInfoInqire(@QueryParam("serviceKey") serviceKey: String,
-                                            @QueryParam("STAGE1") stage1: String,
-                                            @QueryParam("STAGE2") stage2: String,
-                                            @QueryParam("SM_TYPE") smType: String?,
-                                            @QueryParam("pageNo") pageNo: String?,
-                                            @QueryParam("numOfRows") numOfRows: String?): String
-
-    /**
      * 응급의료기관 목록정보 조회
      */
     @GET
