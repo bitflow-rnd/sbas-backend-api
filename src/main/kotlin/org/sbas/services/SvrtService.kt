@@ -58,7 +58,7 @@ class SvrtService(
         prdtDt = svrtAnly.prdtDt,
         covSf = svrtAnly.covSf.toString(),
         oxygenApply = if (svrtAnly.prdtDt == null) latestSvrtColl.find { svrtColl ->
-          svrtColl.id.ptId == svrtAnly.id.ptId && svrtColl.id.hospId == svrtAnly.id.hospId
+          svrtColl.id.collSeq == svrtAnly.id.collSeq
         }?.oxygenApply!! else "-",
       )
       svrtInfoRsps
