@@ -75,7 +75,7 @@ class InfoHospRepository : PanacheRepositoryBase<InfoHosp, String> {
                 param.dutyName?.run { path(InfoHosp::dutyName).like("%$this%") },
                 param.dstr1Cd?.run { path(InfoHosp::dstr1Cd).equal(this) },
                 param.dstr2Cd?.run { path(InfoHosp::dstr2Cd).equal(this) },
-                param.dutyDivNam?.run { path(InfoHosp::dutyDivNam).`in`(this) },
+                param.dutyDivNam?.run { path(InfoHosp::dutyDivNam).`in`(this.split(",")) },
             ).orderBy(
                 path(InfoBed::gnbdSvrt).desc(),
                 path(InfoBed::gnbdIcu).desc(),
@@ -102,7 +102,7 @@ class InfoHospRepository : PanacheRepositoryBase<InfoHosp, String> {
                 param.dutyName?.run { path(InfoHosp::dutyName).like("%$this%") },
                 param.dstr1Cd?.run { path(InfoHosp::dstr1Cd).equal(this) },
                 param.dstr2Cd?.run { path(InfoHosp::dstr2Cd).equal(this) },
-                param.dutyDivNam?.run { path(InfoHosp::dutyDivNam).`in`(this) },
+                param.dutyDivNam?.run { path(InfoHosp::dutyDivNam).`in`(this.split(",")) },
             )
         }
 
@@ -150,24 +150,6 @@ class InfoHospRepository : PanacheRepositoryBase<InfoHosp, String> {
         return entityManager.createQuery(query, context).resultList
     }
 
-    fun findPubHealthCenter(dstr1Cd: String?, dstr2Cd: String?): List<InfoInstResponse> {
-        val query = jpql {
-            selectNew<InfoInstResponse>(
-                path(InfoHosp::hospId), stringLiteral("ORGN0003"), path(InfoHosp::dutyName),
-                path(InfoHosp::dstr1Cd), path(InfoHosp::dstr2Cd),
-            ).from(
-                entity(InfoHosp::class)
-            ).whereAnd(
-                path(InfoHosp::dutyDivNam).eq("보건소"),
-                path(InfoHosp::dutyName).like("%보건소"),
-                dstr1Cd?.run { path(InfoHosp::dstr1Cd).equal(this) },
-                dstr2Cd?.run { path(InfoHosp::dstr2Cd).equal(this) },
-            )
-        }
-
-        return entityManager.createQuery(query, context).resultList
-    }
-
     fun findMediOrgan(dstr1Cd: String?, dstr2Cd: String?): List<InfoInstResponse> {
         val query = jpql {
             selectNew<InfoInstResponse>(
@@ -184,17 +166,6 @@ class InfoHospRepository : PanacheRepositoryBase<InfoHosp, String> {
 
         return entityManager.createQuery(query, context).resultList
     }
-
-
-//    private fun CriteriaQueryDsl<*>.whereAnd(param: InfoHospSearchParam) {
-//        whereAnd(
-//            param.hospId?.run { col(InfoHosp::hospId).like("%$this%") },
-//            param.dutyName?.run { col(InfoHosp::dutyName).like("%$this%") },
-//            param.dstr1Cd?.run { col(InfoHosp::dstr1Cd).equal(this) },
-//            param.dstr2Cd?.run { col(InfoHosp::dstr2Cd).equal(this) },
-//            param.dutyDivNam?.run { col(InfoHosp::dutyDivNam).`in`(this) },
-//        )
-//    }
 }
 
 @ApplicationScoped

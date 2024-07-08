@@ -12,16 +12,12 @@ data class InfoHospSaveReq(
     var hospId: String?,
     var hpid: String, // 기관 ID
     var dutyName: String?, // 기관명
-    var dutyDivNam: String?, // 병원분류명
+    var dutyEmclsName: String?, // 병원분류명
     var dutyTel1: String?, // 대표전화1
     var dutyTel3: String?, // 응급실전화
     var dutyAddr: String?, // 주소
-    var postCdn1: String?, // 우편번호1
-    var postCdn2: String?, // 우편번호2
     var wgs84Lon: String?, // 병원경도
     var wgs84Lat: String?, // 병원위도
-    var dutyInf: String?, // 기관설명상세
-    var dutyEtc: String?, // 비고
     var rnum: Int,
 ) {
     fun toEntity(siDo: String?, siGunGu: String?): InfoHosp {
@@ -29,15 +25,12 @@ data class InfoHospSaveReq(
             hospId = hospIdFormatter(this.rnum),
             hpId = this.hpid,
             dutyName = this.dutyName,
-            dutyDivNam = this.dutyDivNam,
+            dutyDivNam = this.dutyEmclsName,
             dutyTel1 = this.dutyTel1,
+            dutyTel3 = this.dutyTel3,
             dutyAddr = this.dutyAddr,
-            postCdn1 = this.postCdn1,
-            postCdn2 = this.postCdn2,
             wgs84Lon = this.wgs84Lon,
             wgs84Lat = this.wgs84Lat,
-            dutyInf = this.dutyInf,
-            dutyEtc = this.dutyEtc,
             dstr1Cd = siDo,
             dstr2Cd = siGunGu
         )
@@ -55,14 +48,8 @@ data class InfoHospSearchParam(
     @field: QueryParam("dstr1Cd") var dstr1Cd: String?,
     @field: QueryParam("dstr2Cd") var dstr2Cd: String?,
     @field: QueryParam("page") var page: Int? = 0,
-    @field: QueryParam("dutyDivNams") var dutyDivNams: String?,
-) {
-    val dutyDivNam: MutableList<String>?
-        get() {
-            val splitList = dutyDivNams?.split(";")
-            return if (splitList.isNullOrEmpty()) null else splitList.toMutableList()
-        }
-}
+    @field: QueryParam("dutyDivNam") var dutyDivNam: String? = null,
+)
 
 data class InfoHospListDto(
     val hospId: String?,

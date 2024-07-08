@@ -27,29 +27,20 @@ class InfoHosp(
     @Column(name = "dutydivnam", nullable = false, length = 50)
     var dutyDivNam: String? = null, // 병원분류명
 
-    @Column(name = "dutytel1", nullable = false, length = 19)
+    @Column(name = "dutytel1", nullable = false, length = 30)
     var dutyTel1: String? = null, // 대표전화1
+
+    @Column(name = "dutytel3", nullable = false, length = 30)
+    var dutyTel3: String? = null, // 응급실전화
 
     @Column(name = "dutyaddr", nullable = false, length = 200)
     var dutyAddr: String? = null, // 주소
-
-    @Column(name = "postcdn1", length = 3)
-    var postCdn1: String? = null, // 우편번호1
-
-    @Column(name = "postcdn2", length = 3)
-    var postCdn2: String? = null, // 우편번호2
 
     @Column(name = "wgs84lon", length = 19)
     var wgs84Lon: String? = null, // 병원경도
 
     @Column(name = "wgs84lat", length = 19)
     var wgs84Lat: String? = null, // 병원위도
-
-    @Column(name = "dutyinf", length = 300)
-    var dutyInf: String? = null, // 기관설명상세
-
-    @Column(name = "dutyetc")
-    var dutyEtc: String? = null, // 비고
 
     @Column(name = "dstr_1_cd", length = 8)
     var dstr1Cd: String? = null, // 시도

@@ -126,7 +126,6 @@ class OrganiztnService {
     @Transactional
     fun getInstCodes(dstr1Cd: String?, dstr2Cd: String?, instTypeCd: String?): CommonListResponse<*> {
         val instList = when (instTypeCd) {
-            "ORGN0003" -> infoHospRepository.findPubHealthCenter(dstr1Cd, dstr2Cd)
             "ORGN0004" -> infoHospRepository.findMediOrgan(dstr1Cd, dstr2Cd)
             else -> infoInstRepository.findInfoInst(dstr1Cd, dstr2Cd, instTypeCd)
         }
