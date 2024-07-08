@@ -43,25 +43,6 @@ data class InfoHospSaveReq(
         )
     }
 
-    fun toEntityFromScheduler(siDo: String?, siGunGu: String?): InfoHosp {
-        return InfoHosp(
-            hospId = hospIdFormatter(rnum),
-            hpId = hpid,
-            dutyName = dutyName,
-            dutyDivNam = dutyDivNam,
-            dutyTel1 = dutyTel1,
-            dutyAddr = dutyAddr,
-            postCdn1 = postCdn1,
-            postCdn2 = postCdn2,
-            wgs84Lon = wgs84Lon,
-            wgs84Lat = wgs84Lat,
-            dutyInf = dutyInf,
-            dutyEtc = dutyEtc,
-            dstr1Cd = siDo,
-            dstr2Cd = siGunGu,
-        )
-    }
-
     private fun hospIdFormatter(number: Int): String {
         return "HP" + String.format("%08d", number)
     }
@@ -123,14 +104,6 @@ data class InfoHospListDto(
         medicalStaffCount = medicalStaffCount ?: 0
     }
 }
-
-data class InfoHospWithUser(
-    val hospId: String,
-    val dutyName: String,
-    val instId: String,
-    val instNm: String,
-    val userId: String,
-)
 
 data class InfoHospId(
     val hospId: String,

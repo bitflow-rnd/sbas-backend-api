@@ -70,7 +70,7 @@ class SbasScheduler {
     val sampleList = knuchSampleList + knuhSampleList + fatimaSampleList
 
     sampleList.forEach { pid ->
-      val svrtColl = svrtService.saveMntrInfoWithSample(pid)
+      svrtService.saveMntrInfoWithSample(pid)
     }
   }
 
