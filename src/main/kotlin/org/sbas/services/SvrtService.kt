@@ -39,13 +39,12 @@ class SvrtService(
     return svrtPtRepository.findAllWithMaxRgstSeq()
   }
 
-  fun getLastSvrtAnlyByPtId(ptId: String): CommonResponse<*> {
-//    val svrtInfo = svrtAnlyRepository.getSvrtInfo(ptId)
+  fun getLastSvrtAnly(ptId: String): CommonResponse<*> {
     val latestSvrtPt = svrtPtRepository.findByPtId(ptId).maxByOrNull { it.id.rgstSeq }
       ?: return CommonResponse(null)
     val latestSvrtColl = svrtCollRepository.findByPtIdAndHospId(latestSvrtPt.id.ptId, latestSvrtPt.id.hospId)
 
-    val svrtAnlyList = svrtAnlyRepository.findAllByPtIdAndHospIdAndCollSeq(
+    val svrtAnlyList = svrtAnlyRepository.findLastByPtIdAndHospId(
       ptId = ptId,
       hospId = latestSvrtPt.id.hospId,
     )
@@ -116,7 +115,8 @@ class SvrtService(
   fun saveSvrtAnly(ptId: String, pid: String) {
     val svrtCollList = svrtCollRepository.findByPtIdAndPidOrderByRsltDtAsc(ptId, pid) // 3
     if (svrtCollList.isEmpty()) return
-//    val filteredSvrtCollList = svrtCollList.filter { !it.isMntrInfoValueBlank() }
+    if (svrtCollList.last().rsltDt < StringUtils.getYyyyMmDd()) return
+
     val covSfList = svrtAnlyHandler.analyse(svrtCollList) // 주어진 날짜 + 3일까지의 예측값(+1, +2, +3)
     val findSvrtAnly = svrtAnlyRepository.findMaxAnlySeqByPtIdAndPid(ptId, pid)
 
@@ -160,7 +160,7 @@ class SvrtService(
   fun findCovSF(ptId: String): CovSfRsps? {
     val latestSvrtPt = svrtPtRepository.findByPtId(ptId).maxByOrNull { it.id.rgstSeq }
       ?: return null
-    val svrtAnlyList = svrtAnlyRepository.findAllByPtIdAndHospIdAndCollSeq(
+    val svrtAnlyList = svrtAnlyRepository.findLastByPtIdAndHospId(
       ptId = ptId,
       hospId = latestSvrtPt.id.hospId,
     )

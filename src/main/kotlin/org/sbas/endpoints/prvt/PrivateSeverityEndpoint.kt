@@ -27,7 +27,7 @@ class PrivateSeverityEndpoint {
   @Path("probs")
   fun probs(@QueryParam("ptId") ptId: String): Response {
     val result: CommonResponse<*>?
-    result = svrtService.getLastSvrtAnlyByPtId(ptId)
+    result = svrtService.getLastSvrtAnly(ptId)
     return Response.ok(result).build()
   }
 

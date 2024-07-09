@@ -99,18 +99,7 @@ class SvrtColl(
 
     @Column(name = "oxygen", length = 12)
     var oxygenApply: String? = null, // 산소치료수준
-) : CommonEntity() {
-  fun isMntrInfoValueBlank(): Boolean {
-    val values = listOf(
-      bun, cre, hem, ldh,
-      lym, neu, pla, pot,
-      sod, wbc, crp,
-      bdtp, resp, dbp, hr,
-      sbp, spo2, oxygenApply,
-    )
-    return values.any { it.isNullOrBlank() }
-  }
-}
+) : CommonEntity()
 
 @Embeddable
 data class SvrtCollId(
