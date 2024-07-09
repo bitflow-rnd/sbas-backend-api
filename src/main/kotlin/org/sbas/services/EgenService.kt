@@ -139,16 +139,17 @@ class EgenService {
   /**
    * 응급의료기관 목록정보 조회
    */
-  fun getEgytListInfoInqire(param: EgenApiListInfoParams): JSONObject {
+  fun getEgytListInfoInqire(param: EgenApiListInfoParams): Pair<JSONObject, Int> {
     val jsonObject = JSONObject(
       egenRestClient.getEgytListInfoInqire(
         serviceKey = serviceKey,
-        q0 = "", q1 = "", qz = "",
-        qd = "", qt = "", qn = "",
-        ord = "", pageNo = "", numOfRows = ""
+        q0 = param.q0, q1 = param.q1,
+        qz = param.qz, qd = param.qd,
+        qt = param.qt, qn = param.qn,
+        ord = param.ord, pageNo = param.pageNo, numOfRows = param.numOfRows
       )
     )
-    return extractBody(jsonObject)
+    return Pair(extractBody(jsonObject), extractTotalCount(jsonObject))
   }
 
   /**
@@ -216,8 +217,23 @@ class EgenService {
     return CommonResponse(jsonArray)
   }
 
-  fun saveHospitalBedInfos() {
-
+  /**
+   * E-GEN 응급의료기관 목록정보 DB 저장
+   */
+  @Transactional
+  fun saveEgytListInfo(param: EgenApiListInfoParams): CommonResponse<out Any?> {
+    var res: InfoHospSaveReq
+    val jsonArray = try {
+      getEgytListInfoInqire(param).first
+    } catch (e: Exception) {
+      return CommonResponse(e.message)
+    }
+    jsonArray.getJSONArray("item").forEach {
+      res = ObjectMapper().readValue(it.toString(), InfoHospSaveReq::class.java)
+      val addr = baseCodeRepository.findCdIdByAddrNm(res.dutyAddr!!)
+      infoHospRepository.getEntityManager().merge(res.toEntity(addr.siDoCd, addr.siGunGuCd))
+    }
+    return CommonResponse(jsonArray)
   }
 
   /**
@@ -244,21 +260,15 @@ class EgenService {
   }
 
   fun saveUsefulSckbdInfo(param: EgenApiEmrrmRltmUsefulSckbdInfoParams) {
-    //        val (jsonObjectIntPair, totalCount) = getEmrrmRltmUsefulSckbdInfoInqire(param)
-    SidoCd.entries.forEach {
-      if (it.cdNm == "강원도") {
-        param.stage1 = "강원특별자치도"
-      } else {
-        param.stage1 = it.cdNm
-      }
-      val (jsonObjectIntPair, _) = getEmrrmRltmUsefulSckbdInfoInqire(param)
-      val infoJsonArray = jsonObjectIntPair.getJSONArray("item")
-      saveInfoBedFromJsonArray(infoJsonArray)
-    }
+//    val (jsonObjectIntPair, _) = getEmrrmRltmUsefulSckbdInfoInqire(param)
+    val (jsonObjectIntPair, totalCount) = getEmrrmRltmUsefulSckbdInfoInqire(param)
+    val infoJsonArray = jsonObjectIntPair.getJSONArray("item")
+    saveInfoBedFromJsonArray(infoJsonArray, totalCount)
   }
 
   @Transactional
-  fun saveInfoBedFromJsonArray(infoJsonArray: JSONArray) {
+  fun saveInfoBedFromJsonArray(infoJsonArray: JSONArray, totalCount: Int) {
+    log.debug("totalCount = $totalCount / infoJsonArray = ${infoJsonArray.length()}")
     var infoBedSaveReq: InfoBedSaveReq
     infoJsonArray.forEach { jsonObject ->
       infoBedSaveReq = objectMapper.readValue(jsonObject.toString(), InfoBedSaveReq::class.java)

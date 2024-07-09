@@ -62,7 +62,7 @@ class AdminEgenEndpoint {
     @POST
     @Path("hsptlMdcncList")
     fun getHsptlMdcncList(param: EgenApiListInfoParams): Response {
-        val res = egenService.saveHsptlMdcncList(param)
+        val res = egenService.saveEgytListInfo(param)
         return Response.ok(res).type(MediaType.APPLICATION_JSON_TYPE).build()
     }
 
