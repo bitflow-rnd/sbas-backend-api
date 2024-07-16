@@ -48,6 +48,7 @@ class SvrtService(
       ptId = ptId,
       hospId = latestSvrtPt.id.hospId,
     )
+
     val rsps = svrtAnlyList.map { svrtAnly ->
       val svrtInfoRsps = SvrtInfoRsps(
         ptId = svrtAnly.id.ptId,
@@ -58,7 +59,7 @@ class SvrtService(
         covSf = svrtAnly.covSf.toString(),
         oxygenApply = if (svrtAnly.prdtDt == null) latestSvrtColl.find { svrtColl ->
           svrtColl.id.collSeq == svrtAnly.id.collSeq
-        }?.oxygenApply!! else "-",
+        }?.oxygenApply ?: "-" else "-",
       )
       svrtInfoRsps
     }
