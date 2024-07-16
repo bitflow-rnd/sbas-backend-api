@@ -140,7 +140,8 @@ class BedAssignService {
     val bdasUsers = infoUserRepository.findBdasUserByReqDstrCd(bdasReq.reqDstr1Cd, bdasReq.reqDstr2Cd)
 
     // 푸쉬 알람 보내기
-    firebaseService.sendMessageMultiDeviceV2("${findInfoPt.ptNm}님 병상요청", "신규 병상요청", bdasUsers.map { it.id })
+    val userIdList = bdasUsers.map { it.id }
+    firebaseService.sendMessageMultiDeviceV2("${findInfoPt.ptNm}님 병상요청", "신규 병상요청", userIdList)
 
     activityHistoryRepository.save(saveRequest.convertToActivityHistory(bdasReq.rgstUserId))
 
