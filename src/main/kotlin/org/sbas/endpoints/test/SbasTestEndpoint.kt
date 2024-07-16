@@ -70,20 +70,10 @@ class SbasTestEndpoint {
     val fatimaSampleList = listOf("0030001", "0030002", "0030003", "0030004", "0030005")
     val sampleList = knuchSampleList + knuhSampleList + fatimaSampleList
 
-    sampleList.forEach { pid ->
-      val svrtColl = svrtService.saveMntrInfoWithSample(pid)
-      if (svrtColl != null) {
-        svrtService.saveSvrtAnly(svrtColl.id.ptId, pid)
+    svrtService.findAllSvrtPt().forEach { svrtPt ->
+      if (sampleList.contains(svrtPt.pid)) {
+        svrtService.saveSvrtAnly(svrtPt.id.ptId, svrtPt.pid)
       }
-    }
-  }
-
-  @GET
-  @Path("test2")
-  fun test2() {
-    val svrtPt = svrtService.findAllSvrtPt()
-    svrtPt.forEach { pt ->
-      svrtService.saveSvrtAnly(pt.id.ptId, pt.pid)
     }
   }
 }

@@ -40,12 +40,6 @@ class SvrtColl(
     @Column(name = "rslt_tm", nullable = false, length = 6)
     var rsltTm: String, // 결과 시간
 
-    @Column(name = "alt", length = 10)
-    var alt: String? = null, // ALT
-
-    @Column(name = "ast", length = 10)
-    var ast: String? = null, // AST
-
     @Column(name = "bun", length = 10)
     var bun: String? = null, // BUN
 
