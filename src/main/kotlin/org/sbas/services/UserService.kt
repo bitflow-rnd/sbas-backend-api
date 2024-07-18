@@ -259,6 +259,21 @@ class UserService {
   }
 
   /**
+   * 비밀번호 변경
+   */
+  @Transactional
+  fun findPw(modifyPwRequest: ModifyPwRequest): CommonResponse<String?> {
+    val findUser = userRepository.findByUserId(modifyPwRequest.id)
+      ?: throw CustomizedException("등록된 ID가 없습니다.", Response.Status.NOT_FOUND)
+
+    findUser.pw = modifyPwRequest.modifyPw
+
+    userRepository.persist(findUser)
+
+    return CommonResponse("SUCCESS")
+  }
+
+  /**
    * 비밀번호 초기화
    */
   @Transactional
