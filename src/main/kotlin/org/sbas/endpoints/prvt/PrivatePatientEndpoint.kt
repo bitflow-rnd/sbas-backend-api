@@ -174,4 +174,11 @@ class PrivatePatientEndpoint {
     fun myorganiztn(): Response {
         return Response.ok(patientService.findInfoPtWithMyOrgan()).build()
     }
+
+  @Operation(summary = "배정 중인 병원 목록", description = "현재 배정 중인 병원 목록 조회")
+  @GET
+  @Path("bdas-hosp")
+  fun getBdasHospList(): Response {
+    return Response.ok(patientService.getBdasHospList()).build()
+  }
 }
