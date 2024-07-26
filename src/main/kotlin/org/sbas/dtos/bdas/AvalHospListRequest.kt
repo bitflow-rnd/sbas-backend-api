@@ -11,4 +11,6 @@ data class AvalHospListRequest(
   @field: QueryParam("dutyName") var dutyName: String?,
   @field: [QueryParam("reqBedTypeCd") Separator(",")] var reqBedTypeCd: List<String>?,
   @field: [QueryParam("svrtTypeCd") Separator(",")] var svrtTypeCd: List<String>?,
+  @field: [QueryParam("ptTypeCd") Separator(",")] var ptTypeCd: List<String>?,
+  @field: [QueryParam("equipment") Separator(",")] var equipment: List<String>?,
 )

@@ -99,7 +99,7 @@ class InfoPtRepository : PanacheRepositoryBase<InfoPt, String> {
                 "left join BdasAprv ba on (be.bdasSeq = ba.id.bdasSeq and ba.aprvYn = 'Y') " +
                 "left join InfoHosp ih on ba.hospId = ih.hospId " +
                 "where be.ptId = '${ptId}' " +
-                "order by ba.id.bdasSeq desc"
+                "order by br.id.bdasSeq desc"
 
         return entityManager.createQuery(query, BdasHisInfo::class.java).resultList.toMutableList()
     }

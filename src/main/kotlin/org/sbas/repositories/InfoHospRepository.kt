@@ -155,31 +155,42 @@ class InfoHospRepository : PanacheRepositoryBase<InfoHosp, String> {
   fun findAvalHospList(dstr1Cd: String, dstr2Cd: String?, param: AvalHospListRequest): MutableList<AvalHospDto> {
     val query = jpql {
       selectNew<AvalHospDto>(
-        path(InfoHosp::hospId),
-        path(InfoHosp::dutyName),
-        path(InfoHosp::dutyDivNam),
-        path(InfoHosp::wgs84Lon),
-        path(InfoHosp::wgs84Lat),
-        path(InfoHosp::dutyAddr),
-        path(InfoBed::gnbdIcu),
-        path(InfoBed::npidIcu),
-        path(InfoBed::gnbdSvrt),
-        path(InfoBed::gnbdSmsv),
-        path(InfoBed::gnbdModr),
-        path(InfoBed::ventilator),
-        path(InfoBed::ventilatorPreemie),
-        path(InfoBed::incubator),
-        path(InfoBed::ecmo),
-        path(InfoBed::highPressureOxygen),
-        path(InfoBed::ct),
-        path(InfoBed::mri),
-        path(InfoBed::highPressureOxygen),
-        path(InfoBed::bodyTemperatureControl),
+        path(InfoHosp::hospId), path(InfoHosp::dutyName), path(InfoHosp::dutyDivNam),
+        path(InfoHosp::wgs84Lon), path(InfoHosp::wgs84Lat), path(InfoHosp::dutyAddr),
+        path(InfoBed::gnbdIcu), path(InfoBed::npidIcu), path(InfoBed::gnbdSvrt),
+        path(InfoBed::gnbdSmsv), path(InfoBed::gnbdModr),
+        path(InfoBed::ventilator), path(InfoBed::ventilatorPreemie), path(InfoBed::incubator), path(InfoBed::ecmo),
+        path(InfoBed::highPressureOxygen), path(InfoBed::ct), path(InfoBed::mri),
+        path(InfoBed::highPressureOxygen), path(InfoBed::bodyTemperatureControl),
       ).from(
         entity(InfoHosp::class),
         join(InfoBed::class).on(path(InfoHosp::hospId).eq(path(InfoBed::hospId)))
       ).whereAnd(
+        // TODO 좀 더 깔끔하게 변경
         path(InfoHosp::dstr1Cd).eq(dstr1Cd),
+
+        param.svrtTypeCd?.contains("gnbdIcu")?.takeIf { it }?.let { path(InfoBed::gnbdSvrt).ge(1) },
+        param.svrtTypeCd?.contains("npidIcu")?.takeIf { it }?.let { path(InfoBed::npidIcu).ge(1) },
+        param.svrtTypeCd?.contains("gnbdSvrt")?.takeIf { it }?.let { path(InfoBed::gnbdSvrt).ge(1) },
+        param.svrtTypeCd?.contains("gnbdSmsv")?.takeIf { it }?.let { path(InfoBed::gnbdSmsv).ge(1) },
+        param.svrtTypeCd?.contains("gnbdModr")?.takeIf { it }?.let { path(InfoBed::gnbdModr).ge(1) },
+
+        param.reqBedTypeCd?.contains("cohtBed")?.takeIf { it }?.let { path(InfoBed::cohtBed).ge(1) },
+        param.reqBedTypeCd?.contains("emrgncyNgtvIsltnBed")?.takeIf { it }?.let { path(InfoBed::emrgncyNgtvIsltnBed).ge(1) },
+        param.reqBedTypeCd?.contains("emrgncyNrmlIsltnBed")?.takeIf { it }?.let { path(InfoBed::emrgncyNrmlIsltnBed).ge(1) },
+        param.reqBedTypeCd?.contains("ngtvIsltnChild")?.takeIf { it }?.let { path(InfoBed::ngtvIsltnChild).ge(1) },
+        param.reqBedTypeCd?.contains("nrmlIsltnChild")?.takeIf { it }?.let { path(InfoBed::nrmlIsltnChild).ge(1) },
+
+        param.equipment?.contains("ventilator")?.takeIf { it }?.let { path(InfoBed::ventilator).eq("Y") },
+        param.equipment?.contains("ventilatorPreemie")?.takeIf { it }?.let { path(InfoBed::ventilatorPreemie).eq("Y") },
+        param.equipment?.contains("incubator")?.takeIf { it }?.let { path(InfoBed::incubator).eq("Y") },
+        param.equipment?.contains("ecmo")?.takeIf { it }?.let { path(InfoBed::ecmo).eq("Y") },
+        param.equipment?.contains("highPressureOxygen")?.takeIf { it }?.let { path(InfoBed::highPressureOxygen).eq("Y") },
+        param.equipment?.contains("ct")?.takeIf { it }?.let { path(InfoBed::ct).eq("Y") },
+        param.equipment?.contains("mri")?.takeIf { it }?.let { path(InfoBed::mri).eq("Y") },
+        param.equipment?.contains("bloodVesselImaging")?.takeIf { it }?.let { path(InfoBed::bloodVesselImaging).eq("Y") },
+        param.equipment?.contains("bodyTemperatureControl")?.takeIf { it }?.let { path(InfoBed::bodyTemperatureControl).eq("Y") },
+
         param.dutyName?.run { path(InfoHosp::dutyName).like("%$this%") },
         path(InfoHosp::dutyName).`in`("경북대학교병원", "칠곡경북대학교병원", "대구파티마병원", "대구의료원"),
       )
