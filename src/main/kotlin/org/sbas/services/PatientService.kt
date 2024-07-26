@@ -13,6 +13,7 @@ import org.sbas.constants.SbasConst
 import org.sbas.constants.enums.BedStatCd
 import org.sbas.constants.enums.SvrtTypeCd
 import org.sbas.dtos.info.*
+import org.sbas.entities.bdas.BdasReqId
 import org.sbas.entities.info.InfoHosp
 import org.sbas.entities.info.InfoPt
 import org.sbas.handlers.FileHandler
@@ -359,12 +360,42 @@ class PatientService {
   }
 
   @Transactional
-  fun getBdasHospList(): CommonListResponse<InfoHosp?> {
-    val result = bdasAprvRepository.findPresentBdasList()
+  fun getBdasHospList(param: BdasHospListRequest): CommonListResponse<InfoHosp?> {
+    var result = bdasAprvRepository.findPresentBdasList()
 
-    val hospIdList = result.map {
-      it.hospId
-    }.distinct()
+    val ptIdList = result.map{
+      it?.id?.ptId
+    }
+
+    if (param.dstr1Cd != null) {
+      // Filtering InfoPt by dstr1Cd and optional dstr2Cd
+      val filteredDstr = infoPtRepository.findByIds(ptId = ptIdList)
+        .filter {
+          if (param.dstr2Cd != null) {
+            it.dstr1Cd == param.dstr1Cd && it.dstr2Cd == param.dstr2Cd
+          } else {
+            it.dstr1Cd == param.dstr1Cd
+          }
+        }.map { it.ptId }
+
+      log.warn(filteredDstr)
+
+      result = result.filter { it?.id?.ptId in filteredDstr }
+    }
+
+
+    if (!param.bedStatCd.isNullOrEmpty()) {
+      val findIdList = result.mapNotNull {
+        it?.let { BdasReqId(it.id.ptId, it.id.bdasSeq) }
+      }
+
+      val filteredStatus = bdasReqRepository.findByIdList(findIdList, param.bedStatCd!!)
+        .map { it.id.ptId }
+
+      result = result.filter { it?.id?.ptId in filteredStatus }
+    }
+
+    val hospIdList = result.mapNotNull { it?.hospId }.distinct()
 
     val list = infoHospRepository.findListByIds(hospIdList)
 

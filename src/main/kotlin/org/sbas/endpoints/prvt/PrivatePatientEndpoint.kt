@@ -16,6 +16,7 @@ import org.jboss.resteasy.reactive.RestPath
 import org.jboss.resteasy.reactive.multipart.FileUpload
 import org.sbas.dtos.bdas.BdasEsvySaveRequest
 import org.sbas.dtos.bdas.BdasReqSaveRequest
+import org.sbas.dtos.info.BdasHospListRequest
 import org.sbas.dtos.info.InfoPtCheckRequest
 import org.sbas.dtos.info.InfoPtDto
 import org.sbas.dtos.info.InfoPtSearchParam
@@ -178,7 +179,7 @@ class PrivatePatientEndpoint {
   @Operation(summary = "배정 중인 병원 목록", description = "현재 배정 중인 병원 목록 조회")
   @GET
   @Path("bdas-hosp")
-  fun getBdasHospList(): Response {
-    return Response.ok(patientService.getBdasHospList()).build()
+  fun getBdasHospList(@BeanParam @Valid param: BdasHospListRequest): Response {
+    return Response.ok(patientService.getBdasHospList(param)).build()
   }
 }
