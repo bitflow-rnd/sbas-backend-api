@@ -205,7 +205,7 @@ class InfoHospRepository : PanacheRepositoryBase<InfoHosp, String> {
     return entityManager.createQuery(query, context).resultList
   }
 
-  fun findListByIds(list: List<String>): List<InfoHosp> {
+  fun findListByIds(list: List<String?>): List<InfoHosp> {
     return list("hospId in ?1", list)
   }
 }

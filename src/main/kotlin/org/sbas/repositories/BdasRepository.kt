@@ -90,6 +90,10 @@ class BdasReqRepository : PanacheRepositoryBase<BdasReq, BdasReqId> {
     return entityManager.createQuery(query, BedStatCdCount::class.java).resultList
   }
 
+  fun findByIdList(param: List<BdasReqId>, bedStatCdList: List<String>): List<BdasReq> {
+    return list("id in ?1 and bedStatCd in ?2", param, bedStatCdList)
+  }
+
   private fun conditionAndOffset(param: BdasListSearchParam): Pair<String, Int> {
     var cond = param.ptNm?.run { " and (pt.ptNm like '%$this%' " } ?: "and (1=1"
     cond += param.rrno1?.run { " or pt.rrno1 like '%$this%' " } ?: ""
@@ -265,8 +269,10 @@ class BdasAprvRepository : PanacheRepositoryBase<BdasAprv, BdasAprvId> {
     return if (result.isEmpty()) null else result[0]
   }
 
-  fun findPresentBdasList(): List<BdasAprv> {
-    return find("where aprvYn = 'Y'").list()
+  fun findPresentBdasList(): List<BdasAprv?> {
+    return find("where aprvYn = 'Y'").list().groupBy { it.id.ptId }
+      .mapValues { (_, values) -> values.maxBy { it.id.bdasSeq } }
+      .values.toList()
   }
 }
 
