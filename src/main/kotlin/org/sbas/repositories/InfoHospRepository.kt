@@ -10,10 +10,7 @@ import jakarta.persistence.EntityManager
 import org.jboss.logging.Logger
 import org.sbas.dtos.bdas.AvalHospListRequest
 import org.sbas.dtos.info.*
-import org.sbas.entities.info.InfoBed
-import org.sbas.entities.info.InfoHosp
-import org.sbas.entities.info.InfoHospDetail
-import org.sbas.entities.info.InfoUser
+import org.sbas.entities.info.*
 
 @ApplicationScoped
 class InfoHospRepository : PanacheRepositoryBase<InfoHosp, String> {
@@ -58,37 +55,16 @@ class InfoHospRepository : PanacheRepositoryBase<InfoHosp, String> {
       ).asSubquery()
 
       selectNew<InfoHospListDto>(
-        path(InfoHosp::hospId),
-        path(InfoHosp::hpId),
-        path(InfoHosp::dutyName),
-        path(InfoHosp::dutyDivNam),
-        path(InfoHosp::dstr1Cd),
-        path(InfoHosp::dstr2Cd),
-        path(InfoHosp::dutyTel1),
-        path(InfoHosp::dutyTel1),
-        path(InfoBed::updtDttm),
-        path(InfoBed::gnbdIcu),
-        path(InfoBed::npidIcu),
-        path(InfoBed::gnbdSvrt),
-        path(InfoBed::gnbdSmsv),
-        path(InfoBed::gnbdModr),
-        path(InfoBed::ventilator),
-        path(InfoBed::ventilatorPreemie),
-        path(InfoBed::incubator),
-        path(InfoBed::ecmo),
-        path(InfoBed::highPressureOxygen),
-        path(InfoBed::ct),
-        path(InfoBed::mri),
-        path(InfoBed::highPressureOxygen),
+        path(InfoHosp::hospId), path(InfoHosp::hpId), path(InfoHosp::dutyName), path(InfoHosp::dutyDivNam),
+        path(InfoHosp::dstr1Cd), path(InfoHosp::dstr2Cd), path(InfoHosp::dutyTel1), path(InfoHosp::dutyTel1), path(InfoBed::updtDttm),
+        path(InfoBed::gnbdIcu), path(InfoBed::npidIcu), path(InfoBed::gnbdSvrt), path(InfoBed::gnbdSmsv), path(InfoBed::gnbdModr),
+        path(InfoBed::ventilator), path(InfoBed::ventilatorPreemie), path(InfoBed::incubator), path(InfoBed::ecmo),
+        path(InfoBed::highPressureOxygen), path(InfoBed::ct), path(InfoBed::mri), path(InfoBed::bloodVesselImaging),
         path(InfoBed::bodyTemperatureControl),
-        path(InfoBed::emrgncyNrmlBed),
-        path(InfoBed::ngtvIsltnChild),
-        path(InfoBed::nrmlIsltnChild),
-        path(InfoBed::nrmlChildBed),
-        path(InfoBed::emrgncyNgtvIsltnBed),
-        path(InfoBed::emrgncyNrmlIsltnBed),
-        path(InfoBed::isltnMedAreaNgtvIsltnBed),
-        path(InfoBed::isltnMedAreaNrmlIsltnBed),
+        path(InfoBed::emrgncyNrmlBed), path(InfoBed::ngtvIsltnChild),
+        path(InfoBed::nrmlIsltnChild), path(InfoBed::nrmlChildBed),
+        path(InfoBed::emrgncyNgtvIsltnBed), path(InfoBed::emrgncyNrmlIsltnBed),
+        path(InfoBed::isltnMedAreaNgtvIsltnBed), path(InfoBed::isltnMedAreaNrmlIsltnBed),
         path(InfoBed::cohtBed),
         medicalStaffCount,
       ).from(
@@ -164,9 +140,10 @@ class InfoHospRepository : PanacheRepositoryBase<InfoHosp, String> {
         path(InfoBed::highPressureOxygen), path(InfoBed::bodyTemperatureControl),
       ).from(
         entity(InfoHosp::class),
-        join(InfoBed::class).on(path(InfoHosp::hospId).eq(path(InfoBed::hospId)))
+        join(InfoBed::class).on(path(InfoHosp::hospId).eq(path(InfoBed::hospId))),
+        join(InfoHospDetail::class).on(path(InfoHosp::hospId).eq(path(InfoHospDetail::hospId))),
       ).whereAnd(
-        // TODO 좀 더 깔끔하게 변경
+        // TODO 다른 방식 사용 생각
         path(InfoHosp::dstr1Cd).eq(dstr1Cd),
 
         param.svrtTypeCd?.contains("gnbdIcu")?.takeIf { it }?.let { path(InfoBed::gnbdSvrt).ge(1) },
@@ -180,6 +157,13 @@ class InfoHospRepository : PanacheRepositoryBase<InfoHosp, String> {
         param.reqBedTypeCd?.contains("emrgncyNrmlIsltnBed")?.takeIf { it }?.let { path(InfoBed::emrgncyNrmlIsltnBed).ge(1) },
         param.reqBedTypeCd?.contains("ngtvIsltnChild")?.takeIf { it }?.let { path(InfoBed::ngtvIsltnChild).ge(1) },
         param.reqBedTypeCd?.contains("nrmlIsltnChild")?.takeIf { it }?.let { path(InfoBed::nrmlIsltnChild).ge(1) },
+
+        param.ptTypeCd?.contains("childBirthMed")?.takeIf { it }?.let { path(InfoHospDetail::medicalTeamCount)(MedicalTeamCount::childBirthMed).ge(1) },
+        param.ptTypeCd?.contains("dialysisMed")?.takeIf { it }?.let { path(InfoHospDetail::medicalTeamCount)(MedicalTeamCount::dialysisMed).ge(1) },
+        param.ptTypeCd?.contains("childMed")?.takeIf { it }?.let { path(InfoHospDetail::medicalTeamCount)(MedicalTeamCount::childMed).ge(1) },
+        param.ptTypeCd?.contains("nursingHospitalMed")?.takeIf { it }?.let { path(InfoHospDetail::medicalTeamCount)(MedicalTeamCount::nursingHospitalMed).ge(1) },
+        param.ptTypeCd?.contains("mentalPatientMed")?.takeIf { it }?.let { path(InfoHospDetail::medicalTeamCount)(MedicalTeamCount::mentalPatientMed).ge(1) },
+        param.ptTypeCd?.contains("negativePressureRoomYn")?.takeIf { it }?.let { path(InfoHospDetail::facilityStatus)(FacilityStatus::negativePressureRoomYn).eq(false) },
 
         param.equipment?.contains("ventilator")?.takeIf { it }?.let { path(InfoBed::ventilator).eq("Y") },
         param.equipment?.contains("ventilatorPreemie")?.takeIf { it }?.let { path(InfoBed::ventilatorPreemie).eq("Y") },
