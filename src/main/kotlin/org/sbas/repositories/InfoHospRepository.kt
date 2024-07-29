@@ -141,7 +141,7 @@ class InfoHospRepository : PanacheRepositoryBase<InfoHosp, String> {
       ).from(
         entity(InfoHosp::class),
         join(InfoBed::class).on(path(InfoHosp::hospId).eq(path(InfoBed::hospId))),
-        join(InfoHospDetail::class).on(path(InfoHosp::hospId).eq(path(InfoHospDetail::hospId))),
+        leftJoin(InfoHospDetail::class).on(path(InfoHosp::hospId).eq(path(InfoHospDetail::hospId))),
       ).whereAnd(
         // TODO 다른 방식 사용 생각
         path(InfoHosp::dstr1Cd).eq(dstr1Cd),
