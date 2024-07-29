@@ -90,7 +90,6 @@ data class InfoPtSearchParam(
     @field: QueryParam("mpno") var mpno: String?,
     @field: QueryParam("ptId") var ptId: String?,
     @field: QueryParam("page") var page: Int?,
-    @field: QueryParam("sever") var sever: Boolean?
 )
 
 /**
@@ -121,8 +120,6 @@ data class InfoPtSearchDto(
     @JsonIgnore val undrDsesCd: String?,
     val age: Int?,
     val monitoring: Boolean?,
-    val admsDt: String?,
-    val covSf: String?,
 ) {
     val bedStatCdNm: String? = bedStatCd?.let { BedStatCd.valueOf(it).cdNm }
     val tagList: MutableList<String>
