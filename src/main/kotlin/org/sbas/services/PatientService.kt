@@ -225,7 +225,7 @@ class PatientService {
 
   @Transactional
   fun findHospNmList(param: InfoPtSearchParam): CommonResponse<*> {
-    val list = infoPtRepository.findHospNmList(param)
+    val list = infoPtRepository.findHospNmList(param).filterNotNull()
     return CommonListResponse(list)
   }
 
@@ -364,7 +364,7 @@ class PatientService {
     var result = bdasAprvRepository.findPresentBdasList()
 
     val ptIdList = result.map{
-      it?.id?.ptId
+      it.id.ptId
     }
 
     if (param.dstr1Cd != null) {
@@ -380,22 +380,22 @@ class PatientService {
 
       log.warn(filteredDstr)
 
-      result = result.filter { it?.id?.ptId in filteredDstr }
+      result = result.filter { it.id.ptId in filteredDstr }
     }
 
 
     if (!param.bedStatCd.isNullOrEmpty()) {
-      val findIdList = result.mapNotNull {
-        it?.let { BdasReqId(it.id.ptId, it.id.bdasSeq) }
+      val findIdList = result.map {
+        it.let { BdasReqId(it.id.ptId, it.id.bdasSeq) }
       }
 
       val filteredStatus = bdasReqRepository.findByIdList(findIdList, param.bedStatCd!!)
         .map { it.id.ptId }
 
-      result = result.filter { it?.id?.ptId in filteredStatus }
+      result = result.filter { it.id.ptId in filteredStatus }
     }
 
-    val hospIdList = result.mapNotNull { it?.hospId }.distinct()
+    val hospIdList = result.map { it.hospId }.distinct()
 
     val list = infoHospRepository.findListByIds(hospIdList)
 

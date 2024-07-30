@@ -7,6 +7,7 @@ import jakarta.inject.Inject
 import jakarta.persistence.EntityManager
 import jakarta.persistence.TypedQuery
 import jakarta.ws.rs.NotFoundException
+import org.jboss.logging.Logger
 import org.sbas.constants.enums.AdmsStatCd
 import org.sbas.constants.enums.TimeLineStatCd
 import org.sbas.dtos.bdas.*
@@ -269,7 +270,7 @@ class BdasAprvRepository : PanacheRepositoryBase<BdasAprv, BdasAprvId> {
     return if (result.isEmpty()) null else result[0]
   }
 
-  fun findPresentBdasList(): List<BdasAprv?> {
+  fun findPresentBdasList(): List<BdasAprv> {
     return find("where aprvYn = 'Y'").list().groupBy { it.id.ptId }
       .mapValues { (_, values) -> values.maxBy { it.id.bdasSeq } }
       .values.toList()

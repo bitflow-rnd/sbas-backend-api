@@ -179,7 +179,7 @@ class PrivatePatientEndpoint {
   @Operation(summary = "배정 중인 병원 목록", description = "현재 배정 중인 병원 목록 조회")
   @GET
   @Path("bdas-hosp")
-  fun getBdasHospList(@BeanParam @Valid param: BdasHospListRequest): Response {
+  fun getBdasHospList(@BeanParam param: BdasHospListRequest): Response {
     return Response.ok(patientService.getBdasHospList(param)).build()
   }
 }
