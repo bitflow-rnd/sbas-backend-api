@@ -2,6 +2,7 @@ package org.sbas.dtos.info
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties
 import jakarta.ws.rs.QueryParam
+import org.jboss.resteasy.reactive.Separator
 import org.sbas.entities.info.InfoHosp
 import org.sbas.utils.annotation.NoArg
 import java.time.Instant
@@ -49,6 +50,9 @@ data class InfoHospSearchParam(
     @field: QueryParam("dstr2Cd") var dstr2Cd: String?,
     @field: QueryParam("page") var page: Int? = 0,
     @field: QueryParam("dutyDivNam") var dutyDivNam: String? = null,
+    @field: [QueryParam("svrtTypeCd") Separator(",")] var svrtTypeCd: List<String>?,
+    @field: [QueryParam("reqBedTypeCd") Separator(",")] var reqBedTypeCd: List<String>?,
+    @field: [QueryParam("equipment") Separator(",")] var equipment: List<String>?,
 )
 
 data class InfoHospListDto(
