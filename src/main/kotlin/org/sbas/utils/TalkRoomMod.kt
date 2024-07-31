@@ -12,6 +12,7 @@ import jakarta.websocket.server.ServerEndpoint
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.withContext
+import org.eclipse.microprofile.context.ManagedExecutor
 import org.jboss.logging.Logger
 import org.json.JSONArray
 import org.sbas.dtos.AttcIdResponse
@@ -41,6 +42,9 @@ class TalkRoomMod {
     lateinit var log: Logger
 
     @Inject
+    lateinit var managedExecutor: ManagedExecutor
+
+    @Inject
     private lateinit var firebaseService: FirebaseService
 
     @Inject
@@ -65,55 +69,63 @@ class TalkRoomMod {
         session.asyncRemote.sendText(sendObject)
     }
 
-    @OnMessage
-    fun onMessage(session: Session, data: String, @PathParam("tkrmId") tkrmId: String) {
+  @OnMessage
+  fun onMessage(session: Session, data: String, @PathParam("tkrmId") tkrmId: String) {
+    if (data.startsWith("hello|")) {
+      this.userId = data.split("hello|")[1]
+      chatSockets[this.userId!!] = this // WebSocket 연결을 Map에 추가
+      return
+    }
 
-        if (data.startsWith("hello|")) {
-            this.userId = data.split("hello|")[1]
-            chatSockets[this.userId] = this // WebSocket 연결을 Map에 추가
-            return
-        }
+    var addMsg: TalkMsg
+    var otherUsers: MutableList<TalkUser>
+    val message: String?
 
-        var addMsg: TalkMsg
-        val otherUsers: MutableList<TalkUser>
-        var message: String?
+    if (data.contains("attcId:")) {
+      val idx = data.indexOf("|")
+      val msgIdx = data.lastIndexOf("|")
+      val userId = data.substring(0, idx)
+      message = data.substring(msgIdx + 1)
+      val attcId = data.substring(idx + 8, msgIdx)
+      val attcIdResponse = Gson().fromJson(attcId, AttcIdResponse::class.java)
 
-        if(data.contains("attcId:")) {
-            log.debug("data >>> $data")
-            val idx = data.indexOf("|")
-            val msgIdx = data.lastIndexOf("|")
-            val userId = data.substring(0, idx)
-            message = data.substring(msgIdx+1)
-            val attcId = data.substring(idx+8, msgIdx)
-            runBlocking(Dispatchers.IO) {
-                val attcIdResponse: AttcIdResponse = Gson().fromJson(attcId, AttcIdResponse::class.java)
-                addMsg = talkMsgRepository.insertFile(message, attcIdResponse.attcGrpId, tkrmId, userId)
-                otherUsers = talkUserRepository.findOtherUsersByTkrmId(tkrmId, userId) as MutableList<TalkUser>
-            }
-        }else {
-            log.debug("data >>> $data")
-            val idx = data.indexOf("|")
-            val userId = data.substring(0, idx)
-            message = data.substring(idx + 1)
-            runBlocking(Dispatchers.IO) {
-                addMsg = talkMsgRepository.insertMessage(message, tkrmId, userId)
-                otherUsers = talkUserRepository.findOtherUsersByTkrmId(tkrmId, userId) as MutableList<TalkUser>
-            }
-        }
+      managedExecutor.runAsync {
+        addMsg = talkMsgRepository.insertFile(message, attcIdResponse.attcGrpId, tkrmId, userId)
+        otherUsers = talkUserRepository.findOtherUsersByTkrmId(tkrmId, userId) as MutableList<TalkUser>
+        handlePostMessage(session, tkrmId, addMsg, otherUsers, userId, message)
+      }
+    } else {
+      val idx = data.indexOf("|")
+      val userId = data.substring(0, idx)
+      message = data.substring(idx + 1)
 
+      managedExecutor.runAsync {
+        addMsg = talkMsgRepository.insertMessage(message, tkrmId, userId)
+        otherUsers = talkUserRepository.findOtherUsersByTkrmId(tkrmId, userId) as MutableList<TalkUser>
+        handlePostMessage(session, tkrmId, addMsg, otherUsers, userId, message)
+      }
+    }
+  }
+
+    private fun handlePostMessage(
+        session: Session,
+        tkrmId: String,
+        addMsg: TalkMsg,
+        otherUsers: MutableList<TalkUser>,
+        userId: String,
+        message: String?
+    ) {
         chatSockets.values // 모든 WebSocket 연결에 메시지 전송
             .filter { it.tkrmId == tkrmId }
             .forEach {
                 it.session.asyncRemote.sendText(JsonObject.mapFrom(addMsg).toString())
             }
 
-        // TODO 하나의 기기로 여러 아이디 로그인 한 경우 알림이 여러번 옴, 자신 제외
         firebaseService.sendMessageMultiDevice(userId, message, userId)
 
-        otherUsers.forEach{
+        otherUsers.forEach {
             session.asyncRemote.sendText(it.id?.userId)
         }
-
     }
 
     @OnClose

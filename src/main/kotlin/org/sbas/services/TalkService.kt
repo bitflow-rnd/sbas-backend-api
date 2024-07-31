@@ -107,19 +107,7 @@ class TalkService {
 
     fun getMyChat(tkrmId: String) : CommonResponse<*>{
         val findChatDetail = talkMsgRepository.findChatDetail(tkrmId)
-
-        if(findChatDetail.isEmpty()) throw NotFoundException("채팅방에 저장된 메시지가 없습니다.")
-
         return CommonResponse(findChatDetail)
-    }
-    @Transactional
-    fun sendMsg(tkrmId: String, userId: String, detail: String){
-        val recentMsg = talkMsgRepository.findRecentlyMsg(tkrmId)
-        val addMsgId = TalkMsgId(tkrmId, recentMsg?.id?.msgSeq?.plus(1), recentMsg?.id?.histSeq)
-        val addMsg = TalkMsg(addMsgId, recentMsg?.histCd, detail, null)
-        addMsg.rgstUserId = userId
-        addMsg.updtUserId = userId
-        talkMsgRepository.persist(addMsg)
     }
 
     @Transactional
