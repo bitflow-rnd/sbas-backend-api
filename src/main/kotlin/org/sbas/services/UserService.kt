@@ -13,9 +13,11 @@ import org.sbas.constants.SbasConst
 import org.sbas.constants.enums.UserStatCd
 import org.sbas.dtos.PagingListDto
 import org.sbas.dtos.info.*
+import org.sbas.entities.info.InfoAlarm
 import org.sbas.entities.info.InfoCntc
 import org.sbas.entities.info.InfoCntcId
 import org.sbas.parameters.*
+import org.sbas.repositories.InfoAlarmRepository
 import org.sbas.repositories.InfoCntcRepository
 import org.sbas.repositories.InfoUserRepository
 import org.sbas.repositories.UserActivityHistoryRepository
@@ -43,6 +45,9 @@ class UserService {
 
   @Inject
   private lateinit var activityHistoryRepository: UserActivityHistoryRepository
+
+  @Inject
+  private lateinit var infoAlarmRepository: InfoAlarmRepository
 
   @RestClient
   private lateinit var naverSensClient: NaverSensRestClient
@@ -416,4 +421,15 @@ class UserService {
     val histories = activityHistoryRepository.findAllByUserId(userId)
     return CommonListResponse(histories, histories.size)
   }
+
+  /**
+   * 알람 목록 조회
+   */
+  fun getAlarmList(): CommonListResponse<InfoAlarm> {
+    val receiverId = jwt.name
+    val findAlarmList = infoAlarmRepository.findInfoAlarmByReceiverId(receiverId)
+
+    return CommonListResponse(findAlarmList)
+  }
+
 }

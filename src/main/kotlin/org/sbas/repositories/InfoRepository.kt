@@ -12,7 +12,6 @@ import jakarta.ws.rs.NotFoundException
 import org.jboss.logging.Logger
 import org.sbas.dtos.info.*
 import org.sbas.entities.info.*
-import org.sbas.utils.StringUtils
 import java.time.Instant
 
 @ApplicationScoped

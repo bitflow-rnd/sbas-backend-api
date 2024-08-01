@@ -158,4 +158,11 @@ class PrivateUserEndpoint {
     fun activityHistory(@RestPath userId: String): Response {
         return Response.ok(userService.getActivityHistory(userId)).build()
     }
+
+  @Operation(summary = "알람 목록", description = "알람 목록 API")
+  @GET
+  @Path("alarm-list")
+  fun alarmList(): Response {
+    return Response.ok(userService.getAlarmList()).build()
+  }
 }
