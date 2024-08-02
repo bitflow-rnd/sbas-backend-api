@@ -27,8 +27,12 @@ import org.sbas.restclients.NaverSensRestClient
 import org.sbas.restdtos.NaverSmsMsgApiParams
 import org.sbas.restdtos.NaverSmsReqMsgs
 import org.sbas.utils.CustomizedException
+import org.sbas.utils.TimeUtil
 import org.sbas.utils.TokenUtils
 import java.security.MessageDigest
+import java.time.LocalDateTime
+import java.time.ZoneId
+import java.time.format.DateTimeFormatter
 
 
 @ApplicationScoped
@@ -423,13 +427,31 @@ class UserService {
   }
 
   /**
-   * 알람 목록 조회
+   * 알림 목록 조회
    */
-  fun getAlarmList(): CommonListResponse<InfoAlarm> {
+  fun getAlarmList(): CommonListResponse<InfoAlarmDto> {
     val receiverId = jwt.name
     val findAlarmList = infoAlarmRepository.findInfoAlarmByReceiverId(receiverId)
 
-    return CommonListResponse(findAlarmList)
+    val alarmDtoList = findAlarmList.map {
+      val findSender = userRepository.findByUserId(it.senderId)
+      val findReceiver = userRepository.findByUserId(it.receiverId)
+      val formattedDate = TimeUtil.formatInstant(it.rgstDttm)
+
+      InfoAlarmDto(
+        alarmId = it.alarmId,
+        title = it.title,
+        detail = it.detail,
+        senderId = it.senderId,
+        senderName = findSender?.userNm ?: "",
+        receiverId = it.receiverId,
+        receiverName = findReceiver?.userNm ?: "",
+        isRead = it.isRead,
+        rgstDttm = formattedDate,
+      )
+    }
+
+    return CommonListResponse(alarmDtoList)
   }
 
 }

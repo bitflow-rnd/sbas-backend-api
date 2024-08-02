@@ -159,10 +159,17 @@ class PrivateUserEndpoint {
         return Response.ok(userService.getActivityHistory(userId)).build()
     }
 
-  @Operation(summary = "알람 목록", description = "알람 목록 API")
+  @Operation(summary = "알림 목록", description = "알림 목록 API")
   @GET
   @Path("alarm-list")
   fun alarmList(): Response {
     return Response.ok(userService.getAlarmList()).build()
   }
+
+//  @Operation(summary = "알림 읽음", description = "알림 읽음 처리 API")
+//  @POST
+//  @Path("read-alarms")
+//  fun readAlarms(): Response {
+//    return Response.ok(userService.readAlarms()).build()
+//  }
 }
