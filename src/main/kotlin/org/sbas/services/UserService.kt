@@ -4,6 +4,7 @@ import io.quarkus.cache.*
 import jakarta.enterprise.context.ApplicationScoped
 import jakarta.inject.Inject
 import jakarta.transaction.Transactional
+import jakarta.ws.rs.NotFoundException
 import jakarta.ws.rs.core.Response
 import org.eclipse.microprofile.config.inject.ConfigProperty
 import org.eclipse.microprofile.jwt.JsonWebToken
@@ -431,7 +432,7 @@ class UserService {
    */
   fun getAlarmList(): CommonListResponse<InfoAlarmDto> {
     val receiverId = jwt.name
-    val findAlarmList = infoAlarmRepository.findInfoAlarmByReceiverId(receiverId)
+    val findAlarmList = infoAlarmRepository.findAllByReceiverId(receiverId)
 
     val alarmDtoList = findAlarmList.map {
       val findSender = userRepository.findByUserId(it.senderId)
@@ -455,9 +456,16 @@ class UserService {
   }
 
   fun getAlarmCount(): CommonResponse<Long> {
-    val receiverId = jwt.name
+    val receiverId = jwt.name ?: throw CustomizedException("jwt check", Response.Status.BAD_REQUEST)
     val count = infoAlarmRepository.findUnreadAlarmsByReceiverId(receiverId)
     return CommonResponse(count)
+  }
+
+  fun readAlarms(): CommonResponse<String> {
+    val receiverId = jwt.name
+    val updateCnt = infoAlarmRepository.readAlarmsByReceiverId(receiverId)
+
+    return CommonResponse("${updateCnt}개 알림 읽기 처리 완료")
   }
 
 }
