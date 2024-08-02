@@ -20,6 +20,7 @@ import org.jboss.logging.Logger
 import org.sbas.entities.info.InfoAlarm
 import org.sbas.entities.info.InfoUser
 import org.sbas.entities.info.UserFcmToken
+import org.sbas.repositories.InfoAlarmRepository
 import org.sbas.repositories.InfoUserRepository
 import org.sbas.repositories.UserFcmTokenRepository
 import org.sbas.responses.CommonResponse
@@ -41,6 +42,9 @@ class FirebaseService {
 
   @Inject
   private lateinit var userFcmTokenRepository: UserFcmTokenRepository
+
+  @Inject
+  private lateinit var infoAlarmRepository: InfoAlarmRepository
 
   /*
   fun getApp(): FirebaseApp {
@@ -112,7 +116,7 @@ class FirebaseService {
       }else {
         body ?: ""
       }
-      InfoAlarm(
+      val saveAlarm = InfoAlarm(
         title = "${userId}님으로 부터 온 메시지",
         detail = detail,
         senderId = userId,
@@ -120,8 +124,7 @@ class FirebaseService {
         isRead = false,
       )
 
-      //Todo
-      // persist
+      infoAlarmRepository.persist(saveAlarm)
     }
 
     val notification = Notification.builder()
