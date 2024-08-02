@@ -13,7 +13,11 @@ class InfoAlarmRepository : PanacheRepositoryBase<InfoAlarm, Int> {
   private lateinit var log: Logger
 
   fun findInfoAlarmByReceiverId(receiverId: String): List<InfoAlarm> {
-    return find("receiverId = '$receiverId' and isRead = false").list()
+    return find("receiverId = '$receiverId'").list()
+  }
+
+  fun findUnreadAlarmsByReceiverId(receiverId: String): Long {
+    return find("receiverId = '$receiverId' and isRead = false").count()
   }
 
 }

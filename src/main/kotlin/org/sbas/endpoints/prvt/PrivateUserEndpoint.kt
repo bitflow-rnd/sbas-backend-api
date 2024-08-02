@@ -166,6 +166,13 @@ class PrivateUserEndpoint {
     return Response.ok(userService.getAlarmList()).build()
   }
 
+  @Operation(summary = "안읽은 알림 목록 갯수", description = "안읽은 알림 목록 갯수 조회 API")
+  @GET
+  @Path("alarm-count")
+  fun alarmCount(): Response {
+    return Response.ok(userService.getAlarmCount()).build()
+  }
+
 //  @Operation(summary = "알림 읽음", description = "알림 읽음 처리 API")
 //  @POST
 //  @Path("read-alarms")

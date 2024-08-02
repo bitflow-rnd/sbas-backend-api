@@ -454,4 +454,10 @@ class UserService {
     return CommonListResponse(alarmDtoList)
   }
 
+  fun getAlarmCount(): CommonResponse<Long> {
+    val receiverId = jwt.name
+    val count = infoAlarmRepository.findUnreadAlarmsByReceiverId(receiverId)
+    return CommonResponse(count)
+  }
+
 }
