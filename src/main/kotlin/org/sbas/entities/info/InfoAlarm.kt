@@ -12,7 +12,7 @@ class InfoAlarm (
   @Column(name = "alarm_id", nullable = false)
   val alarmId : Int = 0,
 
-  @Column(name = "title", nullable = false, length = 20)
+  @Column(name = "title", nullable = false, length = 30)
   val title: String,
 
   @Column(name = "detail", nullable = false, length = 50)
