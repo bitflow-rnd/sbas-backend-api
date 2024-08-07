@@ -105,10 +105,11 @@ class PatientService {
       ptNm = dto.ptNm,
       rrno1 = dto.rrno1,
       rrno2 = dto.rrno2,
-    )
-    val baseCode = dto.dstr2Cd?.let { baseCodeRepository.findByCdId(it) }
+    ) ?: return CommonResponse(mutableMapOf("isExist" to false, "items" to null))
 
-    val infoPtResponse = findInfoPt?.let {
+    val baseCode = findInfoPt.dstr2Cd?.let { baseCodeRepository.findByCdId(it) }
+
+    val infoPtResponse = findInfoPt.let {
       InfoPtCheckResponse(
         ptId = it.ptId,
         ptNm = it.ptNm,
@@ -132,11 +133,7 @@ class PatientService {
       )
     }
 
-    if (findInfoPt != null) { // 등록된 환자 존재
-      return CommonResponse(mutableMapOf("isExist" to true, "items" to infoPtResponse))
-    }
-
-    return CommonResponse(mutableMapOf("isExist" to false, "items" to null))
+    return CommonResponse(mutableMapOf("isExist" to true, "items" to infoPtResponse))
   }
 
   @Transactional

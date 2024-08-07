@@ -1,6 +1,7 @@
 package org.sbas.responses.patient
 
 import org.sbas.constants.enums.PtTypeCd
+import org.sbas.constants.enums.ReqBedTypeCd
 import org.sbas.constants.enums.SvrtTypeCd
 import org.sbas.constants.enums.UndrDsesCd
 import org.sbas.entities.bdas.BdasEsvy
@@ -61,7 +62,7 @@ data class DiseaseInfoResponse(
         instTelno = bdasEsvy.instTelno
         diagDrNm = bdasEsvy.diagDrNm
         rptChfNm = bdasEsvy.rptChfNm
-        reqBedTypeNm = bdasReq.reqBedTypeCd
+        reqBedTypeNm = ReqBedTypeCd.valueOf(bdasReq.reqBedTypeCd).cdNm
     }
 
 }
