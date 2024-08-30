@@ -17,6 +17,7 @@ data class SvrtInfoRsps(
 
 @NoArg
 data class SvrtPtSearchDto(
+  val pid: String,
   val ptId: String?,
   val bdasSeq: Int?,
   val ptNm: String?,

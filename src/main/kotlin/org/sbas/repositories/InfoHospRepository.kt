@@ -166,7 +166,7 @@ class InfoHospRepository : PanacheRepositoryBase<InfoHosp, String> {
         param.ptTypeCd?.contains("childMed")?.takeIf { it }?.let { path(InfoHospDetail::medicalTeamCount)(MedicalTeamCount::childMed).ge(1) },
         param.ptTypeCd?.contains("nursingHospitalMed")?.takeIf { it }?.let { path(InfoHospDetail::medicalTeamCount)(MedicalTeamCount::nursingHospitalMed).ge(1) },
         param.ptTypeCd?.contains("mentalPatientMed")?.takeIf { it }?.let { path(InfoHospDetail::medicalTeamCount)(MedicalTeamCount::mentalPatientMed).ge(1) },
-        param.ptTypeCd?.contains("negativePressureRoomYn")?.takeIf { it }?.let { path(InfoHospDetail::facilityStatus)(FacilityStatus::negativePressureRoomYn).eq(false) },
+        param.ptTypeCd?.contains("negativePressureRoomYn")?.takeIf { it }?.let { path(InfoHospDetail::facilityStatus)(FacilityStatus::negativePressureRoomYn).eq(true) },
 
         param.equipment?.contains("ventilator")?.takeIf { it }?.let { path(InfoBed::ventilator).eq("Y") },
         param.equipment?.contains("ventilatorPreemie")?.takeIf { it }?.let { path(InfoBed::ventilatorPreemie).eq("Y") },
