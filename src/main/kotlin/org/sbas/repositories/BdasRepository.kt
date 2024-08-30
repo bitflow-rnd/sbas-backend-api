@@ -7,7 +7,6 @@ import jakarta.inject.Inject
 import jakarta.persistence.EntityManager
 import jakarta.persistence.TypedQuery
 import jakarta.ws.rs.NotFoundException
-import org.jboss.logging.Logger
 import org.sbas.constants.enums.AdmsStatCd
 import org.sbas.constants.enums.TimeLineStatCd
 import org.sbas.dtos.bdas.*
@@ -292,7 +291,7 @@ class BdasTrnsRepository : PanacheRepositoryBase<BdasTrns, BdasTrnsId> {
       "iu.instNm || ' / ' || iu.userNm, " +
       "bt.rgstDttm, " +
       "bt.vecno || chr(10) || bt.msg, " +
-      "'${TimeLineStatCd.COMPLETE.cdNm}', " +
+      "'${TimeLineStatCd.SUSPEND.cdNm}', " +
       "iu.instId, iu.instNm, iu.id) " +
       "from BdasTrns bt " +
       "join InfoUser iu on iu.id = bt.rgstUserId " +
@@ -327,11 +326,11 @@ class BdasAdmsRepository : PanacheRepositoryBase<BdasAdms, BdasAdmsId> {
     ).firstResult()
   }
 
-  fun findSuspendTimeLineInfo(ptId: String, bdasSeq: Int): MutableList<SuspendTimeLine> {
+  fun findClosedTimeLineInfo(ptId: String, bdasSeq: Int): MutableList<SuspendTimeLine> {
     val query = "select new org.sbas.dtos.bdas.SuspendTimeLine(" +
       "'입원', " +
       "iu.instNm || ' / ' || iu.userNm, " +
-      "'${TimeLineStatCd.SUSPEND.cdNm}', " +
+      "'${TimeLineStatCd.CLOSED.cdNm}', " +
       "iu.instId, iu.instNm, iu.id) " +
       "from BdasAprv ba " +
       "join InfoUser iu on iu.id = ba.rgstUserId " +

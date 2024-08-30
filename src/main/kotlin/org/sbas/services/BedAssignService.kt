@@ -543,7 +543,7 @@ class BedAssignService {
         timeLineList.addAll(bdasReqAprvRepository.findTimeLineInfo(ptId, bdasSeq))
         timeLineList.addAll(bdasAprvRepository.findTimeLineInfo(ptId, bdasSeq))
         timeLineList.addAll(bdasTrnsRepository.findSuspendTimeLineInfo(ptId, bdasSeq))
-        timeLineList.addAll(bdasAdmsRepository.findSuspendTimeLineInfo(ptId, bdasSeq))
+        timeLineList.addAll(bdasAdmsRepository.findClosedTimeLineInfo(ptId, bdasSeq))
       }
 
       BedStatCd.BAST0007.name -> {
