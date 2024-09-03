@@ -37,6 +37,4 @@ class TalkRoom(
     @NotNull
     @Column(name = "cret_user_id", nullable = false, length = 10)
     var cretUserId: String? = null,
-) : CommonEntity() {
-    constructor() : this("", null, null, null, null)
-}
+) : CommonEntity()

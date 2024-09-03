@@ -158,4 +158,25 @@ class PrivateUserEndpoint {
     fun activityHistory(@RestPath userId: String): Response {
         return Response.ok(userService.getActivityHistory(userId)).build()
     }
+
+  @Operation(summary = "알림 목록", description = "알림 목록 API")
+  @GET
+  @Path("alarm-list")
+  fun alarmList(): Response {
+    return Response.ok(userService.getAlarmList()).build()
+  }
+
+  @Operation(summary = "안읽은 알림 목록 갯수", description = "안읽은 알림 목록 갯수 조회 API")
+  @GET
+  @Path("alarm-count")
+  fun alarmCount(): Response {
+    return Response.ok(userService.getAlarmCount()).build()
+  }
+
+  @Operation(summary = "알림 읽기", description = "알림 읽음 처리 API")
+  @POST
+  @Path("read-alarms")
+  fun readAlarms(): Response {
+    return Response.ok(userService.readAlarms()).build()
+  }
 }

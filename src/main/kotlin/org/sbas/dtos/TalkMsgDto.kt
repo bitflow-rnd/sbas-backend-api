@@ -20,11 +20,12 @@ data class TalkMsgDto(
 data class RegTalkRoomDto(
     var id: String, // 유저 ID
     var userId: String, // 초대받는 유저 ID
+    var userNm: String,
 ) {
     fun toEntity(tkrmId: String): TalkRoom{
         return TalkRoom(
             tkrmId = tkrmId,
-            tkrmNm = "",
+            tkrmNm = userNm,
             cretDt = StringUtils.getYyyyMmDd(),
             cretTm = StringUtils.getHhMmSs(),
             cretUserId = id,

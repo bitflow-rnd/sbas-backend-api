@@ -7,7 +7,7 @@ import org.jboss.logging.Logger
 import org.sbas.dtos.CovSfRsps
 import org.sbas.dtos.SvrtInfoRsps
 import org.sbas.dtos.SvrtPtSearchDto
-import org.sbas.dtos.info.InfoPtSearchParam
+import org.sbas.dtos.info.SvrtPtSearchParam
 import org.sbas.entities.svrt.SvrtAnly
 import org.sbas.entities.svrt.SvrtAnlyId
 import org.sbas.entities.svrt.SvrtColl
@@ -149,7 +149,7 @@ class SvrtService(
   }
 
   @Transactional
-  fun findSvrtPtList(param: InfoPtSearchParam): CommonListResponse<SvrtPtSearchDto> {
+  fun findSvrtPtList(param: SvrtPtSearchParam): CommonListResponse<SvrtPtSearchDto> {
     val svrtPtList = svrtPtRepository.findSvrtPtList(param)
     svrtPtList.forEach {
       it.covSf = findCovSF(it.ptId!!)

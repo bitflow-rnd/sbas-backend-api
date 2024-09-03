@@ -12,6 +12,7 @@ import jakarta.websocket.server.ServerEndpoint
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.withContext
+import org.eclipse.microprofile.context.ManagedExecutor
 import org.jboss.logging.Logger
 import org.json.JSONArray
 import org.sbas.dtos.AttcIdResponse
@@ -28,129 +29,140 @@ import org.sbas.services.FirebaseService
 @ServerEndpoint("/chat-rooms/room/{tkrmId}")
 class TalkRoomMod {
 
-    companion object {
-        private val chatSockets = mutableMapOf<String, TalkRoomMod>() // WebSocket 연결을 관리할 Map
-        private lateinit var talkMsg: MutableList<TalkMsgDto>
+  companion object {
+    private val chatSockets = mutableMapOf<String, TalkRoomMod>() // WebSocket 연결을 관리할 Map
+    private lateinit var talkMsg: MutableList<TalkMsgDto>
+  }
+
+  private lateinit var session: Session // WebSocket 세션
+  private lateinit var tkrmId: String // 채팅방 ID
+  private lateinit var userId: String // 접속 사용자 ID
+
+  @Inject
+  lateinit var log: Logger
+
+  @Inject
+  lateinit var managedExecutor: ManagedExecutor
+
+  @Inject
+  private lateinit var firebaseService: FirebaseService
+
+  @Inject
+  lateinit var talkMsgRepository: TalkMsgRepository
+
+  @Inject
+  lateinit var talkRoomRepository: TalkRoomRepository
+
+  @Inject
+  lateinit var talkUserRepository: TalkUserRepository
+
+  @OnOpen
+  fun onOpen(session: Session, @PathParam("tkrmId") tkrmId: String) {
+
+    this.session = session
+    this.tkrmId = tkrmId
+
+    updateTalkMsg(tkrmId)
+
+    val sendObject = JSONArray(talkMsg).toString()
+
+    session.asyncRemote.sendText(sendObject)
+  }
+
+  @OnMessage
+  fun onMessage(session: Session, data: String, @PathParam("tkrmId") tkrmId: String) {
+    if (data.startsWith("hello|")) {
+      this.userId = data.split("hello|")[1]
+      chatSockets[this.userId!!] = this // WebSocket 연결을 Map에 추가
+      return
     }
 
-    private lateinit var session: Session // WebSocket 세션
-    private lateinit var tkrmId: String // 채팅방 ID
-    private lateinit var userId: String // 접속 사용자 ID
+    var addMsg: TalkMsg
+    var otherUsers: MutableList<TalkUser>
+    val message: String?
 
-    @Inject
-    lateinit var log: Logger
+    if (data.contains("attcId:")) {
+      val idx = data.indexOf("|")
+      val msgIdx = data.lastIndexOf("|")
+      val userId = data.substring(0, idx)
+      message = data.substring(msgIdx + 1)
+      val attcId = data.substring(idx + 8, msgIdx)
+      val attcIdResponse = Gson().fromJson(attcId, AttcIdResponse::class.java)
 
-    @Inject
-    private lateinit var firebaseService: FirebaseService
+      managedExecutor.runAsync {
+        addMsg = talkMsgRepository.insertFile(message, attcIdResponse.attcGrpId, tkrmId, userId)
+        otherUsers = talkUserRepository.findOtherUsersByTkrmId(tkrmId, userId) as MutableList<TalkUser>
+        handlePostMessage(session, tkrmId, addMsg, otherUsers, userId, message)
+      }
+    } else {
+      val idx = data.indexOf("|")
+      val userId = data.substring(0, idx)
+      message = data.substring(idx + 1)
 
-    @Inject
-    lateinit var talkMsgRepository: TalkMsgRepository
+      managedExecutor.runAsync {
+        addMsg = talkMsgRepository.insertMessage(message, tkrmId, userId)
+        otherUsers = talkUserRepository.findOtherUsersByTkrmId(tkrmId, userId) as MutableList<TalkUser>
+        handlePostMessage(session, tkrmId, addMsg, otherUsers, userId, message)
+      }
+    }
+  }
 
-    @Inject
-    lateinit var talkRoomRepository: TalkRoomRepository
+  private fun handlePostMessage(
+    session: Session,
+    tkrmId: String,
+    addMsg: TalkMsg,
+    otherUsers: MutableList<TalkUser>,
+    userId: String,
+    message: String?
+  ) {
+    chatSockets.values // 모든 WebSocket 연결에 메시지 전송
+      .filter { it.tkrmId == tkrmId }
+      .forEach {
+        it.session.asyncRemote.sendText(JsonObject.mapFrom(addMsg).toString())
+      }
 
-    @Inject
-    lateinit var talkUserRepository: TalkUserRepository
+    firebaseService.sendMessageMultiDevice(userId, message, userId)
 
-    @OnOpen
-    fun onOpen(session: Session, @PathParam("tkrmId") tkrmId: String) {
+    otherUsers.forEach {
+      session.asyncRemote.sendText(it.id?.userId)
+    }
+  }
 
-        this.session = session
-        this.tkrmId = tkrmId
+  @OnClose
+  fun onClose(session: Session, @PathParam("tkrmId") tkrmId: String) {
+    chatSockets.remove(tkrmId) // WebSocket 연결을 Map에서 제거
+  }
 
-        updateTalkMsg(tkrmId)
+  private fun updateTalkMsg(tkrmId: String) {
+    val resultList = runBlocking {
+      withContext(Dispatchers.IO) {
+        talkMsgRepository.findChatDetail(tkrmId)
+      }
+    } as MutableList<TalkMsgDto>
+    talkMsg = resultList
+  }
 
-        val sendObject = JSONArray(talkMsg).toString()
+  private fun sendMsg(msg: TalkMsg, tkrmId: String, userId: String) {
+    val talkRoomResponse: TalkRoomResponse?
+    val talkUsers: List<TalkUser>
 
-        session.asyncRemote.sendText(sendObject)
+    runBlocking(Dispatchers.IO) {
+      talkRoomResponse = talkRoomRepository.findTalkRoomResponseByTkrmId(tkrmId, userId)
+      talkUsers = talkUserRepository.findUsersByTkrmId(tkrmId)
     }
 
-    @OnMessage
-    fun onMessage(session: Session, data: String, @PathParam("tkrmId") tkrmId: String) {
+    chatSockets
+      .forEach {
+        it.value.session.asyncRemote.sendText(JsonObject.mapFrom(msg).toString())
+      }
 
-        if (data.startsWith("hello|")) {
-            this.userId = data.split("hello|")[1]
-            chatSockets[this.userId] = this // WebSocket 연결을 Map에 추가
-            return
+    talkUsers
+      .forEach {
+        if (chatSockets[it.id?.userId] != null) {
+          chatSockets[it.id?.userId]?.session?.asyncRemote?.sendText(JsonObject.mapFrom(talkRoomResponse).toString())
+          firebaseService.sendMessageMultiDevice(userId, msg.msg, it.id?.userId!!)
         }
-
-        var addMsg: TalkMsg
-        val otherUsers: MutableList<TalkUser>
-        var message: String?
-
-        if(data.contains("attcId:")) {
-            log.debug("data >>> $data")
-            val idx = data.indexOf("|")
-            val msgIdx = data.lastIndexOf("|")
-            val userId = data.substring(0, idx)
-            message = data.substring(msgIdx+1)
-            val attcId = data.substring(idx+8, msgIdx)
-            runBlocking(Dispatchers.IO) {
-                val attcIdResponse: AttcIdResponse = Gson().fromJson(attcId, AttcIdResponse::class.java)
-                addMsg = talkMsgRepository.insertFile(message, attcIdResponse.attcGrpId, tkrmId, userId)
-                otherUsers = talkUserRepository.findOtherUsersByTkrmId(tkrmId, userId) as MutableList<TalkUser>
-            }
-        }else {
-            log.debug("data >>> $data")
-            val idx = data.indexOf("|")
-            val userId = data.substring(0, idx)
-            message = data.substring(idx + 1)
-            runBlocking(Dispatchers.IO) {
-                addMsg = talkMsgRepository.insertMessage(message, tkrmId, userId)
-                otherUsers = talkUserRepository.findOtherUsersByTkrmId(tkrmId, userId) as MutableList<TalkUser>
-            }
-        }
-
-        chatSockets.values // 모든 WebSocket 연결에 메시지 전송
-            .filter { it.tkrmId == tkrmId }
-            .forEach {
-                it.session.asyncRemote.sendText(JsonObject.mapFrom(addMsg).toString())
-            }
-
-        // TODO 하나의 기기로 여러 아이디 로그인 한 경우 알림이 여러번 옴, 자신 제외
-        firebaseService.sendMessageMultiDevice(userId, message, userId)
-
-        otherUsers.forEach{
-            session.asyncRemote.sendText(it.id?.userId)
-        }
-
-    }
-
-    @OnClose
-    fun onClose(session: Session, @PathParam("tkrmId") tkrmId: String) {
-        chatSockets.remove(tkrmId) // WebSocket 연결을 Map에서 제거
-    }
-
-    private fun updateTalkMsg(tkrmId: String) {
-        val resultList = runBlocking {
-            withContext(Dispatchers.IO) {
-                talkMsgRepository.findChatDetail(tkrmId)
-            }
-        } as MutableList<TalkMsgDto>
-        talkMsg = resultList
-    }
-
-    private fun sendMsg(msg: TalkMsg, tkrmId: String, userId: String){
-        val talkRoomResponse: TalkRoomResponse?
-        val talkUsers: List<TalkUser>
-
-        runBlocking(Dispatchers.IO) {
-            talkRoomResponse = talkRoomRepository.findTalkRoomResponseByTkrmId(tkrmId, userId)
-            talkUsers = talkUserRepository.findUsersByTkrmId(tkrmId)
-        }
-
-        chatSockets
-            .forEach {
-                it.value.session.asyncRemote.sendText(JsonObject.mapFrom(msg).toString())
-            }
-
-        talkUsers
-            .forEach{
-                if (chatSockets[it.id?.userId] != null) {
-                    chatSockets[it.id?.userId]?.session?.asyncRemote?.sendText(JsonObject.mapFrom(talkRoomResponse).toString())
-                    firebaseService.sendMessageMultiDevice(userId, msg.msg, it.id?.userId!!)
-                }
-            }
-    }
+      }
+  }
 
 }

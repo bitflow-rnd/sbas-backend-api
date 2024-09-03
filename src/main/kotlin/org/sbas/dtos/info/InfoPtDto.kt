@@ -5,6 +5,7 @@ import jakarta.validation.constraints.NotBlank
 import jakarta.validation.constraints.NotNull
 import jakarta.validation.constraints.Pattern
 import jakarta.ws.rs.QueryParam
+import org.jboss.resteasy.reactive.Separator
 import org.sbas.constants.enums.*
 import org.sbas.entities.info.InfoPt
 import org.sbas.utils.annotation.NoArg
@@ -89,7 +90,6 @@ data class InfoPtSearchParam(
     @field: QueryParam("mpno") var mpno: String?,
     @field: QueryParam("ptId") var ptId: String?,
     @field: QueryParam("page") var page: Int?,
-    @field: QueryParam("sever") var sever: Boolean?
 )
 
 /**
@@ -120,8 +120,6 @@ data class InfoPtSearchDto(
     @JsonIgnore val undrDsesCd: String?,
     val age: Int?,
     val monitoring: Boolean?,
-    val admsDt: String?,
-    val covSf: String?,
 ) {
     val bedStatCdNm: String? = bedStatCd?.let { BedStatCd.valueOf(it).cdNm }
     val tagList: MutableList<String>
@@ -247,4 +245,11 @@ data class InfoPtCheckResponse(
     var detlAddr: String? = null,
     var zip: String? = null,
     var natiNm: String? = null,
+)
+
+@NoArg
+data class BdasHospListRequest(
+  @field: QueryParam("dstr1Cd") var dstr1Cd: String?,
+  @field: QueryParam("dstr2Cd") var dstr2Cd: String?,
+  @field: [QueryParam("bedStatCd") Separator(",")] var bedStatCd: List<String>?,
 )

@@ -4,6 +4,7 @@ import io.quarkus.cache.*
 import jakarta.enterprise.context.ApplicationScoped
 import jakarta.inject.Inject
 import jakarta.transaction.Transactional
+import jakarta.ws.rs.NotFoundException
 import jakarta.ws.rs.core.Response
 import org.eclipse.microprofile.config.inject.ConfigProperty
 import org.eclipse.microprofile.jwt.JsonWebToken
@@ -13,9 +14,11 @@ import org.sbas.constants.SbasConst
 import org.sbas.constants.enums.UserStatCd
 import org.sbas.dtos.PagingListDto
 import org.sbas.dtos.info.*
+import org.sbas.entities.info.InfoAlarm
 import org.sbas.entities.info.InfoCntc
 import org.sbas.entities.info.InfoCntcId
 import org.sbas.parameters.*
+import org.sbas.repositories.InfoAlarmRepository
 import org.sbas.repositories.InfoCntcRepository
 import org.sbas.repositories.InfoUserRepository
 import org.sbas.repositories.UserActivityHistoryRepository
@@ -25,8 +28,12 @@ import org.sbas.restclients.NaverSensRestClient
 import org.sbas.restdtos.NaverSmsMsgApiParams
 import org.sbas.restdtos.NaverSmsReqMsgs
 import org.sbas.utils.CustomizedException
+import org.sbas.utils.TimeUtil
 import org.sbas.utils.TokenUtils
 import java.security.MessageDigest
+import java.time.LocalDateTime
+import java.time.ZoneId
+import java.time.format.DateTimeFormatter
 
 
 @ApplicationScoped
@@ -43,6 +50,9 @@ class UserService {
 
   @Inject
   private lateinit var activityHistoryRepository: UserActivityHistoryRepository
+
+  @Inject
+  private lateinit var infoAlarmRepository: InfoAlarmRepository
 
   @RestClient
   private lateinit var naverSensClient: NaverSensRestClient
@@ -259,6 +269,21 @@ class UserService {
   }
 
   /**
+   * 비밀번호 변경
+   */
+  @Transactional
+  fun findPw(modifyPwRequest: ModifyPwRequest): CommonResponse<String?> {
+    val findUser = userRepository.findByUserId(modifyPwRequest.id)
+      ?: throw CustomizedException("등록된 ID가 없습니다.", Response.Status.NOT_FOUND)
+
+    findUser.pw = modifyPwRequest.modifyPw
+
+    userRepository.persist(findUser)
+
+    return CommonResponse("SUCCESS")
+  }
+
+  /**
    * 비밀번호 초기화
    */
   @Transactional
@@ -401,4 +426,46 @@ class UserService {
     val histories = activityHistoryRepository.findAllByUserId(userId)
     return CommonListResponse(histories, histories.size)
   }
+
+  /**
+   * 알림 목록 조회
+   */
+  fun getAlarmList(): CommonListResponse<InfoAlarmDto> {
+    val receiverId = jwt.name
+    val findAlarmList = infoAlarmRepository.findAllByReceiverId(receiverId)
+
+    val alarmDtoList = findAlarmList.map {
+      val findSender = userRepository.findByUserId(it.senderId)
+      val findReceiver = userRepository.findByUserId(it.receiverId)
+      val formattedDate = TimeUtil.formatInstant(it.rgstDttm)
+
+      InfoAlarmDto(
+        alarmId = it.alarmId,
+        title = it.title,
+        detail = it.detail,
+        senderId = it.senderId,
+        senderName = findSender?.userNm ?: "",
+        receiverId = it.receiverId,
+        receiverName = findReceiver?.userNm ?: "",
+        isRead = it.isRead,
+        rgstDttm = formattedDate,
+      )
+    }
+
+    return CommonListResponse(alarmDtoList)
+  }
+
+  fun getAlarmCount(): CommonResponse<Long> {
+    val receiverId = jwt.name ?: throw CustomizedException("jwt check", Response.Status.BAD_REQUEST)
+    val count = infoAlarmRepository.findUnreadAlarmsByReceiverId(receiverId)
+    return CommonResponse(count)
+  }
+
+  fun readAlarms(): CommonResponse<String> {
+    val receiverId = jwt.name
+    val updateCnt = infoAlarmRepository.readAlarmsByReceiverId(receiverId)
+
+    return CommonResponse("${updateCnt}개 알림 읽기 처리 완료")
+  }
+
 }

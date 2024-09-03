@@ -91,4 +91,12 @@ class PublicUserEndpoint {
     return Response.ok(userService.initPw(initPwRequest)).build()
   }
 
+  @Operation(summary = "비밀번호 재설정", description = "비밀번호 재설정 API")
+  @POST
+  @Path("find-pw")
+  @PermitAll
+  fun findPw(@Valid modifyPwRequest: ModifyPwRequest): Response {
+    return Response.ok(userService.findPw(modifyPwRequest)).build()
+  }
+
 }

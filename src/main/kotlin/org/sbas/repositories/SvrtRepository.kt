@@ -6,7 +6,7 @@ import jakarta.enterprise.context.ApplicationScoped
 import jakarta.inject.Inject
 import jakarta.persistence.EntityManager
 import org.sbas.dtos.SvrtPtSearchDto
-import org.sbas.dtos.info.InfoPtSearchParam
+import org.sbas.dtos.info.SvrtPtSearchParam
 import org.sbas.entities.svrt.*
 import org.sbas.utils.StringUtils
 
@@ -32,9 +32,9 @@ class SvrtPtRepository : PanacheRepositoryBase<SvrtPt, SvrtPtId> {
       .toList()
   }
 
-  fun findSvrtPtList(param: InfoPtSearchParam): List<SvrtPtSearchDto> {
+  fun findSvrtPtList(param: SvrtPtSearchParam): List<SvrtPtSearchDto> {
     val cond = searchCondition(param)
-    val query = "select new org.sbas.dtos.SvrtPtSearchDto(pt.ptId, br.id.bdasSeq, pt.ptNm, pt.gndr, pt.rrno1, " +
+    val query = "select new org.sbas.dtos.SvrtPtSearchDto(ip.pid, pt.ptId, br.id.bdasSeq, pt.ptNm, pt.gndr, pt.rrno1, " +
       "pt.dstr1Cd, fn_get_cd_nm('SIDO', pt.dstr1Cd), pt.dstr2Cd, fn_get_cd_nm('SIDO'||pt.dstr1Cd, pt.dstr2Cd), " +
       "bap.hospId, ih.dutyName, pt.mpno, pt.natiCd, pt.natiNm, sa.updtDttm, " +
       "br.ptTypeCd, br.svrtTypeCd, br.undrDsesCd, " +
@@ -57,7 +57,7 @@ class SvrtPtRepository : PanacheRepositoryBase<SvrtPt, SvrtPtId> {
       .setFirstResult(offset).resultList
   }
 
-  fun countSvrtPtList(param: InfoPtSearchParam): Long {
+  fun countSvrtPtList(param: SvrtPtSearchParam): Long {
     val cond = searchCondition(param)
     val query = "select count(pt.ptId) " +
       "from InfoPt pt " +
@@ -75,7 +75,7 @@ class SvrtPtRepository : PanacheRepositoryBase<SvrtPt, SvrtPtId> {
     return entityManager.createQuery(query).singleResult as Long
   }
 
-  private fun searchCondition(param: InfoPtSearchParam): String {
+  private fun searchCondition(param: SvrtPtSearchParam): String {
     var cond = param.ptNm?.run { " and (pt.ptNm like '%$this%' " } ?: "and (1=1"
     cond += param.rrno1?.run { " or pt.rrno1 like '%$this%' " } ?: ""
     cond += param.mpno?.run { " or pt.mpno like '%$this%') " } ?: ") "

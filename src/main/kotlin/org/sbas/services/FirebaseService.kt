@@ -17,8 +17,10 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.runBlocking
 import org.eclipse.microprofile.config.inject.ConfigProperty
 import org.jboss.logging.Logger
+import org.sbas.entities.info.InfoAlarm
 import org.sbas.entities.info.InfoUser
 import org.sbas.entities.info.UserFcmToken
+import org.sbas.repositories.InfoAlarmRepository
 import org.sbas.repositories.InfoUserRepository
 import org.sbas.repositories.UserFcmTokenRepository
 import org.sbas.responses.CommonResponse
@@ -40,6 +42,9 @@ class FirebaseService {
 
   @Inject
   private lateinit var userFcmTokenRepository: UserFcmTokenRepository
+
+  @Inject
+  private lateinit var infoAlarmRepository: InfoAlarmRepository
 
   /*
   fun getApp(): FirebaseApp {
@@ -103,6 +108,24 @@ class FirebaseService {
 
     val pushKeys: List<UserFcmToken> = userFcmTokenRepository.findAllByUserId(userId)
     val tokens = pushKeys.map { it.reregistrationToken }
+
+    //메시지 알림
+    pushKeys.forEach {
+      val detail = if(body != null && body.length > 20) {
+        body.substring(0, 20) + "..."
+      }else {
+        body ?: ""
+      }
+      val saveAlarm = InfoAlarm(
+        title = "${userId}님으로 부터 온 메시지",
+        detail = detail,
+        senderId = userId,
+        receiverId = it.userId,
+        isRead = false,
+      )
+
+      infoAlarmRepository.persist(saveAlarm)
+    }
 
     val notification = Notification.builder()
       .setTitle(title)

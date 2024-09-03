@@ -1,9 +1,7 @@
 package org.sbas.utils
 
 import java.nio.ByteBuffer
-import java.time.LocalDate
-import java.time.LocalDateTime
-import java.time.ZoneOffset
+import java.time.*
 import java.time.format.DateTimeFormatter
 
 class TimeUtil {
@@ -72,6 +70,12 @@ class TimeUtil {
 
     fun dateTimeStr2LocalDateTime(dateTimeStr: String): LocalDateTime {
       return LocalDateTime.parse(dateTimeStr, FORMAT_LDT_TO_SEC)
+    }
+
+    fun formatInstant(instant: Instant): String {
+      val formatter = DateTimeFormatter.ofPattern("yyyy년 MM월 dd일 HH:mm:ss")
+      val dateTime = LocalDateTime.ofInstant(instant, ZoneId.systemDefault())
+      return dateTime.format(formatter)
     }
 
   }

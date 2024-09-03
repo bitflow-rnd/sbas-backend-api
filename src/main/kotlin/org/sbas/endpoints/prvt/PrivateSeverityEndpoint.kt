@@ -8,7 +8,7 @@ import jakarta.ws.rs.core.Response
 import org.eclipse.microprofile.openapi.annotations.Operation
 import org.eclipse.microprofile.openapi.annotations.tags.Tag
 import org.jboss.resteasy.reactive.RestPath
-import org.sbas.dtos.info.InfoPtSearchParam
+import org.sbas.dtos.info.SvrtPtSearchParam
 import org.sbas.responses.CommonResponse
 import org.sbas.services.SvrtService
 
@@ -44,7 +44,7 @@ class PrivateSeverityEndpoint {
   @Operation(summary = "환자 중증정보 목록 조회", description = "")
   @GET
   @Path("list")
-  fun svrtPtList(param: InfoPtSearchParam): Response {
+  fun svrtPtList(param: SvrtPtSearchParam): Response {
     return Response.ok(svrtService.findSvrtPtList(param)).build()
   }
 
