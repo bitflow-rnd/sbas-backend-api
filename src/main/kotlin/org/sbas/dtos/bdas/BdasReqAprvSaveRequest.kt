@@ -96,23 +96,19 @@ data class AvalHospListResponse(
   var medicalTeamCount: MedicalTeamCount?,
 ) {
     val tagList: MutableList<String>
-        get() {
-            val list = mutableListOf<String>()
-            if (gnbdIcu >= 1) {
-                list.add("중환자")
-            }
-            if (npidIcu >= 1) {
-                list.add("음압격리")
-            }
-            if (gnbdSvrt >= 1) {
-                list.add("중증")
-            }
-            if (gnbdSmsv >= 1) {
-                list.add("준중증")
-            }
-            if (gnbdModr >= 1) {
-                list.add("중등증")
-            }
-            return list
+      get() = mutableListOf<String>().apply {
+        if (gnbdIcu >= 1) add("중환자")
+        if (npidIcu >= 1) add("음압격리")
+        if (gnbdSvrt >= 1) add("중증")
+        if (gnbdSmsv >= 1) add("준중증")
+        if (gnbdModr >= 1) add("중등증")
+        facilityStatus?.let {
+          if (it.childBirthYn) add("분만")
+          if (it.dialysisYn) add("투석")
+          if (it.childYn) add("소아")
+          if (it.nursingHospitalYn) add("요양병원")
+          if (it.mentalPatientYn) add("정신질환자")
+          if (it.negativePressureRoomYn) add("음압수술실")
         }
+      }
 }
