@@ -137,7 +137,7 @@ class FirebaseService {
       .addAllTokens(tokens)
       .build()
 
-    val response = FirebaseMessaging.getInstance().sendMulticast(message)
+    val response = FirebaseMessaging.getInstance().sendEachForMulticast(message)
 
     response.responses.forEachIndexed { index, sendResponse ->
       if (!sendResponse.isSuccessful) {
@@ -161,7 +161,7 @@ class FirebaseService {
       .addAllTokens(tokens)
       .build()
 
-    val response = FirebaseMessaging.getInstance().sendMulticast(message)
+    val response = FirebaseMessaging.getInstance().sendEachForMulticast(message)
 
     response.responses.forEachIndexed { index, sendResponse ->
       if (!sendResponse.isSuccessful) {

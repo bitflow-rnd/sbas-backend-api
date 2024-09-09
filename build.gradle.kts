@@ -50,7 +50,7 @@ dependencies {
   implementation("io.quarkus:quarkus-smallrye-reactive-messaging")
 
   implementation("com.fasterxml.jackson.module:jackson-module-kotlin:2.14.3")
-  implementation("com.google.firebase:firebase-admin:9.1.1")
+  implementation("com.google.firebase:firebase-admin:9.2.0")
   implementation("com.google.code.gson:gson:2.10.1")
 
   implementation("com.linecorp.kotlin-jdsl:hibernate-support:3.4.1")
