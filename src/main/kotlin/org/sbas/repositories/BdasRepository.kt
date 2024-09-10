@@ -121,25 +121,6 @@ class BdasReqRepository : PanacheRepositoryBase<BdasReq, BdasReqId> {
     return Pair(cond, offset)
   }
 
-  fun findChrgInst(bedStatCd: String, ptId: String, bdasSeq: Int): String {
-    val subQuery = when (bedStatCd) {
-      "BAST0003" -> "SELECT a.rgstUserId FROM BdasReq a WHERE a.id.ptId = '$ptId' AND a.id.bdasSeq = $bdasSeq"
-      "BAST0004" -> "SELECT a.updtUserId FROM BdasReqAprv a WHERE a.id.ptId = '$ptId' AND a.id.bdasSeq = $bdasSeq AND a.id.asgnReqSeq = 1"
-      "BAST0005" -> "SELECT a.updtUserId FROM BdasAprv a WHERE a.id.ptId = '$ptId' AND a.id.bdasSeq = $bdasSeq AND a.aprvYn = 'Y'"
-      "BAST0006" -> "SELECT a.updtUserId FROM BdasTrns a WHERE a.id.ptId = '$ptId' AND a.id.bdasSeq = $bdasSeq"
-      "BAST0007", "BAST0008" -> "SELECT a.updtUserId FROM BdasAdms a WHERE a.id.ptId = '$ptId' AND a.id.bdasSeq = $bdasSeq"
-      else -> "''"
-    }
-
-    return try {
-      val query = "SELECT iu.instNm from InfoUser iu where iu.id in ($subQuery)"
-      entityManager.createQuery(query).singleResult as String
-    } catch (ex: jakarta.persistence.NoResultException) {
-      // 예외 처리: 결과가 없을 때 빈 문자열을 반환
-      ""
-    }
-  }
-
   fun findSuspendTimeLineInfo(ptId: String, bdasSeq: Int): MutableList<BdasReqAprvSuspendTimeLine> {
     val query =
       "select new org.sbas.dtos.bdas.BdasReqAprvSuspendTimeLine(" +
@@ -164,15 +145,14 @@ class BdasReqRepository : PanacheRepositoryBase<BdasReq, BdasReqId> {
         "where br.id.ptId = '$ptId' and br.id.bdasSeq = $bdasSeq"
     return entityManager.createQuery(query, CompleteTimeLine::class.java).resultList
   }
+
+  fun findBdasReqInPeriod(from: Instant, to: Instant): List<BdasReq> {
+    return find("rgstDttm between ?1 and ?2", from, to).list()
+  }
 }
 
 @ApplicationScoped
 class BdasReqAprvRepository : PanacheRepositoryBase<BdasReqAprv, BdasReqAprvId> {
-
-  fun save(bdasReqAprv: BdasReqAprv): BdasReqAprv {
-    persistAndFlush(bdasReqAprv)
-    return bdasReqAprv
-  }
 
   fun findTimeLineInfo(ptId: String, bdasSeq: Int): MutableList<CompleteTimeLine> {
     val query =
