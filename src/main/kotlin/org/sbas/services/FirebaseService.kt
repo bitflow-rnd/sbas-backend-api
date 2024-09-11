@@ -16,6 +16,7 @@ import jakarta.ws.rs.NotFoundException
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.runBlocking
 import org.eclipse.microprofile.config.inject.ConfigProperty
+import org.eclipse.microprofile.jwt.JsonWebToken
 import org.jboss.logging.Logger
 import org.sbas.entities.info.InfoAlarm
 import org.sbas.entities.info.InfoUser
@@ -46,6 +47,8 @@ class FirebaseService {
   @Inject
   private lateinit var infoAlarmRepository: InfoAlarmRepository
 
+  @Inject
+  private lateinit var jwt: JsonWebToken
   /*
   fun getApp(): FirebaseApp {
       if (FirebaseApp.getApps().isEmpty()) {
@@ -105,7 +108,7 @@ class FirebaseService {
   }
 
   fun sendMessageMultiDevice(title: String, body: String?, userId: String) {
-
+    val senderUserId = jwt.name
     val pushKeys: List<UserFcmToken> = userFcmTokenRepository.findAllByUserId(userId)
     val tokens = pushKeys.map { it.reregistrationToken }
 
@@ -117,9 +120,9 @@ class FirebaseService {
         body ?: ""
       }
       val saveAlarm = InfoAlarm(
-        title = "${userId}님으로 부터 온 메시지",
+        title = "${senderUserId}님으로 부터 온 메시지",
         detail = detail,
-        senderId = userId,
+        senderId = senderUserId,
         receiverId = it.userId,
         isRead = false,
       )
@@ -147,9 +150,27 @@ class FirebaseService {
   }
 
   fun sendMessageMultiDeviceV2(title: String, body: String?, userIdList: List<String>) {
+    val senderUserId = jwt.name
     val pushKeys: List<UserFcmToken> = userFcmTokenRepository.findAllByUserIdList(userIdList)
-
     val tokens = pushKeys.map { it.reregistrationToken }
+
+    //메시지 알림
+    pushKeys.forEach {
+      val detail = if(body != null && body.length > 20) {
+        body.substring(0, 20) + "..."
+      }else {
+        body ?: ""
+      }
+      val saveAlarm = InfoAlarm(
+        title = "${senderUserId}님으로 부터 온 메시지",
+        detail = detail,
+        senderId = senderUserId,
+        receiverId = it.userId,
+        isRead = false,
+      )
+
+      infoAlarmRepository.persist(saveAlarm)
+    }
 
     val notification = Notification.builder()
       .setTitle(title)
