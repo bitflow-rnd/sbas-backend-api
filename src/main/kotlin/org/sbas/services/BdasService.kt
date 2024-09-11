@@ -35,7 +35,7 @@ import kotlin.math.sin
  * 병상배정 관련 서비스 클래스
  */
 @ApplicationScoped
-class BedAssignService {
+class BdasService {
   @Inject
   private lateinit var log: Logger
 

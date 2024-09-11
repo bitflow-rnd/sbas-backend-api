@@ -21,7 +21,7 @@ import org.sbas.dtos.info.InfoPtCheckRequest
 import org.sbas.dtos.info.InfoPtDto
 import org.sbas.dtos.info.InfoPtSearchParam
 import org.sbas.parameters.NewsScoreParameters
-import org.sbas.services.BedAssignService
+import org.sbas.services.BdasService
 import org.sbas.services.PatientService
 
 
@@ -36,7 +36,7 @@ class PrivatePatientEndpoint {
     lateinit var patientService: PatientService
 
     @Inject
-    lateinit var bedAssignService: BedAssignService
+    lateinit var bdasService: BdasService
 
     @Operation(summary = "역학조사서 업로드/업데이트", description = "")
     @POST
@@ -100,14 +100,14 @@ class PrivatePatientEndpoint {
     @GET
     @Path("timeline/{ptId}/{bdasSeq}")
     fun timeline(@RestPath ptId: String, @RestPath bdasSeq: Int): Response {
-        return Response.ok(bedAssignService.getTimeLine(ptId, bdasSeq)).build()
+        return Response.ok(bdasService.getTimeLine(ptId, bdasSeq)).build()
     }
 
     @Operation(summary = "차수별 질병(감염병) 정보 조회", description = "")
     @GET
     @Path("disease-info/{ptId}")
     fun getDiseaseInfo(@RestPath ptId: String): Response? {
-        return Response.ok(bedAssignService.getDiseaseInfo(ptId)).build()
+        return Response.ok(bdasService.getDiseaseInfo(ptId)).build()
     }
 
     @Operation(summary = "차수별 중증정보 조회", description = "")
@@ -121,14 +121,14 @@ class PrivatePatientEndpoint {
     @GET
     @Path("transinfo/{ptId}/{bdasSeq}")
     fun transInfo(@RestPath ptId: String, @RestPath bdasSeq: Int): Response {
-        return Response.ok(bedAssignService.findTransInfo(ptId, bdasSeq)).build()
+        return Response.ok(bdasService.findTransInfo(ptId, bdasSeq)).build()
     }
 
     @Operation(summary = "질병(감염병) 정보 등록", description = "")
     @POST
     @Path("regdisesinfo")
     fun regdisesinfo(bdasEsvySaveRequest: BdasEsvySaveRequest): Response? {
-        return Response.ok(bedAssignService.regDisesInfo(bdasEsvySaveRequest)).build()
+        return Response.ok(bdasService.regDisesInfo(bdasEsvySaveRequest)).build()
     }
 
     @Operation(summary = "생체정보입력 분석", description = "생체정보 입력 시 경북대학교 로직(NEWS Score)에 따른 중증분류 값 리턴")
@@ -143,7 +143,7 @@ class PrivatePatientEndpoint {
     @Path("bedassignreq")
     fun bedassignreq(@Valid bdasReqSaveRequest: BdasReqSaveRequest): Response? {
         log.debug("bedassignreq >>> $bdasReqSaveRequest")
-        val res = bedAssignService.registerBedRequestInfo(bdasReqSaveRequest)
+        val res = bdasService.registerBedRequestInfo(bdasReqSaveRequest)
         return Response.ok(res).build()
     }
 

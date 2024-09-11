@@ -12,7 +12,7 @@ import org.eclipse.microprofile.openapi.annotations.tags.Tag
 import org.jboss.logging.Logger
 import org.jboss.resteasy.reactive.RestPath
 import org.sbas.dtos.bdas.*
-import org.sbas.services.BedAssignService
+import org.sbas.services.BdasService
 
 @Tag(name = "병상배정 업무처리(사용자 권한용)", description = "로그인 된 사용자(세부권한별 분기) - 병상배정현황 조회 및 처리 등")
 @Path("v1/private/bedasgn")
@@ -22,14 +22,14 @@ class PrivateBedAssignEndpoint {
   lateinit var log: Logger
 
   @Inject
-  lateinit var bedAssignService: BedAssignService
+  lateinit var bdasService: BdasService
 
   @Operation(summary = "병상승인/불가 (병상배정반)", description = "")
   @POST
   @Path("reqconfirm")
   fun reqconfirm(@Valid bdasReqAprvSaveRequest: BdasReqAprvSaveRequest): Response {
     log.debug("PrivateBedAssignEndpoint reqconfirm >>> $bdasReqAprvSaveRequest")
-    return Response.ok(bedAssignService.reqConfirm(bdasReqAprvSaveRequest)).build()
+    return Response.ok(bdasService.reqConfirm(bdasReqAprvSaveRequest)).build()
   }
 
   @Operation(summary = "가용 병원 목록 조회", description = "")
@@ -40,7 +40,7 @@ class PrivateBedAssignEndpoint {
     @BeanParam avalHospListRequest: AvalHospListRequest,
   ): Response {
     log.debug("PrivateBedAssignEndpoint getHospList >>> $ptId, $bdasSeq, $avalHospListRequest")
-    return Response.ok(bedAssignService.getAvalHospList(ptId, bdasSeq, avalHospListRequest)).build()
+    return Response.ok(bdasService.getAvalHospList(ptId, bdasSeq, avalHospListRequest)).build()
   }
 
   @Operation(summary = "배정승인/불가 (의료진)", description = "")
@@ -48,7 +48,7 @@ class PrivateBedAssignEndpoint {
   @Path("asgnconfirm")
   fun asgnconfirm(@Valid bdasAprvSaveRequest: BdasAprvSaveRequest): Response {
     log.debug("PrivateBedAssignEndpoint asgnconfirm >>> $bdasAprvSaveRequest")
-    return Response.ok(bedAssignService.asgnConfirm(bdasAprvSaveRequest)).build()
+    return Response.ok(bdasService.asgnConfirm(bdasAprvSaveRequest)).build()
   }
 
   @Operation(summary = "이송/배차 처리 (+구급대, 구급대원 및 차량번호 등록)", description = "")
@@ -56,7 +56,7 @@ class PrivateBedAssignEndpoint {
   @Path("confirmtransf")
   fun confirmtransf(@Valid bdasTrnsSaveRequest: BdasTrnsSaveRequest): Response {
     log.debug("PrivateBedAssignEndpoint confirmtransf >>> $bdasTrnsSaveRequest")
-    return Response.ok(bedAssignService.confirmTrans(bdasTrnsSaveRequest)).build()
+    return Response.ok(bdasService.confirmTrans(bdasTrnsSaveRequest)).build()
   }
 
   @Operation(summary = "입/퇴원/재택회송 처리", description = "")
@@ -64,14 +64,14 @@ class PrivateBedAssignEndpoint {
   @Path("confirmhosptlzdiscg")
   fun confirmhosptlzdiscg(@Valid bdasAdmsSaveRequest: BdasAdmsSaveRequest): Response {
     log.debug("PrivateBedAssignEndpoint confirmhosptlzdiscg >>> $bdasAdmsSaveRequest")
-    return Response.ok(bedAssignService.confirmHosp(bdasAdmsSaveRequest)).build()
+    return Response.ok(bdasService.confirmHosp(bdasAdmsSaveRequest)).build()
   }
 
   @Operation(summary = "병상배정 목록 (상태별)", description = "")
   @GET
   @Path("list")
   fun list(@BeanParam param: BdasListSearchParam): Response {
-    return Response.ok(bedAssignService.findBedAsgnList(param)).build()
+    return Response.ok(bdasService.findBedAsgnList(param)).build()
   }
 
   @Operation(summary = "병상배정 목록(웹)", description = "")
@@ -79,7 +79,7 @@ class PrivateBedAssignEndpoint {
   @Path("list-web")
   fun listForWeb(@BeanParam param: BdasListSearchParam): Response? {
     try {
-      return Response.ok(bedAssignService.findBedAsgnListForWeb(param)).build()
+      return Response.ok(bdasService.findBedAsgnListForWeb(param)).build()
     } catch(e: Exception) {
       e.printStackTrace()
     }
@@ -90,12 +90,12 @@ class PrivateBedAssignEndpoint {
   @GET
   @Path("bedstat-count")
   fun countBedStat(@BeanParam param: BdasListSearchParam): Response {
-    return Response.ok(bedAssignService.countBedStatCd(param)).build()
+    return Response.ok(bdasService.countBedStatCd(param)).build()
   }
 
   @GET
   @Path("remove/{ptId}/{step}")
   fun remove(@RestPath ptId: String?, @RestPath step: Int?): Response {
-    return Response.ok(bedAssignService.removeData(ptId, step)).build()
+    return Response.ok(bdasService.removeData(ptId, step)).build()
   }
 }
