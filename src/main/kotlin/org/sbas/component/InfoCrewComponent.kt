@@ -2,6 +2,7 @@ package org.sbas.component
 
 import jakarta.enterprise.context.ApplicationScoped
 import org.sbas.dtos.info.InfoCrewSaveReq
+import org.sbas.entities.info.InfoCrew
 import org.sbas.repositories.InfoCrewRepository
 import org.sbas.repositories.InfoInstRepository
 
@@ -11,7 +12,7 @@ class InfoCrewComponent(
     private val infoInstRepository: InfoInstRepository,
 ) {
 
-    fun saveInfoCrew(list: List<InfoCrewSaveReq?>, instId: String) {
+    fun saveInfoCrew(list: List<InfoCrewSaveReq?>, instId: String): List<InfoCrew> {
         val latestCrewId = infoCrewRepository.findLatestCrewId(instId)
 
         val infoCrews = list.filterNotNull().mapIndexed { idx, it ->
@@ -21,6 +22,7 @@ class InfoCrewComponent(
         infoCrews.forEach {
             infoCrewRepository.persist(it)
         }
+        return infoCrews
     }
 
     fun saveVehicleInfo(instId: String, vecno: String?) {
