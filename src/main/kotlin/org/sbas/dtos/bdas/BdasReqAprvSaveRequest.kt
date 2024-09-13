@@ -92,8 +92,8 @@ data class AvalHospListResponse(
   val mri: String?,
   val bloodVesselImaging: String?,
   val bodyTemperatureControl: String?,
-  var facilityStatus: FacilityStatus?,
-  var medicalTeamCount: MedicalTeamCount?,
+  var facilityStatus: FacilityStatus,
+  var medicalTeamCount: MedicalTeamCount,
 ) {
     val tagList: MutableList<String>
       get() = mutableListOf<String>().apply {
@@ -102,12 +102,12 @@ data class AvalHospListResponse(
         if (gnbdSvrt >= 1) add("중증")
         if (gnbdSmsv >= 1) add("준중증")
         if (gnbdModr >= 1) add("중등증")
-        facilityStatus?.let {
-          if (it.childBirthYn) add("분만")
-          if (it.dialysisYn) add("투석")
-          if (it.childYn) add("소아")
-          if (it.nursingHospitalYn) add("요양병원")
-          if (it.mentalPatientYn) add("정신질환자")
+        facilityStatus.let {
+          if (it.childBirthYn && medicalTeamCount.childBirthMed > 0) add("분만")
+          if (it.dialysisYn && medicalTeamCount.dialysisMed > 0) add("투석")
+          if (it.childYn && medicalTeamCount.childMed > 0) add("소아")
+          if (it.nursingHospitalYn && medicalTeamCount.nursingHospitalMed > 0) add("요양병원")
+          if (it.mentalPatientYn && medicalTeamCount.mentalPatientMed > 0) add("정신질환자")
           if (it.negativePressureRoomYn) add("음압수술실")
         }
       }

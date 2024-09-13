@@ -35,7 +35,7 @@ import kotlin.math.sin
  * 병상배정 관련 서비스 클래스
  */
 @ApplicationScoped
-class BedAssignService {
+class BdasService {
   @Inject
   private lateinit var log: Logger
 
@@ -387,9 +387,9 @@ class BedAssignService {
     if (bdasAprvList.isEmpty()) {
       throw CustomizedException("의료진 승인 정보가 없습니다.", Response.Status.BAD_REQUEST)
     }
-    bdasTrnsRepository.persist(saveRequest.toEntity())
 
-    infoCrewComponent.saveInfoCrew(saveRequest.toInfoCrewSaveReqList(), saveRequest.instId)
+    val saveInfoCrewList = infoCrewComponent.saveInfoCrew(saveRequest.toInfoCrewSaveReqList(), saveRequest.instId)
+    bdasTrnsRepository.persist(saveRequest.toEntity(saveInfoCrewList.sortedBy { it.id.crewId }))
     infoCrewComponent.saveVehicleInfo(saveRequest.instId, saveRequest.vecno)
 
     findBdasReq.changeBedStatTo(BedStatCd.BAST0006.name)

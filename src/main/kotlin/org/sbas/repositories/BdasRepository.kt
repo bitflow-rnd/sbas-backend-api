@@ -203,12 +203,10 @@ class BdasAprvRepository : PanacheRepositoryBase<BdasAprv, BdasAprvId> {
         "order by ba.aprvYn "
 
     val query2 = "select new org.sbas.dtos.bdas.BdasAprvSuspendTimeLine('배정대기', " +
-      "bra.reqHospNm || ' / ' || iu.userNm, '${TimeLineStatCd.SUSPEND.cdNm}', " +
-      "bra.reqHospId, bra.reqHospNm, iu.id, bra.id.asgnReqSeq) " +
+      "bra.reqHospNm, '${TimeLineStatCd.SUSPEND.cdNm}', " +
+      "bra.reqHospId, bra.reqHospNm, '', bra.id.asgnReqSeq) " +
       "from BdasReqAprv bra " +
-      "inner join InfoUser iu on iu.instId = bra.reqHospId " +
       "where bra.id.ptId = '$ptId' and bra.id.bdasSeq = $bdasSeq and bra.id.asgnReqSeq in (${subQuery}) " +
-      "and iu.jobCd = 'PMGR0003' " +
       "order by bra.id.asgnReqSeq "
 
     val resultList: MutableList<TimeLine> = emptyList<TimeLine>().toMutableList()
