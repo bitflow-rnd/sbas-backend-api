@@ -60,7 +60,7 @@ data class BdasTrnsSaveRequest(
   }
 
   fun toInfoCrewSaveReqList(): List<InfoCrewSaveReq?> {
-    val infoCrew1 = crew1Nm?.let {
+    val infoCrew1 = if (!crew1Nm.isNullOrBlank()) {
       InfoCrewSaveReq(
         instId = instId,
         crewNm = crew1Nm,
@@ -68,8 +68,9 @@ data class BdasTrnsSaveRequest(
         rmk = null,
         pstn = crew1Pstn
       )
-    }
-    val infoCrew2 = crew2Nm?.let {
+    } else null
+
+    val infoCrew2 = if (!crew2Nm.isNullOrBlank()) {
       InfoCrewSaveReq(
         instId = instId,
         crewNm = crew2Nm,
@@ -77,8 +78,8 @@ data class BdasTrnsSaveRequest(
         rmk = null,
         pstn = crew2Pstn,
       )
-    }
-    val infoCrew3 = crew3Nm?.let {
+    } else null
+    val infoCrew3 = if (!crew3Nm.isNullOrBlank()) {
       InfoCrewSaveReq(
         instId = instId,
         crewNm = crew3Nm,
@@ -86,7 +87,7 @@ data class BdasTrnsSaveRequest(
         rmk = null,
         pstn = crew3Pstn,
       )
-    }
+    } else null
     return listOf(infoCrew1, infoCrew2, infoCrew3)
   }
 }
