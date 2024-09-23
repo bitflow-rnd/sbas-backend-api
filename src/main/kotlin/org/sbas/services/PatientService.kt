@@ -221,6 +221,13 @@ class PatientService {
   }
 
   @Transactional
+  fun findInfoPtListMobile(param: InfoPtSearchParam): CommonResponse<*> {
+    val list = infoPtRepository.findInfoPtListMobile(param)
+    val count = infoPtRepository.countInfoPtList(param)
+    return CommonListResponse(list, count.toInt())
+  }
+
+  @Transactional
   fun findHospNmList(param: InfoPtSearchParam): CommonResponse<*> {
     val list = infoPtRepository.findHospNmList(param).filterNotNull()
     return CommonListResponse(list)
