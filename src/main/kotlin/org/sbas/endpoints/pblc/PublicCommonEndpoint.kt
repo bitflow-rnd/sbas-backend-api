@@ -2,10 +2,7 @@ package org.sbas.endpoints.pblc
 
 import jakarta.annotation.security.PermitAll
 import jakarta.inject.Inject
-import jakarta.ws.rs.GET
-import jakarta.ws.rs.POST
-import jakarta.ws.rs.Path
-import jakarta.ws.rs.Produces
+import jakarta.ws.rs.*
 import jakarta.ws.rs.core.MediaType
 import jakarta.ws.rs.core.Response
 import jakarta.ws.rs.core.SecurityContext
@@ -126,7 +123,7 @@ class PublicCommonEndpoint {
     @Operation(summary = "공지사항 목록", description = "공지사항 목록 API")
     @GET
     @Path("notice")
-    fun getNoticeList(noticeListReq: NoticeListReq): Response {
+    fun getNoticeList(@BeanParam noticeListReq: NoticeListReq): Response {
         return Response.ok(commonService.getNoticeList(noticeListReq)).build()
     }
 
