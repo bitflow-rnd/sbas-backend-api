@@ -89,6 +89,13 @@ class PrivatePatientEndpoint {
     return Response.ok(patientService.findBasicInfo(ptId)).build()
   }
 
+  @Operation(summary = "환자 질병정보 조회", description = "")
+  @GET
+  @Path("esvyinfo/{ptId}")
+  fun esvyInfo(@RestPath ptId: String): Response {
+    return Response.ok(patientService.findEsvyInfo(ptId)).build()
+  }
+
   @Operation(summary = "병상배정 이력 목록 조회", description = "")
   @GET
   @Path("bdasHisinfos/{ptId}")

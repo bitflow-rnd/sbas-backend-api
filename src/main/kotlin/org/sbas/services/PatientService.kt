@@ -13,6 +13,7 @@ import org.sbas.constants.SbasConst
 import org.sbas.constants.enums.BedStatCd
 import org.sbas.constants.enums.SvrtTypeCd
 import org.sbas.dtos.info.*
+import org.sbas.entities.bdas.BdasEsvy
 import org.sbas.entities.bdas.BdasReqId
 import org.sbas.entities.info.InfoHosp
 import org.sbas.entities.info.InfoPt
@@ -201,6 +202,11 @@ class PatientService {
     )
 
     return CommonResponse(infoPtBasicInfo)
+  }
+
+  fun findEsvyInfo(ptId: String): CommonResponse<out BdasEsvy?> {
+    val bdasEsvy = bdasEsvyRepository.findByPtIdWithLatestBdasSeq(ptId) ?: return CommonResponse(null)
+    return CommonResponse(bdasEsvy)
   }
 
   @Transactional

@@ -123,7 +123,7 @@ class BdasService {
     val bdasReqDprtInfo = saveRequest.dprtInfo
 
     // bdasEsvy 에서 bdasSeq 가져오기
-    val bdasEsvy = bdasEsvyRepository.findByPtIdWithLatestBdasSeq(ptId)
+    val bdasEsvy = bdasEsvyRepository.findByPtIdWithLatestBdasSeq(ptId) ?: throw NotFoundException("해당 환자의 질병정보를 찾을 수 없습니다.")
     val bdasReqId = BdasReqId(ptId, bdasEsvy.bdasSeq)
 
     // 출발지 위도, 경도 설정
@@ -574,7 +574,7 @@ class BdasService {
 
   @Transactional
   fun getDiseaseInfo(ptId: String): CommonResponse<*> {
-    val bdasEsvy = bdasEsvyRepository.findByPtIdWithLatestBdasSeq(ptId)
+    val bdasEsvy = bdasEsvyRepository.findByPtIdWithLatestBdasSeq(ptId) ?: throw NotFoundException("해당 환자의 질병정보를 찾을 수 없습니다.")
     val findReq =
       bdasReqRepository.findByPtIdWithLatestBdasSeq(ptId) ?: throw NotFoundException("$ptId request not found")
 
