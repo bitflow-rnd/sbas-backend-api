@@ -72,6 +72,7 @@ class TalkUserRepository : PanacheRepositoryBase<TalkUser, TalkUserId> {
     val regTalkUserIdSelf = TalkUserId(tkrmId = talkRoom.tkrmId, userId = regGroupTalkRoomDto.id)
     val regTalkUserSelf = TalkUser(
       id = regTalkUserIdSelf,
+      tkrmNm = regGroupTalkRoomDto.tkrmNm,
       hostYn = "Y",
       joinDt = talkRoom.cretDt,
       joinTm = talkRoom.cretTm,
@@ -231,16 +232,9 @@ class TalkRoomRepository : PanacheRepositoryBase<TalkRoom, String> {
     val talkRoom = findTalkRoomByTkrmId(tkrmId)
     return talkRoom?.let {
       val talkMsg = runBlocking { talkMsgRepository.findRecentlyMsg(tkrmId) }
-      var tkrmNm = it.tkrmNm
+      val tkrmNm = talkUserRepository.findTalkRoomNameById(tkrmId, userId)
 
       log.warn("userId : $userId")
-
-      val count = talkUserRepository.countByTkrmId(it.tkrmId)
-      if (count == 2 && it.tkrmNm == "") {
-        val otherUserId = talkUserRepository.findOtherUsersByTkrmId(it.tkrmId, userId)[0].id?.userId!!
-        val otherUserNm = infoUserRepository.findByUserId(otherUserId)?.userNm
-        tkrmNm = otherUserNm
-      }
 
       if (talkMsg != null) {
         TalkRoomResponse(tkrmId, tkrmNm, talkMsg.msg, talkMsg.rgstDttm)

@@ -23,7 +23,6 @@ data class RegTalkRoomDto(
     fun toEntity(tkrmId: String): TalkRoom{
         return TalkRoom(
             tkrmId = tkrmId,
-            tkrmNm = userNm,
             cretDt = StringUtils.getYyyyMmDd(),
             cretTm = StringUtils.getHhMmSs(),
             cretUserId = id,
@@ -39,7 +38,6 @@ data class RegGroupTalkRoomDto(
     fun toEntity(tkrmId: String): TalkRoom {
         return TalkRoom(
             tkrmId = tkrmId,
-            tkrmNm = tkrmNm,
             cretDt = StringUtils.getYyyyMmDd(),
             cretTm = StringUtils.getHhMmSs(),
             cretUserId = id,
