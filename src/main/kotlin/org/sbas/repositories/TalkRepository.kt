@@ -16,35 +16,35 @@ import java.time.Instant
 @ApplicationScoped
 class TalkUserRepository : PanacheRepositoryBase<TalkUser, TalkUserId> {
 
-    @Transactional
-    fun deleteTkrmByUserId(tkrmId: String, userId: String) {
-        runBlocking {
-            val deleteId = TalkUserId(tkrmId, userId)
-            deleteById(deleteId)
-        }
+  @Transactional
+  fun deleteTkrmByUserId(tkrmId: String, userId: String) {
+    runBlocking {
+      val deleteId = TalkUserId(tkrmId, userId)
+      deleteById(deleteId)
     }
+  }
 
-    @Transactional
-    fun findUsersByTkrmId(tkrmId: String): List<TalkUser> {
-        val result = runBlocking {
-            find("select tu from TalkUser tu where tu.id.tkrmId = '$tkrmId'").list()
-        }
-        return result
+  @Transactional
+  fun findUsersByTkrmId(tkrmId: String): List<TalkUser> {
+    val result = runBlocking {
+      find("select tu from TalkUser tu where tu.id.tkrmId = '$tkrmId'").list()
     }
+    return result
+  }
 
-    @Transactional
-    fun findOtherUsersByTkrmId(tkrmId: String, userId: String): List<TalkUser> {
-        val result = runBlocking {
-            find("select tu from TalkUser tu where tu.id.tkrmId = '$tkrmId' and tu.id.userId != '$userId'").list()
-        }
-        return result
+  @Transactional
+  fun findOtherUsersByTkrmId(tkrmId: String, userId: String): List<TalkUser> {
+    val result = runBlocking {
+      find("select tu from TalkUser tu where tu.id.tkrmId = '$tkrmId' and tu.id.userId != '$userId'").list()
     }
+    return result
+  }
 
-    /**
-     * 개인톡방 tkrmId 찾기
-     */
-    fun findTkrmIdByUserId(regTalkRoomDto: RegTalkRoomDto): String? {
-        val query = """
+  /**
+   * 개인톡방 tkrmId 찾기
+   */
+  fun findTkrmIdByUserId(regTalkRoomDto: RegTalkRoomDto): String? {
+    val query = """
             select
                 distinct t1
             from
@@ -65,192 +65,192 @@ class TalkUserRepository : PanacheRepositoryBase<TalkUser, TalkUserId> {
             )
             """.trimIndent()
 
-        return find(query).firstResult()?.id?.tkrmId
+    return find(query).firstResult()?.id?.tkrmId
+  }
+
+  fun persistTalkUsers(regGroupTalkRoomDto: RegGroupTalkRoomDto, talkRoom: TalkRoom) {
+    val regTalkUserIdSelf = TalkUserId(tkrmId = talkRoom.tkrmId, userId = regGroupTalkRoomDto.id)
+    val regTalkUserSelf = TalkUser(
+      id = regTalkUserIdSelf,
+      hostYn = "Y",
+      joinDt = talkRoom.cretDt,
+      joinTm = talkRoom.cretTm,
+      wtdrDt = null,
+      wtdrTm = null
+    )
+    persist(regTalkUserSelf)
+
+    regGroupTalkRoomDto.userIds?.map {
+      val talkRoomId = TalkUserId(tkrmId = talkRoom.tkrmId, userId = it)
+      val regTalkUser = TalkUser(
+        id = talkRoomId,
+        hostYn = "N",
+        joinDt = talkRoom.cretDt,
+        joinTm = talkRoom.cretTm,
+        wtdrDt = null,
+        wtdrTm = null
+      )
+
+      persist(regTalkUser)
     }
+  }
 
-    fun persistTalkUsers(regGroupTalkRoomDto: RegGroupTalkRoomDto, talkRoom: TalkRoom) {
-        val regTalkUserIdSelf = TalkUserId(tkrmId = talkRoom.tkrmId, userId = regGroupTalkRoomDto.id)
-        val regTalkUserSelf = TalkUser(
-            id = regTalkUserIdSelf,
-            hostYn = "Y",
-            joinDt = talkRoom.cretDt,
-            joinTm = talkRoom.cretTm,
-            wtdrDt = null,
-            wtdrTm = null
-        )
-        persist(regTalkUserSelf)
+  fun countByTkrmId(tkrmId: String): Int {
+    return count("where id.tkrmId = '$tkrmId'").toInt()
+  }
 
-        regGroupTalkRoomDto.userIds?.map {
-            val talkRoomId = TalkUserId(tkrmId = talkRoom.tkrmId, userId = it)
-            val regTalkUser = TalkUser(
-                id = talkRoomId,
-                hostYn = "N",
-                joinDt = talkRoom.cretDt,
-                joinTm = talkRoom.cretTm,
-                wtdrDt = null,
-                wtdrTm = null
-            )
-
-            persist(regTalkUser)
-        }
-    }
-
-    fun countByTkrmId(tkrmId: String): Int {
-        return count("where id.tkrmId = '$tkrmId'").toInt()
-    }
+  fun findTalkRoomNameById(tkrmId: String, userId: String) : String {
+    return findById(TalkUserId(tkrmId, userId))?.tkrmNm ?: ""
+  }
 
 }
 
 @ApplicationScoped
 class TalkMsgRepository : PanacheRepositoryBase<TalkMsg, TalkMsgId> {
-    @Transactional
-    fun findChatDetail(tkrmId: String): List<TalkMsgDto> {
-        val query = "select new org.sbas.dtos.TalkMsgDto(tm.id.tkrmId, tm.id.msgSeq, " +
-            "tm.msg, tm.attcId, " +
-            "iu.instNm || ' / ' || iu.userNm, " +
-            "tm.rgstDttm, tm.updtUserId, tm.updtDttm) " +
-            "from TalkMsg tm " +
-            "inner join InfoUser iu on iu.id = tm.rgstUserId " +
-            "where tm.id.tkrmId = '$tkrmId' order by tm.id.msgSeq "
+  @Transactional
+  fun findChatDetail(tkrmId: String): List<TalkMsgDto> {
+    val query = "select new org.sbas.dtos.TalkMsgDto(tm.id.tkrmId, tm.id.msgSeq, " +
+      "tm.msg, tm.attcId, " +
+      "iu.instNm || ' / ' || iu.userNm, " +
+      "tm.rgstDttm, tm.updtUserId, tm.updtDttm) " +
+      "from TalkMsg tm " +
+      "inner join InfoUser iu on iu.id = tm.rgstUserId " +
+      "where tm.id.tkrmId = '$tkrmId' order by tm.id.msgSeq "
 
-        return getEntityManager().createQuery(query, TalkMsgDto::class.java).resultList
-//        return find("select tm from TalkMsg tm where tm.id.tkrmId = '$tkrmId' order by tm.id.msgSeq").list()
+    return getEntityManager().createQuery(query, TalkMsgDto::class.java).resultList
+    //        return find("select tm from TalkMsg tm where tm.id.tkrmId = '$tkrmId' order by tm.id.msgSeq").list()
+  }
+
+  @Transactional
+  fun insertMessage(message: String, tkrmId: String, userId: String): TalkMsg {
+    val recentMsgSeq = findRecentlyMsg(tkrmId)
+    val insertObject = TalkMsg(
+      id = TalkMsgId(tkrmId, (recentMsgSeq?.id?.msgSeq ?: 0) + 1),
+      msg = message,
+      attcId = null,
+      rgstUserId = userId,
+      rgstDttm = Instant.now(),
+      updtUserId = userId,
+      updtDttm = Instant.now()
+    )
+    runBlocking {
+      persist(insertObject)
     }
+    return insertObject
+  }
 
-    @Transactional
-    fun insertMessage(message: String, tkrmId: String, userId: String): TalkMsg {
-        val recentMsgSeq = findRecentlyMsg(tkrmId)
-        val insertObject = TalkMsg(
-            id = TalkMsgId(tkrmId, (recentMsgSeq?.id?.msgSeq ?: 0) + 1),
-            msg = message,
-            attcId = null,
-            rgstUserId = userId,
-            rgstDttm = Instant.now(),
-            updtUserId = userId,
-            updtDttm = Instant.now())
-        runBlocking {
-            persist(insertObject)
-        }
-        return insertObject
+  @Transactional
+  fun insertFile(msg: String?, file: String?, tkrmId: String, userId: String): TalkMsg {
+    val recentMsgSeq = findRecentlyMsg(tkrmId)
+    val insertFile = TalkMsg(
+      id = TalkMsgId(tkrmId, (recentMsgSeq?.id?.msgSeq ?: 0) + 1),
+      msg = msg ?: "",
+      attcId = file,
+      rgstUserId = userId,
+      rgstDttm = Instant.now(),
+      updtUserId = userId,
+      updtDttm = Instant.now()
+    )
+    runBlocking {
+      persist(insertFile)
     }
+    return insertFile
+  }
 
-    @Transactional
-    fun insertFile(msg: String?, file: String?, tkrmId: String, userId: String): TalkMsg {
-        val recentMsgSeq = findRecentlyMsg(tkrmId)
-        val insertFile = TalkMsg(
-            id = TalkMsgId(tkrmId, (recentMsgSeq?.id?.msgSeq ?: 0) + 1),
-            msg = msg ?: "",
-            attcId = file,
-            rgstUserId = userId,
-            rgstDttm = Instant.now(),
-            updtUserId = userId,
-            updtDttm = Instant.now()
-        )
-        runBlocking {
-            persist(insertFile)
-        }
-        return insertFile
-    }
+  @Transactional
+  fun findRecentlyMsg(tkrmId: String) =
+    find("select tm from TalkMsg tm where tm.id.tkrmId = '$tkrmId' order by tm.id.msgSeq desc").firstResult()
 
-    @Transactional
-    fun findRecentlyMsg(tkrmId: String) = find("select tm from TalkMsg tm where tm.id.tkrmId = '$tkrmId' order by tm.id.msgSeq desc").firstResult()
-
-    fun findRecentSeq(tkrmId: String?) = find("select tm from TalkMsg tm where tm.id.tkrmId = '$tkrmId' order by tm.id.msgSeq desc limit 1").firstResult()
+  fun findRecentSeq(tkrmId: String?) =
+    find("select tm from TalkMsg tm where tm.id.tkrmId = '$tkrmId' order by tm.id.msgSeq desc limit 1").firstResult()
 
 }
 
 @ApplicationScoped
 class TalkRoomRepository : PanacheRepositoryBase<TalkRoom, String> {
 
-    @Inject
-    private lateinit var talkMsgRepository: TalkMsgRepository
+  @Inject
+  private lateinit var talkMsgRepository: TalkMsgRepository
 
-    @Inject
-    private lateinit var talkUserRepository: TalkUserRepository
+  @Inject
+  private lateinit var talkUserRepository: TalkUserRepository
 
-    @Inject
-    private lateinit var infoUserRepository: InfoUserRepository
+  @Inject
+  private lateinit var infoUserRepository: InfoUserRepository
 
-    @Inject
-    private lateinit var log: Logger
+  @Inject
+  private lateinit var log: Logger
 
-    fun findMyRooms(userId: String): List<TalkRoom> {
-        return find("select tr from TalkRoom tr join TalkUser tu on tr.tkrmId = tu.id.tkrmId and tu.id.userId = '$userId'").list()
-    }
+  fun findMyRooms(userId: String): List<TalkRoom> {
+    return find("select tr from TalkRoom tr join TalkUser tu on tr.tkrmId = tu.id.tkrmId and tu.id.userId = '$userId'").list()
+  }
 
-    @Transactional
-    fun findTalkRoomResponse(userId: String): List<TalkRoomResponse> {
-        val resultList = mutableListOf<TalkRoomResponse>()
-        val talkRooms = findMyRooms(userId)
+  @Transactional
+  fun findTalkRoomResponse(userId: String): List<TalkRoomResponse> {
+    val resultList = mutableListOf<TalkRoomResponse>()
+    val talkRooms = findMyRooms(userId)
 
-        runBlocking {
-            talkRooms.forEach {
-                var tkrmNm = it.tkrmNm
-                val count = talkUserRepository.countByTkrmId(it.tkrmId)
-                if(count == 2 && it.tkrmNm == "") {
-                    val otherUserId = talkUserRepository.findOtherUsersByTkrmId(it.tkrmId, userId)[0].id?.userId!!
-                    val otherUserNm = infoUserRepository.findByUserId(otherUserId)?.userNm
-                    tkrmNm = otherUserNm
-                }
-
-                val talkMsg = talkMsgRepository.findRecentlyMsg(it.tkrmId)
-                if (talkMsg != null) {
-                    resultList.add(TalkRoomResponse(it.tkrmId, tkrmNm, talkMsg.msg, talkMsg.rgstDttm))
-                } else {
-                    resultList.add(TalkRoomResponse(it.tkrmId, tkrmNm, null, it.rgstDttm))
-                }
-            }
+    runBlocking {
+      talkRooms.forEach {
+        val tkrmNm = talkUserRepository.findTalkRoomNameById(it.tkrmId, userId)
+        val talkMsg = talkMsgRepository.findRecentlyMsg(it.tkrmId)
+        if (talkMsg != null) {
+          resultList.add(TalkRoomResponse(it.tkrmId, tkrmNm, talkMsg.msg, talkMsg.rgstDttm))
+        } else {
+          resultList.add(TalkRoomResponse(it.tkrmId, tkrmNm, null, it.rgstDttm))
         }
-
-        return resultList
+      }
     }
 
-    fun changeTalkRoomListByPersonalTkrmNm(list: List<TalkRoomResponse>, userId: String) : List<TalkRoomResponse> {
-        list.map {
-            val count = talkUserRepository.countByTkrmId(it.tkrmId!!)
-            if(count == 2 && it.tkrmNm == "") {
-                val otherUserId = talkUserRepository.findOtherUsersByTkrmId(it.tkrmId!!, userId)[0].id?.userId!!
-                val otherUserNm = infoUserRepository.findByUserId(otherUserId)?.userNm
-                it.tkrmNm = otherUserNm
-            }
-        }
-        return list
+    return resultList
+  }
+
+  fun changeTalkRoomListByPersonalTkrmNm(list: List<TalkRoomResponse>, userId: String): List<TalkRoomResponse> {
+    list.map {
+      val count = talkUserRepository.countByTkrmId(it.tkrmId!!)
+      if (count == 2 && it.tkrmNm == "") {
+        val otherUserId = talkUserRepository.findOtherUsersByTkrmId(it.tkrmId!!, userId)[0].id?.userId!!
+        val otherUserNm = infoUserRepository.findByUserId(otherUserId)?.userNm
+        it.tkrmNm = otherUserNm
+      }
     }
+    return list
+  }
 
-    fun changePersonalTkrmNm(talkRoom: TalkRoom, userId: String): String {
-        val userNm = infoUserRepository.findByUserId(userId)?.userNm
-        return userNm ?: ""
+  fun changePersonalTkrmNm(talkRoom: TalkRoom, userId: String): String {
+    val userNm = infoUserRepository.findByUserId(userId)?.userNm
+    return userNm ?: ""
+  }
+
+  fun findTalkRoomByTkrmId(tkrmId: String): TalkRoom? {
+    return find("select tr from TalkRoom tr where tr.tkrmId = '$tkrmId'").firstResult()
+  }
+
+  @Transactional
+  fun findTalkRoomResponseByTkrmId(tkrmId: String, userId: String): TalkRoomResponse? {
+    val talkRoom = findTalkRoomByTkrmId(tkrmId)
+    return talkRoom?.let {
+      val talkMsg = runBlocking { talkMsgRepository.findRecentlyMsg(tkrmId) }
+      var tkrmNm = it.tkrmNm
+
+      log.warn("userId : $userId")
+
+      val count = talkUserRepository.countByTkrmId(it.tkrmId)
+      if (count == 2 && it.tkrmNm == "") {
+        val otherUserId = talkUserRepository.findOtherUsersByTkrmId(it.tkrmId, userId)[0].id?.userId!!
+        val otherUserNm = infoUserRepository.findByUserId(otherUserId)?.userNm
+        tkrmNm = otherUserNm
+      }
+
+      if (talkMsg != null) {
+        TalkRoomResponse(tkrmId, tkrmNm, talkMsg.msg, talkMsg.rgstDttm)
+      } else {
+        TalkRoomResponse(tkrmId, tkrmNm, null, it.rgstDttm)
+      }
     }
+  }
 
-    fun findTalkRoomByTkrmId(tkrmId: String): TalkRoom? {
-        return find("select tr from TalkRoom tr where tr.tkrmId = '$tkrmId'").firstResult()
-    }
-
-    @Transactional
-    fun findTalkRoomResponseByTkrmId(tkrmId: String, userId: String): TalkRoomResponse? {
-        val talkRoom = findTalkRoomByTkrmId(tkrmId)
-        return talkRoom?.let {
-            val talkMsg = runBlocking { talkMsgRepository.findRecentlyMsg(tkrmId) }
-            var tkrmNm = it.tkrmNm
-
-            log.warn("userId : $userId")
-
-            val count = talkUserRepository.countByTkrmId(it.tkrmId)
-            if(count == 2 && it.tkrmNm == "") {
-                val otherUserId = talkUserRepository.findOtherUsersByTkrmId(it.tkrmId, userId)[0].id?.userId!!
-                val otherUserNm = infoUserRepository.findByUserId(otherUserId)?.userNm
-                tkrmNm = otherUserNm
-            }
-
-            if (talkMsg != null) {
-                TalkRoomResponse(tkrmId, tkrmNm, talkMsg.msg, talkMsg.rgstDttm)
-            } else {
-                TalkRoomResponse(tkrmId, tkrmNm, null, it.rgstDttm)
-            }
-        }
-    }
-
-    fun findNextId(): String {
-        return find("select max(cast(tkrmId as integer)) + 1 from TalkRoom").firstResult().toString()
-    }
+  fun findNextId(): String {
+    return find("select max(cast(tkrmId as integer)) + 1 from TalkRoom").firstResult().toString()
+  }
 }
