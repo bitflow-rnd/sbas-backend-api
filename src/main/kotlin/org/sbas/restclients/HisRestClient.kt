@@ -8,7 +8,7 @@ import org.sbas.restdtos.response.HisApiResponse
 /**
  * HIS API를 처리하는 클라이언트
  */
-@RegisterRestClient(baseUri = "https://mcaredoctor.fatima.or.kr/qapiplus-dev/api")
+@RegisterRestClient
 interface FatimaHisRestClient {
 
   @POST
@@ -16,7 +16,7 @@ interface FatimaHisRestClient {
   fun getFatimaSvrtMntrInfo(body: HisRestClientRequest): HisApiResponse
 }
 
-@RegisterRestClient(baseUri = "https://sbas.knuh.kr/qapi/api/")
+@RegisterRestClient
 interface KnuhHisRestClient {
 
   @POST
@@ -26,6 +26,14 @@ interface KnuhHisRestClient {
   @POST
   @Path("get_svr_mntr_info_knuch/v1")
   fun getKnuchSvrtMntrInfo(body: HisRestClientRequest): HisApiResponse
+}
+
+@RegisterRestClient
+interface DgmcHisRestClient {
+
+  @POST
+  @Path("get_svr_mntr_info_dmc/v1")
+  fun getDgmcSvrtMntrInfo(body: HisRestClientRequest): HisApiResponse
 }
 
 
