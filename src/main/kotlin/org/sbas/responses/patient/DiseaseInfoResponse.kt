@@ -33,6 +33,8 @@ data class DiseaseInfoResponse(
     var instTelno: String? = null,//요양기관전화번호
     var diagDrNm: String? = null,//진단의사성명
     var rptChfNm: String? = null,//신고기관장
+    var diagAttcId: String? = null,
+    var esvyAttcId: String? = null,
     var reqBedTypeNm: String? = null,//요청병상유형
 ) {
 
@@ -62,6 +64,8 @@ data class DiseaseInfoResponse(
         instTelno = bdasEsvy.instTelno
         diagDrNm = bdasEsvy.diagDrNm
         rptChfNm = bdasEsvy.rptChfNm
+        diagAttcId = bdasEsvy.diagAttcId
+        esvyAttcId = bdasEsvy.esvyAttcId
         reqBedTypeNm = ReqBedTypeCd.valueOf(bdasReq.reqBedTypeCd).cdNm
     }
 
