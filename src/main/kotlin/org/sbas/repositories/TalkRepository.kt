@@ -208,12 +208,7 @@ class TalkRoomRepository : PanacheRepositoryBase<TalkRoom, String> {
 
   fun changeTalkRoomListByPersonalTkrmNm(list: List<TalkRoomResponse>, userId: String): List<TalkRoomResponse> {
     list.map {
-      val count = talkUserRepository.countByTkrmId(it.tkrmId!!)
-      if (count == 2 && it.tkrmNm == "") {
-        val otherUserId = talkUserRepository.findOtherUsersByTkrmId(it.tkrmId!!, userId)[0].id?.userId!!
-        val otherUserNm = infoUserRepository.findByUserId(otherUserId)?.userNm
-        it.tkrmNm = otherUserNm
-      }
+      it.tkrmNm = talkUserRepository.findTalkRoomNameById(it.tkrmId, userId)
     }
     return list
   }

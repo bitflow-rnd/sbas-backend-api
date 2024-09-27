@@ -7,7 +7,9 @@ import jakarta.ws.rs.NotFoundException
 import org.sbas.constants.SbasConst
 import org.sbas.dtos.RegGroupTalkRoomDto
 import org.sbas.dtos.RegTalkRoomDto
-import org.sbas.entities.talk.*
+import org.sbas.entities.talk.TalkRoom
+import org.sbas.entities.talk.TalkUser
+import org.sbas.entities.talk.TalkUserId
 import org.sbas.repositories.InfoUserRepository
 import org.sbas.repositories.TalkMsgRepository
 import org.sbas.repositories.TalkRoomRepository
@@ -36,8 +38,8 @@ class TalkService {
     if (hasTalkRoom != null) {
       val talkRoom = talkRoomRepository.findTalkRoomByTkrmId(hasTalkRoom)
       val result = TalkRoomResponse(
-        tkrmId = talkRoom?.tkrmId,
-        tkrmNm = talkRoomRepository.changePersonalTkrmNm(talkRoom!!, regRequest.userId),
+        tkrmId = talkRoom?.tkrmId!!,
+        tkrmNm = talkRoomRepository.changePersonalTkrmNm(talkRoom, regRequest.userId),
       )
       return CommonResponse(SbasConst.ResCode.FAIL, "해당 유저와의 대화방이 있습니다.", result)
     }
