@@ -25,7 +25,6 @@ import org.sbas.repositories.TalkUserRepository
 import org.sbas.responses.messages.TalkRoomResponse
 import org.sbas.services.FirebaseService
 
-
 @ServerEndpoint("/chat-rooms/room/{tkrmId}")
 class TalkRoomMod {
 

@@ -105,8 +105,8 @@ class TalkUserRepository : PanacheRepositoryBase<TalkUser, TalkUserId> {
 class TalkMsgRepository : PanacheRepositoryBase<TalkMsg, TalkMsgId> {
     @Transactional
     fun findChatDetail(tkrmId: String): List<TalkMsgDto> {
-        val query = "select new org.sbas.dtos.TalkMsgDto(tm.id.tkrmId, tm.id.msgSeq, tm.id.histSeq, " +
-            "tm.histCd, tm.msg, tm.attcId, " +
+        val query = "select new org.sbas.dtos.TalkMsgDto(tm.id.tkrmId, tm.id.msgSeq, " +
+            "tm.msg, tm.attcId, " +
             "iu.instNm || ' / ' || iu.userNm, " +
             "tm.rgstDttm, tm.updtUserId, tm.updtDttm) " +
             "from TalkMsg tm " +
@@ -121,8 +121,7 @@ class TalkMsgRepository : PanacheRepositoryBase<TalkMsg, TalkMsgId> {
     fun insertMessage(message: String, tkrmId: String, userId: String): TalkMsg {
         val recentMsgSeq = findRecentlyMsg(tkrmId)
         val insertObject = TalkMsg(
-            id = TalkMsgId(tkrmId, (recentMsgSeq?.id?.msgSeq ?: 0) + 1, 1),
-            histCd = "1",
+            id = TalkMsgId(tkrmId, (recentMsgSeq?.id?.msgSeq ?: 0) + 1),
             msg = message,
             attcId = null,
             rgstUserId = userId,
@@ -139,8 +138,7 @@ class TalkMsgRepository : PanacheRepositoryBase<TalkMsg, TalkMsgId> {
     fun insertFile(msg: String?, file: String?, tkrmId: String, userId: String): TalkMsg {
         val recentMsgSeq = findRecentlyMsg(tkrmId)
         val insertFile = TalkMsg(
-            id = TalkMsgId(tkrmId, (recentMsgSeq?.id?.msgSeq ?: 0) + 1, 1),
-            histCd = "1",
+            id = TalkMsgId(tkrmId, (recentMsgSeq?.id?.msgSeq ?: 0) + 1),
             msg = msg ?: "",
             attcId = file,
             rgstUserId = userId,
