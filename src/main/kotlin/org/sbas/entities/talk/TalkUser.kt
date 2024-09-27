@@ -15,6 +15,9 @@ class TalkUser(
     @EmbeddedId
     var id: TalkUserId? = null,
 
+    @Column(name = "tkrm_nm", length = 200)
+    var tkrmNm: String? = null,
+
     @Size(max = 1)
     @NotNull
     @Column(name = "host_yn", nullable = false, length = 1)
