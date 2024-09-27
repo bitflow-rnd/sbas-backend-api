@@ -104,6 +104,10 @@ class TalkUserRepository : PanacheRepositoryBase<TalkUser, TalkUserId> {
     return findById(TalkUserId(tkrmId, userId))?.tkrmNm ?: ""
   }
 
+  fun findMainTkrmNmByTkrmId(tkrmId: String): String? {
+    return find("select tr from TalkUser tr where tr.tkrmId = '${tkrmId}' and host_yn = 'Y'").firstResult()?.tkrmNm
+  }
+
 }
 
 @ApplicationScoped
@@ -164,7 +168,6 @@ class TalkMsgRepository : PanacheRepositoryBase<TalkMsg, TalkMsgId> {
 
   fun findRecentSeq(tkrmId: String?) =
     find("select tm from TalkMsg tm where tm.id.tkrmId = '$tkrmId' order by tm.id.msgSeq desc limit 1").firstResult()
-
 }
 
 @ApplicationScoped

@@ -5,8 +5,10 @@ import jakarta.inject.Inject
 import jakarta.transaction.Transactional
 import jakarta.ws.rs.NotFoundException
 import org.sbas.constants.SbasConst
+import org.sbas.dtos.InviteUserDto
 import org.sbas.dtos.RegGroupTalkRoomDto
 import org.sbas.dtos.RegTalkRoomDto
+import org.sbas.dtos.TalkMsgDto
 import org.sbas.entities.talk.TalkRoom
 import org.sbas.entities.talk.TalkUser
 import org.sbas.entities.talk.TalkUserId
@@ -16,6 +18,7 @@ import org.sbas.repositories.TalkRoomRepository
 import org.sbas.repositories.TalkUserRepository
 import org.sbas.responses.CommonResponse
 import org.sbas.responses.messages.TalkRoomResponse
+import org.sbas.utils.StringUtils
 
 @ApplicationScoped
 class TalkService {
@@ -116,9 +119,27 @@ class TalkService {
     return CommonResponse(result)
   }
 
-  fun getMyChat(tkrmId: String): CommonResponse<*> {
+  fun getMyChat(tkrmId: String): CommonResponse<List<TalkMsgDto>> {
     val findChatDetail = talkMsgRepository.findChatDetail(tkrmId)
     return CommonResponse(findChatDetail)
+  }
+
+  @Transactional
+  fun inviteUser(inviteUserDto: InviteUserDto): CommonResponse<String> {
+    val talkUserId = TalkUserId(tkrmId = inviteUserDto.tkrmId, userId = inviteUserDto.userId)
+    val tkrmNm = talkUserRepository.findMainTkrmNmByTkrmId(inviteUserDto.tkrmId)
+
+    val insertTalkUser = TalkUser(
+      id = talkUserId,
+      tkrmNm = tkrmNm,
+      hostYn = "N",
+      joinDt = StringUtils.getYyyyMmDd(),
+      joinTm = StringUtils.getHhMmSs(),
+    )
+
+    talkUserRepository.persist(insertTalkUser)
+
+    return CommonResponse("대화방에 초대하였습니다.")
   }
 
   @Transactional
