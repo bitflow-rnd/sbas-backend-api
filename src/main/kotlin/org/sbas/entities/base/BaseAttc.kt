@@ -1,16 +1,18 @@
 package org.sbas.entities.base
 
-import jakarta.persistence.*
-import org.hibernate.annotations.GenericGenerator
-import org.hibernate.annotations.Parameter
+import jakarta.persistence.Column
+import jakarta.persistence.Entity
+import jakarta.persistence.Id
+import jakarta.persistence.Table
 import org.sbas.entities.CommonEntity
-import org.sbas.entities.StringPrefixedSequenceIdGenerator
+import org.sbas.utils.annotation.NoArg
 import java.io.Serializable
 
 /**
  * 첨부 파일 정보
  */
 @Entity
+@NoArg
 @Table(name = "base_attc")
 class BaseAttc(
     @Id
