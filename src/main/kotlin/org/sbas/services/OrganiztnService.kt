@@ -291,7 +291,8 @@ class OrganiztnService {
         val fileDto = fileHandler.createPrivateFile(fileUpload)
 
         val attcGrpId = baseAttcRepository.getNextValAttcGrpId()
-        val entity = fileDto.toPrivateEntity(attcGrpId = attcGrpId, fileTypeCd = SbasConst.FileTypeCd.IMAGE, "${infoHosp.hospId} 이미지")
+        val newAttcId = baseAttcRepository.getNextValAttcId()
+        val entity = fileDto.toPrivateEntity(attcGrpId = attcGrpId, attcId = newAttcId, fileTypeCd = SbasConst.FileTypeCd.IMAGE, "${infoHosp.hospId} 이미지")
         baseAttcRepository.persist(entity)
 
         infoHosp.updateAttcId(entity.attcId)

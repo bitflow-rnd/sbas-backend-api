@@ -315,7 +315,8 @@ class PatientService {
     val fileDto = fileHandler.createPrivateFile(param)
 
     val attcGrpId = baseAttcRepository.getNextValAttcGrpId()
-    val entity = fileDto.toPrivateEntity(attcGrpId = attcGrpId, fileTypeCd = SbasConst.FileTypeCd.IMAGE, "역학조사서")
+    val attcId = baseAttcRepository.getNextValAttcId()
+    val entity = fileDto.toPrivateEntity(attcGrpId = attcGrpId, attcId = attcId, fileTypeCd = SbasConst.FileTypeCd.IMAGE, "역학조사서")
     baseAttcRepository.persist(entity)
 
     // Naver Clova OCR call
