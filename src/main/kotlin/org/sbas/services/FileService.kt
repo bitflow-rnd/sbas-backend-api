@@ -62,7 +62,7 @@ class FileService {
             val attcId = baseAttcRepository.getNextValAttcId()
             val fileDto = fileHandler.createPublicFile(it)
             val fileTypeCd = getFileTypeCd(fileDto.fileExt)
-            val baseAttc = fileDto.toPublicEntity(attcGrpId = attcGrpId, attcId = attcId, fileTypeCd = fileTypeCd, rmk = null)
+            val baseAttc = fileDto.toPublicEntity(attcGrpId = attcGrpId, attcId = attcId, fileTypeCd = fileTypeCd, rmk = param1)
             baseAttc
         }
         baseAttcRepository.persist(baseAttcList)
@@ -82,7 +82,7 @@ class FileService {
             val attcId = baseAttcRepository.getNextValAttcId()
             val fileDto = fileHandler.createPrivateFile(it)
             val fileTypeCd = getFileTypeCd(fileDto.fileExt)
-            val baseAttc = fileDto.toPrivateEntity(attcGrpId = attcGrpId, attcId = attcId, fileTypeCd = fileTypeCd, rmk = null)
+            val baseAttc = fileDto.toPrivateEntity(attcGrpId = attcGrpId, attcId = attcId, fileTypeCd = fileTypeCd, rmk = param1)
             baseAttc
         }
         baseAttcRepository.persist(baseAttcList)
