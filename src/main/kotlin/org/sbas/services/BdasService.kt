@@ -403,9 +403,10 @@ class BdasService {
   fun confirmHosp(saveRequest: BdasAdmsSaveRequest): CommonResponse<String> {
     val findBdasReq  = bdasReqRepository.findByPtIdAndBdasSeq(saveRequest.ptId, saveRequest.bdasSeq)
     val findBdasAdms = bdasAdmsRepository.findByIdOrderByAdmsSeqDesc(saveRequest.ptId, saveRequest.bdasSeq)
+    val svrtRgstSeq = svrtPtRepository.findByPtId(saveRequest.ptId).size
 
     val admsSeq = if (findBdasAdms == null) 1 else findBdasAdms.id.admsSeq + 1
-    val svrtPtEntity = saveRequest.toSvrtPtEntity(admsSeq)
+    val svrtPtEntity = saveRequest.toSvrtPtEntity(svrtRgstSeq + 1)
     val entity: BdasAdms = saveRequest.toEntity(AdmsStatCd.valueOf(saveRequest.admsStatCd), admsSeq)
 
     // 입원일 경우 중증 관찰 환자 등록
