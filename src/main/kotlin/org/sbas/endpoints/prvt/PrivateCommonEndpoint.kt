@@ -64,7 +64,7 @@ class PrivateCommonEndpoint {
 
   @Operation(summary = "그룹 이미지 조회 (권한별 공개 파일)", description = "private 그룹 이미지 조회(바이트 스트림으로 반환)")
   @GET
-  @Path("images/{attcId}")
+  @Path("images/{attcGrpId}")
   @Produces(MediaType.APPLICATION_OCTET_STREAM)
   fun getPrivateImages(@RestPath attcGrpId: String): Response? {
     val imageBytes = fileService.findPrivateImages(attcGrpId)
