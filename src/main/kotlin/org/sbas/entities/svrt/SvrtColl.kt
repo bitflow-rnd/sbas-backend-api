@@ -116,3 +116,30 @@ data class SvrtCollId(
         private const val serialVersionUID = 4678885072574623613L
     }
 }
+
+fun SvrtColl.hasNonEmptyFields(): Boolean {
+  return listOfNotNull(
+    deptNm?.takeIf { it.isNotEmpty() },
+    wardNm?.takeIf { it.isNotEmpty() },
+    roomNm?.takeIf { it.isNotEmpty() },
+    spclNm?.takeIf { it.isNotEmpty() },
+    bun?.takeIf { it.isNotEmpty() },
+    cre?.takeIf { it.isNotEmpty() },
+    hem?.takeIf { it.isNotEmpty() },
+    ldh?.takeIf { it.isNotEmpty() },
+    lym?.takeIf { it.isNotEmpty() },
+    neu?.takeIf { it.isNotEmpty() },
+    pla?.takeIf { it.isNotEmpty() },
+    pot?.takeIf { it.isNotEmpty() },
+    sod?.takeIf { it.isNotEmpty() },
+    wbc?.takeIf { it.isNotEmpty() },
+    crp?.takeIf { it.isNotEmpty() },
+    bdtp?.takeIf { it.isNotEmpty() },
+    resp?.takeIf { it.isNotEmpty() },
+    hr?.takeIf { it.isNotEmpty() },
+    dbp?.takeIf { it.isNotEmpty() },
+    sbp?.takeIf { it.isNotEmpty() },
+    spo2?.takeIf { it.isNotEmpty() },
+    oxygenApply?.takeIf { it.isNotEmpty() }
+  ).isNotEmpty() // 값이 있는 필드가 하나라도 있으면 true
+}

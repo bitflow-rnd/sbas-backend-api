@@ -8,6 +8,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import org.jboss.logging.Logger
+import org.sbas.repositories.SvrtPtRepository
 import org.sbas.restdtos.EgenApiEmrrmRltmUsefulSckbdInfoParams
 import org.sbas.services.EgenService
 import org.sbas.services.SvrtService
@@ -26,6 +27,9 @@ class SbasScheduler {
 
   @Inject
   private lateinit var svrtService: SvrtService
+
+  @Inject
+  private lateinit var svrtPtRepository: SvrtPtRepository
 
   private val job = Job()
   private val scope = CoroutineScope(job + Dispatchers.Default)
@@ -67,10 +71,13 @@ class SbasScheduler {
     val knuchSampleList = listOf("0010001", "0010002", "0010003", "0010004", "0010005")
     val knuhSampleList = listOf("0020001", "0020002", "0020003", "0020004", "0020005")
     val fatimaSampleList = listOf("0030001", "0030002", "0030003", "0030004", "0030005")
-    val sampleList = knuchSampleList + knuhSampleList + fatimaSampleList
+    val dgmcSampleList = listOf("0040001", "0040002", "0040003", "0040004", "0040005")
+    val sampleList = knuchSampleList + knuhSampleList + fatimaSampleList + dgmcSampleList
 
-    sampleList.forEach { pid ->
-      svrtService.saveMntrInfoWithSample(pid)
+    svrtService.findAllSvrtPt().forEach { svrtPt ->
+      if (sampleList.contains(svrtPt.pid)) {
+        svrtService.saveMntrInfoWithSample(svrtPt.id.ptId, svrtPt.pid)
+      }
     }
   }
 
@@ -82,7 +89,8 @@ class SbasScheduler {
     val knuchSampleList = listOf("0010001", "0010002", "0010003", "0010004", "0010005")
     val knuhSampleList = listOf("0020001", "0020002", "0020003", "0020004", "0020005")
     val fatimaSampleList = listOf("0030001", "0030002", "0030003", "0030004", "0030005")
-    val sampleList = knuchSampleList + knuhSampleList + fatimaSampleList
+    val dgmcSampleList = listOf("0040001", "0040002", "0040003", "0040004", "0040005")
+    val sampleList = knuchSampleList + knuhSampleList + fatimaSampleList + dgmcSampleList
 
     svrtService.findAllSvrtPt().forEach { svrtPt ->
       if (sampleList.contains(svrtPt.pid)) {
