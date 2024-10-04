@@ -10,9 +10,10 @@ data class FileDto(
     val uriPath: String
 ) {
 
-    fun toPublicEntity(attcGrpId: String, fileTypeCd: String, rmk: String?): BaseAttc {
+    fun toPublicEntity(attcGrpId: String, attcId: String, fileTypeCd: String, rmk: String?): BaseAttc {
         return BaseAttc(
             attcGrpId = attcGrpId,
+            attcId = attcId,
             attcDt = StringUtils.getYyyyMmDd(),
             attcTm = StringUtils.getHhMmSs(),
             fileTypeCd = fileTypeCd,
@@ -24,9 +25,10 @@ data class FileDto(
         )
     }
 
-    fun toPrivateEntity(attcGrpId: String, fileTypeCd: String, rmk: String?): BaseAttc {
+    fun toPrivateEntity(attcGrpId: String, attcId: String, fileTypeCd: String, rmk: String?): BaseAttc {
         return BaseAttc(
             attcGrpId = attcGrpId,
+            attcId = attcId,
             attcDt = StringUtils.getYyyyMmDd(),
             attcTm = StringUtils.getHhMmSs(),
             fileTypeCd = fileTypeCd,

@@ -18,15 +18,10 @@ class TalkMsg(
     @EmbeddedId
     var id: TalkMsgId? = null,
 
-    @Size(max = 8)
-    @NotNull
-    @Column(name = "hist_cd", nullable = false, length = 8)
-    var histCd: String? = null, // 이력 코드
-
     @Size(max = 1000)
     @NotNull
     @Column(name = "msg", nullable = false, length = 1000)
-    var msg: String? = null, // 이력 순번
+    var msg: String? = null,
 
     @Size(max = 10)
     @Column(name = "attc_id", length = 10)
@@ -57,10 +52,6 @@ data class TalkMsgId(
     @NotNull
     @Column(name = "msg_seq", nullable = false, precision = 3)
     var msgSeq: Long? = null, // 메시지 순번
-
-    @NotNull
-    @Column(name = "hist_seq", nullable = false, precision = 3)
-    var histSeq: Long? = null, // 이력 순번
 ) : Serializable {
 
     companion object {
@@ -73,8 +64,8 @@ fun arrToJson(arrayData: MutableList<TalkMsgDto>): String {
 
     for (item in arrayData) {
         val attcId = item.attcId
-        result += "{\"id\":{\"tkrmId\":\"${item.tkrmId}\", \"msgSeq\":${item.msgSeq}, \"histSeq\":${item.histSeq}}, " +
-            "\"histCd\":\"${item.histCd}\", \"msg\":\"${item.msg}\", \"attcId\":${attcId?.let { "\"$it\"" } ?: "null"}, \"rgstUserId\":\"${item.rgstUserId}\"," +
+        result += "{\"id\":{\"tkrmId\":\"${item.tkrmId}\", \"msgSeq\":${item.msgSeq}, " +
+            "\"msg\":\"${item.msg}\", \"attcId\":${attcId?.let { "\"$it\"" } ?: "null"}, \"rgstUserId\":\"${item.rgstUserId}\"," +
             "\"rgstDttm\":\"${item.rgstDttm}\", \"updtUserId\":\"${item.updtUserId}\", \"updtDttm\":\"${item.updtDttm}\"}"
         if(item != arrayData.last()){
             result += ","

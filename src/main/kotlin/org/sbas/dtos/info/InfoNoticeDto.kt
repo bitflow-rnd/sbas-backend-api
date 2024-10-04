@@ -1,8 +1,10 @@
 package org.sbas.dtos.info
 
 import jakarta.validation.constraints.NotBlank
+import jakarta.ws.rs.QueryParam
 import org.hibernate.validator.constraints.Length
 import org.sbas.entities.info.InfoNotice
+import org.sbas.utils.annotation.NoArg
 
 data class RegNoticeReq(
     @field: [NotBlank(message = "제목은 필수 값입니다.") Length(max = 30)]
@@ -53,10 +55,11 @@ data class DelNoticeReq(
     val noticeId: String,
 )
 
+@NoArg
 data class NoticeListReq(
-    val userId: String,
-    val page: Int?,
-    val size: Int?,
-    val isActive: Boolean?,
-    val searchPeriod: String?,
+    @field: QueryParam("userId") var userId: String,
+    @field: QueryParam("page")var page: Int?,
+    @field: QueryParam("size") var size: Int?,
+    @field: QueryParam("isActive") var isActive: Boolean?,
+    @field: QueryParam("searchPeriod") var searchPeriod: String?,
 )

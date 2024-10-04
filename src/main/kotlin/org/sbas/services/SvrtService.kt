@@ -18,6 +18,7 @@ import org.sbas.repositories.SvrtCollRepository
 import org.sbas.repositories.SvrtPtRepository
 import org.sbas.responses.CommonListResponse
 import org.sbas.responses.CommonResponse
+import org.sbas.restclients.DgmcHisRestClient
 import org.sbas.restclients.FatimaHisRestClient
 import org.sbas.restclients.HisRestClientRequest
 import org.sbas.restclients.KnuhHisRestClient
@@ -34,6 +35,7 @@ class SvrtService(
   private val svrtAnlyHandler: NubisonAiSeverityAnalysisHandler,
   @RestClient private val fatimaHisRestClient: FatimaHisRestClient,
   @RestClient private val knuhHisRestClient: KnuhHisRestClient,
+  @RestClient private val dgmcHisRestClient: DgmcHisRestClient,
 ) {
   fun findAllSvrtPt(): List<SvrtPt> {
     return svrtPtRepository.findAllWithMaxRgstSeq()
@@ -88,6 +90,8 @@ class SvrtService(
         hisApiResponse = knuhHisRestClient.getKnuhSvrtMntrInfo(sampleData)
       } else if (pid.startsWith("003")) {
         hisApiResponse = fatimaHisRestClient.getFatimaSvrtMntrInfo(sampleData)
+      } else if (pid.startsWith("004")) {
+        hisApiResponse = dgmcHisRestClient.getDgmcSvrtMntrInfo(sampleData)
       }
       log.debug("hisApiResponse: $hisApiResponse")
 

@@ -13,6 +13,7 @@ import org.sbas.constants.SbasConst
 import org.sbas.constants.enums.BedStatCd
 import org.sbas.constants.enums.SvrtTypeCd
 import org.sbas.dtos.info.*
+import org.sbas.entities.bdas.BdasEsvy
 import org.sbas.entities.bdas.BdasReqId
 import org.sbas.entities.info.InfoHosp
 import org.sbas.entities.info.InfoPt
@@ -203,6 +204,11 @@ class PatientService {
     return CommonResponse(infoPtBasicInfo)
   }
 
+  fun findEsvyInfo(ptId: String): CommonResponse<out BdasEsvy?> {
+    val bdasEsvy = bdasEsvyRepository.findByPtIdWithLatestBdasSeq(ptId) ?: return CommonResponse(null)
+    return CommonResponse(bdasEsvy)
+  }
+
   @Transactional
   fun findBdasHistInfo(ptId: String): CommonListResponse<BdasHisInfo> {
     val bdasHisInfoList = infoPtRepository.findBdasHisInfo(ptId)
@@ -309,7 +315,8 @@ class PatientService {
     val fileDto = fileHandler.createPrivateFile(param)
 
     val attcGrpId = baseAttcRepository.getNextValAttcGrpId()
-    val entity = fileDto.toPrivateEntity(attcGrpId = attcGrpId, fileTypeCd = SbasConst.FileTypeCd.IMAGE, "역학조사서")
+    val attcId = baseAttcRepository.getNextValAttcId()
+    val entity = fileDto.toPrivateEntity(attcGrpId = attcGrpId, attcId = attcId, fileTypeCd = SbasConst.FileTypeCd.IMAGE, "역학조사서")
     baseAttcRepository.persist(entity)
 
     // Naver Clova OCR call

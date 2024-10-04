@@ -18,11 +18,6 @@ class TalkRoom(
     @Column(name = "tkrm_id", nullable = false, length = 10)
     var tkrmId: String, // 대화방 ID
 
-    @Size(max = 200)
-    @NotNull
-    @Column(name = "tkrm_nm", nullable = false, length = 200)
-    var tkrmNm: String? = null, // 대화방 이름
-
     @Size(max = 8)
     @NotNull
     @Column(name = "cret_dt", nullable = false, length = 8)

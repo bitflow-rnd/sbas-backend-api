@@ -123,7 +123,7 @@ class BdasService {
     val bdasReqDprtInfo = saveRequest.dprtInfo
 
     // bdasEsvy 에서 bdasSeq 가져오기
-    val bdasEsvy = bdasEsvyRepository.findByPtIdWithLatestBdasSeq(ptId)
+    val bdasEsvy = bdasEsvyRepository.findByPtIdWithLatestBdasSeq(ptId) ?: throw NotFoundException("해당 환자의 질병정보를 찾을 수 없습니다.")
     val bdasReqId = BdasReqId(ptId, bdasEsvy.bdasSeq)
 
     // 출발지 위도, 경도 설정
@@ -403,9 +403,10 @@ class BdasService {
   fun confirmHosp(saveRequest: BdasAdmsSaveRequest): CommonResponse<String> {
     val findBdasReq  = bdasReqRepository.findByPtIdAndBdasSeq(saveRequest.ptId, saveRequest.bdasSeq)
     val findBdasAdms = bdasAdmsRepository.findByIdOrderByAdmsSeqDesc(saveRequest.ptId, saveRequest.bdasSeq)
+    val svrtRgstSeq = svrtPtRepository.findByPtId(saveRequest.ptId).size
 
     val admsSeq = if (findBdasAdms == null) 1 else findBdasAdms.id.admsSeq + 1
-    val svrtPtEntity = saveRequest.toSvrtPtEntity(admsSeq)
+    val svrtPtEntity = saveRequest.toSvrtPtEntity(svrtRgstSeq + 1)
     val entity: BdasAdms = saveRequest.toEntity(AdmsStatCd.valueOf(saveRequest.admsStatCd), admsSeq)
 
     // 입원일 경우 중증 관찰 환자 등록
@@ -574,7 +575,7 @@ class BdasService {
 
   @Transactional
   fun getDiseaseInfo(ptId: String): CommonResponse<*> {
-    val bdasEsvy = bdasEsvyRepository.findByPtIdWithLatestBdasSeq(ptId)
+    val bdasEsvy = bdasEsvyRepository.findByPtIdWithLatestBdasSeq(ptId) ?: throw NotFoundException("해당 환자의 질병정보를 찾을 수 없습니다.")
     val findReq =
       bdasReqRepository.findByPtIdWithLatestBdasSeq(ptId) ?: throw NotFoundException("$ptId request not found")
 

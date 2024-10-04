@@ -1,21 +1,27 @@
 package org.sbas.entities.base
 
-import jakarta.persistence.*
-import org.hibernate.annotations.GenericGenerator
-import org.hibernate.annotations.Parameter
+import jakarta.persistence.Column
+import jakarta.persistence.Entity
+import jakarta.persistence.Id
+import jakarta.persistence.Table
 import org.sbas.entities.CommonEntity
-import org.sbas.entities.StringPrefixedSequenceIdGenerator
+import org.sbas.utils.annotation.NoArg
 import java.io.Serializable
 
 /**
  * 첨부 파일 정보
  */
 @Entity
+@NoArg
 @Table(name = "base_attc")
 class BaseAttc(
     @Id
     @Column(name = "attc_grp_id", nullable = false, length = 10)
     var attcGrpId: String, // 첨부파일 그룹 ID
+
+    @Id
+    @Column(name = "attc_id", nullable = false, length = 12)
+    var attcId: String,
 
     @Column(name = "attc_dt", nullable = false, length = 8)
     var attcDt: String, // 첨부 날짜
@@ -46,19 +52,19 @@ class BaseAttc(
         private const val serialVersionUID = -7627032719191928277L
     }
 
-    @Id
-    @GenericGenerator(
-        name = "base_attc_id_seq",
-        strategy = "org.sbas.entities.StringPrefixedSequenceIdGenerator",
-        parameters = [
-            Parameter(name = StringPrefixedSequenceIdGenerator.VALUE_PREFIX_PARAMETER, value = "AT"),
-            Parameter(name = StringPrefixedSequenceIdGenerator.NUMBER_FORMAT_PARAMETER, value = "%010d"),
-            Parameter(name = StringPrefixedSequenceIdGenerator.incrementSize, value = "1")
-        ]) // AT0000000001
-    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "base_attc_id_seq")
-    @Column(name = "attc_id", nullable = false, length = 12)
-    var attcId: String = ""
-        protected set
+//    @Id
+//    @GenericGenerator(
+//        name = "base_attc_id_seq",
+//        strategy = "org.sbas.entities.StringPrefixedSequenceIdGenerator",
+//        parameters = [
+//            Parameter(name = StringPrefixedSequenceIdGenerator.VALUE_PREFIX_PARAMETER, value = "AT"),
+//            Parameter(name = StringPrefixedSequenceIdGenerator.NUMBER_FORMAT_PARAMETER, value = "%010d"),
+//            Parameter(name = StringPrefixedSequenceIdGenerator.incrementSize, value = "1")
+//        ]) // AT0000000001
+//    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "base_attc_id_seq")
+//    @Column(name = "attc_id", nullable = false, length = 12)
+//    var attcId: String = ""
+//        protected set
 
     override fun equals(other: Any?): Boolean {
         if (this === other) return true

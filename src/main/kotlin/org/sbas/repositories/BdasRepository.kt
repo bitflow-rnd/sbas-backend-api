@@ -16,9 +16,8 @@ import java.time.Instant
 
 @ApplicationScoped
 class BdasEsvyRepository : PanacheRepositoryBase<BdasEsvy, Int> {
-  fun findByPtIdWithLatestBdasSeq(ptId: String): BdasEsvy {
+  fun findByPtIdWithLatestBdasSeq(ptId: String): BdasEsvy? {
     return find("ptId = '${ptId}'", Sort.by("bdasSeq", Sort.Direction.Descending)).firstResult()
-      ?: throw NotFoundException("해당 환자의 질병정보를 찾을 수 없습니다.")
   }
 }
 

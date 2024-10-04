@@ -72,7 +72,7 @@ class BdasEsvy(
     @Column(name = "rpt_chf_nm", length = 10)
     var rptChfNm: String? = null, // 신고 기관장 성명
 
-    @Column(name = "diag_attc_id", length = 12)
+    @Column(name = "diag_attc_id", length = 70)
     var diagAttcId: String? = null, // 진단 정보 첨부 ID
 ) : CommonEntity(), Serializable {
     @Id
