@@ -36,14 +36,14 @@ class SvrtPtRepository : PanacheRepositoryBase<SvrtPt, SvrtPtId> {
     val cond = searchCondition(param)
     val query = "select new org.sbas.dtos.SvrtPtSearchDto(ip.pid, pt.ptId, br.id.bdasSeq, pt.ptNm, pt.gndr, pt.rrno1, " +
       "pt.dstr1Cd, fn_get_cd_nm('SIDO', pt.dstr1Cd), pt.dstr2Cd, fn_get_cd_nm('SIDO'||pt.dstr1Cd, pt.dstr2Cd), " +
-      "bap.hospId, ih.dutyName, pt.mpno, pt.natiCd, pt.natiNm, sa.updtDttm, " +
+      "ip.id.hospId, ih.dutyName, pt.mpno, pt.natiCd, pt.natiNm, sa.updtDttm, " +
       "br.ptTypeCd, br.svrtTypeCd, br.undrDsesCd, " +
       "ip.monStrtDt, null ) " +
       "from InfoPt pt " +
       "join SvrtPt ip on pt.ptId = ip.id.ptId " +
       "left join BdasReq br on pt.ptId = br.id.ptId " +
       "left join BdasAprv bap on (br.id.bdasSeq = bap.id.bdasSeq and bap.aprvYn = 'Y') " +
-      "left join InfoHosp ih on bap.hospId = ih.hospId " +
+      "left join InfoHosp ih on ip.id.hospId = ih.hospId " +
       "left join SvrtAnly sa on ip.id.ptId = sa.id.ptId and ip.pid = sa.pid " +
       "and sa.id.anlySeq = (select max(sa2.id.anlySeq) from SvrtAnly sa2 where sa2.id.ptId = pt.ptId and sa2.id.hospId = bap.hospId) " +
       "and sa.id.collSeq = 1 " +
