@@ -169,6 +169,7 @@ class SvrtService(
       ptId = ptId,
       hospId = latestSvrtPt.id.hospId,
     )
+    if (svrtAnlyList.isEmpty()) return null
     // svrtAnlyList의 마지막 4개 항목을 가져옴
     val lastFourItems = svrtAnlyList.takeLast(4)
 
