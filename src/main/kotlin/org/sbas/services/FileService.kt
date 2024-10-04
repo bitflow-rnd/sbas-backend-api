@@ -13,6 +13,7 @@ import org.sbas.dtos.AttcIdResponse
 import org.sbas.entities.base.BaseAttc
 import org.sbas.handlers.FileHandler
 import org.sbas.repositories.BaseAttcRepository
+import org.sbas.responses.CommonListResponse
 import org.sbas.responses.CommonResponse
 import org.sbas.responses.messages.FileResponse
 import org.sbas.utils.CustomizedException
@@ -132,7 +133,7 @@ class FileService {
     return Files.readAllBytes(filePath)
   }
 
-  fun findPrivateImages(attcGrpId: String): List<String> {
+  fun findPrivateImages(attcGrpId: String): CommonListResponse<String> {
     val findFiles = baseAttcRepository.findFilesByAttcGrpId(attcGrpId) ?: throw NotFoundException("not found")
 
     val imageList = mutableListOf<String>()
@@ -149,7 +150,7 @@ class FileService {
       imageList.add(base64String)
     }
 
-    return imageList
+    return CommonListResponse(imageList, count = imageList.size)
   }
 
   @Transactional
