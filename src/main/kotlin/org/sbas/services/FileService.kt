@@ -23,6 +23,7 @@ import java.io.InputStream
 import java.nio.file.Files
 import java.nio.file.Path
 import java.nio.file.Paths
+import java.util.*
 
 @ApplicationScoped
 class FileService {
@@ -131,17 +132,21 @@ class FileService {
     return Files.readAllBytes(filePath)
   }
 
-  fun findPrivateImages(attcGrpId: String): List<ByteArray> {
+  fun findPrivateImages(attcGrpId: String): List<String> {
     val findFiles = baseAttcRepository.findFilesByAttcGrpId(attcGrpId) ?: throw NotFoundException("not found")
 
-    val imageList = mutableListOf<ByteArray>()
+    val imageList = mutableListOf<String>()
 
     findFiles.forEach {
       require(it.privYn == "Y") { "not private file, check attcId" }
       require(it.fileTypeCd == SbasConst.FileTypeCd.IMAGE) { "not image file, check attcId" }
       val filePath: Path = Paths.get("${it.loclPath}/${it.fileNm}")
 
-      imageList.add(Files.readAllBytes(filePath))
+      val fileBytes = Files.readAllBytes(filePath)
+
+      val base64String = Base64.getEncoder().encodeToString(fileBytes)
+
+      imageList.add(base64String)
     }
 
     return imageList
