@@ -53,6 +53,13 @@ class PrivateCommonEndpoint {
     return Response.ok(fileService.privateFileUpload(param1, param2)).build()
   }
 
+  @Operation(summary = "그룹 ID에 추가 업로드 (권한별 공개 파일)", description = "private 파일 그룹 id에 추가 파일 업로드 API")
+  @POST
+  @Path("upload/{attcGrpId}")
+  fun uploadToGroupId(@RestPath attcGrpId: String, @RestForm param1: String?, @RestForm param2: MutableList<FileUpload>?): Response {
+    return Response.ok(fileService.privateFileUploadToGroupId(attcGrpId, param1, param2)).build()
+  }
+
   @Operation(summary = "이미지 조회 (권한별 공개 파일)", description = "private 이미지 조회(바이트 스트림으로 반환)")
   @GET
   @Path("image/{attcId}")

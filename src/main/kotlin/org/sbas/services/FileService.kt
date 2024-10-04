@@ -95,6 +95,27 @@ class FileService {
     return CommonResponse(AttcIdResponse(attcGrpId, attcIdList))
   }
 
+  @Transactional
+  fun privateFileUploadToGroupId(attcGrpId: String, param1: String?, param2: MutableList<FileUpload>?): CommonResponse<AttcIdResponse> {
+    if (param2.isNullOrEmpty() || param2.any { it.size() == 0L }) {
+      throw CustomizedException("파일을 등록하세요.", Response.Status.BAD_REQUEST)
+    }
+
+    val baseAttcList = param2.map {
+      val attcId = baseAttcRepository.getNextValAttcId()
+      val fileDto = fileHandler.createPrivateFile(it)
+      val fileTypeCd = getFileTypeCd(fileDto.fileExt)
+      val baseAttc =
+        fileDto.toPrivateEntity(attcGrpId = attcGrpId, attcId = attcId, fileTypeCd = fileTypeCd, rmk = param1)
+      baseAttc
+    }
+
+    baseAttcRepository.persist(baseAttcList)
+    val attcIdList = baseAttcList.map { it.attcId }
+
+    return CommonResponse(AttcIdResponse(attcGrpId, attcIdList))
+  }
+
   private fun getFileTypeCd(fileExt: String): String {
     val imageExtensions = setOf("bmp", "jpeg", "jpg", "gif", "png", "pdf")
     val videoExtensions = setOf("mp4", "avi", "mkv", "wmv", "flv", "mov", "webm", "3gp", "mpeg", "mpg", "ts")
