@@ -20,8 +20,8 @@ class SvrtPtRepository : PanacheRepositoryBase<SvrtPt, SvrtPtId> {
     return find("id.ptId = ?1", ptId).list()
   }
 
-  fun findByPid(pid: String): SvrtPt? {
-    return find("pid = ?1", pid).firstResult()
+  fun findByPtIdAndRgstSeq(pid: String, rgstSeq: Int): SvrtPt? {
+    return find("id.ptId = ?1 and id.rgstSeq = ?2", pid, rgstSeq).firstResult()
   }
 
   fun findAllWithMaxRgstSeq(): List<SvrtPt> {
@@ -34,7 +34,7 @@ class SvrtPtRepository : PanacheRepositoryBase<SvrtPt, SvrtPtId> {
 
   fun findSvrtPtList(param: SvrtPtSearchParam): List<SvrtPtSearchDto> {
     val cond = searchCondition(param)
-    val query = "select new org.sbas.dtos.SvrtPtSearchDto(ip.pid, pt.ptId, br.id.bdasSeq, pt.ptNm, pt.gndr, pt.rrno1, " +
+    val query = "select new org.sbas.dtos.SvrtPtSearchDto(ip.pid, ip.id.rgstSeq, pt.ptId, br.id.bdasSeq, pt.ptNm, pt.gndr, pt.rrno1, " +
       "pt.dstr1Cd, fn_get_cd_nm('SIDO', pt.dstr1Cd), pt.dstr2Cd, fn_get_cd_nm('SIDO'||pt.dstr1Cd, pt.dstr2Cd), " +
       "ip.id.hospId, ih.dutyName, pt.mpno, pt.natiCd, pt.natiNm, sa.updtDttm, " +
       "br.ptTypeCd, br.svrtTypeCd, br.undrDsesCd, " +
@@ -90,9 +90,9 @@ class SvrtPtRepository : PanacheRepositoryBase<SvrtPt, SvrtPtId> {
 
 @ApplicationScoped
 class SvrtAnlyRepository : PanacheRepositoryBase<SvrtAnly, SvrtAnlyId> {
-  fun findLastByPtIdAndHospId(ptId: String, hospId: String): List<SvrtAnly> {
-    val query = "select sa from SvrtAnly sa where sa.id.ptId = '$ptId' and sa.id.hospId = '$hospId' and " +
-      "sa.id.anlySeq = (select max(sa2.id.anlySeq) from SvrtAnly sa2 where sa2.id.ptId = '$ptId' and sa2.id.hospId = '$hospId') " +
+  fun findLastByPtIdAndHospId(ptId: String, hospId: String, rgstSeq: Int): List<SvrtAnly> {
+    val query = "select sa from SvrtAnly sa where sa.id.ptId = '$ptId' and sa.id.hospId = '$hospId' and sa.id.rgstSeq = $rgstSeq and " +
+      "sa.id.anlySeq = (select max(sa2.id.anlySeq) from SvrtAnly sa2 where sa2.id.ptId = '$ptId' and sa2.id.hospId = '$hospId' and sa2.id.rgstSeq = $rgstSeq) " +
       "order by sa.id.collSeq asc "
     return getEntityManager().createQuery(query, SvrtAnly::class.java).resultList
   }
@@ -118,7 +118,7 @@ class SvrtCollRepository : PanacheRepositoryBase<SvrtColl, SvrtCollId> {
     return find("id.ptId = ?1 and id.hospId = ?2", ptId, hospId).list()
   }
 
-  fun findByPidAndHospId(pid: String, hospId: String): List<SvrtColl> {
-    return find("pid = ?1 and id.hospId = ?2", pid, hospId).list()
+  fun findByPtId(ptId: String): List<SvrtColl> {
+    return find("id.ptId = ?1", ptId).list()
   }
 }
