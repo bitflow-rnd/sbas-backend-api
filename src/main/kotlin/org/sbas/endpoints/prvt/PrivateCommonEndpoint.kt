@@ -22,79 +22,88 @@ import org.sbas.services.FileService
 @Path("v1/private/common")
 class PrivateCommonEndpoint {
 
-    @Inject
-    lateinit var log: Logger
+  @Inject
+  lateinit var log: Logger
 
-    @Inject
-    lateinit var commonService: CommonService
+  @Inject
+  lateinit var commonService: CommonService
 
-    @Inject
-    lateinit var fileService: FileService
+  @Inject
+  lateinit var fileService: FileService
 
-    @Operation(summary = "파일목록 (권한별 공개 파일)", description = "")
-    @GET
-    @Path("files/{attcGrpId}")
-    fun files(@RestPath attcGrpId: String): Response {
-        return Response.ok(fileService.findFiles(attcGrpId)).build()
-    }
+  @Operation(summary = "파일목록 (권한별 공개 파일)", description = "")
+  @GET
+  @Path("files/{attcGrpId}")
+  fun files(@RestPath attcGrpId: String): Response {
+    return Response.ok(fileService.findFiles(attcGrpId)).build()
+  }
 
-    @Operation(summary = "다운로드 (권한별 공개 파일)", description = "")
-    @GET
-    @Path("download/{attcGrpId}/{attcId}")
-    @Produces(MediaType.APPLICATION_OCTET_STREAM)
-    fun download(@RestPath attcGrpId: String, @RestPath attcId: String): Response {
-        return fileService.publicFileDownload(attcGrpId, attcId)
-    }
+  @Operation(summary = "다운로드 (권한별 공개 파일)", description = "")
+  @GET
+  @Path("download/{attcGrpId}/{attcId}")
+  @Produces(MediaType.APPLICATION_OCTET_STREAM)
+  fun download(@RestPath attcGrpId: String, @RestPath attcId: String): Response {
+    return fileService.publicFileDownload(attcGrpId, attcId)
+  }
 
-    @Operation(summary = "업로드 (권한별 공개 파일)", description = "private 파일 업로드 API")
-    @POST
-    @Path("upload")
-    fun upload(@RestForm param1: String?, @RestForm param2: MutableList<FileUpload>?): Response {
-        return Response.ok(fileService.privateFileUpload(param1, param2)).build()
-    }
+  @Operation(summary = "업로드 (권한별 공개 파일)", description = "private 파일 업로드 API")
+  @POST
+  @Path("upload")
+  fun upload(@RestForm param1: String?, @RestForm param2: MutableList<FileUpload>?): Response {
+    return Response.ok(fileService.privateFileUpload(param1, param2)).build()
+  }
 
-    @Operation(summary = "이미지 조회 (권한별 공개 파일)", description = "private 이미지 조회(바이트 스트림으로 반환)")
-    @GET
-    @Path("image/{attcId}")
-    @Produces(MediaType.APPLICATION_OCTET_STREAM)
-    fun getPrivateImage(@RestPath attcId: String): Response? {
-        val imageBytes = fileService.findPrivateImage(attcId)
-        return Response.ok(imageBytes).build()
-    }
+  @Operation(summary = "이미지 조회 (권한별 공개 파일)", description = "private 이미지 조회(바이트 스트림으로 반환)")
+  @GET
+  @Path("image/{attcId}")
+  @Produces(MediaType.APPLICATION_OCTET_STREAM)
+  fun getPrivateImage(@RestPath attcId: String): Response? {
+    val imageBytes = fileService.findPrivateImage(attcId)
+    return Response.ok(imageBytes).build()
+  }
 
-    @Operation(summary = "서비스이용약관 동의", description = "")
-    @POST
-    @Path("svcusgterm/{param}")
-    fun svcusgterm(@RestPath param: String): Response {
-        return Response.ok().build()
-    }
+  @Operation(summary = "그룹 이미지 조회 (권한별 공개 파일)", description = "private 그룹 이미지 조회(바이트 스트림으로 반환)")
+  @GET
+  @Path("images/{attcId}")
+  @Produces(MediaType.APPLICATION_OCTET_STREAM)
+  fun getPrivateImages(@RestPath attcGrpId: String): Response? {
+    val imageBytes = fileService.findPrivateImages(attcGrpId)
+    return Response.ok(imageBytes).build()
+  }
 
-    @Operation(summary = "모바일 설정 조회", description = "")
-    @GET
-    @Path("settings")
-    fun settings(): Response {
-        return Response.ok().build()
-    }
+  @Operation(summary = "서비스이용약관 동의", description = "")
+  @POST
+  @Path("svcusgterm/{param}")
+  fun svcusgterm(@RestPath param: String): Response {
+    return Response.ok().build()
+  }
 
-    @Operation(summary = "모바일 설정 수정", description = "")
-    @POST
-    @Path("modsettings")
-    fun modsettings(): Response {
-        return Response.ok().build()
-    }
+  @Operation(summary = "모바일 설정 조회", description = "")
+  @GET
+  @Path("settings")
+  fun settings(): Response {
+    return Response.ok().build()
+  }
 
-    @Operation(summary = "약관 동의", description = "최신 버전 약관 동의 API")
-    @POST
-    @Path("terms/agree")
-    fun termsAgree(termsAgreeReq: TermsAgreeReq): Response {
-        return Response.ok(commonService.termsAgree(termsAgreeReq)).build()
-    }
+  @Operation(summary = "모바일 설정 수정", description = "")
+  @POST
+  @Path("modsettings")
+  fun modsettings(): Response {
+    return Response.ok().build()
+  }
 
-    @Operation(summary = "동의한 약관 목록", description = "동의한 약관 목록 API")
-    @GET
-    @Path("terms/agree-list")
-    fun getAgreeTermsList(agreeTermsListReq: AgreeTermsListReq): Response {
-        return Response.ok(commonService.getAgreeTermsList(agreeTermsListReq)).build()
-    }
+  @Operation(summary = "약관 동의", description = "최신 버전 약관 동의 API")
+  @POST
+  @Path("terms/agree")
+  fun termsAgree(termsAgreeReq: TermsAgreeReq): Response {
+    return Response.ok(commonService.termsAgree(termsAgreeReq)).build()
+  }
+
+  @Operation(summary = "동의한 약관 목록", description = "동의한 약관 목록 API")
+  @GET
+  @Path("terms/agree-list")
+  fun getAgreeTermsList(agreeTermsListReq: AgreeTermsListReq): Response {
+    return Response.ok(commonService.getAgreeTermsList(agreeTermsListReq)).build()
+  }
 
 }
