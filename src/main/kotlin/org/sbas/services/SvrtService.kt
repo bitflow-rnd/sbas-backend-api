@@ -67,8 +67,9 @@ class SvrtService(
     return CommonResponse(rsps)
   }
 
-  fun findSeverityInfos(ptId: String): CommonResponse<List<SvrtColl>> {
-    return CommonResponse(svrtCollRepository.findAllByPtIdOrderByCollSeqAsc(ptId))
+  fun findSeverityInfos(ptId: String, rgstSeq: Int): CommonResponse<List<SvrtColl>> {
+    val svrtCollList = svrtCollRepository.findAllByPtIdOrderByCollSeqAsc(ptId, rgstSeq)
+    return CommonResponse(svrtCollList)
   }
 
   @Transactional
@@ -76,40 +77,86 @@ class SvrtService(
     val svrtPt = svrtPtRepository.findByPtId(ptId).maxByOrNull { it.id.rgstSeq }
       ?: return
 
-    val svrtColls = svrtCollRepository.findByPtId(ptId)
-      .sortedWith(compareBy({ it.id.collSeq }, { it.rsltDt }))
+    // 관찰 종료일이 없는 경우에만 수집
+    if (svrtPt.monEndDt == null) {
+      val svrtColls = svrtCollRepository.findByPtIdAndRgstSeq(ptId, svrtPt.id.rgstSeq).sortedBy { it.id.collSeq }
+      val basedd = svrtColls.lastOrNull()?.rsltDt?.plusDays(1) ?: svrtPt.monStrtDt
 
-    val basedd = StringUtils.getYyyyMmDd()
+      val sampleData = HisRestClientRequest(pid, basedd)
+      var hisApiResponse: HisApiResponse? = null
+      if (pid.startsWith("001")) {
+        hisApiResponse = knuhHisRestClient.getKnuchSvrtMntrInfo(sampleData)
+      } else if (pid.startsWith("002")) {
+        hisApiResponse = knuhHisRestClient.getKnuhSvrtMntrInfo(sampleData)
+      } else if (pid.startsWith("003")) {
+        hisApiResponse = fatimaHisRestClient.getFatimaSvrtMntrInfo(sampleData)
+      } else if (pid.startsWith("004")) {
+        hisApiResponse = dgmcHisRestClient.getDgmcSvrtMntrInfo(sampleData)
+      }
+      log.debug("hisApiResponse: $hisApiResponse")
 
-    val sampleData = HisRestClientRequest(pid, basedd)
-    var hisApiResponse: HisApiResponse? = null
-    if (pid.startsWith("001")) {
-      hisApiResponse = knuhHisRestClient.getKnuchSvrtMntrInfo(sampleData)
-    } else if (pid.startsWith("002")) {
-      hisApiResponse = knuhHisRestClient.getKnuhSvrtMntrInfo(sampleData)
-    } else if (pid.startsWith("003")) {
-      hisApiResponse = fatimaHisRestClient.getFatimaSvrtMntrInfo(sampleData)
-    } else if (pid.startsWith("004")) {
-      hisApiResponse = dgmcHisRestClient.getDgmcSvrtMntrInfo(sampleData)
-    }
-    log.debug("hisApiResponse: $hisApiResponse")
+      val body = hisApiResponse!!.body
+      // 리스트가 비어있거나, 마지막 데이터의 msreDt가 basedd와 다르면 endMonitoring
+//      if (body.isEmpty() || body.last().rsltDt != basedd) {
+//        svrtPt.endMonitoring(basedd, StringUtils.getHhMmSs())
+//        return
+//      }
 
-    val svrtMntrInfoList = hisApiResponse!!.body
-//    if (body.last().rsltDt != basedd) {
-//      svrtPt.endMonitoring(basedd, StringUtils.getHhMmSs())
-//      return null
-//    }
-
-    val svrtCollList = svrtMntrInfoList.map { svrtMntrInfo ->
-      svrtMntrInfo.toSvrtColl(
+      val svrtMntrInfo = body.last()
+      val svrtColl = svrtMntrInfo.toSvrtColl(
         ptId = svrtPt.id.ptId,
         hospId = svrtPt.id.hospId,
         rgstSeq = svrtPt.id.rgstSeq,
         collSeq = svrtColls.lastOrNull()?.id?.collSeq?.plus(1) ?: 1,
       )
+      svrtCollRepository.persist(svrtColl)
     }
+  }
 
-    svrtCollRepository.persist(svrtCollList)
+  @Transactional
+  fun saveInitMntrInfo(ptId: String, pid: String) {
+    val svrtPt = svrtPtRepository.findByPtId(ptId).maxByOrNull { it.id.rgstSeq }
+      ?: return
+
+    var basedd = svrtPt.monStrtDt
+    val today = StringUtils.getYyyyMmDd()
+
+    // basedd가 오늘보다 이전이고 monEndDt가 null인 동안 반복
+    while (basedd <= today && svrtPt.monEndDt == null) {
+      // 수집 데이터를 정렬하여 가장 최신의 날짜를 기반으로 다음 시작 날짜 설정
+      val svrtColls = svrtCollRepository.findByPtIdAndRgstSeq(ptId, svrtPt.id.rgstSeq).sortedBy { it.id.collSeq }
+      basedd = svrtColls.lastOrNull()?.rsltDt?.plusDays(1) ?: svrtPt.monStrtDt
+
+      // 샘플 데이터 생성 및 요청
+      val sampleData = HisRestClientRequest(pid, basedd)
+      var hisApiResponse: HisApiResponse? = null
+
+      // 병원 ID에 따라 적절한 HIS API 호출
+      when {
+        pid.startsWith("001") -> hisApiResponse = knuhHisRestClient.getKnuchSvrtMntrInfo(sampleData)
+        pid.startsWith("002") -> hisApiResponse = knuhHisRestClient.getKnuhSvrtMntrInfo(sampleData)
+        pid.startsWith("003") -> hisApiResponse = fatimaHisRestClient.getFatimaSvrtMntrInfo(sampleData)
+        pid.startsWith("004") -> hisApiResponse = dgmcHisRestClient.getDgmcSvrtMntrInfo(sampleData)
+      }
+
+      log.debug("hisApiResponse: $hisApiResponse")
+
+      // 응답 데이터를 바탕으로 새로운 svrtColl 객체 생성
+      val body = hisApiResponse?.body ?: return
+      val svrtMntrInfo = body.lastOrNull() ?: return
+      val svrtColl = svrtMntrInfo.toSvrtColl(
+        ptId = svrtPt.id.ptId,
+        hospId = svrtPt.id.hospId,
+        rgstSeq = svrtPt.id.rgstSeq,
+        collSeq = svrtColls.lastOrNull()?.id?.collSeq?.plus(1) ?: 1
+      )
+
+      // 새로운 수집 데이터를 저장
+      svrtCollRepository.persist(svrtColl)
+
+      // basedd를 다음 날짜로 업데이트 (문자열 형식 유지)
+      basedd = basedd.plus(1)
+    }
   }
 
   @Transactional
@@ -117,9 +164,6 @@ class SvrtService(
     val svrtCollList = svrtCollRepository.findByPtIdAndPidOrderByRsltDtAsc(ptId, pid) // 3
     if (svrtCollList.isEmpty()) return
     if (svrtCollList.last().rsltDt < StringUtils.getYyyyMmDd()) return
-
-    val filteredSvrtCollList = svrtCollList.filter { it.hasNonEmptyFields() }
-    if (filteredSvrtCollList.isEmpty()) return
 
     val covSfList = svrtAnlyHandler.analyse(svrtCollList) // 주어진 날짜 + 3일까지의 예측값(+1, +2, +3)
     val findSvrtAnly = svrtAnlyRepository.findMaxAnlySeqByPtIdAndPid(ptId, pid)
@@ -153,6 +197,7 @@ class SvrtService(
 
   @Transactional
   fun findSvrtPtList(param: SvrtPtSearchParam): CommonListResponse<SvrtPtSearchDto> {
+    log.debug("param: $param")
     val svrtPtList = svrtPtRepository.findSvrtPtList(param)
     svrtPtList.forEach {
       it.covSf = findCovSF(it.ptId!!, it.rgstSeq)

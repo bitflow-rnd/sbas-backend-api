@@ -413,7 +413,7 @@ class BdasService {
     if (saveRequest.admsStatCd == AdmsStatCd.IOST0001.name) {
       svrtPtRepository.persist(svrtPtEntity)
 
-      svrtService.saveMntrInfoWithSample(saveRequest.ptId, saveRequest.pid!!)
+      svrtService.saveInitMntrInfo(saveRequest.ptId, saveRequest.pid!!)
       svrtService.saveSvrtAnly(saveRequest.ptId, saveRequest.pid)
     }
 

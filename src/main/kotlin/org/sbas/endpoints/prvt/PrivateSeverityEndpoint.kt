@@ -36,9 +36,9 @@ class PrivateSeverityEndpoint {
     description = "중증 관찰 환자의 생체 정보를 조회"
   )
   @GET
-  @Path("infos/{ptId}")
-  fun severityInfo(@RestPath ptId: String): Response {
-    return Response.ok(svrtService.findSeverityInfos(ptId)).build()
+  @Path("infos/{ptId}/{rgstSeq}")
+  fun severityInfo(@RestPath ptId: String, @RestPath rgstSeq: Int): Response {
+    return Response.ok(svrtService.findSeverityInfos(ptId, rgstSeq)).build()
   }
 
   @Operation(summary = "환자 중증정보 목록 조회", description = "")
