@@ -36,7 +36,8 @@ class InfoPtRepository : PanacheRepositoryBase<InfoPt, String> {
       "pt.dstr1Cd, fn_get_cd_nm('SIDO', pt.dstr1Cd), pt.dstr2Cd, fn_get_cd_nm('SIDO'||pt.dstr1Cd, pt.dstr2Cd), " +
       "bap.hospId, ih.dutyName, pt.mpno, pt.natiCd, pt.natiNm, br.bedStatCd, pt.rgstDttm, pt.updtDttm, br.svrtIptTypeCd, " +
       "br.ptTypeCd, br.svrtTypeCd, br.undrDsesCd, fn_get_age(pt.rrno1, pt.rrno2), " +
-      "(pt.ptId in (select sa.id.ptId from SvrtAnly sa) or pt.ptId in (select sp.id.ptId from SvrtPt sp)) " +
+      "(pt.ptId in (select sa.id.ptId from SvrtAnly sa) or pt.ptId in (select sp.id.ptId from SvrtPt sp)), " +
+      "(select max(sp.id.rgstSeq) from SvrtPt sp where sp.id.ptId = pt.ptId) " +
       " ) " +
       "from InfoPt pt " +
       "left join BdasReq br on pt.ptId = br.id.ptId " +
@@ -160,6 +161,11 @@ class InfoPtRepository : PanacheRepositoryBase<InfoPt, String> {
     val offset = param.page?.run { this.minus(1).times(15) } ?: 0
 
     return Pair(cond, offset)
+  }
+
+  fun getNextValPtId(): String {
+    val nextValue = getEntityManager().createNativeQuery("select nextval('pt_seq')").singleResult
+    return "PT" + nextValue.toString().padStart(8, '0')
   }
 }
 
