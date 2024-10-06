@@ -200,18 +200,16 @@ class SvrtService(
     log.debug("param: $param")
     val svrtPtList = svrtPtRepository.findSvrtPtList(param)
     svrtPtList.forEach {
-      it.covSf = findCovSF(it.ptId!!, it.rgstSeq)
+      it.covSf = findCovSF(it.ptId!!, it.hospId!!, it.rgstSeq)
     }
     val count = svrtPtRepository.countSvrtPtList(param)
     return CommonListResponse(svrtPtList, count.toInt())
   }
 
-  fun findCovSF(ptId: String, rgstSeq: Int): CovSfRsps? {
-    val latestSvrtPt = svrtPtRepository.findByPtId(ptId).maxByOrNull { it.id.rgstSeq }
-      ?: return null
+  fun findCovSF(ptId: String, hospId: String, rgstSeq: Int): CovSfRsps? {
     val svrtAnlyList = svrtAnlyRepository.findLastByPtIdAndHospId(
       ptId = ptId,
-      hospId = latestSvrtPt.id.hospId,
+      hospId = hospId,
       rgstSeq = rgstSeq,
     )
     if (svrtAnlyList.isEmpty()) return null
