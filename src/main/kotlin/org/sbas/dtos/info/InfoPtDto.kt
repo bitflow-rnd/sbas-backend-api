@@ -40,8 +40,9 @@ data class InfoPtDto(
 
     val addr: String?,
 ) {
-    fun toEntity(dstr1Cd: String, dstr2Cd: String): InfoPt {
+    fun toEntity(ptId: String, dstr1Cd: String, dstr2Cd: String): InfoPt {
         return InfoPt(
+            ptId = ptId,
             ptNm = this.ptNm,
             gndr = this.gndr,
             rrno1 = this.rrno1,
@@ -120,6 +121,7 @@ data class InfoPtSearchDto(
     @JsonIgnore val undrDsesCd: String?,
     val age: Int?,
     val monitoring: Boolean?,
+    val rgstSeq: Int?,
 ) {
     val bedStatCdNm: String? = bedStatCd?.let { BedStatCd.valueOf(it).cdNm }
     val tagList: MutableList<String>

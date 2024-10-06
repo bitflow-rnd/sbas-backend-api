@@ -90,7 +90,8 @@ class PatientService {
     val split = infoPtDto.bascAddr.split(" ")
     val dstr1Cd = StringUtils.getDstr1Cd(split[0])
     val findBaseCode = baseCodeRepository.findByDstr1CdAndCdNm(dstr1Cd, split[1])
-    val infoPt = infoPtDto.toEntity(dstr1Cd, findBaseCode.id.cdId)
+    val ptId = infoPtRepository.getNextValPtId()
+    val infoPt = infoPtDto.toEntity(ptId, dstr1Cd, findBaseCode.id.cdId)
 
     infoPtRepository.persist(infoPt)
 
@@ -116,7 +117,7 @@ class PatientService {
         ptNm = it.ptNm,
         gndr = it.gndr,
         rrno1 = it.rrno1,
-        rrno2 = if (it.rrno2.length > 1) it.rrno2.first().toString() else it.rrno2,
+        rrno2 = it.rrno2,
         dstr1Cd = it.dstr1Cd,
         dstr1CdNm = baseCode?.rmk,
         dstr2Cd = it.dstr2Cd,
@@ -178,7 +179,7 @@ class PatientService {
       gndr = infoPt.gndr,
       age = infoPtRepository.getAge(infoPt.rrno1, infoPt.rrno2),
       rrno1 = infoPt.rrno1,
-      rrno2 = if (infoPt.rrno2.length > 1) infoPt.rrno2.first().toString() else infoPt.rrno2,
+      rrno2 = infoPt.rrno2,
       dstr1Cd = infoPt.dstr1Cd,
       dstr1CdNm = baseCode?.rmk,
       dstr2Cd = infoPt.dstr2Cd,

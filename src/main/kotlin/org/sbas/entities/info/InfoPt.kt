@@ -18,6 +18,10 @@ import java.io.Serializable
 @Entity
 @Table(name = "info_pt")
 class InfoPt(
+    @Id
+    @Column(name = "pt_id", nullable = false, length = 10)
+    var ptId: String, // 환자 ID
+
     @Column(name = "pt_nm", nullable = false, length = 10)
     var ptNm: String, // 이름
 
@@ -83,20 +87,6 @@ class InfoPt(
     @Column(name = "undr_dses_etc", nullable = true, length = 50)
     var undrDsesEtc: String? = null, // 기저 질환 기타
 ) : CommonEntity(), Serializable {
-
-    @Id
-    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "pt_seq")
-    @GenericGenerator(
-        name = "pt_seq",
-        strategy = "org.sbas.entities.StringPrefixedSequenceIdGenerator",
-        parameters = [
-            Parameter(name = StringPrefixedSequenceIdGenerator.VALUE_PREFIX_PARAMETER, value = "PT"),
-            Parameter(name = StringPrefixedSequenceIdGenerator.NUMBER_FORMAT_PARAMETER, value = "%08d"),
-            Parameter(name = StringPrefixedSequenceIdGenerator.incrementSize, value = "1")
-        ]) // PT00000000
-    @Column(name = "pt_id", nullable = false, length = 10)
-    lateinit var ptId: String // 환자 ID
-        protected set
 
     fun updateEntity(infoPtDto: InfoPtDto) {
         this.ptNm = infoPtDto.ptNm
