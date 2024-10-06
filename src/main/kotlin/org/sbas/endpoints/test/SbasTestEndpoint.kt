@@ -10,7 +10,9 @@ import jakarta.ws.rs.QueryParam
 import jakarta.ws.rs.core.SecurityContext
 import org.eclipse.microprofile.openapi.annotations.tags.Tag
 import org.jboss.logging.Logger
+import org.sbas.entities.svrt.SvrtColl
 import org.sbas.handlers.GeocodingHandler
+import org.sbas.repositories.SvrtCollRepository
 import org.sbas.restdtos.NaverGeocodingApiParams
 import org.sbas.restdtos.response.NaverGeocodingApiResponse
 import org.sbas.restdtos.response.NaverReverseGeocodingApiResponse
@@ -35,6 +37,9 @@ class SbasTestEndpoint {
 
     @Inject
     lateinit var svrtService: SvrtService
+
+    @Inject
+    lateinit var svrtCollRepository: SvrtCollRepository
 
     @POST
     @Path("geocoding-test")
@@ -65,14 +70,30 @@ class SbasTestEndpoint {
   @GET
   @Path("test")
   fun test() {
-    val knuchSampleList = listOf("0010001", "0010002", "0010003", "0010004", "0010005")
-    val knuhSampleList = listOf("0020001", "0020002", "0020003", "0020004", "0020005")
+//    val knuchSampleList = listOf("0010001", "0010002", "0010003", "0010004", "0010005")
+//    val knuhSampleList = listOf("0020001", "0020002", "0020003", "0020004", "0020005")
     val fatimaSampleList = listOf("0030001", "0030002", "0030003", "0030004", "0030005")
-    val sampleList = knuchSampleList + knuhSampleList + fatimaSampleList
+    val sampleList = fatimaSampleList
 
     svrtService.findAllSvrtPt().forEach { svrtPt ->
       if (sampleList.contains(svrtPt.pid)) {
         svrtService.saveSvrtAnly(svrtPt.id.ptId, svrtPt.pid)
+      }
+    }
+  }
+
+  @GET
+  @Path("test2")
+  fun testw() {
+//    val knuchSampleList = listOf("0010001", "0010002", "0010003", "0010004", "0010005")
+//    val knuhSampleList = listOf("0020001", "0020002", "0020003", "0020004", "0020005")
+    val fatimaSampleList = listOf("0030001", "0030002", "0030003", "0030004", "0030005")
+//    val dgmcSampleList = listOf("0040001", "0040002", "0040003", "0040004", "0040005")
+    val sampleList = fatimaSampleList
+
+    svrtService.findAllSvrtPt().forEach { svrtPt ->
+      if (sampleList.contains(svrtPt.pid)) {
+        svrtService.saveInitMntrInfo(svrtPt.id.ptId, svrtPt.pid)
       }
     }
   }
