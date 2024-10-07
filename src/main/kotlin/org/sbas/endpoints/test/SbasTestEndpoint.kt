@@ -7,7 +7,6 @@ import jakarta.ws.rs.GET
 import jakarta.ws.rs.POST
 import jakarta.ws.rs.Path
 import jakarta.ws.rs.QueryParam
-import jakarta.ws.rs.core.SecurityContext
 import org.eclipse.microprofile.openapi.annotations.tags.Tag
 import org.jboss.logging.Logger
 import org.sbas.entities.svrt.SvrtColl
@@ -29,10 +28,7 @@ class SbasTestEndpoint {
     @Inject
     lateinit var geoHandler: GeocodingHandler
 
-    @Inject
-    lateinit var security: SecurityContext
-
-    @Inject
+  @Inject
     lateinit var firebaseService: FirebaseService
 
     @Inject
@@ -70,14 +66,17 @@ class SbasTestEndpoint {
   @GET
   @Path("test")
   fun test() {
-//    val knuchSampleList = listOf("0010001", "0010002", "0010003", "0010004", "0010005")
-//    val knuhSampleList = listOf("0020001", "0020002", "0020003", "0020004", "0020005")
+    val knuchSampleList = listOf("0010001", "0010002", "0010003", "0010004", "0010005")
+    val knuhSampleList = listOf("0020001", "0020002", "0020003", "0020004", "0020005")
     val fatimaSampleList = listOf("0030001", "0030002", "0030003", "0030004", "0030005")
-    val sampleList = fatimaSampleList
+    val dgmcSampleList = listOf("0040001", "0040002", "0040003", "0040004", "0040005")
+    val sampleList = knuchSampleList + knuhSampleList + fatimaSampleList + dgmcSampleList
+
+//    svrtService.saveSvrtAnly("PT00000433", "0030001")
 
     svrtService.findAllSvrtPt().forEach { svrtPt ->
       if (sampleList.contains(svrtPt.pid)) {
-        svrtService.saveSvrtAnly(svrtPt.id.ptId, svrtPt.pid)
+        svrtService.saveSvrtAnly("PT00000433", "0030001")
       }
     }
   }
@@ -85,11 +84,11 @@ class SbasTestEndpoint {
   @GET
   @Path("test2")
   fun testw() {
-//    val knuchSampleList = listOf("0010001", "0010002", "0010003", "0010004", "0010005")
-//    val knuhSampleList = listOf("0020001", "0020002", "0020003", "0020004", "0020005")
+    val knuchSampleList = listOf("0010001", "0010002", "0010003", "0010004", "0010005")
+    val knuhSampleList = listOf("0020001", "0020002", "0020003", "0020004", "0020005")
     val fatimaSampleList = listOf("0030001", "0030002", "0030003", "0030004", "0030005")
-//    val dgmcSampleList = listOf("0040001", "0040002", "0040003", "0040004", "0040005")
-    val sampleList = fatimaSampleList
+    val dgmcSampleList = listOf("0040001", "0040002", "0040003", "0040004", "0040005")
+    val sampleList = knuchSampleList + knuhSampleList + fatimaSampleList + dgmcSampleList
 
     svrtService.findAllSvrtPt().forEach { svrtPt ->
       if (sampleList.contains(svrtPt.pid)) {
