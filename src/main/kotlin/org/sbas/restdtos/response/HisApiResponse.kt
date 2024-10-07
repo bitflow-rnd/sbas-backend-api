@@ -8,7 +8,7 @@ data class HisApiResponse(
   val elapsedTime: Int,
   val status: String,
   val errors: List<Any>,
-  val message: String,
+  val message: String?,
   val timestamp: String,
   val bodyType: String,
   val body: List<SvrtMntrInfo>,
@@ -35,7 +35,7 @@ data class SvrtMntrInfo(
   val ldh: String,
   val lym: String,
   val neu: String,
-  val pid: String,
+  val pid: String?,
   val pla: String,
   val pot: String,
   val resp: String,
@@ -46,7 +46,7 @@ data class SvrtMntrInfo(
   val wbc: String,
   var oxyapp: String,
 ) {
-  fun toSvrtColl(ptId: String, hospId: String, rgstSeq: Int, collSeq: Int): SvrtColl {
+  fun toSvrtColl(ptId: String, hospId: String, rgstSeq: Int, collSeq: Int, pid: String): SvrtColl {
     return SvrtColl(
       id = SvrtCollId(
         ptId = ptId,
@@ -55,7 +55,7 @@ data class SvrtMntrInfo(
         msreDt = msreDt,
         collSeq = collSeq,
       ),
-      pid = pid,
+      pid = this.pid ?: pid,
       admsDt = admsDt,
       deptNm = deptNm,
       wardNm = wardNm,
