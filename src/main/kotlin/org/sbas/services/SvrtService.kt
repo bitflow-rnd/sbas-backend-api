@@ -108,6 +108,7 @@ class SvrtService(
         hospId = svrtPt.id.hospId,
         rgstSeq = svrtPt.id.rgstSeq,
         collSeq = svrtColls.lastOrNull()?.id?.collSeq?.plus(1) ?: 1,
+        pid = pid,
       )
       svrtCollRepository.persist(svrtColl)
     }
@@ -148,7 +149,8 @@ class SvrtService(
         ptId = svrtPt.id.ptId,
         hospId = svrtPt.id.hospId,
         rgstSeq = svrtPt.id.rgstSeq,
-        collSeq = svrtColls.lastOrNull()?.id?.collSeq?.plus(1) ?: 1
+        collSeq = svrtColls.lastOrNull()?.id?.collSeq?.plus(1) ?: 1,
+        pid = pid,
       )
 
       // 새로운 수집 데이터를 저장
