@@ -8,7 +8,7 @@ data class HisApiResponse(
   val elapsedTime: Int,
   val status: String,
   val errors: List<Any>,
-  val message: String,
+  val message: String?,
   val timestamp: String,
   val bodyType: String,
   val body: List<SvrtMntrInfo>,
