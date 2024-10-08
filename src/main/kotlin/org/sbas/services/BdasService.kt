@@ -414,7 +414,7 @@ class BdasService {
       svrtPtRepository.persist(svrtPtEntity)
 
       svrtService.saveInitMntrInfo(saveRequest.ptId, saveRequest.pid!!)
-      svrtService.saveSvrtAnly(saveRequest.ptId, saveRequest.pid)
+      svrtService.saveInitSvrtAnly(saveRequest.ptId, saveRequest.pid)
     }
 
     bdasAdmsRepository.persist(entity)
