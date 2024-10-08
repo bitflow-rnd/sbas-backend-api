@@ -122,6 +122,15 @@ class SvrtService(
     var basedd = svrtPt.monStrtDt
     val today = StringUtils.getYyyyMmDd()
 
+    val knuchSampleList = listOf("0010001", "0010002", "0010003", "0010004", "0010005")
+    val knuhSampleList = listOf("0020001", "0020002", "0020003", "0020004", "0020005")
+    val fatimaSampleList = listOf("0030001", "0030002", "0030003", "0030004", "0030005")
+    val dgmcSampleList = listOf("0040001", "0040002", "0040003", "0040004", "0040005")
+    val sampleList = knuchSampleList + knuhSampleList + fatimaSampleList + dgmcSampleList
+    if (!sampleList.contains(svrtPt.pid)) {
+      return
+    }
+
     // basedd가 오늘보다 이전이고 monEndDt가 null인 동안 반복
     while (basedd <= today && svrtPt.monEndDt == null) {
       // 수집 데이터를 정렬하여 가장 최신의 날짜를 기반으로 다음 시작 날짜 설정
