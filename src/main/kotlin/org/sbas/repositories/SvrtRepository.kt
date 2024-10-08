@@ -52,9 +52,8 @@ class SvrtPtRepository : PanacheRepositoryBase<SvrtPt, SvrtPtId> {
       "$cond " +
       "order by sa.updtDttm desc "
 
-    val offset = param.page?.run { this.minus(1).times(15) } ?: 0
-    return entityManager.createQuery(query, SvrtPtSearchDto::class.java).setMaxResults(15)
-      .setFirstResult(offset).resultList
+
+    return entityManager.createQuery(query, SvrtPtSearchDto::class.java).resultList
   }
 
   fun countSvrtPtList(param: SvrtPtSearchParam): Long {
