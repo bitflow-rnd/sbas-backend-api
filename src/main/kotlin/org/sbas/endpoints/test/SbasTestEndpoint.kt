@@ -76,7 +76,7 @@ class SbasTestEndpoint {
 
     svrtService.findAllSvrtPt().forEach { svrtPt ->
       if (sampleList.contains(svrtPt.pid)) {
-        svrtService.saveSvrtAnly("PT00000433", "0030001")
+        svrtService.saveSvrtAnly(svrtPt.id.ptId, svrtPt.pid)
       }
     }
   }

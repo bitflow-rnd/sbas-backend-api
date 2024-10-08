@@ -204,8 +204,15 @@ class SvrtService(
     svrtPtList.forEach {
       it.covSf = findCovSF(it.ptId!!, it.hospId!!, it.rgstSeq)
     }
+    val sortedSvrtPtList = svrtPtList.sortedWith(
+      compareByDescending<SvrtPtSearchDto> { it.covSf?.today }
+        .thenByDescending { it.covSf?.plusOneDay }
+        .thenByDescending { it.covSf?.plusTwoDay }
+        .thenByDescending { it.covSf?.plusThreeDay }
+    )
     val count = svrtPtRepository.countSvrtPtList(param)
-    return CommonListResponse(svrtPtList, count.toInt())
+
+    return CommonListResponse(sortedSvrtPtList, count.toInt())
   }
 
   fun findCovSF(ptId: String, hospId: String, rgstSeq: Int): CovSfRsps? {
