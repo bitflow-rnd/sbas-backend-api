@@ -124,8 +124,8 @@ class SvrtService(
 
     val knuchSampleList = listOf("0010001", "0010002", "0010003", "0010004", "0010005")
     val knuhSampleList = listOf("0020001", "0020002", "0020003", "0020004", "0020005")
-    val fatimaSampleList = listOf("0030001", "0030002", "0030003", "0030004", "0030005")
-    val dgmcSampleList = listOf("0040001", "0040002", "0040003", "0040004", "0040005")
+    val fatimaSampleList = listOf("0030001", "0030002", "0030003", "0030004", "0030005", "0030006")
+    val dgmcSampleList = listOf("0040001", "0040002", "0040003", "0040004", "0040005", "0040006")
     val sampleList = knuchSampleList + knuhSampleList + fatimaSampleList + dgmcSampleList
     if (!sampleList.contains(svrtPt.pid)) {
       return
