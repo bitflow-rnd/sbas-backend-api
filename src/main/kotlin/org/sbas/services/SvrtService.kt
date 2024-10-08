@@ -236,12 +236,39 @@ class SvrtService(
   @Transactional
   fun findSvrtPtList(param: SvrtPtSearchParam): CommonListResponse<SvrtPtSearchDto> {
     log.debug("param: $param")
+
+    // svrtPtList 조회
     val svrtPtList = svrtPtRepository.findSvrtPtList(param)
+
     svrtPtList.forEach {
       it.covSf = findCovSF(it.ptId!!, it.hospId!!, it.rgstSeq)
     }
-    val count = svrtPtRepository.countSvrtPtList(param)
-    return CommonListResponse(svrtPtList, count.toInt())
+
+    // covSf의 today, plusOneDay, plusTwoDay, plusThreeDay 값을 기준으로 정렬
+    val sortedSvrtPtList = svrtPtList.sortedWith(
+      compareByDescending<SvrtPtSearchDto> { it.covSf?.today }
+        .thenByDescending { it.covSf?.plusOneDay }
+        .thenByDescending { it.covSf?.plusTwoDay }
+        .thenByDescending { it.covSf?.plusThreeDay }
+    )
+
+    val page = param.page ?: 1
+    val size = 15  // 한 페이지에 15개씩
+
+    // 페이징 처리: page와 size를 이용해 리스트 자르기
+    val fromIndex = (page - 1) * size
+    val toIndex = minOf(fromIndex + size, sortedSvrtPtList.size)
+
+    // 유효한 범위인지 확인 후 subList로 자르기
+    val pagedSvrtPtList = if (fromIndex in 0 until sortedSvrtPtList.size) {
+      sortedSvrtPtList.subList(fromIndex, toIndex)
+    } else {
+      emptyList()
+    }
+
+    val count = svrtPtList.size
+
+    return CommonListResponse(pagedSvrtPtList, count)
   }
 
   fun findCovSF(ptId: String, hospId: String, rgstSeq: Int): CovSfRsps? {
