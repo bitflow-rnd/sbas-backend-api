@@ -6,6 +6,7 @@ import org.sbas.dtos.info.InfoCrewSaveReq
 import org.sbas.entities.bdas.BdasTrns
 import org.sbas.entities.bdas.BdasTrnsId
 import org.sbas.entities.info.InfoCrew
+import org.sbas.entities.info.InfoCrewId
 import org.sbas.utils.StringUtils
 
 data class BdasTrnsSaveRequest(
@@ -17,15 +18,15 @@ data class BdasTrnsSaveRequest(
   val instId: String,
   @field: NotBlank
   val ambsNm: String,
-  val crew1Id: String?,
+  val crew1Id: Int?,
   val crew1Pstn: String?,
   val crew1Nm: String?,
   val crew1Telno: String?,
-  val crew2Id: String?,
+  val crew2Id: Int?,
   val crew2Pstn: String?,
   val crew2Nm: String?,
   val crew2Telno: String?,
-  val crew3Id: String?,
+  val crew3Id: Int?,
   val crew3Pstn: String?,
   val crew3Nm: String?,
   val crew3Telno: String?,
@@ -57,6 +58,37 @@ data class BdasTrnsSaveRequest(
       dprtDt = StringUtils.getYyyyMmDd(),
       dprtTm = StringUtils.getHhMmSs(),
     )
+  }
+
+  fun toInfoCrewList(): List<InfoCrew?> {
+    val infoCrew1 = if (crew1Id != null && crew1Id != 0) {
+      InfoCrew(
+        id = InfoCrewId(instId, crew1Id),
+        crewNm = crew1Nm!!,
+        telno = crew1Telno,
+        pstn = crew1Pstn,
+        rmk = null,
+      )
+    } else null
+    val infoCrew2 = if (crew2Id != null && crew2Id != 0) {
+      InfoCrew(
+        id = InfoCrewId(instId, crew2Id),
+        crewNm = crew2Nm!!,
+        telno = crew2Telno,
+        pstn = crew2Pstn,
+        rmk = null,
+      )
+    } else null
+    val infoCrew3 = if (crew3Id != null && crew3Id != 0) {
+      InfoCrew(
+        id = InfoCrewId(instId, crew3Id),
+        crewNm = crew3Nm!!,
+        telno = crew3Telno,
+        pstn = crew3Pstn,
+        rmk = null,
+      )
+    } else null
+    return listOf(infoCrew1, infoCrew2, infoCrew3)
   }
 
   fun toInfoCrewSaveReqList(): List<InfoCrewSaveReq?> {

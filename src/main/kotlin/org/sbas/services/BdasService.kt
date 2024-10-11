@@ -388,7 +388,7 @@ class BdasService {
       throw CustomizedException("의료진 승인 정보가 없습니다.", Response.Status.BAD_REQUEST)
     }
 
-    val saveInfoCrewList = infoCrewComponent.saveInfoCrew(saveRequest.toInfoCrewSaveReqList(), saveRequest.instId)
+    val saveInfoCrewList = infoCrewComponent.saveInfoCrew(saveRequest)
     bdasTrnsRepository.persist(saveRequest.toEntity(saveInfoCrewList.sortedBy { it.id.crewId }))
     infoCrewComponent.saveVehicleInfo(saveRequest.instId, saveRequest.vecno)
 

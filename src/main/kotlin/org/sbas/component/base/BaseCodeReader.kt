@@ -45,8 +45,6 @@ class BaseCodeReader(
             completableFuture.get()
         }
 
-      println("cdGrpId/stringCode $cdGrpId $stringCode")
-
         val list = stringCode.split(";")?.map { code ->
             baseCodes.firstOrNull { it.id.cdId == code }?.cdNm ?: throw NotFoundException("Code not found - $code")
         }
