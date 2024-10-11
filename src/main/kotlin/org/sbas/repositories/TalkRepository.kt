@@ -68,32 +68,18 @@ class TalkUserRepository : PanacheRepositoryBase<TalkUser, TalkUserId> {
     return find(query).firstResult()?.id?.tkrmId
   }
 
-  fun persistTalkUsers(regGroupTalkRoomDto: RegGroupTalkRoomDto, talkRoom: TalkRoom) {
-    val regTalkUserIdSelf = TalkUserId(tkrmId = talkRoom.tkrmId, userId = regGroupTalkRoomDto.id)
-    val regTalkUserSelf = TalkUser(
-      id = regTalkUserIdSelf,
-      tkrmNm = regGroupTalkRoomDto.tkrmNm,
-      hostYn = "Y",
+  fun persistTalkUsers(userId: String, talkRoom: TalkRoom, tkrmNm: String, hostYn: String) {
+    val talkUserId = TalkUserId(tkrmId = talkRoom.tkrmId, userId = userId)
+    val talkUser = TalkUser(
+      id = talkUserId,
+      tkrmNm = tkrmNm,
+      hostYn = hostYn,
       joinDt = talkRoom.cretDt,
       joinTm = talkRoom.cretTm,
       wtdrDt = null,
       wtdrTm = null
     )
-    persist(regTalkUserSelf)
-
-    regGroupTalkRoomDto.userIds?.map {
-      val talkRoomId = TalkUserId(tkrmId = talkRoom.tkrmId, userId = it)
-      val regTalkUser = TalkUser(
-        id = talkRoomId,
-        hostYn = "N",
-        joinDt = talkRoom.cretDt,
-        joinTm = talkRoom.cretTm,
-        wtdrDt = null,
-        wtdrTm = null
-      )
-
-      persist(regTalkUser)
-    }
+    persist(talkUser)
   }
 
   fun countByTkrmId(tkrmId: String): Int {

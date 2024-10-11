@@ -91,20 +91,28 @@ class TalkService {
   @Transactional
   fun regGroupChatRoom(regRequest: RegGroupTalkRoomDto): CommonResponse<String> {
     val tkrmId = talkRoomRepository.findNextId()
-
-    if (regRequest.tkrmNm == "" || regRequest.tkrmNm == null) {
-      var tkrmNm = ""
-      tkrmNm += regRequest.userIds?.joinToString(", ")
-
-      if (tkrmNm == "") regRequest.tkrmNm = regRequest.id
-      else regRequest.tkrmNm = tkrmNm
-    }
-
     val regTalkRoom = regRequest.toEntity(tkrmId)
 
-    talkRoomRepository.persist(regTalkRoom)
+    if (regRequest.tkrmNm.isNullOrEmpty()) {
+      val tkrmNmForCreator = regRequest.userNmList.joinToString(", ")  // 초대된 유저들의 이름을 모두 합침
+      talkUserRepository.persistTalkUsers(regRequest.id, regTalkRoom, tkrmNmForCreator, "Y")
 
-    talkUserRepository.persistTalkUsers(regRequest, regTalkRoom)
+      // 초대된 유저들의 tkrmNm 설정
+      regRequest.userIdList.forEachIndexed { index, userId ->
+        val otherUsers = listOf(regRequest.userNm) + regRequest.userNmList.filterIndexed { idx, _ -> idx != index }  // 만든 사람과 다른 유저들만 포함
+        val tkrmNmForUser = otherUsers.joinToString(", ")
+        talkUserRepository.persistTalkUsers(userId, regTalkRoom, tkrmNmForUser, "N")
+      }
+    } else { // 그룹 대화방 이름이 있을 경우
+      talkUserRepository.persistTalkUsers(regRequest.id, regTalkRoom, regRequest.tkrmNm, "Y")
+
+      // 초대된 유저들의 tkrmNm 설정
+      regRequest.userIdList.forEach { userId ->
+        talkUserRepository.persistTalkUsers(userId, regTalkRoom, regRequest.tkrmNm, "N")
+      }
+    }
+
+    talkRoomRepository.persist(regTalkRoom)
 
     return CommonResponse("단체 채팅방을 만들었습니다.")
   }
