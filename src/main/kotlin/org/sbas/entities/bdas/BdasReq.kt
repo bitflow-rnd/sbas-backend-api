@@ -118,6 +118,10 @@ class BdasReq(
     fun changeBedStatTo(bedStatCd: String) {
         this.bedStatCd = bedStatCd
     }
+
+  fun checkBedStatCd(bedStatCd: String): Boolean {
+    return this.bedStatCd == bedStatCd
+  }
 }
 
 @Embeddable
