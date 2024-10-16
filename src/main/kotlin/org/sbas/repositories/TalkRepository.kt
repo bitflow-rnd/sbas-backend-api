@@ -185,18 +185,19 @@ class TalkRoomRepository : PanacheRepositoryBase<TalkRoom, String> {
     val talkRooms = findMyRooms(userId)
 
     runBlocking {
-      talkRooms.forEach {
-        val tkrmNm = talkUserRepository.findTalkRoomNameById(it.tkrmId, userId)
-        val talkMsg = talkMsgRepository.findRecentlyMsg(it.tkrmId)
+      talkRooms.forEach { talkRoom ->
+        val tkrmNm = talkUserRepository.findTalkRoomNameById(talkRoom.tkrmId, userId)
+        val talkMsg = talkMsgRepository.findRecentlyMsg(talkRoom.tkrmId)
         if (talkMsg != null) {
-          resultList.add(TalkRoomResponse(it.tkrmId, tkrmNm, talkMsg.msg, talkMsg.rgstDttm))
+          resultList.add(TalkRoomResponse(talkRoom.tkrmId, tkrmNm, talkMsg.msg, talkMsg.rgstDttm))
         } else {
-          resultList.add(TalkRoomResponse(it.tkrmId, tkrmNm, null, it.rgstDttm))
+          resultList.add(TalkRoomResponse(talkRoom.tkrmId, tkrmNm, null, talkRoom.rgstDttm))
         }
       }
     }
 
-    return resultList
+    // rgstDttm으로 최신 순으로 정렬
+    return resultList.sortedByDescending { it.rgstDttm }
   }
 
   fun changeTalkRoomListByPersonalTkrmNm(list: List<TalkRoomResponse>, userId: String): List<TalkRoomResponse> {
