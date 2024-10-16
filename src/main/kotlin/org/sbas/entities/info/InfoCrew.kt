@@ -48,6 +48,15 @@ class InfoCrew(
             pstn?.let { this@InfoCrew.pstn = it }
         }
     }
+
+  fun update(req: InfoCrew) {
+    with(req) {
+      crewNm.let { this@InfoCrew.crewNm = it }
+      telno?.let { this@InfoCrew.telno = it }
+      rmk?.let { this@InfoCrew.rmk = it }
+      pstn?.let { this@InfoCrew.pstn = it }
+    }
+  }
 }
 
 @Embeddable

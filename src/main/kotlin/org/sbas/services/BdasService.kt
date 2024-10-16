@@ -76,6 +76,12 @@ class BdasService {
   private lateinit var svrtPtRepository: SvrtPtRepository
 
   @Inject
+  private lateinit var svrtCollRepository: SvrtCollRepository
+
+  @Inject
+  private lateinit var svrtAnlyRepository: SvrtAnlyRepository
+
+  @Inject
   private lateinit var geoHandler: GeocodingHandler
 
   @Inject
@@ -153,8 +159,8 @@ class BdasService {
    */
   @Transactional
   fun reqConfirm(saveRequest: BdasReqAprvSaveRequest): CommonResponse<String> {
-
     val findBdasReq = bdasReqRepository.findByPtIdAndBdasSeq(saveRequest.ptId, saveRequest.bdasSeq)
+    check(findBdasReq.checkBedStatCd(BedStatCd.BAST0003.name)) { "${BedStatCd.BAST0003.cdNm} 상태가 아닙니다." }
     val bdasReqAprvs = bdasReqAprvRepository.findAllByPtIdAndBdasSeq(saveRequest.ptId, saveRequest.bdasSeq)
     val requestUser = infoUserRepository.findByUserId(findBdasReq.rgstUserId)
       ?: throw NotFoundException("user not found")
@@ -286,8 +292,8 @@ class BdasService {
    */
   @Transactional
   fun asgnConfirm(saveRequest: BdasAprvSaveRequest): CommonResponse<*> {
-
     val findBdasReq  = bdasReqRepository.findByPtIdAndBdasSeq(saveRequest.ptId, saveRequest.bdasSeq)
+    check(findBdasReq.checkBedStatCd(BedStatCd.BAST0004.name)) { "${BedStatCd.BAST0004.cdNm} 상태가 아닙니다." }
     val findInfoUser = infoUserRepository.findByUserId(jwt.name) ?: throw NotFoundException("user not found")
     val findInfoPt   =
       infoPtRepository.findById(saveRequest.ptId) ?: throw NotFoundException("${saveRequest.ptId} not found")
@@ -383,12 +389,13 @@ class BdasService {
   @Transactional
   fun confirmTrans(saveRequest: BdasTrnsSaveRequest): CommonResponse<String> {
     val findBdasReq = bdasReqRepository.findByPtIdAndBdasSeq(saveRequest.ptId, saveRequest.bdasSeq)
+    check(findBdasReq.checkBedStatCd(BedStatCd.BAST0005.name)) { "${BedStatCd.BAST0005.cdNm} 상태가 아닙니다." }
     val bdasAprvList = bdasAprvRepository.findBdasAprvList(saveRequest.ptId, saveRequest.bdasSeq)
     if (bdasAprvList.isEmpty()) {
       throw CustomizedException("의료진 승인 정보가 없습니다.", Response.Status.BAD_REQUEST)
     }
 
-    val saveInfoCrewList = infoCrewComponent.saveInfoCrew(saveRequest.toInfoCrewSaveReqList(), saveRequest.instId)
+    val saveInfoCrewList = infoCrewComponent.saveInfoCrew(saveRequest)
     bdasTrnsRepository.persist(saveRequest.toEntity(saveInfoCrewList.sortedBy { it.id.crewId }))
     infoCrewComponent.saveVehicleInfo(saveRequest.instId, saveRequest.vecno)
 
@@ -402,6 +409,7 @@ class BdasService {
   @Transactional
   fun confirmHosp(saveRequest: BdasAdmsSaveRequest): CommonResponse<String> {
     val findBdasReq  = bdasReqRepository.findByPtIdAndBdasSeq(saveRequest.ptId, saveRequest.bdasSeq)
+    check(findBdasReq.checkBedStatCd(BedStatCd.BAST0006.name)) { "${BedStatCd.BAST0006.cdNm} 상태가 아닙니다." }
     val findBdasAdms = bdasAdmsRepository.findByIdOrderByAdmsSeqDesc(saveRequest.ptId, saveRequest.bdasSeq)
     val svrtRgstSeq = svrtPtRepository.findByPtId(saveRequest.ptId).size
 
@@ -646,6 +654,9 @@ class BdasService {
           bdasAprvRepository.delete("id.ptId = '$ptId'")
           bdasTrnsRepository.delete("id.ptId = '$ptId'")
           bdasAdmsRepository.delete("id.ptId = '$ptId'")
+          svrtPtRepository.delete("id.ptId = '$ptId'")
+          svrtCollRepository.delete("id.ptId = '$ptId'")
+          svrtAnlyRepository.delete("id.ptId = '$ptId'")
         }
       }
     }

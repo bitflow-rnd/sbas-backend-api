@@ -39,10 +39,13 @@ data class RegTalkRoomDto(
   }
 }
 
+@NoArg
 data class RegGroupTalkRoomDto(
-  var id: String, // 유저 ID
-  var tkrmNm: String?, // 채팅방 이름
-  var userIds: List<String>?, // 초대유저 ID
+  val id: String, // 유저 ID
+  val userNm: String,
+  val tkrmNm: String?,
+  val userIdList: List<String>, // 초대유저 ID
+  val userNmList: List<String>,
 ) {
   fun toEntity(tkrmId: String): TalkRoom {
     return TalkRoom(
