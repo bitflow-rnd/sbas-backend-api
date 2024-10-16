@@ -172,7 +172,11 @@ class TalkRoomRepository : PanacheRepositoryBase<TalkRoom, String> {
   private lateinit var log: Logger
 
   fun findMyRooms(userId: String): List<TalkRoom> {
-    return find("select tr from TalkRoom tr join TalkUser tu on tr.tkrmId = tu.id.tkrmId and tu.id.userId = '$userId'").list()
+    return find(
+      "select tr from TalkRoom tr " +
+        "join TalkUser tu on tr.tkrmId = tu.id.tkrmId and tu.id.userId = '$userId' " +
+        "order by tr.rgstDttm desc"
+    ).list()
   }
 
   @Transactional
