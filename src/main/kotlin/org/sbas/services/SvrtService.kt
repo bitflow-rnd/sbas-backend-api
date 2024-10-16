@@ -95,14 +95,16 @@ class SvrtService(
       }
       log.debug("hisApiResponse: $hisApiResponse")
 
-      val body = hisApiResponse!!.body
-      // 리스트가 비어있거나, 마지막 데이터의 msreDt가 basedd와 다르면 endMonitoring
-//      if (body.isEmpty() || body.last().rsltDt != basedd) {
-//        svrtPt.endMonitoring(basedd, StringUtils.getHhMmSs())
-//        return
-//      }
-
+      val body = hisApiResponse?.body ?: return
       val svrtMntrInfo = body.last()
+
+      // 마지막 데이터의 rsltDt가 basedd보다 이전이면 endMonitoring
+      // 데이터가 20241008까지 있으면 현재 basedd는 20241009 이므로 20241008까지만 수집
+      if (svrtMntrInfo.rsltDt < basedd) {
+        svrtPt.endMonitoring(svrtMntrInfo.rsltDt, svrtMntrInfo.rsltTm)
+        return
+      }
+
       val svrtColl = svrtMntrInfo.toSvrtColl(
         ptId = svrtPt.id.ptId,
         hospId = svrtPt.id.hospId,
@@ -123,7 +125,7 @@ class SvrtService(
     val today = StringUtils.getYyyyMmDd()
 
     val knuchSampleList = listOf("0010001", "0010002", "0010003", "0010004", "0010005", "0010006")
-    val knuhSampleList = listOf("0020001", "0020002", "0020003", "0020004", "0020005")
+    val knuhSampleList = listOf("0020001", "0020002", "0020003", "0020004", "0020005", "0020006")
     val fatimaSampleList = listOf("0030001", "0030002", "0030003", "0030004", "0030005", "0030006")
     val dgmcSampleList = listOf("0040001", "0040002", "0040003", "0040004", "0040005", "0040006")
     val sampleList = knuchSampleList + knuhSampleList + fatimaSampleList + dgmcSampleList
@@ -153,7 +155,15 @@ class SvrtService(
 
       // 응답 데이터를 바탕으로 새로운 svrtColl 객체 생성
       val body = hisApiResponse?.body ?: return
-      val svrtMntrInfo = body.lastOrNull() ?: return
+      val svrtMntrInfo = body.last()
+
+      // 마지막 데이터의 rsltDt가 basedd보다 이전이면 endMonitoring
+      // 데이터가 20241008까지 있으면 현재 basedd는 20241009 이므로 20241008까지만 수집
+      if (svrtMntrInfo.rsltDt < basedd) {
+        svrtPt.endMonitoring(svrtMntrInfo.rsltDt, svrtMntrInfo.rsltTm)
+        return
+      }
+
       val svrtColl = svrtMntrInfo.toSvrtColl(
         ptId = svrtPt.id.ptId,
         hospId = svrtPt.id.hospId,
@@ -161,12 +171,7 @@ class SvrtService(
         collSeq = svrtColls.lastOrNull()?.id?.collSeq?.plus(1) ?: 1,
         pid = pid,
       )
-
-      // 새로운 수집 데이터를 저장
       svrtCollRepository.persist(svrtColl)
-
-      // basedd를 다음 날짜로 업데이트 (문자열 형식 유지)
-      basedd = basedd.plus(1)
     }
   }
 
@@ -180,65 +185,20 @@ class SvrtService(
     val findSvrtAnly = svrtAnlyRepository.findMaxAnlySeqByPtIdAndPid(ptId, pid)
 
     covSfList.forEachIndexed { idx, covSf -> // 0 1 2 3 4 5
-      val svrtColl = svrtCollList.getOrElse(idx) { svrtCollList.last() }
-      val svrtAnlyId = SvrtAnlyId(
-        ptId = svrtColl.id.ptId,
-        hospId = svrtColl.id.hospId,
-        rgstSeq = svrtColl.id.rgstSeq,
-        msreDt = svrtColl.id.msreDt,
-        // covSfList 의 size는 svrtCollList.size 보다 3개 많음.
-        // -> svrtCollList.size 만큼은 svrtColl의 collSeq 사용, 나머지(예측값들)는 idx + 1
-        collSeq = if (idx < svrtCollList.size) svrtColl.id.collSeq else idx + 1,
-        anlyDt = StringUtils.getYyyyMmDd(),
-        anlySeq = findSvrtAnly?.id?.anlySeq?.plus(1) ?: 1,
-      )
-      val svrtAnly = SvrtAnly(
-        id = svrtAnlyId,
-        pid = pid,
-        collDt = StringUtils.convertInstantToYyyyMMdd(svrtColl.rgstDttm),
-        collTm = StringUtils.convertInstantToHhmmss(svrtColl.rgstDttm),
-        anlyTm = StringUtils.getHhMmSs(),
-        covSf = covSf.toString(),
-        prdtDt = if (idx >= svrtCollList.size) StringUtils.getYyyyMmDd()
-          .plusDays(idx - svrtCollList.size + 1) else null,
-      )
-      svrtAnlyRepository.persist(svrtAnly)
+      saveSvrtAnly(svrtCollList, idx, findSvrtAnly, pid, covSf)
     }
   }
 
   @Transactional
   fun saveInitSvrtAnly(ptId: String, pid: String) {
-    val svrtCollList = svrtCollRepository.findByPtIdOrderByRsltDtAsc(ptId) // 3
+    val svrtCollList = svrtCollRepository.findByPtIdAndPidOrderByRsltDtAsc(ptId, pid) // 3
     if (svrtCollList.isEmpty()) return
-    if (svrtCollList.last().rsltDt < StringUtils.getYyyyMmDd()) return
 
     val covSfList = svrtAnlyHandler.analyse(svrtCollList) // 주어진 날짜 + 3일까지의 예측값(+1, +2, +3)
     val findSvrtAnly = svrtAnlyRepository.findMaxAnlySeqByPtIdAndPid(ptId, pid)
 
     covSfList.forEachIndexed { idx, covSf -> // 0 1 2 3 4 5
-      val svrtColl = svrtCollList.getOrElse(idx) { svrtCollList.last() }
-      val svrtAnlyId = SvrtAnlyId(
-        ptId = svrtColl.id.ptId,
-        hospId = svrtColl.id.hospId,
-        rgstSeq = svrtColl.id.rgstSeq,
-        msreDt = svrtColl.id.msreDt,
-        // covSfList 의 size는 svrtCollList.size 보다 3개 많음.
-        // -> svrtCollList.size 만큼은 svrtColl의 collSeq 사용, 나머지(예측값들)는 idx + 1
-        collSeq = if (idx < svrtCollList.size) svrtColl.id.collSeq else idx + 1,
-        anlyDt = StringUtils.getYyyyMmDd(),
-        anlySeq = findSvrtAnly?.id?.anlySeq?.plus(1) ?: 1,
-      )
-      val svrtAnly = SvrtAnly(
-        id = svrtAnlyId,
-        pid = pid,
-        collDt = StringUtils.convertInstantToYyyyMMdd(svrtColl.rgstDttm),
-        collTm = StringUtils.convertInstantToHhmmss(svrtColl.rgstDttm),
-        anlyTm = StringUtils.getHhMmSs(),
-        covSf = covSf.toString(),
-        prdtDt = if (idx >= svrtCollList.size) StringUtils.getYyyyMmDd()
-          .plusDays(idx - svrtCollList.size + 1) else null,
-      )
-      svrtAnlyRepository.persist(svrtAnly)
+      saveSvrtAnly(svrtCollList, idx, findSvrtAnly, pid, covSf)
     }
   }
 
@@ -296,5 +256,37 @@ class SvrtService(
       plusTwoDay = lastFourItems[2].covSf,
       plusThreeDay = lastFourItems[3].covSf,
     )
+  }
+
+  private fun saveSvrtAnly(
+    svrtCollList: List<SvrtColl>,
+    idx: Int,
+    findSvrtAnly: SvrtAnly?,
+    pid: String,
+    covSf: Float
+  ) {
+    val svrtColl = svrtCollList.getOrElse(idx) { svrtCollList.last() }
+    val svrtAnlyId = SvrtAnlyId(
+      ptId = svrtColl.id.ptId,
+      hospId = svrtColl.id.hospId,
+      rgstSeq = svrtColl.id.rgstSeq,
+      msreDt = svrtColl.id.msreDt,
+      // covSfList 의 size는 svrtCollList.size 보다 3개 많음.
+      // -> svrtCollList.size 만큼은 svrtColl의 collSeq 사용, 나머지(예측값들)는 idx + 1
+      collSeq = if (idx < svrtCollList.size) svrtColl.id.collSeq else idx + 1,
+      anlyDt = StringUtils.getYyyyMmDd(),
+      anlySeq = findSvrtAnly?.id?.anlySeq?.plus(1) ?: 1,
+    )
+    val svrtAnly = SvrtAnly(
+      id = svrtAnlyId,
+      pid = pid,
+      collDt = StringUtils.convertInstantToYyyyMMdd(svrtColl.rgstDttm),
+      collTm = StringUtils.convertInstantToHhmmss(svrtColl.rgstDttm),
+      anlyTm = StringUtils.getHhMmSs(),
+      covSf = covSf.toString(),
+      prdtDt = if (idx >= svrtCollList.size) StringUtils.getYyyyMmDd()
+        .plusDays(idx - svrtCollList.size + 1) else null,
+    )
+    svrtAnlyRepository.persist(svrtAnly)
   }
 }

@@ -41,6 +41,7 @@ data class BdasAdmsSaveRequest(
     return SvrtPt(
       id = SvrtPtId(
         ptId = ptId,
+        bdasSeq = bdasSeq,
         hospId = hospId,
         rgstSeq = rgstSeq,
       ),

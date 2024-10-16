@@ -34,12 +34,19 @@ class SvrtPt(
     this.monEndDt = monEndDt
     this.monEndTm = monEndTm
   }
+
+  override fun toString(): String {
+    return "SvrtPt(id=$id, pid='$pid', monStrtDt='$monStrtDt', monStrtTm='$monStrtTm', monEndDt=$monEndDt, monEndTm=$monEndTm)"
+  }
 }
 
 @Embeddable
 data class SvrtPtId(
     @Column(name = "pt_id", nullable = false, length = 10)
     var ptId: String, // 환자 ID
+
+    @Column(name = "bdas_seq", nullable = false)
+    var bdasSeq: Int, // 병상 배정 순번
 
     @Column(name = "hosp_id", nullable = false, length = 10)
     var hospId: String, // 병원 ID

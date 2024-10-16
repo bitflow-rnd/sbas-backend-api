@@ -34,21 +34,19 @@ class SvrtPtRepository : PanacheRepositoryBase<SvrtPt, SvrtPtId> {
 
   fun findSvrtPtList(param: SvrtPtSearchParam): List<SvrtPtSearchDto> {
     val cond = searchCondition(param)
-    val query = "select new org.sbas.dtos.SvrtPtSearchDto(ip.pid, ip.id.rgstSeq, pt.ptId, br.id.bdasSeq, pt.ptNm, pt.gndr, pt.rrno1, " +
-      "pt.dstr1Cd, fn_get_cd_nm('SIDO', pt.dstr1Cd), pt.dstr2Cd, fn_get_cd_nm('SIDO'||pt.dstr1Cd, pt.dstr2Cd), " +
-      "ip.id.hospId, ih.dutyName, pt.mpno, pt.natiCd, pt.natiNm, sa.updtDttm, " +
+    val query = "select new org.sbas.dtos.SvrtPtSearchDto(sp.pid, sp.id.rgstSeq, ip.ptId, br.id.bdasSeq, ip.ptNm, ip.gndr, ip.rrno1, " +
+      "ip.dstr1Cd, fn_get_cd_nm('SIDO', ip.dstr1Cd), ip.dstr2Cd, fn_get_cd_nm('SIDO'||ip.dstr1Cd, ip.dstr2Cd), " +
+      "sp.id.hospId, ih.dutyName, ip.mpno, ip.natiCd, ip.natiNm, sa.updtDttm, " +
       "br.ptTypeCd, br.svrtTypeCd, br.undrDsesCd, " +
-      "ip.monStrtDt, null ) " +
-      "from InfoPt pt " +
-      "join SvrtPt ip on pt.ptId = ip.id.ptId " +
-      "left join BdasReq br on pt.ptId = br.id.ptId " +
-      "left join BdasAprv bap on (br.id.bdasSeq = bap.id.bdasSeq and bap.aprvYn = 'Y') " +
-      "left join InfoHosp ih on ip.id.hospId = ih.hospId " +
-      "left join SvrtAnly sa on ip.id.ptId = sa.id.ptId and ip.pid = sa.pid " +
-      "and sa.id.anlySeq = (select max(sa2.id.anlySeq) from SvrtAnly sa2 where sa2.id.ptId = pt.ptId and sa2.id.hospId = bap.hospId) " +
+      "sp.monStrtDt, null ) " +
+      "from InfoPt ip " +
+      "join SvrtPt sp on ip.ptId = sp.id.ptId " +
+      "join BdasReq br on sp.id.ptId = br.id.ptId and sp.id.bdasSeq = br.id.bdasSeq " +
+      "join InfoHosp ih on sp.id.hospId = ih.hospId " +
+      "left join SvrtAnly sa on sp.id.ptId = sa.id.ptId and sp.pid = sa.pid " +
+      "and sa.id.anlySeq = (select max(sa2.id.anlySeq) from SvrtAnly sa2 where sa2.id.ptId = ip.ptId and sa2.id.rgstSeq = sp.id.rgstSeq) " +
       "and sa.id.collSeq = 1 " +
-      "where (br.id.bdasSeq in ((select max(id.bdasSeq) as bdasSeq from BdasReq group by id.ptId)) or br.id.bdasSeq is null) " +
-      "and br.bedStatCd = 'BAST0007' " +
+      "where br.bedStatCd = 'BAST0007' " +
       "$cond " +
       "order by sa.updtDttm desc "
 
@@ -75,13 +73,13 @@ class SvrtPtRepository : PanacheRepositoryBase<SvrtPt, SvrtPtId> {
   }
 
   private fun searchCondition(param: SvrtPtSearchParam): String {
-    var cond = param.ptNm?.run { " and (pt.ptNm like '%$this%' " } ?: "and (1=1"
-    cond += param.rrno1?.run { " or pt.rrno1 like '%$this%' " } ?: ""
-    cond += param.mpno?.run { " or pt.mpno like '%$this%') " } ?: ") "
-    cond += param.ptId?.run { " and pt.ptId like '%$this%' " } ?: ""
+    var cond = param.ptNm?.run { " and (ip.ptNm like '%$this%' " } ?: "and (1=1"
+    cond += param.rrno1?.run { " or ip.rrno1 like '%$this%' " } ?: ""
+    cond += param.mpno?.run { " or ip.mpno like '%$this%') " } ?: ") "
+    cond += param.ptId?.run { " and ip.ptId like '%$this%' " } ?: ""
 
-    cond += param.dstr1Cd?.run { " and pt.dstr1Cd like '%$this%' " } ?: ""
-    cond += param.dstr2Cd?.run { " and pt.dstr2Cd like '%$this%' " } ?: ""
+    cond += param.dstr1Cd?.run { " and ip.dstr1Cd like '%$this%' " } ?: ""
+    cond += param.dstr2Cd?.run { " and ip.dstr2Cd like '%$this%' " } ?: ""
     cond += param.hospNm?.run { " and ih.dutyName like '%$this%' " } ?: ""
     return cond
   }

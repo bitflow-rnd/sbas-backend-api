@@ -76,6 +76,12 @@ class BdasService {
   private lateinit var svrtPtRepository: SvrtPtRepository
 
   @Inject
+  private lateinit var svrtCollRepository: SvrtCollRepository
+
+  @Inject
+  private lateinit var svrtAnlyRepository: SvrtAnlyRepository
+
+  @Inject
   private lateinit var geoHandler: GeocodingHandler
 
   @Inject
@@ -648,6 +654,9 @@ class BdasService {
           bdasAprvRepository.delete("id.ptId = '$ptId'")
           bdasTrnsRepository.delete("id.ptId = '$ptId'")
           bdasAdmsRepository.delete("id.ptId = '$ptId'")
+          svrtPtRepository.delete("id.ptId = '$ptId'")
+          svrtCollRepository.delete("id.ptId = '$ptId'")
+          svrtAnlyRepository.delete("id.ptId = '$ptId'")
         }
       }
     }
