@@ -36,20 +36,17 @@ class SvrtPtRepository : PanacheRepositoryBase<SvrtPt, SvrtPtId> {
     val cond = searchCondition(param)
     val query = "select new org.sbas.dtos.SvrtPtSearchDto(sp.pid, sp.id.rgstSeq, ip.ptId, br.id.bdasSeq, ip.ptNm, ip.gndr, ip.rrno1, " +
       "ip.dstr1Cd, fn_get_cd_nm('SIDO', ip.dstr1Cd), ip.dstr2Cd, fn_get_cd_nm('SIDO'||ip.dstr1Cd, ip.dstr2Cd), " +
-      "sp.id.hospId, ih.dutyName, ip.mpno, ip.natiCd, ip.natiNm, sa.updtDttm, " +
+      "sp.id.hospId, ih.dutyName, ip.mpno, ip.natiCd, ip.natiNm, sp.updtDttm, " +
       "br.ptTypeCd, br.svrtTypeCd, br.undrDsesCd, " +
-      "sp.monStrtDt, null ) " +
+      "sp.monStrtDt, sp.monStrtDt, sp.monEndDt, null ) " +
       "from InfoPt ip " +
       "join SvrtPt sp on ip.ptId = sp.id.ptId " +
       "join BdasReq br on sp.id.ptId = br.id.ptId and sp.id.bdasSeq = br.id.bdasSeq " +
       "join InfoHosp ih on sp.id.hospId = ih.hospId " +
-      "left join SvrtAnly sa on sp.id.ptId = sa.id.ptId and sp.pid = sa.pid " +
-      "and sa.id.anlySeq = (select max(sa2.id.anlySeq) from SvrtAnly sa2 where sa2.id.ptId = ip.ptId and sa2.id.rgstSeq = sp.id.rgstSeq) " +
-      "and sa.id.collSeq = 1 " +
       "where br.bedStatCd = 'BAST0007' " +
+      "and sp.id.rgstSeq = (select max(sp2.id.rgstSeq) from SvrtPt sp2 where sp2.id.ptId = sp.id.ptId) " +
       "$cond " +
-      "order by sa.updtDttm desc "
-
+      "order by sp.updtDttm desc "
 
     return entityManager.createQuery(query, SvrtPtSearchDto::class.java).resultList
   }
