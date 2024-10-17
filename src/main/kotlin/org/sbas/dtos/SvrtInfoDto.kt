@@ -33,11 +33,13 @@ data class SvrtPtSearchDto(
   val mpno: String?,
   val natiCd: NatiCd?,
   val natiCdNm: String?,
-  val updtDttm: Instant?,
+  var updtDttm: Instant?,
   @JsonIgnore val ptTypeCd: String?,
   val svrtTypeCd: String?,
   @JsonIgnore val undrDsesCd: String?,
   val admsDt: String?,
+  val monStrtDt: String,
+  val monEndDt: String?,
   var covSf: CovSfRsps? = null,
 ) {
   val tagList: MutableList<String>
@@ -66,4 +68,5 @@ data class CovSfRsps(
   val plusOneDay: String?,
   val plusTwoDay: String?,
   val plusThreeDay: String?,
+  val updtDttm: Instant?,
 )

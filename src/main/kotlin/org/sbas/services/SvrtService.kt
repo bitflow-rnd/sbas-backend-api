@@ -67,6 +67,16 @@ class SvrtService(
     return CommonResponse(rsps)
   }
 
+  @Transactional
+  fun saveWithMonitoringEnd(svrtPt: SvrtPt) {
+    if (svrtPt.id.rgstSeq > 1) {
+      val lastSvrtPt = svrtPtRepository.findByPtIdAndRgstSeq(svrtPt.id.ptId, svrtPt.id.rgstSeq - 1)
+      lastSvrtPt?.endMonitoring(svrtPt.monStrtDt, svrtPt.monStrtTm)
+    }
+
+    svrtPtRepository.persist(svrtPt)
+  }
+
   fun findSeverityInfos(ptId: String, rgstSeq: Int): CommonResponse<List<SvrtColl>> {
     val svrtCollList = svrtCollRepository.findAllByPtIdOrderByCollSeqAsc(ptId, rgstSeq)
     return CommonResponse(svrtCollList)
@@ -84,14 +94,11 @@ class SvrtService(
 
       val sampleData = HisRestClientRequest(pid, basedd)
       var hisApiResponse: HisApiResponse? = null
-      if (pid.startsWith("001")) {
-        hisApiResponse = knuhHisRestClient.getKnuchSvrtMntrInfo(sampleData)
-      } else if (pid.startsWith("002")) {
-        hisApiResponse = knuhHisRestClient.getKnuhSvrtMntrInfo(sampleData)
-      } else if (pid.startsWith("003")) {
-        hisApiResponse = fatimaHisRestClient.getFatimaSvrtMntrInfo(sampleData)
-      } else if (pid.startsWith("004")) {
-        hisApiResponse = dgmcHisRestClient.getDgmcSvrtMntrInfo(sampleData)
+      when {
+        pid.startsWith("001") -> hisApiResponse = knuhHisRestClient.getKnuchSvrtMntrInfo(sampleData)
+        pid.startsWith("002") -> hisApiResponse = knuhHisRestClient.getKnuhSvrtMntrInfo(sampleData)
+        pid.startsWith("003") -> hisApiResponse = fatimaHisRestClient.getFatimaSvrtMntrInfo(sampleData)
+        pid.startsWith("004") -> hisApiResponse = dgmcHisRestClient.getDgmcSvrtMntrInfo(sampleData)
       }
       log.debug("hisApiResponse: $hisApiResponse")
 
@@ -142,8 +149,6 @@ class SvrtService(
       // 샘플 데이터 생성 및 요청
       val sampleData = HisRestClientRequest(pid, basedd)
       var hisApiResponse: HisApiResponse? = null
-
-      // 병원 ID에 따라 적절한 HIS API 호출
       when {
         pid.startsWith("001") -> hisApiResponse = knuhHisRestClient.getKnuchSvrtMntrInfo(sampleData)
         pid.startsWith("002") -> hisApiResponse = knuhHisRestClient.getKnuhSvrtMntrInfo(sampleData)
@@ -210,7 +215,9 @@ class SvrtService(
     val svrtPtList = svrtPtRepository.findSvrtPtList(param)
 
     svrtPtList.forEach {
-      it.covSf = findCovSF(it.ptId!!, it.hospId!!, it.rgstSeq)
+      val findCovSF = findCovSF(it.ptId!!, it.hospId!!, it.rgstSeq)
+      it.covSf = findCovSF
+      it.updtDttm = findCovSF?.updtDttm ?: it.updtDttm
     }
 
     // covSf의 today, plusOneDay, plusTwoDay, plusThreeDay 값을 기준으로 정렬
@@ -255,6 +262,7 @@ class SvrtService(
       plusOneDay = lastFourItems[1].covSf,
       plusTwoDay = lastFourItems[2].covSf,
       plusThreeDay = lastFourItems[3].covSf,
+      updtDttm = lastFourItems[0].updtDttm,
     )
   }
 

@@ -419,7 +419,7 @@ class BdasService {
 
     // 입원일 경우 중증 관찰 환자 등록
     if (saveRequest.admsStatCd == AdmsStatCd.IOST0001.name) {
-      svrtPtRepository.persist(svrtPtEntity)
+      svrtService.saveWithMonitoringEnd(svrtPtEntity)
 
       svrtService.saveInitMntrInfo(saveRequest.ptId, saveRequest.pid!!)
       svrtService.saveInitSvrtAnly(saveRequest.ptId, saveRequest.pid)
