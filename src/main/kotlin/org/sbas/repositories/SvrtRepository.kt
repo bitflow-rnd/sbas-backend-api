@@ -109,8 +109,8 @@ class SvrtCollRepository : PanacheRepositoryBase<SvrtColl, SvrtCollId> {
     return find("select sc from SvrtColl sc where sc.id.ptId = '$ptId' and sc.rsltDt <= '$today' order by sc.rsltDt").list()
   }
 
-  fun findAllByPtIdOrderByCollSeqAsc(ptId: String, rgstSeq: Int): List<SvrtColl> {
-    return find("id.ptId = ?1 and id.rgstSeq = ?2", Sort.by("id.collSeq", Sort.Direction.Ascending), ptId, rgstSeq).list()
+  fun findAllByPtIdOrderByCollSeqAsc(ptId: String): List<SvrtColl> {
+    return find("id.ptId = ?1", Sort.by("id.collSeq", Sort.Direction.Ascending), ptId).list()
   }
 
   fun findByPtIdAndHospId(ptId: String, hospId: String): List<SvrtColl> {
