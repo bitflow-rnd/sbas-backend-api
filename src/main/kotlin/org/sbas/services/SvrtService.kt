@@ -168,7 +168,7 @@ class SvrtService(
 
       // 마지막 데이터의 rsltDt가 basedd보다 이전이면 endMonitoring
       // 데이터가 20241008까지 있으면 현재 basedd는 20241009 이므로 20241008까지만 수집
-      if (svrtMntrInfo.rsltDt < basedd) {
+      if (svrtMntrInfo.rsltDt <= basedd) {
         svrtPt.endMonitoring(svrtMntrInfo.rsltDt, svrtMntrInfo.rsltTm)
         return
       }
