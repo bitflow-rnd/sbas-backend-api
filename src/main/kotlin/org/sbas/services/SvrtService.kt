@@ -182,7 +182,7 @@ class SvrtService(
 
   @Transactional
   fun saveSvrtAnly(ptId: String, pid: String) {
-    val svrtCollList = svrtCollRepository.findByPtIdAndPidOrderByRsltDtAsc(ptId, pid) // 3
+    val svrtCollList = svrtCollRepository.findByPtIdOrderByRsltDtAsc(ptId) // 3
     if (svrtCollList.isEmpty()) return
     if (svrtCollList.last().rsltDt < StringUtils.getYyyyMmDd()) return
 
@@ -196,7 +196,7 @@ class SvrtService(
 
   @Transactional
   fun saveInitSvrtAnly(ptId: String, pid: String) {
-    val svrtCollList = svrtCollRepository.findByPtIdAndPidOrderByRsltDtAsc(ptId, pid) // 3
+    val svrtCollList = svrtCollRepository.findByPtIdOrderByRsltDtAsc(ptId) // 3
     if (svrtCollList.isEmpty()) return
 
     val covSfList = svrtAnlyHandler.analyse(svrtCollList) // 주어진 날짜 + 3일까지의 예측값(+1, +2, +3)
