@@ -140,15 +140,41 @@ class SvrtService(
       return
     }
 
+    if (svrtPt.id.rgstSeq > 1) {
+      val svrtColls = svrtCollRepository.findByPtId(ptId).sortedBy { it.id.collSeq }
+
+      // 샘플 데이터 생성 및 요청
+      val sampleData = HisRestClientRequest(pid, basedd)
+      var hisApiResponse: HisApiResponse? = null
+      when {
+        pid.startsWith("001") -> hisApiResponse = knuhHisRestClient.getKnuchSvrtMntrInfo(sampleData)
+        pid.startsWith("002") -> hisApiResponse = knuhHisRestClient.getKnuhSvrtMntrInfo(sampleData)
+        pid.startsWith("003") -> hisApiResponse = fatimaHisRestClient.getFatimaSvrtMntrInfo(sampleData)
+        pid.startsWith("004") -> hisApiResponse = dgmcHisRestClient.getDgmcSvrtMntrInfo(sampleData)
+      }
+
+      log.debug("hisApiResponse: $hisApiResponse")
+
+      // 응답 데이터를 바탕으로 새로운 svrtColl 객체 생성
+      val body = hisApiResponse?.body ?: return
+      val svrtMntrInfo = body.last()
+
+      val svrtColl = svrtMntrInfo.toSvrtColl(
+        ptId = svrtPt.id.ptId,
+        hospId = svrtPt.id.hospId,
+        rgstSeq = svrtPt.id.rgstSeq,
+        collSeq = svrtColls.lastOrNull()?.id?.collSeq?.plus(1) ?: 1,
+        pid = pid,
+      )
+      svrtCollRepository.persist(svrtColl)
+      return
+    }
+
     // basedd가 오늘보다 이전이고 monEndDt가 null인 동안 반복
     while (basedd <= today && svrtPt.monEndDt == null) {
       // 수집 데이터를 정렬하여 가장 최신의 날짜를 기반으로 다음 시작 날짜 설정
       val svrtColls = svrtCollRepository.findByPtId(ptId).sortedBy { it.id.collSeq }
-      basedd = if (svrtPt.id.rgstSeq > 1) {
-        svrtPt.monStrtDt
-      } else {
-        svrtColls.lastOrNull()?.rsltDt?.plusDays(1) ?: svrtPt.monStrtDt
-      }
+      svrtColls.lastOrNull()?.rsltDt?.plusDays(1) ?: svrtPt.monStrtDt
 
       // 샘플 데이터 생성 및 요청
       val sampleData = HisRestClientRequest(pid, basedd)
@@ -168,7 +194,7 @@ class SvrtService(
 
       // 마지막 데이터의 rsltDt가 basedd보다 이전이면 endMonitoring
       // 데이터가 20241008까지 있으면 현재 basedd는 20241009 이므로 20241008까지만 수집
-      if (svrtMntrInfo.rsltDt <= basedd) {
+      if (svrtMntrInfo.rsltDt < basedd) {
         svrtPt.endMonitoring(svrtMntrInfo.rsltDt, svrtMntrInfo.rsltTm)
         return
       }
