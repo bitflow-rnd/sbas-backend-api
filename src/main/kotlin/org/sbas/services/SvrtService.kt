@@ -156,17 +156,18 @@ class SvrtService(
       // 응답 데이터를 바탕으로 새로운 svrtColl 객체 생성
       val body = hisApiResponse?.body ?: return
       val svrtMntrInfo = body.last()
+      val lastSvrtColl = svrtColls.last()
 
       val svrtColl = svrtMntrInfo.toSvrtColl(
         ptId = svrtPt.id.ptId,
         hospId = svrtPt.id.hospId,
         rgstSeq = svrtPt.id.rgstSeq,
-        collSeq = svrtColls.lastOrNull()?.id?.collSeq?.plus(1) ?: 1,
+        collSeq = lastSvrtColl.id.collSeq,
         pid = pid,
       )
 
       // 전원요청이면 마지막 데이터 삭제 후 새로 저장
-      svrtCollRepository.delete(svrtColls.last())
+      svrtCollRepository.delete(lastSvrtColl)
       svrtCollRepository.persist(svrtColl)
       return
     }
