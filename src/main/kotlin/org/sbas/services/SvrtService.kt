@@ -164,6 +164,9 @@ class SvrtService(
         collSeq = svrtColls.lastOrNull()?.id?.collSeq?.plus(1) ?: 1,
         pid = pid,
       )
+
+      // 전원요청이면 마지막 데이터 삭제 후 새로 저장
+      svrtCollRepository.delete(svrtColls.last())
       svrtCollRepository.persist(svrtColl)
       return
     }
