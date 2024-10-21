@@ -38,7 +38,7 @@ class SvrtPtRepository : PanacheRepositoryBase<SvrtPt, SvrtPtId> {
       "ip.dstr1Cd, fn_get_cd_nm('SIDO', ip.dstr1Cd), ip.dstr2Cd, fn_get_cd_nm('SIDO'||ip.dstr1Cd, ip.dstr2Cd), " +
       "sp.id.hospId, ih.dutyName, ip.mpno, ip.natiCd, ip.natiNm, sp.updtDttm, " +
       "br.ptTypeCd, br.svrtTypeCd, br.undrDsesCd, " +
-      "sp.monStrtDt, sp.monStrtDt, sp.monEndDt, new org.sbas.dtos.CovSfRsps() ) " +
+      "sp.monStrtDt, sp.monStrtDt, sp.monEndDt, null ) " +
       "from InfoPt ip " +
       "join SvrtPt sp on ip.ptId = sp.id.ptId " +
       "join BdasReq br on sp.id.ptId = br.id.ptId and sp.id.bdasSeq = br.id.bdasSeq " +
