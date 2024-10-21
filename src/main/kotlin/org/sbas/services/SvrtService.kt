@@ -315,6 +315,7 @@ class SvrtService(
       anlyDt = StringUtils.getYyyyMmDd(),
       anlySeq = findSvrtAnly?.id?.anlySeq?.plus(1) ?: 1,
     )
+    log.debug("svrtAnlyId: $svrtAnlyId")
     val svrtAnly = SvrtAnly(
       id = svrtAnlyId,
       pid = pid,
