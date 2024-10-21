@@ -302,11 +302,12 @@ class SvrtService(
     pid: String,
     covSf: Float
   ) {
+    val rgstSeq = svrtCollList.last().id.rgstSeq
     val svrtColl = svrtCollList.getOrElse(idx) { svrtCollList.last() }
     val svrtAnlyId = SvrtAnlyId(
       ptId = svrtColl.id.ptId,
       hospId = svrtColl.id.hospId,
-      rgstSeq = svrtColl.id.rgstSeq,
+      rgstSeq = rgstSeq,
       msreDt = svrtColl.id.msreDt,
       // covSfList 의 size는 svrtCollList.size 보다 3개 많음.
       // -> svrtCollList.size 만큼은 svrtColl의 collSeq 사용, 나머지(예측값들)는 idx + 1

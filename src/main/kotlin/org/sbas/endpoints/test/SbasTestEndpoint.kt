@@ -66,7 +66,7 @@ class SbasTestEndpoint {
   @GET
   @Path("test")
   fun test() {
-    val knuchSampleList = listOf("0010001", "0010002", "0010003", "0010004", "0010005")
+    val knuchSampleList = listOf("0010001", "0010002", "0010003", "0010004", "0010005", "0010006")
     val knuhSampleList = listOf("0020001", "0020002", "0020003", "0020004", "0020005")
     val fatimaSampleList = listOf("0030001", "0030002", "0030003", "0030004", "0030005")
     val dgmcSampleList = listOf("0040001", "0040002", "0040003", "0040004", "0040005")
@@ -85,9 +85,9 @@ class SbasTestEndpoint {
   @Path("test2")
   fun test2() {
     val knuchSampleList = listOf("0010001", "0010002", "0010003", "0010004", "0010005", "0010006")
-    val knuhSampleList = listOf("0020001", "0020002", "0020003", "0020004", "0020005", "0020006")
-    val fatimaSampleList = listOf("0030001", "0030002", "0030003", "0030004", "0030005", "0030006")
-    val dgmcSampleList = listOf("0040001", "0040002", "0040003", "0040004", "0040005", "0040006")
+    val knuhSampleList = listOf("0020001", "0020002", "0020003", "0020004", "0020005")
+    val fatimaSampleList = listOf("0030001", "0030002", "0030003", "0030004", "0030005")
+    val dgmcSampleList = listOf("0040001", "0040002", "0040003", "0040004", "0040005")
     val sampleList = knuchSampleList + knuhSampleList + fatimaSampleList + dgmcSampleList
 
     svrtService.findAllSvrtPt().forEach { svrtPt ->
@@ -101,9 +101,9 @@ class SbasTestEndpoint {
   @Path("test3")
   fun test3() {
     val knuchSampleList = listOf("0010001", "0010002", "0010003", "0010004", "0010005", "0010006")
-    val knuhSampleList = listOf("0020001", "0020002", "0020003", "0020004", "0020005", "0020006")
-    val fatimaSampleList = listOf("0030001", "0030002", "0030003", "0030004", "0030005", "0030006")
-    val dgmcSampleList = listOf("0040001", "0040002", "0040003", "0040004", "0040005", "0040006")
+    val knuhSampleList = listOf("0020001", "0020002", "0020003", "0020004", "0020005")
+    val fatimaSampleList = listOf("0030001", "0030002", "0030003", "0030004", "0030005")
+    val dgmcSampleList = listOf("0040001", "0040002", "0040003", "0040004", "0040005")
     val sampleList = knuchSampleList + knuhSampleList + fatimaSampleList + dgmcSampleList
 
     svrtService.findAllSvrtPt().forEach { svrtPt ->
