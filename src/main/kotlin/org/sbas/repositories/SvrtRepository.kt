@@ -38,7 +38,7 @@ class SvrtPtRepository : PanacheRepositoryBase<SvrtPt, SvrtPtId> {
       "ip.dstr1Cd, fn_get_cd_nm('SIDO', ip.dstr1Cd), ip.dstr2Cd, fn_get_cd_nm('SIDO'||ip.dstr1Cd, ip.dstr2Cd), " +
       "sp.id.hospId, ih.dutyName, ip.mpno, ip.natiCd, ip.natiNm, sp.updtDttm, " +
       "br.ptTypeCd, br.svrtTypeCd, br.undrDsesCd, " +
-      "sp.monStrtDt, sp.monStrtDt, sp.monEndDt, null ) " +
+      "sp.monStrtDt, sp.monStrtDt, sp.monEndDt, new org.sbas.dtos.CovSfRsps() ) " +
       "from InfoPt ip " +
       "join SvrtPt sp on ip.ptId = sp.id.ptId " +
       "join BdasReq br on sp.id.ptId = br.id.ptId and sp.id.bdasSeq = br.id.bdasSeq " +
@@ -84,26 +84,20 @@ class SvrtPtRepository : PanacheRepositoryBase<SvrtPt, SvrtPtId> {
 
 @ApplicationScoped
 class SvrtAnlyRepository : PanacheRepositoryBase<SvrtAnly, SvrtAnlyId> {
-  fun findLastByPtIdAndHospId(ptId: String, hospId: String, rgstSeq: Int): List<SvrtAnly> {
-    val query = "select sa from SvrtAnly sa where sa.id.ptId = '$ptId' and sa.id.hospId = '$hospId' and sa.id.rgstSeq = $rgstSeq and " +
-      "sa.id.anlySeq = (select max(sa2.id.anlySeq) from SvrtAnly sa2 where sa2.id.ptId = '$ptId' and sa2.id.hospId = '$hospId' and sa2.id.rgstSeq = $rgstSeq) " +
+  fun findLastByPtId(ptId: String): List<SvrtAnly> {
+    val query = "select sa from SvrtAnly sa where sa.id.ptId = '$ptId' and " +
+      "sa.id.anlySeq = (select max(sa2.id.anlySeq) from SvrtAnly sa2 where sa2.id.ptId = '$ptId') " +
       "order by sa.id.collSeq asc "
     return getEntityManager().createQuery(query, SvrtAnly::class.java).resultList
   }
 
-  fun findMaxAnlySeqByPtIdAndPid(ptId: String, pid: String): SvrtAnly? {
-    return find("id.ptId = ?1 and pid = ?2", Sort.by("id.anlySeq", Sort.Direction.Descending), ptId, pid).firstResult()
+  fun findMaxAnlySeqByPtId(ptId: String): SvrtAnly? {
+    return find("id.ptId = ?1", Sort.by("id.anlySeq", Sort.Direction.Descending), ptId).firstResult()
   }
 }
 
 @ApplicationScoped
 class SvrtCollRepository : PanacheRepositoryBase<SvrtColl, SvrtCollId> {
-
-  fun findByPtIdAndPidOrderByRsltDtAsc(ptId: String, pid: String): List<SvrtColl> {
-    val today = StringUtils.getYyyyMmDd()
-    return find("select sc from SvrtColl sc where sc.id.ptId = '$ptId' and sc.pid = '$pid' and sc.rsltDt <= '$today' order by sc.rsltDt").list()
-  }
-
   fun findByPtIdOrderByRsltDtAsc(ptId: String): List<SvrtColl> {
     val today = StringUtils.getYyyyMmDd()
     return find("select sc from SvrtColl sc where sc.id.ptId = '$ptId' and sc.rsltDt <= '$today' order by sc.rsltDt").list()
@@ -119,9 +113,5 @@ class SvrtCollRepository : PanacheRepositoryBase<SvrtColl, SvrtCollId> {
 
   fun findByPtId(ptId: String): List<SvrtColl> {
     return find("id.ptId = ?1", ptId).list()
-  }
-
-  fun findByPtIdAndRgstSeq(ptId: String, rgstSeq: Int): List<SvrtColl> {
-    return find("id.ptId = ?1 and id.rgstSeq = ?2", ptId, rgstSeq).list()
   }
 }

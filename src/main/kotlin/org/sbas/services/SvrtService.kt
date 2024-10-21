@@ -43,10 +43,8 @@ class SvrtService(
       ?: return CommonResponse(null)
     val latestSvrtColl = svrtCollRepository.findByPtIdAndHospId(latestSvrtPt.id.ptId, latestSvrtPt.id.hospId)
 
-    val svrtAnlyList = svrtAnlyRepository.findLastByPtIdAndHospId(
+    val svrtAnlyList = svrtAnlyRepository.findLastByPtId(
       ptId = ptId,
-      hospId = latestSvrtPt.id.hospId,
-      rgstSeq = rgstSeq,
     )
 
     val rsps = svrtAnlyList.map { svrtAnly ->
@@ -217,7 +215,7 @@ class SvrtService(
     if (svrtCollList.last().rsltDt < StringUtils.getYyyyMmDd()) return
 
     val covSfList = svrtAnlyHandler.analyse(svrtCollList) // 주어진 날짜 + 3일까지의 예측값(+1, +2, +3)
-    val findSvrtAnly = svrtAnlyRepository.findMaxAnlySeqByPtIdAndPid(ptId, pid)
+    val findSvrtAnly = svrtAnlyRepository.findMaxAnlySeqByPtId(ptId)
 
     covSfList.forEachIndexed { idx, covSf -> // 0 1 2 3 4 5
       saveSvrtAnly(svrtCollList, idx, findSvrtAnly, pid, covSf)
@@ -230,7 +228,7 @@ class SvrtService(
     if (svrtCollList.isEmpty()) return
 
     val covSfList = svrtAnlyHandler.analyse(svrtCollList) // 주어진 날짜 + 3일까지의 예측값(+1, +2, +3)
-    val findSvrtAnly = svrtAnlyRepository.findMaxAnlySeqByPtIdAndPid(ptId, pid)
+    val findSvrtAnly = svrtAnlyRepository.findMaxAnlySeqByPtId(ptId)
 
     covSfList.forEachIndexed { idx, covSf -> // 0 1 2 3 4 5
       saveSvrtAnly(svrtCollList, idx, findSvrtAnly, pid, covSf)
@@ -278,10 +276,8 @@ class SvrtService(
   }
 
   fun findCovSF(ptId: String, hospId: String, rgstSeq: Int): CovSfRsps? {
-    val svrtAnlyList = svrtAnlyRepository.findLastByPtIdAndHospId(
+    val svrtAnlyList = svrtAnlyRepository.findLastByPtId(
       ptId = ptId,
-      hospId = hospId,
-      rgstSeq = rgstSeq,
     )
     if (svrtAnlyList.isEmpty()) return null
     // svrtAnlyList의 마지막 4개 항목을 가져옴
@@ -322,8 +318,8 @@ class SvrtService(
       collTm = StringUtils.convertInstantToHhmmss(svrtColl.rgstDttm),
       anlyTm = StringUtils.getHhMmSs(),
       covSf = covSf.toString(),
-      prdtDt = if (idx >= svrtCollList.size) StringUtils.getYyyyMmDd()
-        .plusDays(idx - svrtCollList.size + 1) else null,
+      prdtDt = if (idx < svrtCollList.size) null
+        else svrtColl.id.msreDt.plusDays(idx - svrtCollList.size + 1),
     )
     svrtAnlyRepository.persist(svrtAnly)
   }
