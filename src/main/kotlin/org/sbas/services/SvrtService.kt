@@ -176,7 +176,7 @@ class SvrtService(
     while (basedd <= today && svrtPt.monEndDt == null) {
       // 수집 데이터를 정렬하여 가장 최신의 날짜를 기반으로 다음 시작 날짜 설정
       val svrtColls = svrtCollRepository.findByPtId(ptId).sortedBy { it.id.collSeq }
-      svrtColls.lastOrNull()?.rsltDt?.plusDays(1) ?: svrtPt.monStrtDt
+      basedd = svrtColls.lastOrNull()?.rsltDt?.plusDays(1) ?: svrtPt.monStrtDt
 
       // 샘플 데이터 생성 및 요청
       val sampleData = HisRestClientRequest(pid, basedd)
