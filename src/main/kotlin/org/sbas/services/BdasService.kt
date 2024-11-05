@@ -147,7 +147,12 @@ class BdasService {
 
     // 푸쉬 알람 보내기
     val userIdList = bdasUsers.map { it.id }
-    firebaseService.sendMessageMultiDeviceV2("${findInfoPt.ptNm}님 병상요청", "신규 병상요청", userIdList)
+    try {
+      firebaseService.sendMessageMultiDeviceV2("${findInfoPt.ptNm}님 병상요청", "신규 병상요청", userIdList)
+    } catch (e: Exception) {
+      log.error("[BED-REQ] ERR " + e.message)
+      e.printStackTrace()
+    }
 
     activityHistoryRepository.save(saveRequest.convertToActivityHistory(bdasReq.rgstUserId))
 
@@ -182,18 +187,22 @@ class BdasService {
 
         // 전원 요청시 병원 정보 저장
         val oldAsgnReqSeq = bdasReqAprvs.size
-        val hospList = infoHospRepository.findByHospIdList(saveRequest.reqHospIdList)
+        val hospWithUserList = infoHospRepository.findWithUserByHospIdList(saveRequest.reqHospIdList)
 
-        log.info("${saveRequest.reqHospIdList} / hospList / ${hospList.size}")
+        log.info("${saveRequest.reqHospIdList} / hospList / ${hospWithUserList.size}")
 
-        hospList.forEachIndexed { idx, infoHosp ->
+        saveRequest.reqHospIdList.forEachIndexed { idx, hospId ->
+          val infoHosp = infoHospRepository.findInfoHospByHospId(hospId) ?: throw NotFoundException("$hospId not found")
           val entity = saveRequest.toEntityWhenNotInHosp(
             asgnReqSeq = idx + 1 + oldAsgnReqSeq,
             hospId = infoHosp.hospId!!,
             hospNm = infoHosp.dutyName!!,
           )
           bdasReqAprvRepository.persist(entity)
-          // userIdList.add(infoHosp.userId) // 병상 승인이 안되서 쿼리 단순화 하고 임시 주석처리
+        }
+
+        hospWithUserList.forEach { infoHosp ->
+          userIdList.add(infoHosp.userId)
         }
 
         try {
@@ -421,7 +430,7 @@ class BdasService {
     if (saveRequest.admsStatCd == AdmsStatCd.IOST0001.name) {
       svrtService.saveWithMonitoringEnd(svrtPtEntity)
 
-      svrtService.saveInitMntrInfo(saveRequest.ptId, saveRequest.pid!!)
+      svrtService.saveSvrtCollWithSample(saveRequest.ptId, saveRequest.pid!!)
       svrtService.saveInitSvrtAnly(saveRequest.ptId, saveRequest.pid)
     }
 

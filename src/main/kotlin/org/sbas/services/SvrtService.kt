@@ -12,6 +12,7 @@ import org.sbas.entities.svrt.*
 import org.sbas.handlers.NubisonAiSeverityAnalysisHandler
 import org.sbas.repositories.SvrtAnlyRepository
 import org.sbas.repositories.SvrtCollRepository
+import org.sbas.repositories.SvrtCollSampleRepository
 import org.sbas.repositories.SvrtPtRepository
 import org.sbas.responses.CommonListResponse
 import org.sbas.responses.CommonResponse
@@ -29,6 +30,7 @@ class SvrtService(
   private val svrtAnlyRepository: SvrtAnlyRepository,
   private val svrtCollRepository: SvrtCollRepository,
   private val svrtPtRepository: SvrtPtRepository,
+  private val svrtCollSampleRepository: SvrtCollSampleRepository,
   private val svrtAnlyHandler: NubisonAiSeverityAnalysisHandler,
   @RestClient private val fatimaHisRestClient: FatimaHisRestClient,
   @RestClient private val knuhHisRestClient: KnuhHisRestClient,
@@ -328,5 +330,40 @@ class SvrtService(
         else svrtColl.id.msreDt.plusDays(idx - svrtCollList.size + 1),
     )
     svrtAnlyRepository.persist(svrtAnly)
+  }
+
+  @Transactional
+  fun saveSvrtCollWithSample(ptId: String, pid: String) {
+    val today = StringUtils.getYyyyMmDd()
+    val svrtPt = svrtPtRepository.findByPtId(ptId).maxByOrNull { it.id.rgstSeq }
+
+    val knuchSampleList = listOf("0010001", "0010002", "0010003", "0010004", "0010005", "0010006")
+    val knuhSampleList = listOf("0020001", "0020002", "0020003", "0020004", "0020005", "0020006")
+    val fatimaSampleList = listOf("0030001", "0030002", "0030003", "0030004", "0030005", "0030006")
+    val dgmcSampleList = listOf("0040001", "0040002", "0040003", "0040004", "0040005", "0040006")
+    val sampleList = knuchSampleList + knuhSampleList + fatimaSampleList + dgmcSampleList
+    if (!sampleList.contains(pid)) {
+      return
+    }
+
+    if (svrtPt != null && svrtPt.id.rgstSeq > 1) {
+      val svrtCollSample = svrtCollSampleRepository.findByPidAndDate(pid, today)
+        ?: return
+      val svrtColls = svrtCollRepository.findByPtId(ptId).sortedBy { it.id.collSeq }
+      val lastSvrtColl = svrtColls.last()
+
+      // 전원요청이면 마지막 데이터 삭제 후 새로 저장
+      svrtCollRepository.delete(lastSvrtColl)
+      val toSvrtColl = svrtCollSample.toSvrtColl(ptId, svrtPt.id.rgstSeq, lastSvrtColl.id.collSeq)
+      svrtCollRepository.persist(toSvrtColl)
+      return
+    }
+
+    val svrtCollSampleList = svrtCollSampleRepository.findByPidBeforeDate(pid, today)
+    svrtCollSampleList.forEachIndexed { idx, sample ->
+      val toSvrtColl = sample.toSvrtColl(ptId, 1, idx + 1)
+      svrtCollRepository.persist(toSvrtColl)
+    }
+
   }
 }
