@@ -301,7 +301,7 @@ class UserFcmTokenRepository : PanacheRepositoryBase<UserFcmToken, Long> {
   }
 
   fun findAllByUserIdList(list: List<String>): List<UserFcmToken> {
-    return find("userId in ?1", list).list()
+    return find("userId in ?1 and isValid = true", list).list()
   }
 }
 

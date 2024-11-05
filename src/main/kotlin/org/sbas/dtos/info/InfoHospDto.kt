@@ -96,6 +96,12 @@ data class InfoHospListDto(
     }
 }
 
+data class InfoHospWithUser(
+  val hospId: String,
+  val dutyName: String,
+  val userId: String,
+)
+
 data class InfoHospId(
     val hospId: String,
     val hpId: String,

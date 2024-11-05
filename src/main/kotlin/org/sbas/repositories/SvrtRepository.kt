@@ -115,3 +115,14 @@ class SvrtCollRepository : PanacheRepositoryBase<SvrtColl, SvrtCollId> {
     return find("id.ptId = ?1", ptId).list()
   }
 }
+
+@ApplicationScoped
+class SvrtCollSampleRepository : PanacheRepositoryBase<SvrtCollSample, SvrtCollId> {
+  fun findByPidAndDate(pid: String, date: String): SvrtCollSample? {
+    return find("pid = ?1 and msreDt = ?2", pid, date).firstResult()
+  }
+
+  fun findByPidBeforeDate(pid: String, date: String): List<SvrtCollSample> {
+    return find("pid = ?1 and msreDt <= ?2", Sort.by("msreDt"), pid, date).list()
+  }
+}
