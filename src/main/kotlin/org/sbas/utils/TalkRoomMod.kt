@@ -85,11 +85,10 @@ class TalkRoomMod {
       val msgIdx = data.lastIndexOf("|")
       val userId = data.substring(0, idx)
       message = data.substring(msgIdx + 1)
-      val attcId = data.substring(idx + 8, msgIdx)
-      val attcIdResponse = Gson().fromJson(attcId, AttcIdResponse::class.java)
+      val attcGrpId = data.substring(idx + 8, msgIdx)
 
       managedExecutor.runAsync {
-        addMsg = talkMsgRepository.insertFile(message, attcIdResponse.attcGrpId, tkrmId, userId)
+        addMsg = talkMsgRepository.insertFile(message, attcGrpId, tkrmId, userId)
         otherUsers = talkUserRepository.findOtherUsersByTkrmId(tkrmId, userId) as MutableList<TalkUser>
         handlePostMessage(session, tkrmId, addMsg, otherUsers, userId, message)
       }
