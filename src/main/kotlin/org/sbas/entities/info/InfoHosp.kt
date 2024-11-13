@@ -61,26 +61,3 @@ class InfoHosp(
         private const val serialVersionUID: Long = -1587076961195755891L
     }
 }
-
-//@Embeddable
-//data class InfoHospId(
-//    @GenericGenerator(
-//        name = "info_hosp_id_seq",
-//        strategy = "org.sbas.entities.StringPrefixedSequenceIdGenerator",
-//        parameters = [
-//            Parameter(name = StringPrefixedSequenceIdGenerator.VALUE_PREFIX_PARAMETER, value = "HP"),
-//            Parameter(name = StringPrefixedSequenceIdGenerator.NUMBER_FORMAT_PARAMETER, value = "%08d"),
-//            Parameter(name = StringPrefixedSequenceIdGenerator.incrementSize, value = "1")
-//        ]) // HP00000001
-//    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "info_hosp_id_seq")
-//    @Column(name = "hosp_id", nullable = false, length = 10)
-//    var hospId: String? = null, // 병원 ID
-//
-//    @Column(name = "hpid", nullable = false, length = 10)
-//    var hpId: String? = null, // 기관 ID
-//) : Serializable {
-//
-//    companion object {
-//        private const val serialVersionUID: Long = -1587076961195755891L
-//    }
-//}

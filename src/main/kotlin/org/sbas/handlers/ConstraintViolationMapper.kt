@@ -7,7 +7,6 @@ import jakarta.ws.rs.ext.Provider
 import org.sbas.constants.SbasConst
 import org.sbas.responses.CommonResponse
 
-
 /**
  * 파라미터 validation 실패 시 처리
  */

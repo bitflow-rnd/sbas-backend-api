@@ -26,10 +26,6 @@ import org.sbas.utils.CustomizedException
 import org.sbas.utils.StringUtils
 import java.io.File
 
-
-/**
- * 사용자를 CRUD하는 서비스 클래스
- */
 @ApplicationScoped
 class OrganiztnService {
 

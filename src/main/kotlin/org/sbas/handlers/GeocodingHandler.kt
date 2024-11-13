@@ -11,7 +11,7 @@ import org.sbas.restdtos.response.NaverReverseGeocodingApiResponse
 class GeocodingHandler {
 
     @RestClient
-    lateinit var naverGeocodingRestClient: NaverGeocodingRestClient
+    private lateinit var naverGeocodingRestClient: NaverGeocodingRestClient
 
     fun getGeocoding(naverGeocodingApiParams: NaverGeocodingApiParams): NaverGeocodingApiResponse {
         return naverGeocodingRestClient.getAddressInfo(

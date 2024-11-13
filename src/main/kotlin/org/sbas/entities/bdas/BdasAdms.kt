@@ -51,12 +51,7 @@ class BdasAdms(
     
     @Column(name = "adms_stat_cd", nullable = false, length = 8)
     var admsStatCd: String, // 입퇴원상태 코드
-) : CommonEntity() {
-
-    fun isAdmsStatCdDuplicate(admsStatCd: String): Boolean {
-        return this.admsStatCd == admsStatCd
-    }
-}
+) : CommonEntity()
 
 @Embeddable
 data class BdasAdmsId(
