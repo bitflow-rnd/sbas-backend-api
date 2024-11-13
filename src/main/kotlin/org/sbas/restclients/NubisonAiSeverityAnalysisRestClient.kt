@@ -22,6 +22,6 @@ interface NubisonAiSeverityAnalysisRestClient {
     fun inferV4(body: String) : NubisonAiSeverityAnalysisResponse
 
     @POST
-    @Path("seldon/inference-stag/knuh-v5/v2/models/infer")
+    @Path("inference-stag/knuh-v5-default/v2/models/infer")
     fun inferV5(body: String) : NubisonAiSeverityAnalysisResponse
 }
