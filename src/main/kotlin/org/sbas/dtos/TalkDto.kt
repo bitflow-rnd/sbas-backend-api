@@ -19,6 +19,8 @@ data class TalkMsgDto(
   var msgSeq: Long? = null, // 메시지 순번
   var msg: String? = null,
   var attcId: String? = null, // 첨부 ID
+  var userNm: String? = null, // 사용자명
+  var instNm: String? = null, // 기관명
   var rgstUserId: String? = null, // 등록 사용자 ID
   var rgstDttm: Instant? = null, // 등록 일시
   var updtUserId: String? = null, // 수정 사용자 ID

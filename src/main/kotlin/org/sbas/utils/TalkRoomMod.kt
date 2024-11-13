@@ -1,6 +1,5 @@
 package org.sbas.utils
 
-import com.google.gson.Gson
 import io.vertx.core.json.JsonObject
 import jakarta.inject.Inject
 import jakarta.websocket.OnClose
@@ -9,16 +8,17 @@ import jakarta.websocket.OnOpen
 import jakarta.websocket.Session
 import jakarta.websocket.server.PathParam
 import jakarta.websocket.server.ServerEndpoint
+import jakarta.ws.rs.NotFoundException
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.withContext
 import org.eclipse.microprofile.context.ManagedExecutor
 import org.jboss.logging.Logger
 import org.json.JSONArray
-import org.sbas.dtos.AttcIdResponse
 import org.sbas.dtos.TalkMsgDto
 import org.sbas.entities.talk.TalkMsg
 import org.sbas.entities.talk.TalkUser
+import org.sbas.repositories.InfoUserRepository
 import org.sbas.repositories.TalkMsgRepository
 import org.sbas.repositories.TalkRoomRepository
 import org.sbas.repositories.TalkUserRepository
@@ -55,6 +55,9 @@ class TalkRoomMod {
   @Inject
   lateinit var talkUserRepository: TalkUserRepository
 
+  @Inject
+  lateinit var infoUserRepository: InfoUserRepository
+
   @OnOpen
   fun onOpen(session: Session, @PathParam("tkrmId") tkrmId: String) {
 
@@ -76,7 +79,7 @@ class TalkRoomMod {
       return
     }
 
-    var addMsg: TalkMsg
+    var talkMsg: TalkMsg
     var otherUsers: MutableList<TalkUser>
     val message: String?
 
@@ -85,13 +88,26 @@ class TalkRoomMod {
       val msgIdx = data.lastIndexOf("|")
       val userId = data.substring(0, idx)
       message = data.substring(msgIdx + 1)
-      val attcId = data.substring(idx + 8, msgIdx)
-      val attcIdResponse = Gson().fromJson(attcId, AttcIdResponse::class.java)
+      val attcGrpId = data.substring(idx + 8, msgIdx)
 
       managedExecutor.runAsync {
-        addMsg = talkMsgRepository.insertFile(message, attcIdResponse.attcGrpId, tkrmId, userId)
+        talkMsg = talkMsgRepository.insertFile(message, attcGrpId, tkrmId, userId)
+        val infoUser = infoUserRepository.findByUserId(userId) ?: throw NotFoundException("사용자 정보를 찾을 수 없습니다.")
+        val talkMsgDto = TalkMsgDto(
+          tkrmId = talkMsg.id?.tkrmId,
+          msgSeq = talkMsg.id?.msgSeq,
+          msg = talkMsg.msg,
+          attcId = talkMsg.attcId,
+          userNm = infoUser.userNm,
+          instNm = infoUser.instNm,
+          rgstUserId = talkMsg.rgstUserId,
+          rgstDttm = talkMsg.rgstDttm,
+          updtUserId = talkMsg.updtUserId,
+          updtDttm = talkMsg.updtDttm
+        )
+
         otherUsers = talkUserRepository.findOtherUsersByTkrmId(tkrmId, userId) as MutableList<TalkUser>
-        handlePostMessage(session, tkrmId, addMsg, otherUsers, userId, message)
+        handlePostMessage(session, tkrmId, talkMsgDto, otherUsers, userId, message)
       }
     } else {
       val idx = data.indexOf("|")
@@ -99,9 +115,23 @@ class TalkRoomMod {
       message = data.substring(idx + 1)
 
       managedExecutor.runAsync {
-        addMsg = talkMsgRepository.insertMessage(message, tkrmId, userId)
+        talkMsg = talkMsgRepository.insertMessage(message, tkrmId, userId)
+        val infoUser = infoUserRepository.findByUserId(userId) ?: throw NotFoundException("사용자 정보를 찾을 수 없습니다.")
+        val talkMsgDto = TalkMsgDto(
+          tkrmId = talkMsg.id?.tkrmId,
+          msgSeq = talkMsg.id?.msgSeq,
+          msg = talkMsg.msg,
+          attcId = talkMsg.attcId,
+          userNm = infoUser.userNm,
+          instNm = infoUser.instNm,
+          rgstUserId = talkMsg.rgstUserId,
+          rgstDttm = talkMsg.rgstDttm,
+          updtUserId = talkMsg.updtUserId,
+          updtDttm = talkMsg.updtDttm
+        )
+
         otherUsers = talkUserRepository.findOtherUsersByTkrmId(tkrmId, userId) as MutableList<TalkUser>
-        handlePostMessage(session, tkrmId, addMsg, otherUsers, userId, message)
+        handlePostMessage(session, tkrmId, talkMsgDto, otherUsers, userId, message)
       }
     }
   }
@@ -109,7 +139,7 @@ class TalkRoomMod {
   private fun handlePostMessage(
     session: Session,
     tkrmId: String,
-    addMsg: TalkMsg,
+    addMsg: TalkMsgDto,
     otherUsers: MutableList<TalkUser>,
     userId: String,
     message: String?

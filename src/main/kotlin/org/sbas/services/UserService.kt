@@ -4,7 +4,6 @@ import io.quarkus.cache.*
 import jakarta.enterprise.context.ApplicationScoped
 import jakarta.inject.Inject
 import jakarta.transaction.Transactional
-import jakarta.ws.rs.NotFoundException
 import jakarta.ws.rs.core.Response
 import org.eclipse.microprofile.config.inject.ConfigProperty
 import org.eclipse.microprofile.jwt.JsonWebToken
@@ -14,7 +13,6 @@ import org.sbas.constants.SbasConst
 import org.sbas.constants.enums.UserStatCd
 import org.sbas.dtos.PagingListDto
 import org.sbas.dtos.info.*
-import org.sbas.entities.info.InfoAlarm
 import org.sbas.entities.info.InfoCntc
 import org.sbas.entities.info.InfoCntcId
 import org.sbas.parameters.*
@@ -31,10 +29,6 @@ import org.sbas.utils.CustomizedException
 import org.sbas.utils.TimeUtil
 import org.sbas.utils.TokenUtils
 import java.security.MessageDigest
-import java.time.LocalDateTime
-import java.time.ZoneId
-import java.time.format.DateTimeFormatter
-
 
 @ApplicationScoped
 class UserService {

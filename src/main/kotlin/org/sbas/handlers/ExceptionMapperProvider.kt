@@ -19,7 +19,6 @@ import org.sbas.constants.SbasConst
 import org.sbas.responses.CommonResponse
 import org.sbas.utils.CustomizedException
 
-
 /**
  * NotFoundException 발생 시 예외 응답 처리
  */

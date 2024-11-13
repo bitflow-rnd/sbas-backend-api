@@ -82,10 +82,6 @@ class TalkUserRepository : PanacheRepositoryBase<TalkUser, TalkUserId> {
     persist(talkUser)
   }
 
-  fun countByTkrmId(tkrmId: String): Int {
-    return count("where id.tkrmId = '$tkrmId'").toInt()
-  }
-
   fun findTalkRoomNameById(tkrmId: String, userId: String) : String {
     return findById(TalkUserId(tkrmId, userId))?.tkrmNm ?: ""
   }
@@ -102,7 +98,7 @@ class TalkMsgRepository : PanacheRepositoryBase<TalkMsg, TalkMsgId> {
   fun findChatDetail(tkrmId: String): List<TalkMsgDto> {
     val query = "select new org.sbas.dtos.TalkMsgDto(tm.id.tkrmId, tm.id.msgSeq, " +
       "tm.msg, tm.attcId, " +
-      "iu.instNm || ' / ' || iu.userNm, " +
+      "iu.userNm, iu.instNm, tm.rgstUserId, " +
       "tm.rgstDttm, tm.updtUserId, tm.updtDttm) " +
       "from TalkMsg tm " +
       "inner join InfoUser iu on iu.id = tm.rgstUserId " +
@@ -151,9 +147,6 @@ class TalkMsgRepository : PanacheRepositoryBase<TalkMsg, TalkMsgId> {
   @Transactional
   fun findRecentlyMsg(tkrmId: String) =
     find("select tm from TalkMsg tm where tm.id.tkrmId = '$tkrmId' order by tm.id.msgSeq desc").firstResult()
-
-  fun findRecentSeq(tkrmId: String?) =
-    find("select tm from TalkMsg tm where tm.id.tkrmId = '$tkrmId' order by tm.id.msgSeq desc limit 1").firstResult()
 }
 
 @ApplicationScoped
