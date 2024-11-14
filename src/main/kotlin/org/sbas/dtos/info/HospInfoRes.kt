@@ -1,10 +1,7 @@
 package org.sbas.dtos.info
 
 import com.fasterxml.jackson.annotation.JsonProperty
-import org.sbas.constants.enums.DtpmTypeCd
-import org.sbas.constants.enums.PmgrTypeCd
-import org.sbas.constants.enums.SidoCd
-import org.sbas.constants.enums.UserStatCd
+import org.sbas.constants.enums.*
 import org.sbas.utils.annotation.NoArg
 import java.time.Instant
 
@@ -236,24 +233,30 @@ data class HospDetailInfo(
 data class HospMedInfo(
     val userId: String,
     var dutyDstr1Cd: String,
-    val ocpCd: String,
+    val ocpCd: String?,
     val userNm: String,
-    var ptTypeCd: String,
-    var jobCd: String,
-    var authCd: String,
+    var ptTypeCd: String?,
+    var jobCd: String?,
+    var authCd: String?,
     val rgstDttm: Instant,
     val updtDttm: Instant,
-    val userStatCd: UserStatCd,
+    val userStatCd: UserStatCd?,
 ) {
-    val userStatCdNm: String
-        get() = userStatCd.cdNm
+    val userStatCdNm: String?
+        get() = userStatCd?.cdNm
 
-    val ptTypeCdNm: String
-        get() = ptTypeCd.replace(";", ", ")
+    val ptTypeCdNm: String?
+        get() {
+            return ptTypeCd?.let { ptTypeCd ->
+              ptTypeCd.split(";").joinToString(", ") {
+                PtTypeCd.valueOf(it).cdNm
+              }
+            }
+        }
 
     init {
         dutyDstr1Cd = SidoCd.valueOf("SIDO$dutyDstr1Cd").cdNm
-        jobCd = PmgrTypeCd.valueOf(jobCd).cdNm
-        authCd = DtpmTypeCd.valueOf(authCd).cdNm
+        jobCd = jobCd?.let { PmgrTypeCd.valueOf(it).cdNm }
+        authCd = authCd?.let { DtpmTypeCd.valueOf(it).cdNm }
     }
 }
