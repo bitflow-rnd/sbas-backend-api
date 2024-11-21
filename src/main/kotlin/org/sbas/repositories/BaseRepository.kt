@@ -40,7 +40,7 @@ class BaseCodeRepository : PanacheRepositoryBase<BaseCode, BaseCodeId> {
       ?: throw NotFoundException("baseCode not found")
   }
 
-  fun getdstr2CdNm(dstr1Cd: String?, dstr2Cd: String?): String {
+  fun getDstr2CdNm(dstr1Cd: String?, dstr2Cd: String?): String {
     val query = "select fn_get_dstr_cd2_nm('$dstr1Cd', '$dstr2Cd') as test"
     return getEntityManager().createNativeQuery(query).singleResult as String
   }

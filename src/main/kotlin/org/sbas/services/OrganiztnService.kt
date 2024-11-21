@@ -137,7 +137,7 @@ class OrganiztnService {
         val fireStatnInstId = StringUtils.incrementCode("FS", 8, infoInstRepository.findLatestFireStatInstId())
 
         val baseCode = baseCodeRepository.findByCdId(fireStatnSaveReq.dstr1Cd)
-        val dstr2CdNm = baseCodeRepository.getdstr2CdNm(fireStatnSaveReq.dstr1Cd, fireStatnSaveReq.dstr2Cd)
+        val dstr2CdNm = baseCodeRepository.getDstr2CdNm(fireStatnSaveReq.dstr1Cd, fireStatnSaveReq.dstr2Cd)
 
         val fullAddr = baseCode!!.cdNm + dstr2CdNm + fireStatnSaveReq.detlAddr
 

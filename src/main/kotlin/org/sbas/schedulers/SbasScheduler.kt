@@ -4,11 +4,7 @@ import io.quarkus.scheduler.Scheduled
 import io.quarkus.scheduler.Scheduled.Schedules
 import jakarta.enterprise.context.ApplicationScoped
 import jakarta.inject.Inject
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.Job
 import org.jboss.logging.Logger
-import org.sbas.repositories.SvrtPtRepository
 import org.sbas.restdtos.EgenApiEmrrmRltmUsefulSckbdInfoParams
 import org.sbas.services.EgenService
 import org.sbas.services.SvrtService
@@ -27,22 +23,6 @@ class SbasScheduler {
 
   @Inject
   private lateinit var svrtService: SvrtService
-
-  @Inject
-  private lateinit var svrtPtRepository: SvrtPtRepository
-
-  private val job = Job()
-  private val scope = CoroutineScope(job + Dispatchers.Default)
-
-  /**
-   * 매 12시간 마다 트리거 됨
-   */
-  @Scheduled(every = "12h")
-  fun getHospitalInfos() {
-    log.info("scheduler has started job")
-    val res = egenService.syncHospitalInfos();
-    log.info("scheduler has finished job, success = $res")
-  }
 
   @Schedules(
     value = [
