@@ -333,4 +333,8 @@ class BdasAdmsRepository : PanacheRepositoryBase<BdasAdms, BdasAdmsId> {
 
     return getEntityManager().createQuery(query, CompleteTimeLine::class.java).resultList
   }
+
+  fun findBdasAdmsInPeriod(from: Instant, to: Instant): List<BdasAdms> {
+    return find("rgstDttm between ?1 and ?2", from, to).list()
+  }
 }

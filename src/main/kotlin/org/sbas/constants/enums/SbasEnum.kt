@@ -126,3 +126,12 @@ enum class DtpmTypeCd(val cdNm: String) {
     DTPM0001("일반"),
     DTPM0002("게스트"),
 }
+
+enum class DsbdType(val cdNm: String) {
+  DBTP0001("지역"), 
+  DBTP0002("기관"),
+  DBTP0003("staff"),
+  DBTP0004("병상배정상태"),
+  DBTP0005("중증도"),
+  DBTP0006("가용병상"),
+}

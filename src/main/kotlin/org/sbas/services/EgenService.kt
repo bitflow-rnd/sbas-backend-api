@@ -199,25 +199,6 @@ class EgenService {
   }
 
   /**
-   * E-GEN 병의원 목록정보를 DB에 저장
-   */
-  @Transactional
-  fun saveHsptlMdcncList(param: EgenApiListInfoParams): CommonResponse<*> {
-    var res: InfoHospSaveReq
-    val jsonArray = try {
-      getHsptlMdcncListInfoInqire(param).first
-    } catch (e: Exception) {
-      return CommonResponse(e.message)
-    }
-    jsonArray.getJSONArray("item").forEach {
-      res = ObjectMapper().readValue(it.toString(), InfoHospSaveReq::class.java)
-      val addr = baseCodeRepository.findCdIdByAddrNm(res.dutyAddr!!)
-      infoHospRepository.getEntityManager().merge(res.toEntity(addr.siDoCd, addr.siGunGuCd))
-    }
-    return CommonResponse(jsonArray)
-  }
-
-  /**
    * E-GEN 응급의료기관 목록정보 DB 저장
    */
   @Transactional
@@ -234,29 +215,6 @@ class EgenService {
       infoHospRepository.getEntityManager().merge(res.toEntity(addr.siDoCd, addr.siGunGuCd))
     }
     return CommonResponse(jsonArray)
-  }
-
-  /**
-   * return: 1: success, 0: fail
-   */
-  @Transactional
-  fun syncHospitalInfos(): Boolean {
-    var ret = false
-    try {
-      val jsonObject = JSONObject(
-        //                egenRestClient.getHsptlMdcncListInfoInqire(
-        //                    serviceKey = serviceKey,
-        //                    q0 = param.q0, q1 = param.q1,
-        //                    qz = param.qz, qd = param.qd,
-        //                    qt = param.qt, qn = param.qn,
-        //                    ord = param.ord, pageNo = param.pageNo, numOfRows = param.numOfRows
-        //                )
-      )
-      ret = true
-    } catch (e: Exception) {
-      log.error("scheduler failed when running, e = ${e.message}")
-    }
-    return ret
   }
 
   fun saveUsefulSckbdInfo(param: EgenApiEmrrmRltmUsefulSckbdInfoParams) {
